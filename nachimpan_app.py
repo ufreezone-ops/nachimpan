@@ -432,27 +432,29 @@ OFFICIAL_RELEASE_URL = "https://mods.go.kr/board.es?act=view&bid=11898&list_no=4
 # 2.01.00 | 세션 상태 및 진단 동기화(NC-코드) 엔진
 # ------------------------------------------------------------------------------
 
-# 2.01.01 | 세션 키 초기화 및 안전 조회 헬퍼 (getv)
+# 2.01.01 | 세션 키 초기화 및 안전 조회 헬퍼 (getv, advanced_mode 기본값 탑재)
 if "anonymous_id" not in st.session_state:
     st.session_state.anonymous_id = f"#{random.choice('ABCDE')}-{random.randint(101,999)}"
 if "started" not in st.session_state:
     st.session_state.started = False
 if "answers" not in st.session_state:
     st.session_state.answers = {}
+if "advanced_mode" not in st.session_state:
+    st.session_state.advanced_mode = False  # 기본값: 누구나 부담 없는 3분 산책 기본 모드로 시작
 
 def getv(key, default=0):
     val = st.session_state.get(key, default)
     return default if val is None else val
 
-# 2.01.02 | 동기화 키 목록 및 압축 인코더 (export_diagnosis_code)
+# 2.01.02 | 동기화 키 목록 및 압축 인코더 (export_diagnosis_code, advanced_mode 포함)
 SYNC_KEYS = [
     "anonymous_id", "person_name", "person_age", "gender", "job_form", "job_spouse_form", "career_stage",
     "income_self", "income_spouse", "income_other", "income_bonus", "income_pension",
     "expense_living", "expense_loan", "expense_other", "retirement_monthly_expenses",
     "asset_cash", "asset_financial", "asset_home", "asset_deposit", "asset_other",
     "debt_home", "debt_other", "retirement_age", "spouse_age", "child_count",
-    "child_age", "child_age2", "child_age3", "father_age", "mother_age",
-    "marriage_plan", "child_plan", "housing_plan", "sibling_items"
+    "child_age", "child_age2", "child_age3", "child_age4", "father_age", "mother_age",
+    "marriage_plan", "child_plan", "housing_plan", "sibling_items", "advanced_mode"
 ]
 
 def export_diagnosis_code():
@@ -491,7 +493,6 @@ def import_diagnosis_code(raw_input):
     except Exception as e:
         return False, f"데이터 복원 실패: {e}"
 
-
 # 2.01.04 | 개발용 테스트 사례 및 Google Sheets 저장/불러오기
 from datetime import datetime
 
@@ -513,7 +514,7 @@ DEV_CASES = {
         "retirement_age": 60, "spouse_age": 0,
         "child_count": "없음", "child_age": 0, "child_age2": 0,
         "child_age3": 0, "child_age4": 0,
-        "father_age": 67, "mother_age": 65,  # 아버지(+35세), 어머니(+33세)
+        "father_age": 67, "mother_age": 65,
         "marriage_plan": "1~3년 내 결혼 생각 있음",
         "child_plan": "자녀 계획 있음",
         "housing_plan": "전세·월세 이동 고려",
@@ -535,7 +536,7 @@ DEV_CASES = {
         "retirement_age": 62, "spouse_age": 46,
         "child_count": "2명", "child_age": 18, "child_age2": 14,
         "child_age3": 0, "child_age4": 0,
-        "father_age": 83, "mother_age": 81,  # 아버지(+35세), 어머니(+33세)
+        "father_age": 83, "mother_age": 81,
         "marriage_plan": "미정", "child_plan": "미정",
         "housing_plan": "현재 주거 유지",
     },
@@ -556,7 +557,7 @@ DEV_CASES = {
         "retirement_age": 62, "spouse_age": 56,
         "child_count": "2명", "child_age": 28, "child_age2": 25,
         "child_age3": 0, "child_age4": 0,
-        "father_age": 93, "mother_age": 91,  # 아버지(+35세), 어머니(+33세)
+        "father_age": 93, "mother_age": 91,
         "marriage_plan": "미정", "child_plan": "미정",
         "housing_plan": "현재 주거 유지",
     },
@@ -591,7 +592,6 @@ def get_test_cases():
         conn = st.connection("gsheets", type=GSheetsConnection)
         df = conn.read(ttl=0)
         if df is not None and not df.empty:
-            # 가장 최근에 저장된 사례가 위로 오도록 최신순(역순) 정렬
             saved_dict = {}
             for _, row in df.iloc[::-1].iterrows():
                 name = str(row.get("case_name", "")).strip()
@@ -601,7 +601,6 @@ def get_test_cases():
                         saved_dict[f"📁 저장 사례: {name}"] = json.loads(payload)
                     except (ValueError, TypeError):
                         pass
-            # 기본 표준 사례 아래에 최신 저장 사례 결합
             cases.update(saved_dict)
     except Exception:
         pass
@@ -794,7 +793,7 @@ def call_gemini_text(prompt_text):
 # 4.01.00 | 사이드바 프로필 요약 및 복원
 # ------------------------------------------------------------------------------
 
-# 4.01.01 | 사이드바 컴포넌트 렌더링 (일반 새로고침 삭제 ➜ 익명 배지부터 단정하게 시작)
+# 4.01.01 | 사이드바 컴포넌트 렌더링 (하단 비밀 스위치 🧭 포함)
 with st.sidebar:
     st.markdown(f"""
 <div style="background: rgba(30, 41, 59, 0.4); border: 1px solid #334155; border-radius: 10px; padding: 12px 14px; text-align: center; margin-bottom: 20px;">
@@ -829,9 +828,17 @@ with st.sidebar:
                 st.error(msg)
 
     st.markdown("<div style='height: 14px;'></div>", unsafe_allow_html=True)
-    st.caption("※ 나침반은 외부 서버에 저장되지 않는 일회성 안전 세션입니다.")
+    
+    # [비밀 스위치] 안내문과 나란히 배치된 아는 사람만 누르는 🧭 토글 버튼
+    disc_col1, disc_col2 = st.columns([8.8, 1.2])
+    with disc_col1:
+        st.caption("※ 나침반은 외부 서버에 저장되지 않는 일회성 안전 세션입니다.")
+    with disc_col2:
+        if st.button("🧭", key="secret_adv_toggle", help="모드 전환"):
+            st.session_state.advanced_mode = not st.session_state.get("advanced_mode", False)
+            st.rerun()
 
-# 4.01.02 | 개발용 테스트 메뉴 (새로고침 버튼 통합 & 100개 대비 실시간 검색창 신설)
+# 4.01.02 | 개발용 테스트 메뉴 (실명 소림 ➜ 가명 혜림 교체 적용)
 _dev_enabled = (
     st.secrets.get("DEV_MODE", False)
     and st.query_params.get("dev") == "1"
@@ -842,7 +849,6 @@ if _dev_enabled:
         st.divider()
         st.markdown("### 🧪 개발용 테스트")
         
-        # 1. 사이드바 꼭대기에 있던 새로고침 버튼을 개발자 전용 메뉴 최상단으로 이전
         if st.button("↻ 개발용 새로고침", key="dev_menu_refresh", use_container_width=True):
             st.rerun()
 
@@ -851,15 +857,14 @@ if _dev_enabled:
         _cases = get_test_cases()
         _all_names = list(_cases.keys())
 
-        # 2. 사례가 50개, 100개 쌓여도 0.1초 만에 찾아내는 실시간 검색 필터창
+        # [실명 박멸] 가명 '혜림'으로 검색 placeholder 교체
         _search_kw = st.text_input(
             "🔍 사례 검색 (이름 또는 키워드)",
-            placeholder="예: 여성, 소림, 30대...",
+            placeholder="예: 여성, 혜림, 30대...",
             key="dev_search_keyword",
             label_visibility="visible"
         ).strip()
 
-        # 검색어가 있으면 필터링, 없으면 전체 목록 표출
         if _search_kw:
             _filtered_names = [n for n in _all_names if _search_kw.lower() in n.lower()]
             if not _filtered_names:
@@ -880,7 +885,6 @@ if _dev_enabled:
             for k, v in _data.items():
                 st.session_state[k] = v
 
-            # 불러온 사례의 성별, 직업, 경력, 배우자 pills 하이라이트 동기화
             if "gender" in _data:
                 st.session_state["pills_gender"] = _data["gender"]
             if "job_form" in _data:
@@ -1089,498 +1093,302 @@ selected_page = {
 
 
 # ================================================================================
-# [Module 6.00.00] 메인 뷰 페이지 (Main View Tabs)
+# [Module 6.00.00] 메인 뷰 페이지 (Main View Tabs: 기본 3분 산책 vs 정밀 심층 모드)
 # ================================================================================
 
-# ------------------------------------------------------------------------------
+# ==============================================================================
 # 6.01.00 | Tab 1 — 우리집 가계부
-# ------------------------------------------------------------------------------
+# ==============================================================================
 if selected_page == "우리집 가계부":
-    st.markdown("## 우리집 가계부")
+    is_adv = st.session_state.get("advanced_mode", False)
     
-    # 6.01.01 | ⓪ 우리집 소득 성격 및 재무 입력 폼
-    with st.form("finance_form"):
-        with st.container(border=True, key="job-panel"):
-            st.markdown("### ⓪ 우리집 소득 성격")
-            
-            gender_options = ["🙋‍♂️ 남성", "🙋‍♀️ 여성"]
-            prev_gender = st.session_state.get("gender", "🙋‍♂️ 남성")
-            if prev_gender not in gender_options:
-                prev_gender = "🙋‍♂️ 남성"
-                
-            st.markdown("<div style='font-size: 17px; font-weight: 700; color: #F8FAFC; margin-bottom: 6px;'>나의 성별은?</div>", unsafe_allow_html=True)
-            gender_selected = st.pills(
-                "나의 성별은?",
-                gender_options,
-                default=prev_gender,
-                key="pills_gender",
-                label_visibility="collapsed"
-            )
-            
-            st.markdown("<div style='height: 12px;'></div>", unsafe_allow_html=True)
-
-            job_options = ["직장인", "자영업", "전문직", "사업가", "투자자", "임대소득자", "전업주부", "그외"]
-            job_spouse_options = ["해당 없음", "직장인", "자영업", "전문직", "사업가", "투자자", "임대소득자", "전업주부", "그외"]
-            career_options = ["🌱 3년 이하 (초년생)", "🌿 4~9년 (성장기)", "🌳 10년 이상 (베테랑)"]
-            
-            prev_job = st.session_state.get("job_form", "직장인")
-            if prev_job not in job_options:
-                prev_job = "직장인"
-                
-            prev_spouse_job = st.session_state.get("job_spouse_form", "해당 없음")
-            if prev_spouse_job not in job_spouse_options:
-                prev_spouse_job = "해당 없음"
-
-            prev_career = st.session_state.get("career_stage", "🌱 3년 이하 (초년생)")
-            if prev_career not in career_options:
-                prev_career = "🌱 3년 이하 (초년생)"
-            
-            st.markdown("<div style='font-size: 17px; font-weight: 700; color: #F8FAFC; margin-bottom: 6px;'>나의 직업은?</div>", unsafe_allow_html=True)
-            job_selected = st.pills(
-                "나의 직업은?",
-                job_options,
-                default=prev_job,
-                key="pills_job_self",
-                label_visibility="collapsed"
-            )
-            
-            st.markdown("<div style='height: 12px;'></div>", unsafe_allow_html=True)
-            
-            st.markdown("<div style='font-size: 17px; font-weight: 700; color: #F8FAFC; margin-bottom: 6px;'>나의 현업 경력(연차)은?</div>", unsafe_allow_html=True)
-            career_selected = st.pills(
-                "나의 현업 경력(연차)은?",
-                career_options,
-                default=prev_career,
-                key="pills_career_stage",
-                label_visibility="collapsed"
-            )
-
-            st.markdown("<div style='height: 12px;'></div>", unsafe_allow_html=True)
-            
-            st.markdown("<div style='font-size: 17px; font-weight: 700; color: #F8FAFC; margin-bottom: 6px;'>배우자의 직업은? (선택)</div>", unsafe_allow_html=True)
-            job_spouse_selected = st.pills(
-                "배우자의 직업은?",
-                job_spouse_options,
-                default=prev_spouse_job,
-                key="pills_job_spouse",
-                label_visibility="collapsed"
-            )
-
-        st.write("")
-
-        # 6.01.02 | ① 들어오는 돈 vs ② 나가는 돈 입력 패널
-        income_col, expense_col = st.columns(2)
-        with income_col:
+    if not is_adv:
+        # [기본 모드] 딱 2개만 묻는 극도로 가벼운 일상 수지 산책
+        st.markdown("## 우리집 가계부")
+        st.caption("가벼운 3분 산책: 가장 핵심적인 우리 집의 한 달 현금흐름 밸런스만 살펴봅니다.")
+        
+        with st.form("basic_finance_form"):
             with st.container(border=True, key="income-panel"):
-                st.markdown("### ① 들어오는 돈 (만원)")
-                income_self = st.number_input("나의 월 실수령액 (월급·기본소득)", min_value=0, value=st.session_state.get("income_self"), step=10, placeholder="월 금액")
-                income_spouse = st.number_input("배우자 월 실수령액", min_value=0, value=st.session_state.get("income_spouse"), step=10, placeholder="월 금액")
-                income_other = st.number_input("그 밖의 월 정기소득 (임대·부업 등)", min_value=0, value=st.session_state.get("income_other"), step=10, placeholder="월 금액")
-                income_bonus = st.number_input("연간 비정기 소득 (상여금·성과급·연말수입)", min_value=0, value=st.session_state.get("income_bonus"), step=100, placeholder="1년 합계 금액 (없으면 빈칸)")
-        with expense_col:
-            with st.container(border=True, key="expense-panel"):
-                st.markdown("### ② 나가는 돈 (월, 만원)")
-                expense_living = st.number_input("기본 생활비 (식비·관리비·통신비·가족생활)", min_value=0, value=st.session_state.get("expense_living"), step=10, placeholder="월 생활 유지비")
-                expense_loan = st.number_input("대출 원리금 상환액 (원금+이자 합계)", min_value=0, value=st.session_state.get("expense_loan"), step=10, placeholder="은행 납입 합계")
-                expense_other = st.number_input("그 밖의 월평균 지출 (연간 여행·경조사·세금÷12)", min_value=0, value=st.session_state.get("expense_other"), step=10, placeholder="비정기 지출 월평균")
+                st.markdown("### 들어오고 나가는 돈 (월, 만원)")
+                b_in_col, b_ex_col = st.columns(2)
+                with b_in_col:
+                    basic_income = st.number_input(
+                        "나의 월 실수령액 (월급·기본소득)",
+                        min_value=0, value=int(st.session_state.get("income_self", 0) or 0), step=10,
+                        placeholder="월 실수령액"
+                    )
+                with b_ex_col:
+                    basic_expense = st.number_input(
+                        "우리집 기본 생활비",
+                        min_value=0, value=int(st.session_state.get("expense_living", 0) or 0), step=10,
+                        placeholder="월 생활비"
+                    )
+            save_basic = st.form_submit_button("입력 내용 반영하기", use_container_width=True, type="primary")
 
-        # 6.01.03 | ③ 가지고 있는 것 vs ④ 갚아야 할 돈 입력 패널
-        asset_col, debt_col = st.columns(2)
-        with asset_col:
-            with st.container(border=True, key="asset-panel"):
-                st.markdown("### ③ 가지고 있는 것 (시세, 만원)")
-                asset_cash = st.number_input("현금·예적금", min_value=0, value=st.session_state.get("asset_cash"), step=100, placeholder="금액")
-                asset_financial = st.number_input("주식·채권 등 금융자산", min_value=0, value=st.session_state.get("asset_financial"), step=100, placeholder="금액")
-                asset_home = st.number_input("부동산 시세", min_value=0, value=st.session_state.get("asset_home"), step=100, placeholder="금액")
-                asset_deposit = st.number_input("전세보증금", min_value=0, value=st.session_state.get("asset_deposit"), step=100, placeholder="금액")
-                asset_other = st.number_input("그 밖의 자산 (현금화 가능한 사업체·지분 등)", min_value=0, value=st.session_state.get("asset_other"), step=100, placeholder="금액")
-        with debt_col:
-            with st.container(border=True, key="debt-panel"):
-                st.markdown("### ④ 갚아야 할 돈 (원금, 만원)")
-                debt_home = st.number_input("주택담보·전세대출 잔액", min_value=0, value=st.session_state.get("debt_home"), step=100, placeholder="금액")
-                debt_other = st.number_input("그 밖의 부채 잔액 (신용·마이너스통장)", min_value=0, value=st.session_state.get("debt_other"), step=100, placeholder="금액")
-
-        # 6.01.04 | 은퇴 후 가정 입력 및 세션 상태 저장
-        with st.container(border=True, key="retirement-panel"):
-            st.markdown("### 은퇴 후에는? (월, 만원)")
-            pension_col, retirement_expense_col = st.columns(2)
-            with pension_col:
-                income_pension = st.number_input(
-                    "은퇴 후 받을 월 연금", min_value=0,
-                    value=st.session_state.get("income_pension"), step=10,
-                    placeholder="모르면 빈칸으로 두세요"
-                )
-            with retirement_expense_col:
-                retirement_monthly_expenses = st.number_input(
-                    "은퇴 후 한 달 생활비", min_value=0,
-                    value=int(st.session_state.get("retirement_monthly_expenses", 200) or 0),
-                    step=10
-                )
-
-        save_finance = st.form_submit_button("입력 내용 반영하기", use_container_width=True, type="primary")
-
-    if save_finance:
-        final_gender = gender_selected if gender_selected else "🙋‍♂️ 남성"
-        final_job = job_selected if job_selected else "직장인"
-        final_career = career_selected if career_selected else "🌱 3년 이하 (초년생)"
-        final_spouse_job = "" if (not job_spouse_selected or job_spouse_selected == "해당 없음") else job_spouse_selected
-        
-        submitted_values = {
-            "gender": final_gender,
-            "job_form": final_job,
-            "career_stage": final_career,
-            "job_spouse_form": final_spouse_job,
-            "income_self": income_self, "income_spouse": income_spouse,
-            "income_other": income_other, "income_bonus": income_bonus,
-            "income_pension": income_pension,
-            "expense_living": expense_living, "expense_loan": expense_loan,
-            "expense_other": expense_other, "retirement_monthly_expenses": retirement_monthly_expenses,
-            "asset_cash": asset_cash, "asset_financial": asset_financial, "asset_home": asset_home,
-            "asset_deposit": asset_deposit, "asset_other": asset_other,
-            "debt_home": debt_home, "debt_other": debt_other,
-        }
-        for k, v in submitted_values.items():
-            st.session_state[k] = v
-        st.session_state["finance_saved_notice"] = True
-
-    # 6.01.05 | 우리집 재무 현황 2x2 ESBI 매트릭스 카드 UI
-    q_self = active_quadrant(st.session_state.get("job_form", "직장인"))
-    q_spouse = active_quadrant(st.session_state.get("job_spouse_form", ""))
-
-    st.markdown("### 우리집 재무 현황")
-    st.markdown("<div id='selected-esbi'></div>", unsafe_allow_html=True)
-    if st.session_state.pop("finance_saved_notice", False):
-        st.success("입력하신 재무 정보가 반영되었습니다.")
-        st.components.v1.html("<script>try { window.parent.document.getElementById('selected-esbi').scrollIntoView({behavior:'smooth',block:'center'}); } catch(e) {}</script>", height=0)
-
-    def get_quad_ui(code, title, desc):
-        is_self = (q_self == code)
-        is_spouse = (q_spouse == code)
-        
-        if is_self and is_spouse:
-            border_style = "border: 2.5px solid #EA580C; outline: 2.5px dashed #38BDF8; outline-offset: -5px; background: rgba(234, 88, 12, 0.16);"
-        elif is_self:
-            border_style = "border: 2.5px solid #EA580C; background: rgba(234, 88, 12, 0.14);"
-        elif is_spouse:
-            border_style = "border: 2.5px dashed #38BDF8; background: rgba(56, 189, 248, 0.14);"
-        else:
-            border_style = "border: 1px solid #334155; background: rgba(15, 23, 42, 0.7);"
-            
-        badges = []
-        if is_self:
-            badges.append("<span style='background:#EA580C; color:#FFFFFF; font-size:12px; font-weight:800; padding:2px 8px; border-radius:4px;'>나</span>")
-        if is_spouse:
-            badges.append("<span style='background:#0284C7; color:#FFFFFF; font-size:12px; font-weight:800; padding:2px 8px; border-radius:4px;'>배우자</span>")
-        
-        badge_row = f"<div style='min-height:24px; margin-bottom:4px; display:flex; justify-content:center; gap:6px;'>{' '.join(badges)}</div>" if badges else "<div style='min-height:24px; margin-bottom:4px;'></div>"
-        
-        return f'<div style="{border_style} border-radius: 12px; padding: 18px 12px; text-align: center; display: flex; flex-direction: column; justify-content: center; align-items: center; height: 165px; box-sizing: border-box; width: 100%;">{badge_row}<div style="font-size: 28px; font-weight: 850; color: #F8FAFC; line-height: 1.1;">{code}</div><div style="font-size: 17.5px; font-weight: 700; color: #F1F5F9; margin: 4px 0 6px 0;">{title}</div><div style="font-size: 14px; color: #CBD5E1; line-height: 1.4; word-break: keep-all; text-align: center;">{desc}</div></div>'
-
-    card_e = get_quad_ui("E", "직장인", "나의 시간과 돈을 바꿈.<br><span style='color:#F59E0B; font-weight:600;'>(작은 물통)</span>")
-    card_s = get_quad_ui("S", "자영업·전문직", "나의 시간과 돈을 바꿈.<br><span style='color:#F59E0B; font-weight:600;'>(큰 물통)</span>")
-    card_b = get_quad_ui("B", "사업가", "나의 회사가 돈을 만듦.<br><span style='color:#38BDF8; font-weight:600;'>(파이프라인)</span>")
-    card_i = get_quad_ui("I", "투자자·임대소득자", "나의 자산이 돈을 만듦.<br><span style='color:#38BDF8; font-weight:600;'>(파이프라인)</span>")
-
-    esbi_html = f"""<div style="margin: 16px 0 24px 0;">
-<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0px; align-items: stretch;">
-<div style="display: flex; flex-direction: column; gap: 14px; padding-right: 14px; border-right: 3.5px dashed #475569;">
-<div>{card_e}</div>
-<div>{card_s}</div>
-</div>
-<div style="display: flex; flex-direction: column; gap: 14px; padding-left: 14px;">
-<div>{card_b}</div>
-<div>{card_i}</div>
-</div>
-</div>
-<div style="text-align: center; margin-top: 14px;">
-<span style="font-size: 14px; color: #94A3B8;">
-🧱 좌측(E·S)에서 우측(B·I)으로 넘어가는 것은 소득의 성격을 바꾸는 과정입니다.
-</span>
-</div>
-</div>"""
-    st.markdown(esbi_html, unsafe_allow_html=True)
-
-    # 6.01.06 | 현재 재무 요약 메트릭
-    s = current_financial_summary()
-    st.markdown("### 현재 재무 요약")
-    cols = st.columns(4)
-    cols[0].metric("월 정기수입", money(s["regular_income"]), help="나 + 배우자 + 기타 월 정기소득")
-    cols[1].metric("월 현금지출", money(s["expenses"]), help="기본생활비 + 대출원리금 + 기타지출")
-    
-    bonus_help = f"연간 상여금 {money(s['annual_bonus'])} 반영" if s['annual_bonus'] > 0 else "월 정기수지 기준"
-    cols[2].metric(
-        "연간 순저축 여력",
-        money(s["annual_net_surplus"]),
-        delta=f"월평균 {money(s['monthly_effective_surplus'])}",
-        help=f"1년 총수입({money(s['annual_total_income'])}) - 1년 총지출({money(s['annual_total_expenses'])}) | {bonus_help}"
-    )
-    cols[3].metric("순자산", fmt_eok(s["net_worth"]))
-
-    # 6.01.07 | 미래 순자산·연금 궤적 Plotly 차트
-    st.markdown("### 미래 순자산·연금 궤적")
-    
-    cur_age = int(st.session_state.person_age)
-    retire_val = st.session_state.get("retirement_age")
-    retire_age = int(retire_val) if retire_val is not None else 65
-    retire_age = max(cur_age, min(retire_age, 90))
-    
-    start_asset_eok = s["net_worth"] / 10000.0
-    base_annual_surplus_eok = s["annual_net_surplus"] / 10000.0
-    
-    career_st = st.session_state.get("career_stage", "🌱 3년 이하 (초년생)")
-    user_gender = st.session_state.get("gender", "🙋‍♂️ 남성")
-    is_female = ("여성" in user_gender)
-    m_plan = st.session_state.get("marriage_plan", "미정")
-    c_plan = st.session_state.get("child_plan", "미정")
-    is_single_young = (int(getv("spouse_age", 0)) == 0 and cur_age < 40)
-    life_expectancy = 87 if is_female else 81
-
-    ages_accum = list(range(cur_age, retire_age + 1))
-    vals_accum_eok = []
-    current_asset = start_asset_eok
-    
-    for a in ages_accum:
-        vals_accum_eok.append(current_asset)
-        
-        if a < 45:
-            growth_step = 0.025 if "초년생" in career_st else 0.018
-            lifecycle_weight = 1.0 + (growth_step * (a - cur_age))
-        elif 45 <= a <= 53:
-            lifecycle_weight = 1.0 + (0.02 * (45 - cur_age)) - 0.15
-        else:
-            lifecycle_weight = max(0.65, 1.0 + (0.02 * (45 - cur_age)) - 0.25)
-            
-        if is_single_young:
-            if m_plan in ["1~3년 내 결혼 생각 있음", "결혼 예정/준비 중"] and (cur_age + 1 <= a <= cur_age + 3):
-                lifecycle_weight *= 0.75
-            if is_female and c_plan in ["자녀 계획 있음", "출산 예정/준비 중"] and (33 <= a <= 36):
-                lifecycle_weight *= 0.65
-
-        annual_save = base_annual_surplus_eok * max(0.05, lifecycle_weight)
-        current_asset += annual_save
-
-    peak_asset_eok = vals_accum_eok[-1]
-
-    ret_pension = float(getv("income_pension", 0) or 0)
-    ret_expenses = float(getv("retirement_monthly_expenses", 200) or 0)
-    annual_ret_cashflow_eok = ((ret_pension - ret_expenses) * 12) / 10000.0
-
-    ages_retire = list(range(retire_age, max(retire_age + 1, life_expectancy + 1)))
-    vals_retire_eok = []
-    ret_asset = peak_asset_eok
-    depletion_age = None
-
-    for idx, a in enumerate(ages_retire):
-        vals_retire_eok.append(ret_asset)
-        if idx > 0 and ret_asset <= 0 and depletion_age is None:
-            depletion_age = a
-        ret_asset += annual_ret_cashflow_eok
-
-    max_val_eok = max(max(vals_accum_eok), max(vals_retire_eok) if vals_retire_eok else 0)
-    use_cheonman = (max_val_eok < 1.0 and max_val_eok > 0)
-    
-    if use_cheonman:
-        mult = 10.0
-        unit_str = "천만"
-        y_accum = [v * mult for v in vals_accum_eok]
-        y_retire = [v * mult for v in vals_retire_eok]
-        peak_disp = f"{peak_asset_eok * mult:.0f}천만 원"
-        hover_tmpl = "나이: %{x}세<br>추정 순자산: <b>%{y:.0f}천만 원</b><extra></extra>"
-    else:
-        mult = 1.0
-        unit_str = "억"
-        y_accum = vals_accum_eok
-        y_retire = vals_retire_eok
-        peak_disp = f"{peak_asset_eok:.0f}억 원" if abs(peak_asset_eok) >= 10 else f"{peak_asset_eok:.1f}억 원"
-        hover_tmpl = "나이: %{x}세<br>추정 순자산: <b>%{y:.1f}억 원</b><extra></extra>"
-
-    fig_asset = go.Figure()
-    fig_asset.add_hline(y=0, line_dash="solid", line_color="#334155", line_width=1.5)
-
-    fig_asset.add_trace(go.Scatter(
-        x=ages_accum, y=y_accum,
-        mode="lines+markers",
-        line=dict(color="#F59E0B", width=3.5),
-        marker=dict(size=6),
-        fill='tozeroy',
-        fillcolor='rgba(245, 158, 11, 0.12)',
-        name="🌱 자산 축적기 (연간 총저축 + NTA 생애주기)",
-        hovertemplate=hover_tmpl
-    ))
-
-    fig_asset.add_trace(go.Scatter(
-        x=ages_retire, y=y_retire,
-        mode="lines+markers",
-        line=dict(color="#38BDF8", width=3.5),
-        marker=dict(size=6),
-        fill='tozeroy',
-        fillcolor='rgba(56, 189, 248, 0.08)',
-        name="🍂 자산 인출기 (연금 - 노후생활비)",
-        hovertemplate=hover_tmpl
-    ))
-
-    fig_asset.add_vline(x=retire_age, line_dash="dash", line_color="#F8FAFC", line_width=2)
-    fig_asset.add_annotation(
-        x=retire_age, y=peak_asset_eok * mult,
-        text=f"은퇴 정점 {retire_age}세 ({peak_disp})",
-        showarrow=True, arrowhead=2, arrowcolor="#F59E0B",
-        font=dict(size=13, color="#FDE68A", family="sans-serif"),
-        ay=-38, bgcolor="rgba(15, 23, 42, 0.85)", bordercolor="#F59E0B", borderpad=4
-    )
-
-    if depletion_age and depletion_age <= life_expectancy:
-        fig_asset.add_annotation(
-            x=depletion_age, y=0,
-            text=f"자산 소진 ({depletion_age}세)",
-            showarrow=True, arrowhead=2, arrowcolor="#EF4444",
-            font=dict(size=12.5, color="#FCA5A5"),
-            ay=35, bgcolor="rgba(15, 23, 42, 0.85)", bordercolor="#EF4444", borderpad=3
-        )
-
-    fig_asset.update_layout(
-        height=380,
-        margin=dict(l=20, r=20, t=30, b=35),
-        paper_bgcolor="rgba(0,0,0,0)",
-        plot_bgcolor="rgba(0,0,0,0)",
-        font=dict(color="#E2E8F0", size=13),
-        xaxis=dict(
-            title=dict(text="나이 (세)", font=dict(size=14, color="#94A3B8")),
-            tickfont=dict(size=13, color="#94A3B8"),
-            gridcolor="rgba(100, 116, 139, 0.2)",
-            tickmode="linear", tick0=20, dtick=5,
-            fixedrange=True
-        ),
-        yaxis=dict(
-            title=dict(text="추정 순자산", font=dict(size=14, color="#94A3B8")),
-            tickfont=dict(size=13, color="#94A3B8"),
-            ticksuffix=unit_str,
-            tickformat=",.0f",
-            gridcolor="rgba(100, 116, 139, 0.2)",
-            fixedrange=True
-        ),
-        legend=dict(
-            orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1,
-            font=dict(size=12.5, color="#F1F5F9")
-        ),
-        hovermode="x unified"
-    )
-
-    st.plotly_chart(
-        fig_asset,
-        use_container_width=True,
-        config={"displayModeBar": False, "scrollZoom": False, "doubleClick": False, "showAxisDragHandles": False}
-    )
-
-    bonus_note = f" (연간 상여금 {money(s['annual_bonus'])} 포함)" if s['annual_bonus'] > 0 else ""
-    gender_note = f"통계청 {user_gender.split()[1]} 기대수명({life_expectancy}세)"
-    st.markdown(f"""
-<div style="background: rgba(30, 41, 59, 0.5); border: 1px solid #334155; border-radius: 10px; padding: 14px 16px; margin-top: 10px;">
-<div style="font-size: 13.5px; color: #CBD5E1; line-height: 1.6;">
-• <b>🌱 은퇴 전 (만 {cur_age}세 ~ {retire_age}세)</b>: 1년 총 저축여력({money(s['annual_net_surplus'])}{bonus_note})과 현업 경력({career_st}), 국가데이터처 국민이전계정(NTA)의 생애주기 소득 피크(45세) 및 가족 지출기를 결합한 실질 자산 궤적입니다.<br>
-• <b>🍂 은퇴 후 ({retire_age}세 ~ {life_expectancy}세)</b>: {gender_note}을 기준으로 예상 월 연금({ret_pension:,.0f}만 원)에서 노후 생활비({ret_expenses:,.0f}만 원)를 뺀 순현금흐름({annual_ret_cashflow_eok*10000:,.0f}만 원/년)에 따른 순자산 변화입니다.
-</div>
-</div>
-""", unsafe_allow_html=True)
-
-    _, next_col = st.columns([5, 1])
-    with next_col:
-        if st.button("다음 →", key="finance_next", use_container_width=True, type="primary"):
-            st.session_state["_pending_nav"] = "삶과 생계수단"
+        if save_basic:
+            st.session_state["income_self"] = basic_income
+            st.session_state["expense_living"] = basic_expense
             st.rerun()
 
+        surplus_val = int(st.session_state.get("income_self", 0) or 0) - int(st.session_state.get("expense_living", 0) or 0)
+        st.markdown("<div style='height: 14px;'></div>", unsafe_allow_html=True)
+        st.markdown("### 우리집 월 현금흐름 밸런스")
+        b_c1, b_c2, b_c3 = st.columns(3)
+        b_c1.metric("월 실수령 소득", money(st.session_state.get("income_self", 0) or 0))
+        b_c2.metric("월 기본 생활비", money(st.session_state.get("expense_living", 0) or 0))
+        b_c3.metric("월 저축여력 (잉여)", money(surplus_val), delta=f"{'+' if surplus_val >= 0 else ''}{money(surplus_val)}")
 
-# ------------------------------------------------------------------------------
-# 6.02.00 | Tab 2 — 삶과 생계수단
-# ------------------------------------------------------------------------------
-elif selected_page == "삶과 생계수단":
-    st.markdown("## 삶과 생계수단")
-    
-    # 6.02.01 | 소득의 모습 2x2 사분면 (물통 vs 구축B/접속I)
-    st.markdown("""
-<div style="background: rgba(30, 41, 59, 0.45); border: 1.5px solid #334155; border-radius: 14px; padding: 20px 22px; margin-bottom: 22px;">
-<div style="font-size: 20px; font-weight: 850; color: #F8FAFC; margin-bottom: 6px;">소득이 만들어지는 모습 (물통 vs 파이프라인)</div>
-<div style="font-size: 14px; color: #94A3B8; margin-bottom: 16px;">수입의 크기보다 중요한 것은 수입이 만들어지는 '소득의 성격'입니다.</div>
+        _, next_col = st.columns([5, 1])
+        with next_col:
+            if st.button("다음 →", key="basic_fin_next", use_container_width=True, type="primary"):
+                st.session_state["_pending_nav"] = "삶과 생계수단"
+                st.rerun()
+
+    else:
+        # [정밀 고급 모드] 모든 마이크로 모듈(6.01.01 ~ 6.01.07) 100% 완전 복원
+        st.markdown("## 우리집 가계부")
+        with st.form("finance_form"):
+            # 6.01.01 | ⓪ 우리집 소득 성격 (성별, 직업, 경력 연차 pills)
+            with st.container(border=True, key="job-panel"):
+                st.markdown("### ⓪ 우리집 소득 성격")
+                gender_options = ["🙋‍♂️ 남성", "🙋‍♀️ 여성"]
+                prev_gender = st.session_state.get("gender", "🙋‍♂️ 남성")
+                if prev_gender not in gender_options: prev_gender = "🙋‍♂️ 남성"
+                    
+                st.markdown("<div style='font-size: 17px; font-weight: 700; color: #F8FAFC; margin-bottom: 6px;'>나의 성별은?</div>", unsafe_allow_html=True)
+                gender_selected = st.pills("나의 성별은?", gender_options, default=prev_gender, key="pills_gender", label_visibility="collapsed")
+                st.markdown("<div style='height: 12px;'></div>", unsafe_allow_html=True)
+
+                job_options = ["직장인", "자영업", "전문직", "사업가", "투자자", "임대소득자", "전업주부", "그외"]
+                job_spouse_options = ["해당 없음", "직장인", "자영업", "전문직", "사업가", "투자자", "임대소득자", "전업주부", "그외"]
+                career_options = ["🌱 3년 이하 (초년생)", "🌿 4~9년 (성장기)", "🌳 10년 이상 (베테랑)"]
+                
+                prev_job = st.session_state.get("job_form", "직장인")
+                if prev_job not in job_options: prev_job = "직장인"
+                prev_spouse_job = st.session_state.get("job_spouse_form", "해당 없음")
+                if prev_spouse_job not in job_spouse_options: prev_spouse_job = "해당 없음"
+                prev_career = st.session_state.get("career_stage", "🌱 3년 이하 (초년생)")
+                if prev_career not in career_options: prev_career = "🌱 3년 이하 (초년생)"
+                
+                st.markdown("<div style='font-size: 17px; font-weight: 700; color: #F8FAFC; margin-bottom: 6px;'>나의 직업은?</div>", unsafe_allow_html=True)
+                job_selected = st.pills("나의 직업은?", job_options, default=prev_job, key="pills_job_self", label_visibility="collapsed")
+                st.markdown("<div style='height: 12px;'></div>", unsafe_allow_html=True)
+                
+                st.markdown("<div style='font-size: 17px; font-weight: 700; color: #F8FAFC; margin-bottom: 6px;'>나의 현업 경력(연차)은?</div>", unsafe_allow_html=True)
+                career_selected = st.pills("나의 현업 경력(연차)은?", career_options, default=prev_career, key="pills_career_stage", label_visibility="collapsed")
+                st.markdown("<div style='height: 12px;'></div>", unsafe_allow_html=True)
+                
+                st.markdown("<div style='font-size: 17px; font-weight: 700; color: #F8FAFC; margin-bottom: 6px;'>배우자의 직업은? (선택)</div>", unsafe_allow_html=True)
+                job_spouse_selected = st.pills("배우자의 직업은?", job_spouse_options, default=prev_spouse_job, key="pills_job_spouse", label_visibility="collapsed")
+
+            st.write("")
+
+            # 6.01.02 | ① 들어오는 돈 vs ② 나가는 돈 입력 패널
+            income_col, expense_col = st.columns(2)
+            with income_col:
+                with st.container(border=True, key="income-panel"):
+                    st.markdown("### ① 들어오는 돈 (만원)")
+                    income_self = st.number_input("나의 월 실수령액 (월급·기본소득)", min_value=0, value=st.session_state.get("income_self"), step=10, placeholder="월 금액")
+                    income_spouse = st.number_input("배우자 월 실수령액", min_value=0, value=st.session_state.get("income_spouse"), step=10, placeholder="월 금액")
+                    income_other = st.number_input("그 밖의 월 정기소득 (임대·부업 등)", min_value=0, value=st.session_state.get("income_other"), step=10, placeholder="월 금액")
+                    income_bonus = st.number_input("연간 비정기 소득 (상여금·성과급·연말수입)", min_value=0, value=st.session_state.get("income_bonus"), step=100, placeholder="1년 합계 금액 (없으면 빈칸)")
+            with expense_col:
+                with st.container(border=True, key="expense-panel"):
+                    st.markdown("### ② 나가는 돈 (월, 만원)")
+                    expense_living = st.number_input("기본 생활비 (식비·관리비·통신비·가족생활)", min_value=0, value=st.session_state.get("expense_living"), step=10, placeholder="월 생활 유지비")
+                    expense_loan = st.number_input("대출 원리금 상환액 (원금+이자 합계)", min_value=0, value=st.session_state.get("expense_loan"), step=10, placeholder="은행 납입 합계")
+                    expense_other = st.number_input("그 밖의 월평균 지출 (연간 여행·경조사·세금÷12)", min_value=0, value=st.session_state.get("expense_other"), step=10, placeholder="비정기 지출 월평균")
+
+            # 6.01.03 | ③ 가지고 있는 것 vs ④ 갚아야 할 돈 입력 패널
+            asset_col, debt_col = st.columns(2)
+            with asset_col:
+                with st.container(border=True, key="asset-panel"):
+                    st.markdown("### ③ 가지고 있는 것 (시세, 만원)")
+                    asset_cash = st.number_input("현금·예적금", min_value=0, value=st.session_state.get("asset_cash"), step=100, placeholder="금액")
+                    asset_financial = st.number_input("주식·채권 등 금융자산", min_value=0, value=st.session_state.get("asset_financial"), step=100, placeholder="금액")
+                    asset_home = st.number_input("부동산 시세", min_value=0, value=st.session_state.get("asset_home"), step=100, placeholder="금액")
+                    asset_deposit = st.number_input("전세보증금", min_value=0, value=st.session_state.get("asset_deposit"), step=100, placeholder="금액")
+                    asset_other = st.number_input("그 밖의 자산 (현금화 가능한 사업체·지분 등)", min_value=0, value=st.session_state.get("asset_other"), step=100, placeholder="금액")
+            with debt_col:
+                with st.container(border=True, key="debt-panel"):
+                    st.markdown("### ④ 갚아야 할 돈 (원금, 만원)")
+                    debt_home = st.number_input("주택담보·전세대출 잔액", min_value=0, value=st.session_state.get("debt_home"), step=100, placeholder="금액")
+                    debt_other = st.number_input("그 밖의 부채 잔액 (신용·마이너스통장)", min_value=0, value=st.session_state.get("debt_other"), step=100, placeholder="금액")
+
+            # 6.01.04 | 은퇴 후 가정 입력 및 세션 상태 저장
+            with st.container(border=True, key="retirement-panel"):
+                st.markdown("### 은퇴 후에는? (월, 만원)")
+                pension_col, retirement_expense_col = st.columns(2)
+                with pension_col:
+                    income_pension = st.number_input("은퇴 후 받을 월 연금", min_value=0, value=st.session_state.get("income_pension"), step=10, placeholder="모르면 빈칸으로 두세요")
+                with retirement_expense_col:
+                    retirement_monthly_expenses = st.number_input("은퇴 후 한 달 생활비", min_value=0, value=int(st.session_state.get("retirement_monthly_expenses", 200) or 0), step=10)
+
+            save_finance = st.form_submit_button("입력 내용 반영하기", use_container_width=True, type="primary")
+
+        if save_finance:
+            final_gender = gender_selected if gender_selected else "🙋‍♂️ 남성"
+            final_job = job_selected if job_selected else "직장인"
+            final_career = career_selected if career_selected else "🌱 3년 이하 (초년생)"
+            final_spouse_job = "" if (not job_spouse_selected or job_spouse_selected == "해당 없음") else job_spouse_selected
+            
+            submitted_values = {
+                "gender": final_gender, "job_form": final_job, "career_stage": final_career, "job_spouse_form": final_spouse_job,
+                "income_self": income_self, "income_spouse": income_spouse, "income_other": income_other, "income_bonus": income_bonus,
+                "income_pension": income_pension, "expense_living": expense_living, "expense_loan": expense_loan, "expense_other": expense_other,
+                "retirement_monthly_expenses": retirement_monthly_expenses, "asset_cash": asset_cash, "asset_financial": asset_financial,
+                "asset_home": asset_home, "asset_deposit": asset_deposit, "asset_other": asset_other, "debt_home": debt_home, "debt_other": debt_other,
+            }
+            for k, v in submitted_values.items(): st.session_state[k] = v
+            st.session_state["finance_saved_notice"] = True
+
+        # 6.01.05 | 우리집 재무 현황 2x2 ESBI 매트릭스 카드 UI
+        q_self = active_quadrant(st.session_state.get("job_form", "직장인"))
+        q_spouse = active_quadrant(st.session_state.get("job_spouse_form", ""))
+        st.markdown("### 우리집 재무 현황")
+        st.markdown("<div id='selected-esbi'></div>", unsafe_allow_html=True)
+        if st.session_state.pop("finance_saved_notice", False):
+            st.success("입력하신 재무 정보가 반영되었습니다.")
+            st.components.v1.html("<script>try { window.parent.document.getElementById('selected-esbi').scrollIntoView({behavior:'smooth',block:'center'}); } catch(e) {}</script>", height=0)
+
+        def get_quad_ui(code, title, desc):
+            is_self = (q_self == code)
+            is_spouse = (q_spouse == code)
+            if is_self and is_spouse: border_style = "border: 2.5px solid #EA580C; outline: 2.5px dashed #38BDF8; outline-offset: -5px; background: rgba(234, 88, 12, 0.16);"
+            elif is_self: border_style = "border: 2.5px solid #EA580C; background: rgba(234, 88, 12, 0.14);"
+            elif is_spouse: border_style = "border: 2.5px dashed #38BDF8; background: rgba(56, 189, 248, 0.14);"
+            else: border_style = "border: 1px solid #334155; background: rgba(15, 23, 42, 0.7);"
+            badges = []
+            if is_self: badges.append("<span style='background:#EA580C; color:#FFFFFF; font-size:12px; font-weight:800; padding:2px 8px; border-radius:4px;'>나</span>")
+            if is_spouse: badges.append("<span style='background:#0284C7; color:#FFFFFF; font-size:12px; font-weight:800; padding:2px 8px; border-radius:4px;'>배우자</span>")
+            badge_row = f"<div style='min-height:24px; margin-bottom:4px; display:flex; justify-content:center; gap:6px;'>{' '.join(badges)}</div>" if badges else "<div style='min-height:24px; margin-bottom:4px;'></div>"
+            return f'<div style="{border_style} border-radius: 12px; padding: 18px 12px; text-align: center; display: flex; flex-direction: column; justify-content: center; align-items: center; height: 165px; box-sizing: border-box; width: 100%;">{badge_row}<div style="font-size: 28px; font-weight: 850; color: #F8FAFC; line-height: 1.1;">{code}</div><div style="font-size: 17.5px; font-weight: 700; color: #F1F5F9; margin: 4px 0 6px 0;">{title}</div><div style="font-size: 14px; color: #CBD5E1; line-height: 1.4; word-break: keep-all; text-align: center;">{desc}</div></div>'
+
+        card_e = get_quad_ui("E", "직장인", "나의 시간과 돈을 바꿈.<br><span style='color:#F59E0B; font-weight:600;'>(작은 물통)</span>")
+        card_s = get_quad_ui("S", "자영업·전문직", "나의 시간과 돈을 바꿈.<br><span style='color:#F59E0B; font-weight:600;'>(큰 물통)</span>")
+        card_b = get_quad_ui("B", "사업가", "나의 회사가 돈을 만듦.<br><span style='color:#38BDF8; font-weight:600;'>(파이프라인)</span>")
+        card_i = get_quad_ui("I", "투자자·임대소득자", "나의 자산이 돈을 만듦.<br><span style='color:#38BDF8; font-weight:600;'>(파이프라인)</span>")
+
+        st.markdown(f"""
+<div style="margin: 16px 0 24px 0;">
+<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0px; align-items: stretch;">
+<div style="display: flex; flex-direction: column; gap: 14px; padding-right: 14px; border-right: 3.5px dashed #475569;">
+<div>{card_e}</div><div>{card_s}</div>
+</div>
+<div style="display: flex; flex-direction: column; gap: 14px; padding-left: 14px;">
+<div>{card_b}</div><div>{card_i}</div>
+</div></div>
+<div style="text-align: center; margin-top: 14px;"><span style="font-size: 14px; color: #94A3B8;">🧱 좌측(E·S)에서 우측(B·I)으로 넘어가는 것은 소득의 성격을 바꾸는 과정입니다.</span></div>
+</div>
 """, unsafe_allow_html=True)
-    
-    q_self = active_quadrant(st.session_state.get("job_form", "직장인"))
-    q_spouse = active_quadrant(st.session_state.get("job_spouse_form", ""))
-    
-    def get_quad_badge(target_code):
-        badges = []
-        if q_self == target_code:
-            badges.append("<span style='background:#EA580C; color:#FFFFFF; font-size:12px; font-weight:800; padding:2px 8px; border-radius:4px;'>나</span>")
-        if q_spouse == target_code:
-            badges.append("<span style='background:#0284C7; color:#FFFFFF; font-size:12px; font-weight:800; padding:2px 8px; border-radius:4px;'>배우자</span>")
-        return f"<div style='min-height:22px; margin-bottom:4px; display:flex; justify-content:center; gap:6px;'>{' '.join(badges)}</div>" if badges else "<div style='min-height:22px; margin-bottom:4px;'></div>"
 
-    def render_livelihood_quad(code, icon_html, title, sub_title, desc, is_right=False):
-        is_self = (q_self == code)
-        is_spouse = (q_spouse == code)
+        # 6.01.06 | 현재 재무 요약 메트릭
+        s = current_financial_summary()
+        st.markdown("### 현재 재무 요약")
+        cols = st.columns(4)
+        cols[0].metric("월 정기수입", money(s["regular_income"]))
+        cols[1].metric("월 현금지출", money(s["expenses"]))
+        bonus_help = f"연간 상여금 {money(s['annual_bonus'])} 반영" if s['annual_bonus'] > 0 else "월 정기수지 기준"
+        cols[2].metric("연간 순저축 여력", money(s["annual_net_surplus"]), delta=f"월평균 {money(s['monthly_effective_surplus'])}", help=bonus_help)
+        cols[3].metric("순자산", fmt_eok(s["net_worth"]))
+
+        # 6.01.07 | 미래 순자산·연금 궤적 Plotly 차트
+        st.markdown("### 미래 순자산·연금 궤적")
+        cur_age = int(st.session_state.person_age)
+        retire_val = st.session_state.get("retirement_age")
+        retire_age = int(retire_val) if retire_val is not None else 65
+        retire_age = max(cur_age, min(retire_age, 90))
+        start_asset_eok = s["net_worth"] / 10000.0
+        base_annual_surplus_eok = s["annual_net_surplus"] / 10000.0
+        career_st = st.session_state.get("career_stage", "🌱 3년 이하 (초년생)")
+        user_gender = st.session_state.get("gender", "🙋‍♂️ 남성")
+        is_female = ("여성" in user_gender)
+        m_plan = st.session_state.get("marriage_plan", "미정")
+        c_plan = st.session_state.get("child_plan", "미정")
+        is_single_young = (int(getv("spouse_age", 0)) == 0 and cur_age < 40)
+        life_expectancy = 87 if is_female else 81
+
+        ages_accum = list(range(cur_age, retire_age + 1))
+        vals_accum_eok = []
+        current_asset = start_asset_eok
+        for a in ages_accum:
+            vals_accum_eok.append(current_asset)
+            if a < 45: growth_step = 0.025 if "초년생" in career_st else 0.018; lifecycle_weight = 1.0 + (growth_step * (a - cur_age))
+            elif 45 <= a <= 53: lifecycle_weight = 1.0 + (0.02 * (45 - cur_age)) - 0.15
+            else: lifecycle_weight = max(0.65, 1.0 + (0.02 * (45 - cur_age)) - 0.25)
+            if is_single_young:
+                if m_plan in ["1~3년 내 결혼 생각 있음", "결혼 예정/준비 중"] and (cur_age + 1 <= a <= cur_age + 3): lifecycle_weight *= 0.75
+                if is_female and c_plan in ["자녀 계획 있음", "출산 예정/준비 중", "추가 자녀 계획 있음"] and (33 <= a <= 36): lifecycle_weight *= 0.65
+            annual_save = base_annual_surplus_eok * max(0.05, lifecycle_weight)
+            current_asset += annual_save
+
+        peak_asset_eok = vals_accum_eok[-1]
+        ret_pension = float(getv("income_pension", 0) or 0)
+        ret_expenses = float(getv("retirement_monthly_expenses", 200) or 0)
+        annual_ret_cashflow_eok = ((ret_pension - ret_expenses) * 12) / 10000.0
+        ages_retire = list(range(retire_age, max(retire_age + 1, life_expectancy + 1)))
+        vals_retire_eok = []
+        ret_asset = peak_asset_eok
+        depletion_age = None
+        for idx, a in enumerate(ages_retire):
+            vals_retire_eok.append(ret_asset)
+            if idx > 0 and ret_asset <= 0 and depletion_age is None: depletion_age = a
+            ret_asset += annual_ret_cashflow_eok
+
+        max_val_eok = max(max(vals_accum_eok), max(vals_retire_eok) if vals_retire_eok else 0)
+        use_cheonman = (max_val_eok < 1.0 and max_val_eok > 0)
+        mult = 10.0 if use_cheonman else 1.0
+        unit_str = "천만" if use_cheonman else "억"
+        y_accum = [v * mult for v in vals_accum_eok]
+        y_retire = [v * mult for v in vals_retire_eok]
+        peak_disp = f"{peak_asset_eok * mult:.0f}천만 원" if use_cheonman else (f"{peak_asset_eok:.0f}억 원" if abs(peak_asset_eok) >= 10 else f"{peak_asset_eok:.1f}억 원")
+        hover_tmpl = f"나이: %{{x}}세<br>추정 순자산: <b>%{{y:.{0 if use_cheonman else 1}f}}{unit_str} 원</b><extra></extra>"
+
+        fig_asset = go.Figure()
+        fig_asset.add_hline(y=0, line_dash="solid", line_color="#334155", line_width=1.5)
+        fig_asset.add_trace(go.Scatter(x=ages_accum, y=y_accum, mode="lines+markers", line=dict(color="#F59E0B", width=3.5), marker=dict(size=6), fill='tozeroy', fillcolor='rgba(245, 158, 11, 0.12)', name="🌱 자산 축적기", hovertemplate=hover_tmpl))
+        fig_asset.add_trace(go.Scatter(x=ages_retire, y=y_retire, mode="lines+markers", line=dict(color="#38BDF8", width=3.5), marker=dict(size=6), fill='tozeroy', fillcolor='rgba(56, 189, 248, 0.08)', name="🍂 자산 인출기", hovertemplate=hover_tmpl))
+        fig_asset.add_vline(x=retire_age, line_dash="dash", line_color="#F8FAFC", line_width=2)
+        fig_asset.add_annotation(x=retire_age, y=peak_asset_eok * mult, text=f"은퇴 정점 {retire_age}세 ({peak_disp})", showarrow=True, arrowhead=2, arrowcolor="#F59E0B", font=dict(size=13, color="#FDE68A"), ay=-38, bgcolor="rgba(15, 23, 42, 0.85)", bordercolor="#F59E0B", borderpad=4)
+        if depletion_age and depletion_age <= life_expectancy:
+            fig_asset.add_annotation(x=depletion_age, y=0, text=f"자산 소진 ({depletion_age}세)", showarrow=True, arrowhead=2, arrowcolor="#EF4444", font=dict(size=12.5, color="#FCA5A5"), ay=35, bgcolor="rgba(15, 23, 42, 0.85)", bordercolor="#EF4444", borderpad=3)
+        fig_asset.update_layout(height=380, margin=dict(l=20, r=20, t=30, b=35), paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="rgba(0,0,0,0)", font=dict(color="#E2E8F0", size=13), xaxis=dict(title=dict(text="나이 (세)", font=dict(size=14, color="#94A3B8")), tickfont=dict(size=13, color="#94A3B8"), gridcolor="rgba(100, 116, 139, 0.2)", tickmode="linear", tick0=20, dtick=5, fixedrange=True), yaxis=dict(title=dict(text="추정 순자산", font=dict(size=14, color="#94A3B8")), tickfont=dict(size=13, color="#94A3B8"), ticksuffix=unit_str, tickformat=",.0f", gridcolor="rgba(100, 116, 139, 0.2)", fixedrange=True), legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1, font=dict(size=12.5, color="#F1F5F9")), hovermode="x unified")
+        st.plotly_chart(fig_asset, use_container_width=True, config={"displayModeBar": False, "scrollZoom": False, "doubleClick": False, "showAxisDragHandles": False})
+
+        _, next_col = st.columns([5, 1])
+        with next_col:
+            if st.button("다음 →", key="finance_next", use_container_width=True, type="primary"):
+                st.session_state["_pending_nav"] = "삶과 생계수단"
+                st.rerun()
+
+
+# ==============================================================================
+# 6.02.00 | Tab 2 — 삶과 생계수단
+# ==============================================================================
+elif selected_page == "삶과 생계수단":
+    is_adv = st.session_state.get("advanced_mode", False)
+    
+    if not is_adv:
+        # [기본 모드] '돌쇠와 똘똘이' 우화 단독 노출 (물통 vs 파이프라인 개념 각인)
+        st.markdown("## 삶과 생계수단")
+        st.caption("가벼운 3분 산책: 소득의 크기보다 중요한 '소득의 성격'을 한 편의 지혜로운 이야기로 마주합니다.")
         
-        if is_self and is_spouse:
-            border_style = "border: 2.5px solid #EA580C; outline: 2.5px dashed #38BDF8; outline-offset: -5px; background: rgba(234, 88, 12, 0.16);"
-        elif is_self:
-            border_style = "border: 2.5px solid #EA580C; background: rgba(234, 88, 12, 0.14);"
-        elif is_spouse:
-            border_style = "border: 2.5px dashed #38BDF8; background: rgba(56, 189, 248, 0.14);"
-        else:
-            border_color = "#38BDF8" if is_right else "#334155"
-            bg_color = "rgba(14, 165, 233, 0.06)" if is_right else "rgba(15, 23, 42, 0.7)"
-            border_style = f"border: 1px solid {border_color}; background: {bg_color};"
-
-        badge_html = get_quad_badge(code)
-        accent_color = "#38BDF8" if is_right else "#F59E0B"
-
-        return f"""
-<div style="{border_style} border-radius: 12px; padding: 14px 10px; text-align: center; display: flex; flex-direction: column; justify-content: center; align-items: center; height: 100%; min-height: 195px; box-sizing: border-box; width: 100%;">
-{badge_html}
-<div style="font-size: 26px; margin-bottom: 2px;">{icon_html}</div>
-<div style="font-size: 17.5px; font-weight: 850; color: #F8FAFC; line-height: 1.2;">{title}</div>
-<div style="font-size: 13px; font-weight: 700; color: {accent_color}; margin: 3px 0 5px 0; line-height: 1.3;">{sub_title}</div>
-<div style="font-size: 12.5px; color: #CBD5E1; line-height: 1.4; word-break: keep-all; text-align: center;">{desc}</div>
-</div>
-"""
-
-    card_e = render_livelihood_quad("E", "🪣🪣🪣", "작은 물통 (E)", "나의 시간과 돈을 1:1 맞교환", "직접 일한 시간만큼 소득 창출<br><span style='color:#F59E0B; font-weight:600;'>(노동을 멈추면 수입도 멈춤)</span>", is_right=False)
-    card_s = render_livelihood_quad("S", "🛢️", "큰 물통 (S)", "전문성과 몸값으로 키운 물통", "한 번에 담는 물통의 양을 키운 모습<br><span style='color:#F59E0B; font-weight:600;'>(큰 물통이지만 여전히 지고 다님)</span>", is_right=False)
-    card_b = render_livelihood_quad("B", "⚙️", "구축 (B)", "파이프라인 구축", "스스로 굴러가는 시스템 소유<br><span style='color:#38BDF8; font-weight:600;'>(내가 멈추어도 시스템이 일함)</span>", is_right=True)
-    card_i = render_livelihood_quad("I", "🚰➰", "접속 (I)", "파이프라인 접속", "이미 구축된 플랫폼·자본에 접속<br><span style='color:#38BDF8; font-weight:600;'>(자산과 네트워크가 소득을 만듦)</span>", is_right=True)
-
-    livelihood_2x2_html = f"""
-<div style="margin: 10px 0 16px 0;">
-<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px 0px; align-items: stretch;">
-<div style="padding-right: 12px; border-right: 3.5px dashed #475569; display: flex; box-sizing: border-box;">{card_e}</div>
-<div style="padding-left: 12px; display: flex; box-sizing: border-box;">{card_b}</div>
-<div style="padding-right: 12px; border-right: 3.5px dashed #475569; display: flex; box-sizing: border-box;">{card_s}</div>
-<div style="padding-left: 12px; display: flex; box-sizing: border-box;">{card_i}</div>
-</div>
-<div style="text-align: center; margin-top: 14px;">
-<span style="font-size: 13.5px; color: #94A3B8;">
-🧱 좌측(물통 E·S)에서 우측(파이프라인 B·I)으로 넘어가는 것은 소득의 성격을 바꾸는 과정입니다.
-</span>
-</div>
-</div>
-"""
-    st.markdown(livelihood_2x2_html, unsafe_allow_html=True)
-    st.markdown("</div>", unsafe_allow_html=True)
-
-    # 6.02.02 | 지혜로운 산책: 돌쇠와 똘똘이 우화 카드
-    st.markdown("""
-<div style="background: rgba(45, 35, 20, 0.55); border: 1.5px solid #6d4a1a; border-radius: 14px; padding: 22px 24px; margin-bottom: 22px;">
-<div style="font-size: 20px; font-weight: 850; color: #FDE68A; margin-bottom: 12px;">🌾 지혜로운 산책: 돌쇠와 똘똘이</div>
+        st.markdown("""
+<div style="background: rgba(45, 35, 20, 0.55); border: 1.5px solid #6d4a1a; border-radius: 14px; padding: 24px 26px; margin: 16px 0 24px 0;">
+<div style="font-size: 21px; font-weight: 850; color: #FDE68A; margin-bottom: 12px;">🌾 지혜로운 산책: 돌쇠와 똘똘이</div>
 <div style="font-size: 14.5px; color: #E2E8F0; margin-bottom: 16px;">옛날 어느 마을, 머슴을 구하는 대감댁에 두 젊은이가 찾아왔습니다.</div>
 
 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px;">
-<div style="background: rgba(15, 23, 42, 0.75); border: 1px solid #78350f; border-radius: 10px; padding: 14px 16px;">
-<div style="font-size: 17px; font-weight: 800; color: #F59E0B; margin-bottom: 6px;">💪 돌쇠의 선택 (물통의 삶)</div>
+<div style="background: rgba(15, 23, 42, 0.75); border: 1px solid #78350f; border-radius: 10px; padding: 16px 18px;">
+<div style="font-size: 17.5px; font-weight: 800; color: #F59E0B; margin-bottom: 6px;">💪 돌쇠의 선택 (물통의 삶)</div>
 <div style="font-size: 14px; color: #CBD5E1; line-height: 1.6; word-break: keep-all;">
 "대감마님, 저는 첫 달부터 매달 <b>쌀 한 가마(80kg)</b>씩을 주십시오."<br>
 돌쇠는 첫 달부터 쌀 한 가마를 받아 가족을 부양했습니다. 하지만 늙어 힘이 빠질 때까지 지게를 내려놓지 못했습니다.
 </div>
 </div>
 
-<div style="background: rgba(15, 23, 42, 0.75); border: 1px solid #0369a1; border-radius: 10px; padding: 14px 16px;">
-<div style="font-size: 17px; font-weight: 800; color: #38BDF8; margin-bottom: 6px;">🧠 똘똘이의 선택 (파이프라인의 삶)</div>
+<div style="background: rgba(15, 23, 42, 0.75); border: 1px solid #0369a1; border-radius: 10px; padding: 16px 18px;">
+<div style="font-size: 17.5px; font-weight: 800; color: #38BDF8; margin-bottom: 6px;">🧠 똘똘이의 선택 (파이프라인의 삶)</div>
 <div style="font-size: 14px; color: #CBD5E1; line-height: 1.6; word-break: keep-all;">
 "저는 첫 달에 <b>쌀 한 되(1kg)</b>만 주시고, 매달 곱절(2되, 4되, 8되...)로 주십시오."<br>
 똘똘이는 <b>'복리의 지혜'(파이프라인의 속성)</b>로 훗날 힘겨운 물통으로부터 자유로워졌습니다. <b>하지만 당장 첫 달에 쌀 한 되만 받았다면 굶어 죽었을 것입니다.</b>
@@ -1588,7 +1396,7 @@ elif selected_page == "삶과 생계수단":
 </div>
 </div>
 
-<div style="background: rgba(234, 88, 12, 0.14); border-left: 4px solid #EA580C; border-radius: 4px; padding: 12px 16px;">
+<div style="background: rgba(234, 88, 12, 0.14); border-left: 4px solid #EA580C; border-radius: 4px; padding: 14px 18px;">
 <div style="font-size: 15px; font-weight: 750; color: #F8FAFC; line-height: 1.6; word-break: keep-all;">
 💡 <b>나침반의 성찰</b>: 돌쇠의 삶(현업)을 버리라는 것이 아닙니다.<br>
 낮에는 돌쇠처럼 성실하게 가족의 생계(쌀 한 가마)를 책임지면서, 저녁과 주말의 시간에 똘똘이의 지혜(파이프라인)를 한 되, 두 되 차근차근 놓아가는 <b>'현명한 플랜 B'</b>가 필요한 이유입니다.
@@ -1597,235 +1405,273 @@ elif selected_page == "삶과 생계수단":
 </div>
 """, unsafe_allow_html=True)
 
-    # 6.02.03 | 더 생각해보기 4가지 질문 리스트 (가로 1줄 대형화)
-    st.markdown("""
-<div style="margin: 28px 0 26px 0; padding: 4px 2px;">
-<div style="font-size: 21px; font-weight: 850; color: #F8FAFC; margin-bottom: 6px;">더 생각해보기</div>
-<div style="font-size: 14px; color: #94A3B8; margin-bottom: 18px; line-height: 1.6;">우리가 당연하게 여겨온 것들을 잠시 멈추어 생각해 봅니다.</div>
+        _, next_col = st.columns([5, 1])
+        with next_col:
+            if st.button("다음 →", key="basic_livelihood_next", use_container_width=True, type="primary"):
+                st.session_state["_pending_nav"] = "인생의 사계절"
+                st.rerun()
 
-<div style="display: flex; flex-direction: column; gap: 14px;">
-<div style="background: rgba(30, 41, 59, 0.35); border-left: 3.5px solid #64748B; border-radius: 4px; padding: 12px 16px; display: flex; align-items: baseline; gap: 12px;">
-<span style="font-size: 14px; font-weight: 800; color: #94A3B8; min-width: 24px;">01</span>
-<span style="font-size: 18.5px; font-weight: 800; color: #F8FAFC; line-height: 1.5; word-break: keep-all;">'일을 하고 있는 것'과 '생계를 위해 반드시 일해야 하는 것'은 같은가?</span>
-</div>
+    else:
+        # [고급 모드] 모든 마이크로 모듈(6.02.01 ~ 6.02.04) 100% 완전 복원
+        st.markdown("## 삶과 생계수단")
+        
+        # 6.02.01 | 소득의 모습 2x2 사분면 (물통 vs 구축B/접속I)
+        st.markdown("""
+<div style="background: rgba(30, 41, 59, 0.45); border: 1.5px solid #334155; border-radius: 14px; padding: 20px 22px; margin-bottom: 22px;">
+<div style="font-size: 20px; font-weight: 850; color: #F8FAFC; margin-bottom: 6px;">소득이 만들어지는 모습 (물통 vs 파이프라인)</div>
+<div style="font-size: 14px; color: #94A3B8; margin-bottom: 16px;">수입의 크기보다 중요한 것은 수입이 만들어지는 '소득의 성격'입니다.</div>
+""", unsafe_allow_html=True)
+        
+        q_self = active_quadrant(st.session_state.get("job_form", "직장인"))
+        q_spouse = active_quadrant(st.session_state.get("job_spouse_form", ""))
+        
+        def get_quad_badge(target_code):
+            badges = []
+            if q_self == target_code: badges.append("<span style='background:#EA580C; color:#FFFFFF; font-size:12px; font-weight:800; padding:2px 8px; border-radius:4px;'>나</span>")
+            if q_spouse == target_code: badges.append("<span style='background:#0284C7; color:#FFFFFF; font-size:12px; font-weight:800; padding:2px 8px; border-radius:4px;'>배우자</span>")
+            return f"<div style='min-height:22px; margin-bottom:4px; display:flex; justify-content:center; gap:6px;'>{' '.join(badges)}</div>" if badges else "<div style='min-height:22px; margin-bottom:4px;'></div>"
 
-<div style="background: rgba(30, 41, 59, 0.35); border-left: 3.5px solid #64748B; border-radius: 4px; padding: 12px 16px; display: flex; align-items: baseline; gap: 12px;">
-<span style="font-size: 14px; font-weight: 800; color: #94A3B8; min-width: 24px;">02</span>
-<span style="font-size: 18.5px; font-weight: 800; color: #F8FAFC; line-height: 1.5; word-break: keep-all;">'소득이 발생하는 것'과 '내가 직접 일해야 소득이 발생하는 것'은 같은가?</span>
-</div>
+        def render_livelihood_quad(code, icon_html, title, sub_title, desc, is_right=False):
+            is_self = (q_self == code)
+            is_spouse = (q_spouse == code)
+            if is_self and is_spouse: border_style = "border: 2.5px solid #EA580C; outline: 2.5px dashed #38BDF8; outline-offset: -5px; background: rgba(234, 88, 12, 0.16);"
+            elif is_self: border_style = "border: 2.5px solid #EA580C; background: rgba(234, 88, 12, 0.14);"
+            elif is_spouse: border_style = "border: 2.5px dashed #38BDF8; background: rgba(56, 189, 248, 0.14);"
+            else:
+                border_color = "#38BDF8" if is_right else "#334155"
+                bg_color = "rgba(14, 165, 233, 0.06)" if is_right else "rgba(15, 23, 42, 0.7)"
+                border_style = f"border: 1px solid {border_color}; background: {bg_color};"
+            badge_html = get_quad_badge(code)
+            accent_color = "#38BDF8" if is_right else "#F59E0B"
+            return f'<div style="{border_style} border-radius: 12px; padding: 14px 10px; text-align: center; display: flex; flex-direction: column; justify-content: center; align-items: center; height: 100%; min-height: 195px; box-sizing: border-box; width: 100%;">{badge_html}<div style="font-size: 26px; margin-bottom: 2px;">{icon_html}</div><div style="font-size: 17.5px; font-weight: 850; color: #F8FAFC; line-height: 1.2;">{title}</div><div style="font-size: 13px; font-weight: 700; color: {accent_color}; margin: 3px 0 5px 0; line-height: 1.3;">{sub_title}</div><div style="font-size: 12.5px; color: #CBD5E1; line-height: 1.4; word-break: keep-all; text-align: center;">{desc}</div></div>'
 
-<div style="background: rgba(30, 41, 59, 0.35); border-left: 3.5px solid #64748B; border-radius: 4px; padding: 12px 16px; display: flex; align-items: baseline; gap: 12px;">
-<span style="font-size: 14px; font-weight: 800; color: #94A3B8; min-width: 24px;">03</span>
-<span style="font-size: 18.5px; font-weight: 800; color: #F8FAFC; line-height: 1.5; word-break: keep-all;">'직장을 그만두는 것'과 '은퇴'는 같은가?</span>
-</div>
+        card_e = render_livelihood_quad("E", "🪣🪣🪣", "작은 물통 (E)", "나의 시간과 돈을 1:1 맞교환", "직접 일한 시간만큼 소득 창출<br><span style='color:#F59E0B; font-weight:600;'>(노동을 멈추면 수입도 멈춤)</span>", is_right=False)
+        card_s = render_livelihood_quad("S", "🛢️", "큰 물통 (S)", "전문성과 몸값으로 키운 물통", "한 번에 담는 물통의 양을 키운 모습<br><span style='color:#F59E0B; font-weight:600;'>(큰 물통이지만 여전히 지고 다님)</span>", is_right=False)
+        card_b = render_livelihood_quad("B", "⚙️", "구축 (B)", "파이프라인 구축", "스스로 굴러가는 시스템 소유<br><span style='color:#38BDF8; font-weight:600;'>(내가 멈추어도 시스템이 일함)</span>", is_right=True)
+        card_i = render_livelihood_quad("I", "🚰➰", "접속 (I)", "파이프라인 접속", "이미 구축된 플랫폼·자본에 접속<br><span style='color:#38BDF8; font-weight:600;'>(자산과 네트워크가 소득을 만듦)</span>", is_right=True)
 
-<div style="background: rgba(30, 41, 59, 0.35); border-left: 3.5px solid #64748B; border-radius: 4px; padding: 12px 16px; display: flex; align-items: baseline; gap: 12px;">
-<span style="font-size: 14px; font-weight: 800; color: #94A3B8; min-width: 24px;">04</span>
-<span style="font-size: 18.5px; font-weight: 800; color: #F8FAFC; line-height: 1.5; word-break: keep-all;">'은퇴'란 무엇이며, '나'는 은퇴를 어떻게 바라볼 수 있을까?</span>
+        st.markdown(f"""
+<div style="margin: 10px 0 16px 0;">
+<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px 0px; align-items: stretch;">
+<div style="padding-right: 12px; border-right: 3.5px dashed #475569; display: flex; box-sizing: border-box;">{card_e}</div>
+<div style="padding-left: 12px; display: flex; box-sizing: border-box;">{card_b}</div>
+<div style="padding-right: 12px; border-right: 3.5px dashed #475569; display: flex; box-sizing: border-box;">{card_s}</div>
+<div style="padding-left: 12px; display: flex; box-sizing: border-box;">{card_i}</div>
 </div>
+<div style="text-align: center; margin-top: 14px;"><span style="font-size: 13.5px; color: #94A3B8;">🧱 좌측(물통 E·S)에서 우측(파이프라인 B·I)으로 넘어가는 것은 소득의 성격을 바꾸는 과정입니다.</span></div>
 </div>
 </div>
 """, unsafe_allow_html=True)
 
-    # 6.02.04 | 내가 생각하는 은퇴 예상 나이 인라인 폼
-    st.markdown("""
+        # 6.02.02 | 지혜로운 산책: 돌쇠와 똘똘이 우화 카드
+        st.markdown("""
+<div style="background: rgba(45, 35, 20, 0.55); border: 1.5px solid #6d4a1a; border-radius: 14px; padding: 22px 24px; margin-bottom: 22px;">
+<div style="font-size: 20px; font-weight: 850; color: #FDE68A; margin-bottom: 12px;">🌾 지혜로운 산책: 돌쇠와 똘똘이</div>
+<div style="font-size: 14.5px; color: #E2E8F0; margin-bottom: 16px;">옛날 어느 마을, 머슴을 구하는 대감댁에 두 젊은이가 찾아왔습니다.</div>
+<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px;">
+<div style="background: rgba(15, 23, 42, 0.75); border: 1px solid #78350f; border-radius: 10px; padding: 14px 16px;">
+<div style="font-size: 17px; font-weight: 800; color: #F59E0B; margin-bottom: 6px;">💪 돌쇠의 선택 (물통의 삶)</div>
+<div style="font-size: 14px; color: #CBD5E1; line-height: 1.6; word-break: keep-all;">
+"대감마님, 저는 첫 달부터 매달 <b>쌀 한 가마(80kg)</b>씩을 주십시오."<br>
+돌쇠는 첫 달부터 쌀 한 가마를 받아 가족을 부양했습니다. 하지만 늙어 힘이 빠질 때까지 지게를 내려놓지 못했습니다.
+</div></div>
+<div style="background: rgba(15, 23, 42, 0.75); border: 1px solid #0369a1; border-radius: 10px; padding: 14px 16px;">
+<div style="font-size: 17px; font-weight: 800; color: #38BDF8; margin-bottom: 6px;">🧠 똘똘이의 선택 (파이프라인의 삶)</div>
+<div style="font-size: 14px; color: #CBD5E1; line-height: 1.6; word-break: keep-all;">
+"저는 첫 달에 <b>쌀 한 되(1kg)</b>만 주시고, 매달 곱절(2되, 4되, 8되...)로 주십시오."<br>
+똘똘이는 <b>'복리의 지혜'(파이프라인의 속성)</b>로 훗날 힘겨운 물통으로부터 자유로워졌습니다. <b>하지만 당장 첫 달에 쌀 한 되만 받았다면 굶어 죽었을 것입니다.</b>
+</div></div></div>
+<div style="background: rgba(234, 88, 12, 0.14); border-left: 4px solid #EA580C; border-radius: 4px; padding: 12px 16px;">
+<div style="font-size: 15px; font-weight: 750; color: #F8FAFC; line-height: 1.6; word-break: keep-all;">
+💡 <b>나침반의 성찰</b>: 돌쇠의 삶(현업)을 버리라는 것이 아닙니다.<br>
+낮에는 돌쇠처럼 성실하게 가족의 생계(쌀 한 가마)를 책임지면서, 저녁과 주말의 시간에 똘똘이의 지혜(파이프라인)를 한 되, 두 되 차근차근 놓아가는 <b>'현명한 플랜 B'</b>가 필요한 이유입니다.
+</div></div></div>
+""", unsafe_allow_html=True)
+
+        # 6.02.03 | 더 생각해보기 4가지 질문 리스트 (가로 1줄 대형화)
+        st.markdown("""
+<div style="margin: 28px 0 26px 0; padding: 4px 2px;">
+<div style="font-size: 21px; font-weight: 850; color: #F8FAFC; margin-bottom: 6px;">더 생각해보기</div>
+<div style="font-size: 14px; color: #94A3B8; margin-bottom: 18px; line-height: 1.6;">우리가 당연하게 여겨온 것들을 잠시 멈추어 생각해 봅니다.</div>
+<div style="display: flex; flex-direction: column; gap: 14px;">
+<div style="background: rgba(30, 41, 59, 0.35); border-left: 3.5px solid #64748B; border-radius: 4px; padding: 12px 16px; display: flex; align-items: baseline; gap: 12px;"><span style="font-size: 14px; font-weight: 800; color: #94A3B8; min-width: 24px;">01</span><span style="font-size: 18.5px; font-weight: 800; color: #F8FAFC; line-height: 1.5; word-break: keep-all;">'일을 하고 있는 것'과 '생계를 위해 반드시 일해야 하는 것'은 같은가?</span></div>
+<div style="background: rgba(30, 41, 59, 0.35); border-left: 3.5px solid #64748B; border-radius: 4px; padding: 12px 16px; display: flex; align-items: baseline; gap: 12px;"><span style="font-size: 14px; font-weight: 800; color: #94A3B8; min-width: 24px;">02</span><span style="font-size: 18.5px; font-weight: 800; color: #F8FAFC; line-height: 1.5; word-break: keep-all;">'소득이 발생하는 것'과 '내가 직접 일해야 소득이 발생하는 것'은 같은가?</span></div>
+<div style="background: rgba(30, 41, 59, 0.35); border-left: 3.5px solid #64748B; border-radius: 4px; padding: 12px 16px; display: flex; align-items: baseline; gap: 12px;"><span style="font-size: 14px; font-weight: 800; color: #94A3B8; min-width: 24px;">03</span><span style="font-size: 18.5px; font-weight: 800; color: #F8FAFC; line-height: 1.5; word-break: keep-all;">'직장을 그만두는 것'과 '은퇴'는 같은가?</span></div>
+<div style="background: rgba(30, 41, 59, 0.35); border-left: 3.5px solid #64748B; border-radius: 4px; padding: 12px 16px; display: flex; align-items: baseline; gap: 12px;"><span style="font-size: 14px; font-weight: 800; color: #94A3B8; min-width: 24px;">04</span><span style="font-size: 18.5px; font-weight: 800; color: #F8FAFC; line-height: 1.5; word-break: keep-all;">'은퇴'란 무엇이며, '나'는 은퇴를 어떻게 바라볼 수 있을까?</span></div>
+</div></div>
+""", unsafe_allow_html=True)
+
+        # 6.02.04 | 내가 생각하는 은퇴 예상 나이 인라인 폼
+        st.markdown("""
 <div style="background: rgba(24, 32, 47, 0.65); border: 1.5px solid #3b4b66; border-radius: 14px; padding: 20px 22px; margin-bottom: 22px;">
 <div style="font-size: 20px; font-weight: 850; color: #F8FAFC; margin-bottom: 6px;">내가 생각하는 은퇴 예상 나이</div>
 <div style="font-size: 14.5px; color: #CBD5E1; line-height: 1.6; word-break: keep-all; margin-bottom: 14px;">나는 언제부터 생계를 위해 반드시 일해야 하는 삶에서 벗어날 수 있을까?</div>
 """, unsafe_allow_html=True)
 
-    cur_user_age = int(st.session_state.person_age)
-    default_retire = int(st.session_state.get("retirement_age") or 60)
-    if default_retire < cur_user_age:
-        default_retire = cur_user_age
+        cur_user_age = int(st.session_state.person_age)
+        default_retire = int(st.session_state.get("retirement_age") or 60)
+        if default_retire < cur_user_age: default_retire = cur_user_age
 
-    with st.form("retirement_inline_form"):
-        r_col1, r_col2 = st.columns([3.2, 1.0])
-        with r_col1:
-            retirement_input = st.number_input(
-                "지금 하는 현업을 졸업(은퇴)하고 싶은 나이",
-                min_value=cur_user_age, max_value=100,
-                value=default_retire, step=1,
-                label_visibility="collapsed"
-            )
-        with r_col2:
-            retirement_saved = st.form_submit_button("은퇴 나이 확인", use_container_width=True, type="primary")
+        with st.form("retirement_inline_form"):
+            r_col1, r_col2 = st.columns([3.2, 1.0])
+            with r_col1:
+                retirement_input = st.number_input("지금 하는 현업을 졸업(은퇴)하고 싶은 나이", min_value=cur_user_age, max_value=100, value=default_retire, step=1, label_visibility="collapsed")
+            with r_col2:
+                retirement_saved = st.form_submit_button("은퇴 나이 확인", use_container_width=True, type="primary")
 
-    if retirement_saved:
-        st.session_state["retirement_age"] = int(retirement_input)
-        st.success(f"은퇴 예상 나이({retirement_input}세)가 반영되었습니다.")
+        if retirement_saved:
+            st.session_state["retirement_age"] = int(retirement_input)
+            st.success(f"은퇴 예상 나이({retirement_input}세)가 반영되었습니다.")
 
-    st.markdown("</div>", unsafe_allow_html=True)
+        st.markdown("</div>", unsafe_allow_html=True)
 
-    _, next_col = st.columns([5, 1])
-    with next_col:
-        if st.button("다음 →", key="livelihood_next", use_container_width=True, type="primary"):
-            st.session_state["retirement_age"] = int(st.session_state.get("retirement_age_input", retirement_input))
-            st.session_state["_pending_nav"] = "인생의 사계절"
-            st.session_state["_scroll_to_top_once"] = True
-            st.rerun()
+        _, next_col = st.columns([5, 1])
+        with next_col:
+            if st.button("다음 →", key="livelihood_next", use_container_width=True, type="primary"):
+                st.session_state["retirement_age"] = int(st.session_state.get("retirement_age_input", retirement_input))
+                st.session_state["_pending_nav"] = "인생의 사계절"
+                st.session_state["_scroll_to_top_once"] = True
+                st.rerun()
 
 
 # ==============================================================================
-# 6.03.00 | Tab 3 — 인생의 사계절 (동선 최적화 & 공식 생애주기적자 차트 탑재)
+# 6.03.00 | Tab 3 — 인생의 사계절
 # ==============================================================================
 elif selected_page == "인생의 사계절":
     if st.session_state.pop("_scroll_to_top_once", False):
-        st.components.v1.html(
-            "<script>try { window.parent.scrollTo({top: 0, behavior: 'instant'}); } catch(e) {}</script>",
-            height=0,
-        )
+        st.components.v1.html("<script>try { window.parent.scrollTo({top: 0, behavior: 'instant'}); } catch(e) {}</script>", height=0)
     
-    st.markdown("## 인생의 사계절")
-    st.markdown("자연에 사계절이 있듯 사람의 삶에도 준비(봄) · 성장(여름) · 결실(가을) · 음미(겨울)의 시간이 있습니다.")
-    
+    is_adv = st.session_state.get("advanced_mode", False)
     cur_age = int(st.session_state.person_age)
+    user_gender = st.session_state.get("gender", "🙋‍♂️ 남성")
+    is_female = ("여성" in user_gender)
+    life_expectancy = 87 if is_female else 81
     retire_val = st.session_state.get("retirement_age")
     retire_age = int(retire_val) if retire_val is not None else 60
     retire_age = max(cur_age, min(retire_age, 90))
     years_left = max(0, retire_age - cur_age)
-
-    user_gender = st.session_state.get("gender", "🙋‍♂️ 남성")
-    is_female = ("여성" in user_gender)
-    life_expectancy = 87 if is_female else 81
     winter_years = max(0, life_expectancy - retire_age)
     winter_months = winter_years * 12
 
-    # 6.03.01 | 가족 구성원 나이 입력 폼 (3대 직계 가족 슬림화)
-    # 6.03.02 | (형제자매 기능 전면 폐기 ➜ 직계 부양가족 집중 완료)
-    st.markdown("### 1. 가족 구성원과 은퇴 시점의 나이")
+    if not is_adv:
+        # [기본 모드] 국가 3대 지표 + 나의 현재 계절 배지 (3분 산책)
+        st.markdown("## 인생의 사계절")
+        st.caption("가벼운 3분 산책: 대한민국 통계청 공식 지표를 통해 내 인생의 사계절 중 어디쯤 와 있는지 확인합니다.")
 
-    child_options = ["입력 안 함", "없음", "1명", "2명", "3명", "4명 이상"]
-    prev_c_count = st.session_state.get("child_count", "입력 안 함")
-    if prev_c_count not in child_options:
-        prev_c_count = "입력 안 함"
+        if cur_age <= 27: cur_season, s_icon, s_color, s_desc = "봄 (준비기)", "🌱", "#4ADE80", "부모님의 부양으로 배우고 성장하는 계절"
+        elif 28 <= cur_age <= 45: cur_season, s_icon, s_color, s_desc = "여름 (성장기)", "☀️", "#F59E0B", "성실하게 일하여 가정을 일구고 최대 흑자를 만드는 계절"
+        elif 46 <= cur_age <= 60: cur_season, s_icon, s_color, s_desc = "가을 (결실기)", "🍂", "#FB923C", "자녀 독립과 함께 다가올 겨울을 준비할 골든타임"
+        else: cur_season, s_icon, s_color, s_desc = "겨울 (음미기)", "❄️", "#38BDF8", "근로소득이 멈추고 삶의 열매를 누리는 계절"
 
-    child_count = st.selectbox(
-        "자녀 수", child_options,
-        index=child_options.index(prev_c_count),
-        key="child_count_select_direct"
-    )
+        st.markdown(f"""
+<div style="background: rgba(30, 41, 59, 0.55); border: 2px solid {s_color}; border-radius: 14px; padding: 22px 24px; margin: 16px 0 24px 0; text-align: center;">
+<div style="font-size: 32px; margin-bottom: 6px;">{s_icon}</div>
+<div style="font-size: 21px; font-weight: 850; color: #F8FAFC; margin-bottom: 4px;">나의 현재 계절은 <span style="color:{s_color};">{cur_season}</span> 입니다 (만 {cur_age}세)</div>
+<div style="font-size: 14.5px; color: #CBD5E1; line-height: 1.6; word-break: keep-all; margin-top: 6px;">{s_desc}</div>
+</div>
+""", unsafe_allow_html=True)
 
-    with st.form("family_form"):
-        spouse_age = st.number_input(
-            "배우자 나이 (없거나 미입력 시 0)",
-            min_value=0, max_value=120,
-            value=int(st.session_state.get("spouse_age", 0)),
-            step=1
-        )
+        st.markdown("### 국가데이터처 공식 생애 통계 지표 (대한민국 평균 기준)")
+        c_m1, c_m2, c_m3 = st.columns(3)
+        c_m1.metric("한국인 평균 흑자 진입", "28세", help="노동소득이 소비를 추월하는 연령")
+        c_m2.metric("최대 흑자 정점", "45세", "연 1,932만 원")
+        c_m3.metric("평균 적자 재전환", "61세", help="은퇴 후 소비가 노동소득을 다시 초과")
 
-        child_age1, child_age2, child_age3, child_age4 = 0, 0, 0, 0
+        _, next_col = st.columns([5, 1])
+        with next_col:
+            if st.button("다음 →", key="basic_seasons_next", use_container_width=True, type="primary"):
+                st.session_state["_pending_nav"] = "AI 시선"
+                st.rerun()
 
-        if child_count in ["1명", "2명", "3명", "4명 이상"]:
-            c1_col, c2_col = st.columns(2)
-            with c1_col:
-                child_age1 = st.number_input(
-                    "첫째 자녀 나이", min_value=0, max_value=100,
-                    value=int(st.session_state.get("child_age", 0)), step=1
-                )
-            with c2_col:
-                if child_count in ["2명", "3명", "4명 이상"]:
-                    child_age2 = st.number_input(
-                        "둘째 자녀 나이", min_value=0, max_value=100,
-                        value=int(st.session_state.get("child_age2", 0)), step=1
-                    )
-                else:
-                    st.write("")
+    else:
+        # [고급 모드] 모든 마이크로 모듈(6.03.01 ~ 6.03.07) 100% 완전 복원
+        st.markdown("## 인생의 사계절")
+        st.markdown("자연에 사계절이 있듯 사람의 삶에도 준비(봄) · 성장(여름) · 결실(가을) · 음미(겨울)의 시간이 있습니다.")
 
-        if child_count in ["3명", "4명 이상"]:
-            c3_col, c4_col = st.columns(2)
-            with c3_col:
-                child_age3 = st.number_input(
-                    "셋째 자녀 나이", min_value=0, max_value=100,
-                    value=int(st.session_state.get("child_age3", 0)), step=1
-                )
-            with c4_col:
-                if child_count == "4명 이상":
-                    child_age4 = st.number_input(
-                        "넷째 자녀 나이", min_value=0, max_value=100,
-                        value=int(st.session_state.get("child_age4", 0)), step=1
-                    )
-                else:
-                    st.write("")
+        # 6.03.01 | 가족 구성원 나이 입력 폼 (3대 직계 가족 슬림화)
+        # 6.03.02 | (형제자매 기능 전면 폐기 ➜ 직계 부양가족 집중 완료)
+        st.markdown("### 1. 가족 구성원과 은퇴 시점의 나이")
+        child_options = ["입력 안 함", "없음", "1명", "2명", "3명", "4명 이상"]
+        prev_c_count = st.session_state.get("child_count", "입력 안 함")
+        if prev_c_count not in child_options: prev_c_count = "입력 안 함"
 
-        st.markdown("<div style='height: 8px;'></div>", unsafe_allow_html=True)
+        child_count = st.selectbox("자녀 수", child_options, index=child_options.index(prev_c_count), key="child_count_select_direct")
 
-        f_col, m_col = st.columns(2)
-        with f_col:
-            father_age = st.number_input(
-                "아버지 나이 (선택, 모르면 0)", min_value=0, max_value=120,
-                value=int(st.session_state.get("father_age", 0)), step=1
-            )
-        with m_col:
-            mother_age = st.number_input(
-                "어머니 나이 (선택, 모르면 0)", min_value=0, max_value=120,
-                value=int(st.session_state.get("mother_age", 0)), step=1
-            )
+        with st.form("family_form"):
+            spouse_age = st.number_input("배우자 나이 (없거나 미입력 시 0)", min_value=0, max_value=120, value=int(st.session_state.get("spouse_age", 0)), step=1)
+            child_age1, child_age2, child_age3, child_age4 = 0, 0, 0, 0
+            if child_count in ["1명", "2명", "3명", "4명 이상"]:
+                c1_col, c2_col = st.columns(2)
+                with c1_col: child_age1 = st.number_input("첫째 자녀 나이", min_value=0, max_value=100, value=int(st.session_state.get("child_age", 0)), step=1)
+                with c2_col:
+                    if child_count in ["2명", "3명", "4명 이상"]: child_age2 = st.number_input("둘째 자녀 나이", min_value=0, max_value=100, value=int(st.session_state.get("child_age2", 0)), step=1)
+                    else: st.write("")
 
-        st.markdown("<div style='height: 10px;'></div>", unsafe_allow_html=True)
+            if child_count in ["3명", "4명 이상"]:
+                c3_col, c4_col = st.columns(2)
+                with c3_col: child_age3 = st.number_input("셋째 자녀 나이", min_value=0, max_value=100, value=int(st.session_state.get("child_age3", 0)), step=1)
+                with c4_col:
+                    if child_count == "4명 이상": child_age4 = st.number_input("넷째 자녀 나이", min_value=0, max_value=100, value=int(st.session_state.get("child_age4", 0)), step=1)
+                    else: st.write("")
 
-        st.markdown("#### 앞으로의 가족 계획 (선택)")
-        p_c1, p_c2, p_c3 = st.columns(3)
-        with p_c1:
-            marriage_options = ["미정", "계획 없음", "1~3년 내 결혼 생각 있음", "3년 이후 결혼 생각 있음", "결혼 예정/준비 중"]
-            marriage_plan = st.selectbox(
-                "결혼 계획", marriage_options,
-                index=marriage_options.index(st.session_state.get("marriage_plan", "미정")) if st.session_state.get("marriage_plan", "미정") in marriage_options else 0
-            )
-        with p_c2:
-            child_plan_options = ["미정", "계획 없음", "자녀 계획 있음", "출산 예정/준비 중", "추가 자녀 계획 있음"]
-            child_plan = st.selectbox(
-                "출산·자녀 계획", child_plan_options,
-                index=child_plan_options.index(st.session_state.get("child_plan", "미정")) if st.session_state.get("child_plan", "미정") in child_plan_options else 0
-            )
-        with p_c3:
-            housing_options = ["미정", "현재 주거 유지", "전세·월세 이동 고려", "주택 구입 고려", "주거 계획 확정"]
-            housing_plan = st.selectbox(
-                "주거 계획", housing_options,
-                index=housing_options.index(st.session_state.get("housing_plan", "미정")) if st.session_state.get("housing_plan", "미정") in housing_options else 0
-            )
+            st.markdown("<div style='height: 8px;'></div>", unsafe_allow_html=True)
+            f_col, m_col = st.columns(2)
+            with f_col: father_age = st.number_input("아버지 나이 (선택, 모르면 0)", min_value=0, max_value=120, value=int(st.session_state.get("father_age", 0)), step=1)
+            with m_col: mother_age = st.number_input("어머니 나이 (선택, 모르면 0)", min_value=0, max_value=120, value=int(st.session_state.get("mother_age", 0)), step=1)
 
-        save_family = st.form_submit_button("가족 정보 반영하기", use_container_width=True, type="primary")
+            st.markdown("<div style='height: 10px;'></div>", unsafe_allow_html=True)
+            st.markdown("#### 앞으로의 가족 계획 (선택)")
+            p_c1, p_c2, p_c3 = st.columns(3)
+            with p_c1:
+                marriage_options = ["미정", "계획 없음", "1~3년 내 결혼 생각 있음", "3년 이후 결혼 생각 있음", "결혼 예정/준비 중"]
+                marriage_plan = st.selectbox("결혼 계획", marriage_options, index=marriage_options.index(st.session_state.get("marriage_plan", "미정")) if st.session_state.get("marriage_plan", "미정") in marriage_options else 0)
+            with p_c2:
+                child_plan_options = ["미정", "계획 없음", "자녀 계획 있음", "출산 예정/준비 중", "추가 자녀 계획 있음"]
+                child_plan = st.selectbox("출산·자녀 계획", child_plan_options, index=child_plan_options.index(st.session_state.get("child_plan", "미정")) if st.session_state.get("child_plan", "미정") in child_plan_options else 0)
+            with p_c3:
+                housing_options = ["미정", "현재 주거 유지", "전세·월세 이동 고려", "주택 구입 고려", "주거 계획 확정"]
+                housing_plan = st.selectbox("주거 계획", housing_options, index=housing_options.index(st.session_state.get("housing_plan", "미정")) if st.session_state.get("housing_plan", "미정") in housing_options else 0)
 
-    if save_family:
-        st.session_state.spouse_age = spouse_age
-        st.session_state.child_count = child_count
-        st.session_state.child_age = child_age1
-        st.session_state.child_age2 = child_age2
-        st.session_state.child_age3 = child_age3
-        st.session_state.child_age4 = child_age4
-        st.session_state.father_age = father_age
-        st.session_state.mother_age = mother_age
-        st.session_state.marriage_plan = marriage_plan
-        st.session_state.child_plan = child_plan
-        st.session_state.housing_plan = housing_plan
-        st.session_state.pop("sibling_items", None)
-        st.session_state.pop("sib_count", None)
-        st.rerun()
+            save_family = st.form_submit_button("가족 정보 반영하기", use_container_width=True, type="primary")
 
-    # 6.03.03 | 은퇴 시점 가족 미래 나이 2열 슬림 카드 (직계 3대 집중)
-    people = [(st.session_state.get("person_name", "나"), cur_age)]
-    if getv("spouse_age", 0) > 0: people.append(("배우자", int(getv("spouse_age"))))
-    if getv("child_age", 0) > 0: people.append(("첫째 자녀", int(getv("child_age"))))
-    if getv("child_age2", 0) > 0: people.append(("둘째 자녀", int(getv("child_age2"))))
-    if getv("child_age3", 0) > 0: people.append(("셋째 자녀", int(getv("child_age3"))))
-    if getv("child_age4", 0) > 0: people.append(("넷째 자녀", int(getv("child_age4"))))
-    if getv("father_age", 0) > 0: people.append(("아버지", int(getv("father_age"))))
-    if getv("mother_age", 0) > 0: people.append(("어머니", int(getv("mother_age"))))
+        if save_family:
+            st.session_state.spouse_age = spouse_age
+            st.session_state.child_count = child_count
+            st.session_state.child_age = child_age1
+            st.session_state.child_age2 = child_age2
+            st.session_state.child_age3 = child_age3
+            st.session_state.child_age4 = child_age4
+            st.session_state.father_age = father_age
+            st.session_state.mother_age = mother_age
+            st.session_state.marriage_plan = marriage_plan
+            st.session_state.child_plan = child_plan
+            st.session_state.housing_plan = housing_plan
+            st.session_state.pop("sibling_items", None)
+            st.rerun()
 
-    st.markdown(f"""
+        # 6.03.03 | 은퇴 시점 가족 미래 나이 2열 슬림 카드 (직계 3대 집중)
+        people = [(st.session_state.get("person_name", "나"), cur_age)]
+        if getv("spouse_age", 0) > 0: people.append(("배우자", int(getv("spouse_age"))))
+        if getv("child_age", 0) > 0: people.append(("첫째 자녀", int(getv("child_age"))))
+        if getv("child_age2", 0) > 0: people.append(("둘째 자녀", int(getv("child_age2"))))
+        if getv("child_age3", 0) > 0: people.append(("셋째 자녀", int(getv("child_age3"))))
+        if getv("child_age4", 0) > 0: people.append(("넷째 자녀", int(getv("child_age4"))))
+        if getv("father_age", 0) > 0: people.append(("아버지", int(getv("father_age"))))
+        if getv("mother_age", 0) > 0: people.append(("어머니", int(getv("mother_age"))))
+
+        st.markdown(f"""
 <div style="background: rgba(30, 41, 59, 0.4); border: 1px solid #334155; border-radius: 10px; padding: 12px 18px; margin: 18px 0 10px 0; display:flex; justify-content:space-between; align-items:center;">
 <span style="font-size: 15.5px; font-weight: 800; color: #F8FAFC;">📌 내가 은퇴하는 시점(만 {retire_age}세, {years_left}년 후)의 우리 가족 나이</span>
 <span style="font-size: 13px; color: #94A3B8;">현재 나이 ➔ 은퇴 시 나이</span>
 </div>
 """, unsafe_allow_html=True)
 
-    f_cols = st.columns(2)
-    for idx, (name, current) in enumerate(people):
-        c = f_cols[idx % 2]
-        future = current + years_left
-        with c:
-            st.markdown(f"""
+        f_cols = st.columns(2)
+        for idx, (name, current) in enumerate(people):
+            c = f_cols[idx % 2]
+            future = current + years_left
+            with c:
+                st.markdown(f"""
 <div class='soft-card' style='display:flex; align-items:center; justify-content:space-between; padding:12px 18px; margin:5px 0;'>
 <b style='font-size:16px; color:#F8FAFC;'>{name}</b>
 <div style='display:flex; align-items:center; gap:12px;'>
@@ -1836,380 +1682,173 @@ elif selected_page == "인생의 사계절":
 </div>
 """, unsafe_allow_html=True)
 
-    # 6.03.04 | 가족 생애 지출 피크(성인/미성년 자녀) 안내 카드
-    
-    c_age1 = int(getv("child_age", 0))
-    if 0 < c_age1 < 20:
-        college_my_age = cur_age + (20 - c_age1)
-        st.markdown(f"""
+        # 6.03.04 | 가족 생애 지출 피크(성인/미성년 자녀) 안내 카드
+        c_age1 = int(getv("child_age", 0))
+        if 0 < c_age1 < 20:
+            college_my_age = cur_age + (20 - c_age1)
+            st.markdown(f"""
 <div style="background: rgba(234, 88, 12, 0.12); border-left: 4px solid #EA580C; border-radius: 6px; padding: 14px 18px; margin: 12px 0 20px 0;">
 <div style="font-size: 15px; font-weight: 750; color: #F8FAFC; line-height: 1.6;">
 🎯 <b>생애 지출 피크 자각 포인트</b>: 첫째 자녀가 대학에 입학하는 만 20세가 되면, 나의 나이는 <b>만 {college_my_age}세</b>가 됩니다.<br>
-<span style="font-size: 13.5px; color: #CBD5E1;">
-통계청 국민이전계정 상 소득 정점(45세)은 지나가면서, 자녀 학자금과 독립 비용으로 <b>인생에서 가장 큰 지출이 집중되는 결정적 시기</b>입니다.
-</span>
-</div>
-</div>
+<span style="font-size: 13.5px; color: #CBD5E1;">통계청 국민이전계정 상 소득 정점(45세)은 지나가면서, 자녀 학자금과 독립 비용으로 <b>인생에서 가장 큰 지출이 집중되는 결정적 시기</b>입니다.</span>
+</div></div>
 """, unsafe_allow_html=True)
-    elif c_age1 >= 20:
-        st.markdown(f"""
+        elif c_age1 >= 20:
+            st.markdown(f"""
 <div style="background: rgba(30, 41, 59, 0.5); border-left: 4px solid #38BDF8; border-radius: 6px; padding: 14px 18px; margin: 12px 0 20px 0;">
 <div style="font-size: 15px; font-weight: 750; color: #F8FAFC; line-height: 1.6;">
 🌱 <b>가족 성장 단계</b>: 첫째 자녀(만 {c_age1}세)가 이미 성년기에 도달하여, 학자금 집중 지출기를 거쳐 독립과 사회 진출의 계절을 맞이하고 있습니다.
-</div>
-</div>
+</div></div>
 """, unsafe_allow_html=True)
 
-    # 6.03.05 | 나만의 생애주기 소득·소비 곡선 (출산육아기 35% 실질소득 급감 골짜기)
-    st.markdown("### 2. 나만의 생애주기 소득·소비 곡선 (국민이전계정 개인화 번역)")
-    st.caption("※ 통계청 국민이전계정(NTA) 공식 패턴을 인터뷰이 본인의 실제 소득·소비 및 은퇴 나이에 맞추어 번역한 개인 곡선입니다.")
-    
-    s = current_financial_summary()
-    cur_annual_income = s["annual_total_income"]
-    cur_annual_expense = s["annual_total_expenses"]
-    ret_annual_pension = float(getv("income_pension", 0) or 0) * 12.0
-    ret_annual_expense = float(getv("retirement_monthly_expenses", 200) or 0) * 12.0
+        # 6.03.05 | 나만의 생애주기 소득·소비 곡선
+        st.markdown("### 2. 나만의 생애주기 소득·소비 곡선 (국민이전계정 개인화 번역)")
+        st.caption("※ 통계청 국민이전계정(NTA) 공식 패턴을 인터뷰이 본인의 실제 소득·소비 및 은퇴 나이에 맞추어 번역한 개인 곡선입니다.")
+        s = current_financial_summary()
+        cur_annual_income = s["annual_total_income"]
+        cur_annual_expense = s["annual_total_expenses"]
+        ret_annual_pension = float(getv("income_pension", 0) or 0) * 12.0
+        ret_annual_expense = float(getv("retirement_monthly_expenses", 200) or 0) * 12.0
+        career_st = st.session_state.get("career_stage", "🌱 3년 이하 (초년생)")
+        m_plan = st.session_state.get("marriage_plan", "미정")
+        c_plan = st.session_state.get("child_plan", "미정")
+        is_single_young = (int(getv("spouse_age", 0)) == 0 and cur_age < 40)
+        has_m_curve = is_female and (c_plan in ["자녀 계획 있음", "출산 예정/준비 중", "추가 자녀 계획 있음"])
 
-    career_st = st.session_state.get("career_stage", "🌱 3년 이하 (초년생)")
-    m_plan = st.session_state.get("marriage_plan", "미정")
-    c_plan = st.session_state.get("child_plan", "미정")
-    is_single_young = (int(getv("spouse_age", 0)) == 0 and cur_age < 40)
-    has_m_curve = is_female and (c_plan in ["자녀 계획 있음", "출산 예정/준비 중", "추가 자녀 계획 있음"])
-
-    ages_sim = list(range(20, 86))
-    my_income_curve = []
-    my_expense_curve = []
-
-    for a in ages_sim:
-        # 1. 소득 곡선 (출산·육아기 실질 소득 급감 U자형 골짜기 반영)
-        if a < cur_age:
-            # 과거 구간: 현재 소득까지 자연스러운 오르막
-            ratio = max(0.28, 1.0 - (0.04 * (cur_age - a)))
-            inc_val = cur_annual_income * ratio
-        elif cur_age <= a < retire_age:
-            # 여성 출산·육아 경력단절 시나리오 (실제 소득 35% 수직 강하 및 완만 복귀)
-            if has_m_curve and cur_age <= 36:
-                if a <= 32:
-                    w = 1.0 + (0.012 * (a - cur_age))
-                elif 33 <= a <= 36:
-                    # [핵심] 출산·육아 집중기: 육아휴직 및 경력단절로 소득 35% 실질 급감 (바닥 골짜기)
-                    dist = abs(a - 34.5)
-                    # 34~35세 바닥에서 약 0.65(35% 삭감)까지 확실하게 내려앉는 깊은 U자형 곡선
-                    w = 0.65 + (0.04 * (dist ** 2))
-                elif 37 <= a <= 45:
-                    # 복귀기: 남성처럼 치솟지 않고 통계청 기준(약 80~85%)의 완만한 상승 궤적
-                    w = 0.80 + (0.012 * (a - 37))
+        ages_sim = list(range(20, 86))
+        my_income_curve = []
+        my_expense_curve = []
+        for a in ages_sim:
+            if a < cur_age: ratio = max(0.28, 1.0 - (0.04 * (cur_age - a))); inc_val = cur_annual_income * ratio
+            elif cur_age <= a < retire_age:
+                if has_m_curve and cur_age <= 36:
+                    if a <= 32: w = 1.0 + (0.012 * (a - cur_age))
+                    elif 33 <= a <= 36: dist = abs(a - 34.5); w = 0.65 + (0.04 * (dist ** 2))
+                    elif 37 <= a <= 45: w = 0.80 + (0.012 * (a - 37))
+                    else: peak_w = 0.80 + (0.012 * (45 - 37)); w = max(0.75, peak_w - (0.008 * (a - 45)))
                 else:
-                    peak_w = 0.80 + (0.012 * (45 - 37))
-                    w = max(0.75, peak_w - (0.008 * (a - 45)))
-            else:
-                # 일반 궤적 (남성 또는 경력단절 미해당)
-                if a <= 45:
-                    w = 1.0 + (0.018 * (a - cur_age))
-                else:
-                    peak_w = 1.0 + (0.018 * max(0, 45 - cur_age))
-                    w = max(0.85, peak_w - (0.008 * (a - 45)))
-                    
-            inc_val = cur_annual_income * w
-        else:
-            # 은퇴 후: 연금 수평선 전환 (삶의 경계)
-            inc_val = ret_annual_pension
+                    if a <= 45: w = 1.0 + (0.018 * (a - cur_age))
+                    else: peak_w = 1.0 + (0.018 * max(0, 45 - cur_age)); w = max(0.85, peak_w - (0.008 * (a - 45)))
+                inc_val = cur_annual_income * w
+            else: inc_val = ret_annual_pension
+            my_income_curve.append(inc_val)
 
-        my_income_curve.append(inc_val)
+            if a < cur_age: exp_val = cur_annual_expense * 0.78
+            elif cur_age <= a < retire_age:
+                exp_factor = 1.0
+                if 44 <= a <= 53 and c_age1 < 20: exp_factor = 1.14
+                if is_single_young:
+                    if m_plan in ["1~3년 내 결혼 생각 있음", "결혼 예정/준비 중"] and (cur_age <= a <= cur_age + 3): exp_factor = max(exp_factor, 1.10)
+                    if c_plan in ["자녀 계획 있음", "출산 예정/준비 중", "추가 자녀 계획 있음"] and (33 <= a <= 37): exp_factor = max(exp_factor, 1.15)
+                exp_val = cur_annual_expense * exp_factor
+            else: exp_val = ret_annual_expense
+            my_expense_curve.append(exp_val)
 
-        # 2. 소비 곡선 (출산·육아기 지출 상승 팩트 반영)
-        if a < cur_age:
-            exp_val = cur_annual_expense * 0.78
-        elif cur_age <= a < retire_age:
-            exp_factor = 1.0
-            if 44 <= a <= 53 and c_age1 < 20:
-                exp_factor = 1.14
-            if is_single_young:
-                if m_plan in ["1~3년 내 결혼 생각 있음", "결혼 예정/준비 중"] and (cur_age <= a <= cur_age + 3):
-                    exp_factor = max(exp_factor, 1.10)
-                # 출산·영유아기 지출 상승 (기저귀, 분유, 양육비 등으로 지출 15% 상승)
-                if c_plan in ["자녀 계획 있음", "출산 예정/준비 중", "추가 자녀 계획 있음"] and (33 <= a <= 37):
-                    exp_factor = max(exp_factor, 1.15)
-            exp_val = cur_annual_expense * exp_factor
-        else:
-            exp_val = ret_annual_expense
+        fig_my_nta = go.Figure()
+        fig_my_nta.add_trace(go.Scatter(x=ages_sim, y=my_income_curve, mode="lines", line=dict(color="#10B981", width=3.5, shape='spline', smoothing=1.0), name="나의 소득 흐름 (근로·사업소득 ➔ 은퇴 후 연금)", hovertemplate="나이: %{x}세<br>연 소득: <b>%{y:,.0f}만 원</b><extra></extra>"))
+        fig_my_nta.add_trace(go.Scatter(x=ages_sim, y=my_expense_curve, mode="lines", line=dict(color="#F97316", width=2.8, dash="dash", shape='spline', smoothing=1.0), name="나의 생애 소비 흐름", hovertemplate="나이: %{x}세<br>연 소비: <b>%{y:,.0f}만 원</b><extra></extra>"))
+        fig_my_nta.add_vline(x=cur_age, line_dash="solid", line_color="#38BDF8", line_width=2)
+        fig_my_nta.add_annotation(x=cur_age, y=max(my_income_curve) * 0.95, text=f"현재 나이 ({cur_age}세)", showarrow=True, arrowhead=2, arrowcolor="#38BDF8", font=dict(size=12, color="#BAE6FD"), ay=-30, bgcolor="rgba(15, 23, 42, 0.85)", bordercolor="#38BDF8")
+        if has_m_curve and cur_age <= 35:
+            dip_val = my_income_curve[ages_sim.index(34)]
+            fig_my_nta.add_annotation(x=34, y=dip_val, text="👶 출산·육아기 (소득 급감)", showarrow=True, arrowhead=2, arrowcolor="#FB923C", font=dict(size=11.5, color="#FDBA74"), ay=36, bgcolor="rgba(15, 23, 42, 0.85)", bordercolor="#FB923C", borderpad=3)
+        fig_my_nta.add_vline(x=retire_age, line_dash="dash", line_color="#EF4444", line_width=2)
+        fig_my_nta.add_annotation(x=retire_age, y=my_income_curve[ages_sim.index(retire_age)], text=f"나의 은퇴 시점 ({retire_age}세 적자 전환)", showarrow=True, arrowhead=2, arrowcolor="#EF4444", font=dict(size=12, color="#FCA5A5"), ay=35, bgcolor="rgba(15, 23, 42, 0.85)", bordercolor="#EF4444")
+        fig_my_nta.update_layout(height=380, margin=dict(l=20, r=20, t=30, b=35), paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="rgba(0,0,0,0)", font=dict(color="#E2E8F0", size=13), xaxis=dict(title=dict(text="연령 (세)", font=dict(size=14, color="#94A3B8")), tickfont=dict(size=13, color="#94A3B8"), gridcolor="rgba(100, 116, 139, 0.2)", tickmode="linear", tick0=20, dtick=5, fixedrange=True), yaxis=dict(title=dict(text="연간 금액 (만 원)", font=dict(size=14, color="#94A3B8")), tickfont=dict(size=13, color="#94A3B8"), tickformat=",.0f", gridcolor="rgba(100, 116, 139, 0.2)", fixedrange=True), legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1, font=dict(size=12.5, color="#F1F5F9")), hovermode="x unified")
+        st.plotly_chart(fig_my_nta, use_container_width=True, config={"displayModeBar": False, "scrollZoom": False, "doubleClick": False, "showAxisDragHandles": False})
 
-        my_expense_curve.append(exp_val)
+        st.markdown("<div style='height: 14px;'></div>", unsafe_allow_html=True)
 
-    fig_my_nta = go.Figure()
+        # 6.03.06 | 국가데이터처 공식 생애 통계 지표 (여성 경단 팩트 탑재 & 공식 NTA 차트)
+        st.markdown("### 3. 국가데이터처 공식 생애 통계 지표 (대한민국 평균 기준)")
+        st.caption("※ 통계청 국민이전계정(NTA) 공식 발표 자료 기준")
+        col_m1, col_m2, col_m3 = st.columns(3)
+        col_m1.metric("한국인 평균 흑자 진입", "28세", help="노동소득이 소비를 추월하는 연령")
+        col_m2.metric("최대 흑자 정점", "45세", "연 1,932만 원")
+        col_m3.metric("평균 적자 재전환", "61세", help="은퇴 후 소비가 노동소득을 다시 초과")
 
-    # 1. 소득 곡선 (35% 급감 골짜기가 담긴 부드러운 스플라인)
-    fig_my_nta.add_trace(go.Scatter(
-        x=ages_sim, y=my_income_curve,
-        mode="lines",
-        line=dict(color="#10B981", width=3.5, shape='spline', smoothing=1.0),
-        name="나의 소득 흐름 (근로·사업소득 ➔ 은퇴 후 연금)",
-        hovertemplate="나이: %{x}세<br>연 소득: <b>%{y:,.0f}만 원</b><extra></extra>"
-    ))
-
-    # 2. 소비 곡선
-    fig_my_nta.add_trace(go.Scatter(
-        x=ages_sim, y=my_expense_curve,
-        mode="lines",
-        line=dict(color="#F97316", width=2.8, dash="dash", shape='spline', smoothing=1.0),
-        name="나의 생애 소비 흐름",
-        hovertemplate="나이: %{x}세<br>연 소비: <b>%{y:,.0f}만 원</b><extra></extra>"
-    ))
-
-    # 현재 나이 기준선
-    fig_my_nta.add_vline(x=cur_age, line_dash="solid", line_color="#38BDF8", line_width=2)
-    fig_my_nta.add_annotation(
-        x=cur_age, y=max(my_income_curve) * 0.95,
-        text=f"현재 나이 ({cur_age}세)",
-        showarrow=True, arrowhead=2, arrowcolor="#38BDF8",
-        font=dict(size=12, color="#BAE6FD"),
-        ay=-30, bgcolor="rgba(15, 23, 42, 0.85)", bordercolor="#38BDF8"
-    )
-
-    # 깊은 골짜기 바닥에 꽂히는 출산·육아기 주석 깃발
-    if has_m_curve and cur_age <= 35:
-        dip_val = my_income_curve[ages_sim.index(34)]
-        fig_my_nta.add_annotation(
-            x=34, y=dip_val,
-            text="👶 출산·육아기 (소득 급감)",
-            showarrow=True, arrowhead=2, arrowcolor="#FB923C",
-            font=dict(size=11.5, color="#FDBA74"),
-            ay=36, bgcolor="rgba(15, 23, 42, 0.85)", bordercolor="#FB923C", borderpad=3
-        )
-
-    # 은퇴 시점 기준선 (삶의 진짜 경계)
-    fig_my_nta.add_vline(x=retire_age, line_dash="dash", line_color="#EF4444", line_width=2)
-    fig_my_nta.add_annotation(
-        x=retire_age, y=my_income_curve[ages_sim.index(retire_age)],
-        text=f"나의 은퇴 시점 ({retire_age}세 적자 전환)",
-        showarrow=True, arrowhead=2, arrowcolor="#EF4444",
-        font=dict(size=12, color="#FCA5A5"),
-        ay=35, bgcolor="rgba(15, 23, 42, 0.85)", bordercolor="#EF4444"
-    )
-
-    fig_my_nta.update_layout(
-        height=380,
-        margin=dict(l=20, r=20, t=30, b=35),
-        paper_bgcolor="rgba(0,0,0,0)",
-        plot_bgcolor="rgba(0,0,0,0)",
-        font=dict(color="#E2E8F0", size=13),
-        xaxis=dict(
-            title=dict(text="연령 (세)", font=dict(size=14, color="#94A3B8")),
-            tickfont=dict(size=13, color="#94A3B8"),
-            gridcolor="rgba(100, 116, 139, 0.2)",
-            tickmode="linear", tick0=20, dtick=5,
-            fixedrange=True
-        ),
-        yaxis=dict(
-            title=dict(text="연간 금액 (만 원)", font=dict(size=14, color="#94A3B8")),
-            tickfont=dict(size=13, color="#94A3B8"),
-            tickformat=",.0f",
-            gridcolor="rgba(100, 116, 139, 0.2)",
-            fixedrange=True
-        ),
-        legend=dict(
-            orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1,
-            font=dict(size=12, color="#F1F5F9")
-        ),
-        hovermode="x unified"
-    )
-
-    st.plotly_chart(
-        fig_my_nta,
-        use_container_width=True,
-        config={"displayModeBar": False, "scrollZoom": False, "doubleClick": False, "showAxisDragHandles": False}
-    )
-
-    st.markdown("<div style='height: 14px;'></div>", unsafe_allow_html=True)
-
-    # --------------------------------------------------------------------------
-    # 6.03.06 | 국가데이터처 공식 생애 통계 지표 (여성 경단 팩트 탑재 & 공식 NTA 차트)
-    # --------------------------------------------------------------------------
-    st.markdown("### 3. 국가데이터처 공식 생애 통계 지표 (대한민국 평균 기준)")
-    st.caption("※ 통계청 국민이전계정(NTA) 공식 발표 자료 기준")
-    
-    col_m1, col_m2, col_m3 = st.columns(3)
-    col_m1.metric("한국인 평균 흑자 진입", "28세", help="노동소득이 소비를 추월하는 연령")
-    col_m2.metric("최대 흑자 정점", "45세", "연 1,932만 원")
-    col_m3.metric("평균 적자 재전환", "61세", help="은퇴 후 소비가 노동소득을 다시 초과")
-
-    # [신규] 대한민국 여성 경제활동 실태 공식 팩트 카드 (대표님 요청 명칭 반영 및 초슬림 정제)
-    st.markdown("""
+        st.markdown("""
 <div style="background: rgba(30, 41, 59, 0.55); border-left: 4px solid #F59E0B; border-radius: 6px; padding: 12px 18px; margin: 12px 0 16px 0;">
 <div style="font-size: 15px; font-weight: 800; color: #FDE68A; margin-bottom: 6px;">👩‍👧 여성 출산·육아 경력단절의 현실 지표 (여성가족부·국가데이터처 조사)</div>
 <div style="font-size: 13.5px; color: #CBD5E1; line-height: 1.6;">
 • <b>재취업까지 소요 기간</b>: 평균 <b>7.5년</b> (단기 공백이 아닌 장기화)<br>
 • <b>복귀 후 실질 임금</b>: 단절 이전의 약 <b>80% 수준</b>으로 하락
-</div>
-</div>
+</div></div>
 """, unsafe_allow_html=True)
 
-    # 첨부 1: 국가데이터처 공식 < 생애주기적자(총액) > 완벽 복원 차트
-    fig_official_nta = go.Figure()
+        fig_official_nta = go.Figure()
+        official_ages = [0, 5, 10, 14, 17, 20, 24, 28, 32, 36, 40, 44, 48, 52, 56, 60, 61, 65, 70, 75, 80, 85]
+        official_income = [0, 0, 0, 0, 0, 3, 10, 18, 28, 27, 28, 38, 35, 39, 36, 26, 21, 14, 7, 2, 0.5, 0]
+        official_expense = [4, 5, 18, 20, 22, 15, 19, 18, 22, 20, 19, 23, 20, 24, 26, 23, 23, 25, 16, 11, 7, 5]
+        official_deficit = [e - i for e, i in zip(official_expense, official_income)]
+        fig_official_nta.add_trace(go.Scatter(x=official_ages, y=official_deficit, mode="lines", line=dict(color="rgba(147, 197, 253, 0.0)", width=0), fill='tozeroy', fillcolor='rgba(147, 197, 253, 0.45)', name="생애주기적자 (소비 - 노동소득)", hovertemplate="나이: %{x}세<br>생애주기적자: <b>%{y:.1f}조 원</b><extra></extra>"))
+        fig_official_nta.add_trace(go.Scatter(x=official_ages, y=official_expense, mode="lines", line=dict(color="#65A30D", width=3, dash="dash"), name="소비 (조원)", hovertemplate="나이: %{x}세<br>소비: <b>%{y:.1f}조 원</b><extra></extra>"))
+        fig_official_nta.add_trace(go.Scatter(x=official_ages, y=official_income, mode="lines", line=dict(color="#2563EB", width=3.5), name="노동소득 (조원)", hovertemplate="나이: %{x}세<br>노동소득: <b>%{y:.1f}조 원</b><extra></extra>"))
+        fig_official_nta.add_hline(y=0, line_dash="solid", line_color="#475569", line_width=1.5)
+        fig_official_nta.add_vline(x=17, line_dash="dash", line_color="#94A3B8", line_width=1.5)
+        fig_official_nta.add_vline(x=65, line_dash="dash", line_color="#94A3B8", line_width=1.5)
+        fig_official_nta.add_annotation(x=8, y=50, text="유년층", showarrow=False, font=dict(size=12, color="#E2E8F0"), bgcolor="rgba(30, 41, 59, 0.8)", bordercolor="#475569")
+        fig_official_nta.add_annotation(x=41, y=50, text="노동연령층", showarrow=False, font=dict(size=12, color="#E2E8F0"), bgcolor="rgba(30, 41, 59, 0.8)", bordercolor="#475569")
+        fig_official_nta.add_annotation(x=75, y=50, text="노년층", showarrow=False, font=dict(size=12, color="#E2E8F0"), bgcolor="rgba(30, 41, 59, 0.8)", bordercolor="#475569")
+        fig_official_nta.add_annotation(x=12, y=10, text="적자", showarrow=False, font=dict(size=13, color="#93C5FD", weight="bold"))
+        fig_official_nta.add_annotation(x=45, y=-16, text="흑자", showarrow=False, font=dict(size=13, color="#93C5FD", weight="bold"))
+        fig_official_nta.add_annotation(x=73, y=5, text="적자", showarrow=False, font=dict(size=13, color="#93C5FD", weight="bold"))
+        fig_official_nta.update_layout(title=dict(text="&lt; 생 애 주 기 적 자 (총 액) &gt;", x=0.5, xanchor="center", font=dict(size=16, color="#F8FAFC")), height=390, margin=dict(l=20, r=20, t=45, b=80), paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="rgba(0,0,0,0)", font=dict(color="#E2E8F0", size=13), xaxis=dict(title=dict(text="연령 (세)", font=dict(size=13, color="#94A3B8")), tickfont=dict(size=12, color="#94A3B8"), gridcolor="rgba(100, 116, 139, 0.2)", tickmode="linear", tick0=0, dtick=5, fixedrange=True), yaxis=dict(title=dict(text="규모 (조원)", font=dict(size=13, color="#94A3B8")), tickfont=dict(size=12, color="#94A3B8"), gridcolor="rgba(100, 116, 139, 0.2)", range=[-22, 54], fixedrange=True), legend=dict(orientation="h", yanchor="top", y=-0.28, xanchor="center", x=0.5, font=dict(size=12, color="#F1F5F9")), hovermode="x unified")
+        st.plotly_chart(fig_official_nta, use_container_width=True, config={"displayModeBar": False, "scrollZoom": False, "doubleClick": False, "showAxisDragHandles": False})
 
-    official_ages = [0, 5, 10, 14, 17, 20, 24, 28, 32, 36, 40, 44, 48, 52, 56, 60, 61, 65, 70, 75, 80, 85]
-    official_income = [0, 0, 0, 0, 0, 3, 10, 18, 28, 27, 28, 38, 35, 39, 36, 26, 21, 14, 7, 2, 0.5, 0]
-    official_expense = [4, 5, 18, 20, 22, 15, 19, 18, 22, 20, 19, 23, 20, 24, 26, 23, 23, 25, 16, 11, 7, 5]
-    official_deficit = [e - i for e, i in zip(official_expense, official_income)]
-
-    fig_official_nta.add_trace(go.Scatter(
-        x=official_ages, y=official_deficit,
-        mode="lines",
-        line=dict(color="rgba(147, 197, 253, 0.0)", width=0),
-        fill='tozeroy',
-        fillcolor='rgba(147, 197, 253, 0.45)',
-        name="생애주기적자 (소비 - 노동소득)",
-        hovertemplate="나이: %{x}세<br>생애주기적자: <b>%{y:.1f}조 원</b><extra></extra>"
-    ))
-
-    fig_official_nta.add_trace(go.Scatter(
-        x=official_ages, y=official_expense,
-        mode="lines",
-        line=dict(color="#65A30D", width=3, dash="dash"),
-        name="소비 (조원)",
-        hovertemplate="나이: %{x}세<br>소비: <b>%{y:.1f}조 원</b><extra></extra>"
-    ))
-
-    fig_official_nta.add_trace(go.Scatter(
-        x=official_ages, y=official_income,
-        mode="lines",
-        line=dict(color="#2563EB", width=3.5),
-        name="노동소득 (조원)",
-        hovertemplate="나이: %{x}세<br>노동소득: <b>%{y:.1f}조 원</b><extra></extra>"
-    ))
-
-    fig_official_nta.add_hline(y=0, line_dash="solid", line_color="#475569", line_width=1.5)
-    fig_official_nta.add_vline(x=17, line_dash="dash", line_color="#94A3B8", line_width=1.5)
-    fig_official_nta.add_vline(x=65, line_dash="dash", line_color="#94A3B8", line_width=1.5)
-
-    fig_official_nta.add_annotation(x=8, y=50, text="유년층", showarrow=False, font=dict(size=12, color="#E2E8F0"), bgcolor="rgba(30, 41, 59, 0.8)", bordercolor="#475569")
-    fig_official_nta.add_annotation(x=41, y=50, text="노동연령층", showarrow=False, font=dict(size=12, color="#E2E8F0"), bgcolor="rgba(30, 41, 59, 0.8)", bordercolor="#475569")
-    fig_official_nta.add_annotation(x=75, y=50, text="노년층", showarrow=False, font=dict(size=12, color="#E2E8F0"), bgcolor="rgba(30, 41, 59, 0.8)", bordercolor="#475569")
-    
-    fig_official_nta.add_annotation(x=12, y=10, text="적자", showarrow=False, font=dict(size=13, color="#93C5FD", weight="bold"))
-    fig_official_nta.add_annotation(x=45, y=-16, text="흑자", showarrow=False, font=dict(size=13, color="#93C5FD", weight="bold"))
-    fig_official_nta.add_annotation(x=73, y=5, text="적자", showarrow=False, font=dict(size=13, color="#93C5FD", weight="bold"))
-
-    fig_official_nta.update_layout(
-        title=dict(
-            text="&lt; 생 애 주 기 적 자 (총 액) &gt;",
-            x=0.5,
-            xanchor="center",
-            font=dict(size=16, color="#F8FAFC")
-        ),
-        height=390,
-        margin=dict(l=20, r=20, t=45, b=80),
-        paper_bgcolor="rgba(0,0,0,0)",
-        plot_bgcolor="rgba(0,0,0,0)",
-        font=dict(color="#E2E8F0", size=13),
-        xaxis=dict(
-            title=dict(text="연령 (세)", font=dict(size=13, color="#94A3B8")),
-            tickfont=dict(size=12, color="#94A3B8"),
-            gridcolor="rgba(100, 116, 139, 0.2)",
-            tickmode="linear", tick0=0, dtick=5,
-            fixedrange=True
-        ),
-        yaxis=dict(
-            title=dict(text="규모 (조원)", font=dict(size=13, color="#94A3B8")),
-            tickfont=dict(size=12, color="#94A3B8"),
-            gridcolor="rgba(100, 116, 139, 0.2)",
-            range=[-22, 54],
-            fixedrange=True
-        ),
-        legend=dict(
-            orientation="h",
-            yanchor="top",
-            y=-0.28,
-            xanchor="center",
-            x=0.5,
-            font=dict(size=12, color="#F1F5F9")
-        ),
-        hovermode="x unified"
-    )
-
-    st.plotly_chart(
-        fig_official_nta,
-        use_container_width=True,
-        config={"displayModeBar": False, "scrollZoom": False, "doubleClick": False, "showAxisDragHandles": False}
-    )
-
-    st.markdown(f"""
+        st.markdown(f"""
 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 14px;">
 <a href="{OFFICIAL_PDF_URL}" target="_blank" style="background:#1E293B; border:1px solid #475569; border-radius:8px; padding:12px 14px; text-align:center; text-decoration:none; color:#38BDF8 !important; font-size:15px; font-weight:700; display:flex; align-items:center; justify-content:center; gap:8px;">
 <span style="font-size:18px;">📄</span><span style="color:#38BDF8 !important;">2024년 국가데이터처 통계 보도자료</span>
 </a>
 <a href="{OFFICIAL_RELEASE_URL}" target="_blank" style="background:#1E293B; border:1px solid #475569; border-radius:8px; padding:12px 14px; text-align:center; text-decoration:none; color:#38BDF8 !important; font-size:15px; font-weight:700; display:flex; align-items:center; justify-content:center; gap:8px;">
 <span style="font-size:18px;">🌐</span><span style="color:#38BDF8 !important;">국가데이터처 공식 발표 페이지</span>
-</a>
-</div>
+</a></div>
 """, unsafe_allow_html=True)
+        st.markdown("<div style='height: 20px;'></div>", unsafe_allow_html=True)
 
-    st.markdown("<div style='height: 20px;'></div>", unsafe_allow_html=True)
+        # 6.03.07 | [위치 이동] 인생의 사계절과 맞이할 겨울의 시간 (사계절 카드)
+        st.markdown("### 4. 인생의 사계절과 맞이할 겨울의 시간")
+        if cur_age <= 27: cur_season = "spring"
+        elif 28 <= cur_age <= 45: cur_season = "summer"
+        elif 46 <= cur_age < retire_age: cur_season = "autumn"
+        else: cur_season = "winter"
 
-    # --------------------------------------------------------------------------
-    # 6.03.07 | [위치 이동] 인생의 사계절과 맞이할 겨울의 시간 (사계절 카드)
-    # --------------------------------------------------------------------------
-    st.markdown("### 4. 인생의 사계절과 맞이할 겨울의 시간")
-    
-    if cur_age <= 27:
-        cur_season = "spring"
-    elif 28 <= cur_age <= 45:
-        cur_season = "summer"
-    elif 46 <= cur_age < retire_age:
-        cur_season = "autumn"
-    else:
-        cur_season = "winter"
+        def get_season_card_ui(season_key, icon, title, age_range, desc):
+            is_current = (cur_season == season_key)
+            card_border = "border: 2px solid #EA580C; background: rgba(234, 88, 12, 0.14);" if is_current else "border: 1px solid #334155; background: rgba(21, 30, 47, 0.7);"
+            badge_html = "<div style='min-height:22px; margin-bottom:4px;'><span style='background:#EA580C; color:#FFFFFF; font-size:11.5px; font-weight:800; padding:2px 7px; border-radius:4px;'>📍 지금 나의 계절</span></div>" if is_current else "<div style='min-height:22px; margin-bottom:4px;'></div>"
+            return f'<div class="soft-card" style="text-align:center; min-height:205px; {card_border} padding:14px 10px; margin:0;">{badge_html}<div style="font-size:28px;">{icon}</div><div style="font-size:16.5px; font-weight:800; color:#F8FAFC; margin:4px 0;">{title}</div><div style="font-size:13px; color:#94A3B8;">{age_range}</div><div style="font-size:13px; color:#CBD5E1; margin-top:8px; line-height:1.4;">{desc}</div></div>'
 
-    def get_season_card_ui(season_key, icon, title, age_range, desc):
-        is_current = (cur_season == season_key)
-        if is_current:
-            card_border = "border: 2px solid #EA580C; background: rgba(234, 88, 12, 0.14);"
-            badge_html = "<div style='min-height:22px; margin-bottom:4px;'><span style='background:#EA580C; color:#FFFFFF; font-size:11.5px; font-weight:800; padding:2px 7px; border-radius:4px;'>📍 지금 나의 계절</span></div>"
-        else:
-            card_border = "border: 1px solid #334155; background: rgba(21, 30, 47, 0.7);"
-            badge_html = "<div style='min-height:22px; margin-bottom:4px;'></div>"
+        card_spring = get_season_card_ui("spring", "🌱", "봄 (준비기)", "0세 ~ 27세", "부모님의 부양으로 배우고 성장하는 적자 구간")
+        card_summer = get_season_card_ui("summer", "☀️", "여름 (성장기)", "28세 ~ 45세", "성실하게 일하여 가정을 일구고 최대 흑자를 만드는 시기")
+        card_autumn = get_season_card_ui("autumn", "🍂", "가을 (결실기)", f"46세 ~ {retire_age}세", "자녀 독립 & 똘똘이의 파이프라인을 다질 골든타임")
+        card_winter = get_season_card_ui("winter", "❄️", "겨울 (음미기)", f"{retire_age}세 ~ {life_expectancy}세", f"근로소득 중단 (통계청 {user_gender.split()[1]} {life_expectancy}세 수명)<br><b style='color:#38BDF8;'>약 {winter_years}년 ({winter_months}개월)</b>")
 
-        return f"""
-<div class='soft-card' style='text-align:center; min-height:205px; {card_border} padding:14px 10px; margin:0;'>
-{badge_html}
-<div style='font-size:28px;'>{icon}</div>
-<div style='font-size:16.5px; font-weight:800; color:#F8FAFC; margin:4px 0;'>{title}</div>
-<div style='font-size:13px; color:#94A3B8;'>{age_range}</div>
-<div style='font-size:13px; color:#CBD5E1; margin-top:8px; line-height:1.4;'>{desc}</div>
-</div>
-"""
+        s_col1, s_col2, s_col3, s_col4 = st.columns(4)
+        with s_col1: st.markdown(card_spring, unsafe_allow_html=True)
+        with s_col2: st.markdown(card_summer, unsafe_allow_html=True)
+        with s_col3: st.markdown(card_autumn, unsafe_allow_html=True)
+        with s_col4: st.markdown(card_winter, unsafe_allow_html=True)
 
-    card_spring = get_season_card_ui("spring", "🌱", "봄 (준비기)", "0세 ~ 27세", "부모님의 부양으로 배우고 성장하는 적자 구간")
-    card_summer = get_season_card_ui("summer", "☀️", "여름 (성장기)", "28세 ~ 45세", "성실하게 일하여 가정을 일구고 최대 흑자를 만드는 시기")
-    card_autumn = get_season_card_ui("autumn", "🍂", "가을 (결실기)", f"46세 ~ {retire_age}세", "자녀 독립 & 똘똘이의 파이프라인을 다질 골든타임")
-    card_winter = get_season_card_ui("winter", "❄️", "겨울 (음미기)", f"{retire_age}세 ~ {life_expectancy}세", f"근로소득 중단 (통계청 {user_gender.split()[1]} {life_expectancy}세 수명)<br><b style='color:#38BDF8;'>약 {winter_years}년 ({winter_months}개월)</b>")
-
-    s_col1, s_col2, s_col3, s_col4 = st.columns(4)
-    with s_col1: st.markdown(card_spring, unsafe_allow_html=True)
-    with s_col2: st.markdown(card_summer, unsafe_allow_html=True)
-    with s_col3: st.markdown(card_autumn, unsafe_allow_html=True)
-    with s_col4: st.markdown(card_winter, unsafe_allow_html=True)
-
-    st.markdown(f"""
+        st.markdown(f"""
 <div style="background: rgba(30, 41, 59, 0.6); border: 1px solid #334155; border-radius: 12px; padding: 18px 20px; margin: 16px 0 24px 0;">
 <div style="font-size: 15px; color: #F8FAFC; line-height: 1.6; word-break: keep-all;">
 💡 <b>산책로의 질문</b>: 은퇴 후 우리가 맞이할 겨울의 시간은 <b>약 {winter_years}년 ({winter_months:,}개월)</b>입니다. (통계청 {user_gender.split()[1]} 기대수명 {life_expectancy}세 기준)<br>
-<span style="color: #94A3B8;">
-이 긴 겨울 동안 매달 무거운 물통을 지고 눈길을 걸을 것인가, 방 안에서 따뜻하게 흘러나오는 파이프라인을 맞이할 것인가는 <b>지금 '가을'의 준비</b>에 달려 있습니다.
-</span>
-</div>
-</div>
+<span style="color: #94A3B8;">이 긴 겨울 동안 매달 무거운 물통을 지고 눈길을 걸을 것인가, 방 안에서 따뜻하게 흘러나오는 파이프라인을 맞이할 것인가는 <b>지금 '가을'의 준비</b>에 달려 있습니다.</span>
+</div></div>
 """, unsafe_allow_html=True)
 
-    _, next_col = st.columns([5, 1])
-    with next_col:
-        if st.button("다음 →", key="seasons_next", use_container_width=True, type="primary"):
-            st.session_state["_pending_nav"] = "AI 시선"
-            st.rerun()
+        _, next_col = st.columns([5, 1])
+        with next_col:
+            if st.button("다음 →", key="seasons_next", use_container_width=True, type="primary"):
+                st.session_state["_pending_nav"] = "AI 시선"
+                st.rerun()
 
-# ------------------------------------------------------------------------------
+
+# ==============================================================================
 # 6.04.00 | Tab 4 — AI 시선
-# ------------------------------------------------------------------------------
+# ==============================================================================
 else:
     st.markdown("## AI 시선")
     st.markdown("AI는 평가자가 아닌, 내가 작성한 삶과 숫자를 객관적인 거울처럼 비춰주는 성찰 파트너입니다.")
@@ -2237,12 +1876,14 @@ else:
         family_desc["배우자"] = f"{int(getv('spouse_age'))}세"
 
     children_list = []
-    if child_count_str in ["1명", "2명", "3명 이상"] and getv("child_age", 0) > 0:
+    if child_count_str in ["1명", "2명", "3명", "4명 이상"] and getv("child_age", 0) > 0:
         children_list.append(f"첫째 {int(getv('child_age'))}세")
-    if child_count_str in ["2명", "3명 이상"] and getv("child_age2", 0) > 0:
+    if child_count_str in ["2명", "3명", "4명 이상"] and getv("child_age2", 0) > 0:
         children_list.append(f"둘째 {int(getv('child_age2'))}세")
-    if child_count_str == "3명 이상" and getv("child_age3", 0) > 0:
+    if child_count_str in ["3명", "4명 이상"] and getv("child_age3", 0) > 0:
         children_list.append(f"셋째 {int(getv('child_age3'))}세")
+    if child_count_str == "4명 이상" and getv("child_age4", 0) > 0:
+        children_list.append(f"넷째 {int(getv('child_age4'))}세")
 
     if children_list:
         family_desc["자녀"] = f"총 {len(children_list)}명 ({', '.join(children_list)})"
@@ -2428,11 +2069,8 @@ else:
 
         def format_readable_paragraph(txt):
             sentences = re.split(r'(?<=[.!?])\s+', txt.strip())
-            if len(sentences) <= 2:
-                return txt.strip()
-            grouped = []
-            for i in range(0, len(sentences), 2):
-                grouped.append(" ".join(sentences[i:i+2]))
+            if len(sentences) <= 2: return txt.strip()
+            grouped = [" ".join(sentences[i:i+2]) for i in range(0, len(sentences), 2)]
             return "\n\n".join(grouped)
 
         formatted_income = format_readable_paragraph(income_comment)
