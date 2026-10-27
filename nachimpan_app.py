@@ -1546,6 +1546,60 @@ elif selected_page == "인생의 사계절":
     winter_years = max(0, life_expectancy - retire_age)
     winter_months = winter_years * 12
 
+    def build_official_nta_chart():
+        
+        fig_official_nta = go.Figure()
+        official_ages = [0, 5, 10, 14, 17, 20, 24, 28, 32, 36, 40, 44, 48, 52, 56, 60, 61, 65, 70, 75, 80, 85]
+        official_income = [0, 0, 0, 0, 0, 3, 10, 18, 28, 27, 28, 38, 35, 39, 36, 26, 21, 14, 7, 2, 0.5, 0]
+        official_expense = [4, 5, 18, 20, 22, 15, 19, 18, 22, 20, 19, 23, 20, 24, 26, 23, 23, 25, 16, 11, 7, 5]
+        official_deficit = [e - i for e, i in zip(official_expense, official_income)]
+        fig_official_nta.add_trace(go.Scatter(x=official_ages, y=official_deficit, mode="lines", line=dict(color="rgba(147, 197, 253, 0.0)", width=0), fill='tozeroy', fillcolor='rgba(147, 197, 253, 0.45)', name="생애주기적자 (소비 - 노동소득)", hovertemplate="나이: %{x}세<br>생애주기적자: <b>%{y:.1f}조 원</b><extra></extra>"))
+        fig_official_nta.add_trace(go.Scatter(x=official_ages, y=official_expense, mode="lines", line=dict(color="#65A30D", width=3, dash="dash"), name="소비", hovertemplate="나이: %{x}세<br>소비: <b>%{y:.1f}조 원</b><extra></extra>"))
+        fig_official_nta.add_trace(go.Scatter(x=official_ages, y=official_income, mode="lines", line=dict(color="#2563EB", width=3.5), name="노동소득", hovertemplate="나이: %{x}세<br>노동소득: <b>%{y:.1f}조 원</b><extra></extra>"))
+        fig_official_nta.add_hline(y=0, line_dash="solid", line_color="#475569", line_width=1.5)
+        fig_official_nta.add_vline(x=17, line_dash="dash", line_color="#94A3B8", line_width=1.5)
+        fig_official_nta.add_vline(x=65, line_dash="dash", line_color="#94A3B8", line_width=1.5)
+        fig_official_nta.add_annotation(x=8, y=50, text="유년층", showarrow=False, font=dict(size=12, color="#E2E8F0"), bgcolor="rgba(30, 41, 59, 0.8)", bordercolor="#475569")
+        fig_official_nta.add_annotation(x=41, y=50, text="노동연령층", showarrow=False, font=dict(size=12, color="#E2E8F0"), bgcolor="rgba(30, 41, 59, 0.8)", bordercolor="#475569")
+        fig_official_nta.add_annotation(x=75, y=50, text="노년층", showarrow=False, font=dict(size=12, color="#E2E8F0"), bgcolor="rgba(30, 41, 59, 0.8)", bordercolor="#475569")
+        fig_official_nta.add_annotation(x=12, y=10, text="적자", showarrow=False, font=dict(size=13, color="#93C5FD", weight="bold"))
+        fig_official_nta.add_annotation(x=45, y=-16, text="흑자", showarrow=False, font=dict(size=13, color="#93C5FD", weight="bold"))
+        fig_official_nta.add_annotation(x=73, y=5, text="적자", showarrow=False, font=dict(size=13, color="#93C5FD", weight="bold"))
+
+        fig_official_nta.update_layout(
+            title=dict(text="&lt; 생 애 주 기 적 자 &gt;", x=0.5, xanchor="center", font=dict(size=16, color="#F8FAFC")),
+            height=390,
+            margin=dict(l=20, r=20, t=45, b=80),
+            paper_bgcolor="rgba(0,0,0,0)",
+            plot_bgcolor="rgba(0,0,0,0)",
+            font=dict(color="#E2E8F0", size=13),
+            xaxis=dict(
+                title=dict(text="연령 (세)", font=dict(size=13, color="#94A3B8")),
+                tickfont=dict(size=12, color="#94A3B8"),
+                gridcolor="rgba(100, 116, 139, 0.2)",
+                tickmode="linear", tick0=0, dtick=5,
+                fixedrange=True
+            ),
+            yaxis=dict(
+                title=None,
+                tickfont=dict(size=12, color="#94A3B8"),
+                gridcolor="rgba(100, 116, 139, 0.2)",
+                range=[-22, 54],
+                fixedrange=True
+            ),
+            legend=dict(
+                orientation="h",
+                yanchor="top",
+                y=-0.28,
+                xanchor="center",
+                x=0.5,
+                font=dict(size=12, color="#F1F5F9")
+            ),
+            hovermode="x unified"
+        )
+
+        return fig_official_nta
+        
     if not is_adv:
         # [기본 모드] 중복 제목 없이 3대 지표 + 내 계절 배지만 노출
         st.caption("가벼운 3분 산책: 대한민국 통계청 공식 지표를 통해 내 인생의 사계절 중 어디쯤 와 있는지 확인합니다.")
@@ -1568,6 +1622,9 @@ elif selected_page == "인생의 사계절":
         c_m1.metric("한국인 평균 흑자 진입", "28세", help="노동소득이 소비를 추월하는 연령")
         c_m2.metric("최대 흑자 정점", "45세", "연 1,932만 원")
         c_m3.metric("평균 적자 재전환", "61세", help="은퇴 후 소비가 노동소득을 다시 초과")
+
+        fig_official_nta = build_official_nta_chart()
+        st.plotly_chart(fig_official_nta, use_container_width=True, config={"displayModeBar": False, "scrollZoom": False, "doubleClick": False, "showAxisDragHandles": False})
 
         _, next_col = st.columns([5, 1])
         with next_col:
@@ -1765,57 +1822,9 @@ elif selected_page == "인생의 사계절":
 </div></div>
 """, unsafe_allow_html=True)
 
-        fig_official_nta = go.Figure()
-        official_ages = [0, 5, 10, 14, 17, 20, 24, 28, 32, 36, 40, 44, 48, 52, 56, 60, 61, 65, 70, 75, 80, 85]
-        official_income = [0, 0, 0, 0, 0, 3, 10, 18, 28, 27, 28, 38, 35, 39, 36, 26, 21, 14, 7, 2, 0.5, 0]
-        official_expense = [4, 5, 18, 20, 22, 15, 19, 18, 22, 20, 19, 23, 20, 24, 26, 23, 23, 25, 16, 11, 7, 5]
-        official_deficit = [e - i for e, i in zip(official_expense, official_income)]
-        fig_official_nta.add_trace(go.Scatter(x=official_ages, y=official_deficit, mode="lines", line=dict(color="rgba(147, 197, 253, 0.0)", width=0), fill='tozeroy', fillcolor='rgba(147, 197, 253, 0.45)', name="생애주기적자 (소비 - 노동소득)", hovertemplate="나이: %{x}세<br>생애주기적자: <b>%{y:.1f}조 원</b><extra></extra>"))
-        fig_official_nta.add_trace(go.Scatter(x=official_ages, y=official_expense, mode="lines", line=dict(color="#65A30D", width=3, dash="dash"), name="소비", hovertemplate="나이: %{x}세<br>소비: <b>%{y:.1f}조 원</b><extra></extra>"))
-        fig_official_nta.add_trace(go.Scatter(x=official_ages, y=official_income, mode="lines", line=dict(color="#2563EB", width=3.5), name="노동소득", hovertemplate="나이: %{x}세<br>노동소득: <b>%{y:.1f}조 원</b><extra></extra>"))
-        fig_official_nta.add_hline(y=0, line_dash="solid", line_color="#475569", line_width=1.5)
-        fig_official_nta.add_vline(x=17, line_dash="dash", line_color="#94A3B8", line_width=1.5)
-        fig_official_nta.add_vline(x=65, line_dash="dash", line_color="#94A3B8", line_width=1.5)
-        fig_official_nta.add_annotation(x=8, y=50, text="유년층", showarrow=False, font=dict(size=12, color="#E2E8F0"), bgcolor="rgba(30, 41, 59, 0.8)", bordercolor="#475569")
-        fig_official_nta.add_annotation(x=41, y=50, text="노동연령층", showarrow=False, font=dict(size=12, color="#E2E8F0"), bgcolor="rgba(30, 41, 59, 0.8)", bordercolor="#475569")
-        fig_official_nta.add_annotation(x=75, y=50, text="노년층", showarrow=False, font=dict(size=12, color="#E2E8F0"), bgcolor="rgba(30, 41, 59, 0.8)", bordercolor="#475569")
-        fig_official_nta.add_annotation(x=12, y=10, text="적자", showarrow=False, font=dict(size=13, color="#93C5FD", weight="bold"))
-        fig_official_nta.add_annotation(x=45, y=-16, text="흑자", showarrow=False, font=dict(size=13, color="#93C5FD", weight="bold"))
-        fig_official_nta.add_annotation(x=73, y=5, text="적자", showarrow=False, font=dict(size=13, color="#93C5FD", weight="bold"))
-
-        fig_official_nta.update_layout(
-            title=dict(text="&lt; 생 애 주 기 적 자 &gt;", x=0.5, xanchor="center", font=dict(size=16, color="#F8FAFC")),
-            height=390,
-            margin=dict(l=20, r=20, t=45, b=80),
-            paper_bgcolor="rgba(0,0,0,0)",
-            plot_bgcolor="rgba(0,0,0,0)",
-            font=dict(color="#E2E8F0", size=13),
-            xaxis=dict(
-                title=dict(text="연령 (세)", font=dict(size=13, color="#94A3B8")),
-                tickfont=dict(size=12, color="#94A3B8"),
-                gridcolor="rgba(100, 116, 139, 0.2)",
-                tickmode="linear", tick0=0, dtick=5,
-                fixedrange=True
-            ),
-            yaxis=dict(
-                title=None,
-                tickfont=dict(size=12, color="#94A3B8"),
-                gridcolor="rgba(100, 116, 139, 0.2)",
-                range=[-22, 54],
-                fixedrange=True
-            ),
-            legend=dict(
-                orientation="h",
-                yanchor="top",
-                y=-0.28,
-                xanchor="center",
-                x=0.5,
-                font=dict(size=12, color="#F1F5F9")
-            ),
-            hovermode="x unified"
-        )
+        fig_official_nta = build_official_nta_chart()
         st.plotly_chart(fig_official_nta, use_container_width=True, config={"displayModeBar": False, "scrollZoom": False, "doubleClick": False, "showAxisDragHandles": False})
-
+        
         st.markdown(f"""
 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 14px;">
 <a href="{OFFICIAL_PDF_URL}" target="_blank" style="background:#1E293B; border:1px solid #475569; border-radius:8px; padding:12px 14px; text-align:center; text-decoration:none; color:#38BDF8 !important; font-size:15px; font-weight:700; display:flex; align-items:center; justify-content:center; gap:8px;">
