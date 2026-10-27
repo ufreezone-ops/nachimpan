@@ -5,5 +5,4 @@ gspread
 oauth2client
 yfinance
 st-gsheets-connection #
-google-cloud-vision
 streamlit-option-menu #
