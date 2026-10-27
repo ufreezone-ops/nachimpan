@@ -1103,8 +1103,7 @@ if selected_page == "우리집 가계부":
     is_adv = st.session_state.get("advanced_mode", False)
     
     if not is_adv:
-        # [기본 모드] 딱 2개만 묻는 극도로 가벼운 일상 수지 산책
-        st.markdown("## 우리집 가계부")
+        # [기본 모드] 중복 제목 없이 바로 본론으로 진입하는 3분 일상 수지 산책
         st.caption("가벼운 3분 산책: 가장 핵심적인 우리 집의 한 달 현금흐름 밸런스만 살펴봅니다.")
         
         with st.form("basic_finance_form"):
@@ -1146,7 +1145,6 @@ if selected_page == "우리집 가계부":
 
     else:
         # [고급 모드] 모든 마이크로 모듈(6.01.01 ~ 6.01.07) 완전 탑재
-        st.markdown("## 우리집 가계부")
         with st.form("finance_form"):
             # 6.01.01 | ⓪ 우리집 소득 성격 및 재무 입력 폼
             with st.container(border=True, key="job-panel"):
@@ -1278,7 +1276,6 @@ if selected_page == "우리집 가계부":
 <div style="display: flex; flex-direction: column; gap: 14px; padding-left: 14px;">
 <div>{card_b}</div><div>{card_i}</div>
 </div></div>
-<div style="text-align: center; margin-top: 14px;"><span style="font-size: 14px; color: #94A3B8;">🧱 좌측(E·S)에서 우측(B·I)으로 넘어가는 것은 소득의 성격을 바꾸는 과정입니다.</span></div>
 </div>
 """, unsafe_allow_html=True)
 
@@ -1369,10 +1366,10 @@ elif selected_page == "삶과 생계수단":
     is_adv = st.session_state.get("advanced_mode", False)
     
     if not is_adv:
-        # [기본 모드] '돌쇠와 똘똘이' 우화 단독 노출
-        st.markdown("## 삶과 생계수단")
+        # [기본 모드] 중복 제목 없이 '돌쇠와 똘똘이' 우화 단독 노출
         st.caption("가벼운 3분 산책: 소득의 크기보다 중요한 '소득의 성격'을 한 편의 지혜로운 이야기로 마주합니다.")
         
+        # 6.02.02 | 지혜로운 산책: 돌쇠와 똘똘이 우화 카드
         st.markdown("""
 <div style="background: rgba(45, 35, 20, 0.55); border: 1.5px solid #6d4a1a; border-radius: 14px; padding: 24px 26px; margin: 16px 0 24px 0;">
 <div style="font-size: 21px; font-weight: 850; color: #FDE68A; margin-bottom: 12px;">🌾 지혜로운 산책: 돌쇠와 똘똘이</div>
@@ -1398,7 +1395,7 @@ elif selected_page == "삶과 생계수단":
 
 <div style="background: rgba(234, 88, 12, 0.14); border-left: 4px solid #EA580C; border-radius: 4px; padding: 14px 18px;">
 <div style="font-size: 15px; font-weight: 750; color: #F8FAFC; line-height: 1.6; word-break: keep-all;">
-💡 <b>나침반의 성찰</b>: 돌쇠의 삶(현업)을 버리라는 것이 아닙니다.<br>
+💡 <b>나침반의 성찰</b>: 누구의 선택이 옳다는 것이 아닙니다.<br>
 낮에는 돌쇠처럼 성실하게 가족의 생계(쌀 한 가마)를 책임지면서, 저녁과 주말의 시간에 똘똘이의 지혜(파이프라인)를 한 되, 두 되 차근차근 놓아가는 <b>'현명한 플랜 B'</b>가 필요한 이유입니다.
 </div>
 </div>
@@ -1413,13 +1410,10 @@ elif selected_page == "삶과 생계수단":
 
     else:
         # [고급 모드] 모든 마이크로 모듈(6.02.01 ~ 6.02.04) 완전 탑재
-        st.markdown("## 삶과 생계수단")
-        
-        # 6.02.01 | 소득의 모습 2x2 사분면 (물통 vs 구축B/접속I)
+        # 6.02.01 | 소득의 모습 2x2 사분면 (헤더 심플화: '물통과 파이프라인')
         st.markdown("""
-<div style="background: rgba(30, 41, 59, 0.45); border: 1.5px solid #334155; border-radius: 14px; padding: 20px 22px; margin-bottom: 22px;">
-<div style="font-size: 20px; font-weight: 850; color: #F8FAFC; margin-bottom: 6px;">소득이 만들어지는 모습 (물통 vs 파이프라인)</div>
-<div style="font-size: 14px; color: #94A3B8; margin-bottom: 16px;">수입의 크기보다 중요한 것은 수입이 만들어지는 '소득의 성격'입니다.</div>
+<div style="background: rgba(30, 41, 59, 0.45); border: 1.5px solid #334155; border-radius: 14px; padding: 18px 22px; margin-bottom: 22px;">
+<div style="font-size: 20px; font-weight: 850; color: #F8FAFC; margin-bottom: 14px;">물통과 파이프라인</div>
 """, unsafe_allow_html=True)
         
         q_self = active_quadrant(st.session_state.get("job_form", "직장인"))
@@ -1447,29 +1441,28 @@ elif selected_page == "삶과 생계수단":
 
         card_e = render_livelihood_quad("E", "🪣🪣🪣", "작은 물통 (E)", "나의 시간과 돈을 1:1 맞교환", "직접 일한 시간만큼 소득 창출<br><span style='color:#F59E0B; font-weight:600;'>(노동을 멈추면 수입도 멈춤)</span>", is_right=False)
         card_s = render_livelihood_quad("S", "🛢️", "큰 물통 (S)", "전문성과 몸값으로 키운 물통", "한 번에 담는 물통의 양을 키운 모습<br><span style='color:#F59E0B; font-weight:600;'>(큰 물통이지만 여전히 지고 다님)</span>", is_right=False)
-        card_b = render_livelihood_quad("B", "⚙️", "구축 (B)", "파이프라인 구축", "스스로 굴러가는 시스템 소유<br><span style='color:#38BDF8; font-weight:600;'>(내가 멈추어도 시스템이 일함)</span>", is_right=True)
-        card_i = render_livelihood_quad("I", "🚰➰", "접속 (I)", "파이프라인 접속", "이미 구축된 플랫폼·자본에 접속<br><span style='color:#38BDF8; font-weight:600;'>(자산과 네트워크가 소득을 만듦)</span>", is_right=True)
+        card_b = render_livelihood_quad("B", "⚙️", "파이프라인<br>구축 (B)", "시스템 소유", "스스로 굴러가는 비즈니스 소유<br><span style='color:#38BDF8; font-weight:600;'>(내가 멈추어도 시스템이 일함)</span>", is_right=True)
+        card_i = render_livelihood_quad("I", "🚰➰", "파이프라인<br>접속 (I)", "플랫폼·자본 접속", "이미 구축된 플랫폼에 접속 레버리지<br><span style='color:#38BDF8; font-weight:600;'>(자산과 네트워크가 소득을 만듦)</span>", is_right=True)
 
         st.markdown(f"""
-<div style="margin: 10px 0 16px 0;">
+<div style="margin: 6px 0 16px 0;">
 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px 0px; align-items: stretch;">
 <div style="padding-right: 12px; border-right: 3.5px dashed #475569; display: flex; box-sizing: border-box;">{card_e}</div>
 <div style="padding-left: 12px; display: flex; box-sizing: border-box;">{card_b}</div>
 <div style="padding-right: 12px; border-right: 3.5px dashed #475569; display: flex; box-sizing: border-box;">{card_s}</div>
 <div style="padding-left: 12px; display: flex; box-sizing: border-box;">{card_i}</div>
 </div>
-<div style="text-align: center; margin-top: 14px;"><span style="font-size: 13.5px; color: #94A3B8;">🧱 좌측(물통 E·S)에서 우측(파이프라인 B·I)으로 넘어가는 것은 소득의 성격을 바꾸는 과정입니다.</span></div>
 </div>
 </div>
 """, unsafe_allow_html=True)
 
-        # 6.02.02 | 지혜로운 산책: 돌쇠와 똘똘이 우화 카드
+        # 6.02.02 | 지혜로운 산책: 돌쇠와 똘똘이 우화 카드 (수정 멘트 반영)
         st.markdown("""
 <div style="background: rgba(45, 35, 20, 0.55); border: 1.5px solid #6d4a1a; border-radius: 14px; padding: 22px 24px; margin-bottom: 22px;">
 <div style="font-size: 20px; font-weight: 850; color: #FDE68A; margin-bottom: 12px;">🌾 지혜로운 산책: 돌쇠와 똘똘이</div>
 <div style="font-size: 14.5px; color: #E2E8F0; margin-bottom: 16px;">옛날 어느 마을, 머슴을 구하는 대감댁에 두 젊은이가 찾아왔습니다.</div>
 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px;">
-<div style="background: rgba(15, 23, 42, 0.75); border: 1px solid #78350f; border-radius: 10px; padding: 14px 16px;">
+<div style="background: rgba(15, 23, 42, 0.75); border: 1px solid #78350f; border-radius: 10px; padding: 16px 18px;">
 <div style="font-size: 17px; font-weight: 800; color: #F59E0B; margin-bottom: 6px;">💪 돌쇠의 선택 (물통의 삶)</div>
 <div style="font-size: 14px; color: #CBD5E1; line-height: 1.6; word-break: keep-all;">
 "대감마님, 저는 첫 달부터 매달 <b>쌀 한 가마(80kg)</b>씩을 주십시오."<br>
@@ -1483,7 +1476,7 @@ elif selected_page == "삶과 생계수단":
 </div></div></div>
 <div style="background: rgba(234, 88, 12, 0.14); border-left: 4px solid #EA580C; border-radius: 4px; padding: 12px 16px;">
 <div style="font-size: 15px; font-weight: 750; color: #F8FAFC; line-height: 1.6; word-break: keep-all;">
-💡 <b>나침반의 성찰</b>: 돌쇠의 삶(현업)을 버리라는 것이 아닙니다.<br>
+💡 <b>나침반의 성찰</b>: 누구의 선택이 옳다는 것이 아닙니다.<br>
 낮에는 돌쇠처럼 성실하게 가족의 생계(쌀 한 가마)를 책임지면서, 저녁과 주말의 시간에 똘똘이의 지혜(파이프라인)를 한 되, 두 되 차근차근 놓아가는 <b>'현명한 플랜 B'</b>가 필요한 이유입니다.
 </div></div></div>
 """, unsafe_allow_html=True)
@@ -1501,11 +1494,11 @@ elif selected_page == "삶과 생계수단":
 </div></div>
 """, unsafe_allow_html=True)
 
-        # 6.02.04 | 내가 생각하는 은퇴 예상 나이 인라인 폼
+        # 6.02.04 | 내가 생각하는 은퇴 예상 나이 (질문 순서 위아래 교체)
         st.markdown("""
 <div style="background: rgba(24, 32, 47, 0.65); border: 1.5px solid #3b4b66; border-radius: 14px; padding: 20px 22px; margin-bottom: 22px;">
-<div style="font-size: 20px; font-weight: 850; color: #F8FAFC; margin-bottom: 6px;">내가 생각하는 은퇴 예상 나이</div>
-<div style="font-size: 14.5px; color: #CBD5E1; line-height: 1.6; word-break: keep-all; margin-bottom: 14px;">나는 언제부터 생계를 위해 반드시 일해야 하는 삶에서 벗어날 수 있을까?</div>
+<div style="font-size: 17px; font-weight: 750; color: #FDE68A; line-height: 1.6; word-break: keep-all; margin-bottom: 6px;">나는 언제부터 생계를 위해 반드시 일해야 하는 삶에서 벗어날 수 있을까?</div>
+<div style="font-size: 20px; font-weight: 850; color: #F8FAFC; margin-bottom: 12px;">내가 생각하는 은퇴 예상 나이</div>
 """, unsafe_allow_html=True)
 
         cur_user_age = int(st.session_state.person_age)
@@ -1554,8 +1547,7 @@ elif selected_page == "인생의 사계절":
     winter_months = winter_years * 12
 
     if not is_adv:
-        # [기본 모드] 국가 3대 지표 + 나의 현재 계절 배지 (3분 산책)
-        st.markdown("## 인생의 사계절")
+        # [기본 모드] 중복 제목 없이 3대 지표 + 내 계절 배지만 노출
         st.caption("가벼운 3분 산책: 대한민국 통계청 공식 지표를 통해 내 인생의 사계절 중 어디쯤 와 있는지 확인합니다.")
 
         if cur_age <= 27: cur_season, s_icon, s_color, s_desc = "봄 (준비기)", "🌱", "#4ADE80", "부모님의 부양으로 배우고 성장하는 계절"
@@ -1585,9 +1577,6 @@ elif selected_page == "인생의 사계절":
 
     else:
         # [고급 모드] 모든 마이크로 모듈(6.03.01 ~ 6.03.07) 완전 탑재
-        st.markdown("## 인생의 사계절")
-        st.markdown("자연에 사계절이 있듯 사람의 삶에도 준비(봄) · 성장(여름) · 결실(가을) · 음미(겨울)의 시간이 있습니다.")
-
         # 6.03.01 | 가족 구성원 나이 입력 폼 (3대 직계 가족 슬림화)
         # 6.03.02 | (형제자매 기능 전면 폐기 ➜ 직계 부양가족 집중 완료)
         st.markdown("### 1. 가족 구성원과 은퇴 시점의 나이")
@@ -1759,7 +1748,7 @@ elif selected_page == "인생의 사계절":
 
         st.markdown("<div style='height: 14px;'></div>", unsafe_allow_html=True)
 
-        # 6.03.06 | 국가데이터처 공식 생애 통계 지표 (여성 경단 팩트 탑재 & 공식 NTA 차트)
+        # 6.03.06 | 국가데이터처 공식 생애 통계 지표 (단위 다이어트 & <생애주기적자> 차트)
         st.markdown("### 3. 국가데이터처 공식 생애 통계 지표 (대한민국 평균 기준)")
         st.caption("※ 통계청 국민이전계정(NTA) 공식 발표 자료 기준")
         col_m1, col_m2, col_m3 = st.columns(3)
@@ -1782,8 +1771,8 @@ elif selected_page == "인생의 사계절":
         official_expense = [4, 5, 18, 20, 22, 15, 19, 18, 22, 20, 19, 23, 20, 24, 26, 23, 23, 25, 16, 11, 7, 5]
         official_deficit = [e - i for e, i in zip(official_expense, official_income)]
         fig_official_nta.add_trace(go.Scatter(x=official_ages, y=official_deficit, mode="lines", line=dict(color="rgba(147, 197, 253, 0.0)", width=0), fill='tozeroy', fillcolor='rgba(147, 197, 253, 0.45)', name="생애주기적자 (소비 - 노동소득)", hovertemplate="나이: %{x}세<br>생애주기적자: <b>%{y:.1f}조 원</b><extra></extra>"))
-        fig_official_nta.add_trace(go.Scatter(x=official_ages, y=official_expense, mode="lines", line=dict(color="#65A30D", width=3, dash="dash"), name="소비 (조원)", hovertemplate="나이: %{x}세<br>소비: <b>%{y:.1f}조 원</b><extra></extra>"))
-        fig_official_nta.add_trace(go.Scatter(x=official_ages, y=official_income, mode="lines", line=dict(color="#2563EB", width=3.5), name="노동소득 (조원)", hovertemplate="나이: %{x}세<br>노동소득: <b>%{y:.1f}조 원</b><extra></extra>"))
+        fig_official_nta.add_trace(go.Scatter(x=official_ages, y=official_expense, mode="lines", line=dict(color="#65A30D", width=3, dash="dash"), name="소비", hovertemplate="나이: %{x}세<br>소비: <b>%{y:.1f}조 원</b><extra></extra>"))
+        fig_official_nta.add_trace(go.Scatter(x=official_ages, y=official_income, mode="lines", line=dict(color="#2563EB", width=3.5), name="노동소득", hovertemplate="나이: %{x}세<br>노동소득: <b>%{y:.1f}조 원</b><extra></extra>"))
         fig_official_nta.add_hline(y=0, line_dash="solid", line_color="#475569", line_width=1.5)
         fig_official_nta.add_vline(x=17, line_dash="dash", line_color="#94A3B8", line_width=1.5)
         fig_official_nta.add_vline(x=65, line_dash="dash", line_color="#94A3B8", line_width=1.5)
@@ -1793,7 +1782,38 @@ elif selected_page == "인생의 사계절":
         fig_official_nta.add_annotation(x=12, y=10, text="적자", showarrow=False, font=dict(size=13, color="#93C5FD", weight="bold"))
         fig_official_nta.add_annotation(x=45, y=-16, text="흑자", showarrow=False, font=dict(size=13, color="#93C5FD", weight="bold"))
         fig_official_nta.add_annotation(x=73, y=5, text="적자", showarrow=False, font=dict(size=13, color="#93C5FD", weight="bold"))
-        fig_official_nta.update_layout(title=dict(text="&lt; 생 애 주 기 적 자 (총 액) &gt;", x=0.5, xanchor="center", font=dict(size=16, color="#F8FAFC")), height=390, margin=dict(l=20, r=20, t=45, b=80), paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="rgba(0,0,0,0)", font=dict(color="#E2E8F0", size=13), xaxis=dict(title=dict(text="연령 (세)", font=dict(size=13, color="#94A3B8")), tickfont=dict(size=12, color="#94A3B8"), gridcolor="rgba(100, 116, 139, 0.2)", tickmode="linear", tick0=0, dtick=5, fixedrange=True), yaxis=dict(title=dict(text="규모 (조원)", font=dict(size=13, color="#94A3B8")), tickfont=dict(size=12, color="#94A3B8"), gridcolor="rgba(100, 116, 139, 0.2)", range=[-22, 54], fixedrange=True), legend=dict(orientation="h", yanchor="top", y=-0.28, xanchor="center", x=0.5, font=dict(size=12, color="#F1F5F9")), hovermode="x unified")
+
+        fig_official_nta.update_layout(
+            title=dict(text="&lt; 생 애 주 기 적 자 &gt;", x=0.5, xanchor="center", font=dict(size=16, color="#F8FAFC")),
+            height=390,
+            margin=dict(l=20, r=20, t=45, b=80),
+            paper_bgcolor="rgba(0,0,0,0)",
+            plot_bgcolor="rgba(0,0,0,0)",
+            font=dict(color="#E2E8F0", size=13),
+            xaxis=dict(
+                title=dict(text="연령 (세)", font=dict(size=13, color="#94A3B8")),
+                tickfont=dict(size=12, color="#94A3B8"),
+                gridcolor="rgba(100, 116, 139, 0.2)",
+                tickmode="linear", tick0=0, dtick=5,
+                fixedrange=True
+            ),
+            yaxis=dict(
+                title=None,
+                tickfont=dict(size=12, color="#94A3B8"),
+                gridcolor="rgba(100, 116, 139, 0.2)",
+                range=[-22, 54],
+                fixedrange=True
+            ),
+            legend=dict(
+                orientation="h",
+                yanchor="top",
+                y=-0.28,
+                xanchor="center",
+                x=0.5,
+                font=dict(size=12, color="#F1F5F9")
+            ),
+            hovermode="x unified"
+        )
         st.plotly_chart(fig_official_nta, use_container_width=True, config={"displayModeBar": False, "scrollZoom": False, "doubleClick": False, "showAxisDragHandles": False})
 
         st.markdown(f"""
@@ -1809,10 +1829,10 @@ elif selected_page == "인생의 사계절":
 
         # 6.03.07 | [위치 이동] 인생의 사계절과 맞이할 겨울의 시간 (사계절 카드)
         st.markdown("### 4. 인생의 사계절과 맞이할 겨울의 시간")
-        if cur_age <= 27: cur_season, s_icon, s_color, s_desc = "봄 (준비기)", "🌱", "#4ADE80", "부모님의 부양으로 배우고 성장하는 적자 구간"
-        elif 28 <= cur_age <= 45: cur_season, s_icon, s_color, s_desc = "여름 (성장기)", "☀️", "#F59E0B", "성실하게 일하여 가정을 일구고 최대 흑자를 만드는 시기"
-        elif 46 <= cur_age < retire_age: cur_season, s_icon, s_color, s_desc = "가을 (결실기)", "🍂", "#FB923C", "자녀 독립 & 똘똘이의 파이프라인을 다질 골든타임"
-        else: cur_season, s_icon, s_color, s_desc = "겨울 (음미기)", "❄️", "#38BDF8", "근로소득 중단 (통계청 {user_gender.split()[1]} {life_expectancy}세 수명)<br><b style='color:#38BDF8;'>약 {winter_years}년 ({winter_months}개월)</b>"
+        if cur_age <= 27: cur_season = "spring"
+        elif 28 <= cur_age <= 45: cur_season = "summer"
+        elif 46 <= cur_age < retire_age: cur_season = "autumn"
+        else: cur_season = "winter"
 
         def get_season_card_ui(season_key, icon, title, age_range, desc):
             is_current = (cur_season == season_key)
@@ -1850,20 +1870,19 @@ elif selected_page == "인생의 사계절":
 # 6.04.00 | Tab 4 — AI 시선
 # ==============================================================================
 else:
-    st.markdown("## AI 시선")
-    st.markdown("AI는 평가자가 아닌, 내가 작성한 삶과 숫자를 객관적인 거울처럼 비춰주는 성찰 파트너입니다.")
-    
     is_adv = st.session_state.get("advanced_mode", False)
     summary = current_financial_summary()
     person_name = st.session_state.get("person_name", "나")
     person_age = st.session_state.get("person_age", 35)
 
     if not is_adv:
-        # 6.04.01 | [기본 모드] AI 1문단 자동 성찰 (버튼 없이 자동 렌더링)
+        # [기본 모드] AI 1문단 자동 성찰 & 초대장 카드 + 심플한 [고급버튼]
+        st.caption("AI는 평가자가 아닌, 내가 작성한 삶과 숫자를 객관적인 거울처럼 비춰주는 성찰 파트너입니다.")
         inc_val = float(getv("income_self", 0) or 0)
         exp_val = float(getv("expense_living", 0) or 0)
         surplus_val = inc_val - exp_val
 
+        # 1문단 자동 생성
         if "basic_ai_comment" not in st.session_state or st.session_state.get("basic_ai_last_input") != (inc_val, exp_val):
             prompt_basic = f"""[역할 정의] 가계 재무를 객관적인 거울처럼 정직하고 따뜻하게 짚어주는 성찰 파트너.
 인터뷰이: {person_name}님 (만 {person_age}세), 월 실수령 소득 {inc_val:,.0f}만 원, 월 기본 생활비 {exp_val:,.0f}만 원, 월 저축여력 {surplus_val:,.0f}만 원.
@@ -1885,14 +1904,14 @@ else:
 
         st.markdown("<div style='height: 20px;'></div>", unsafe_allow_html=True)
 
-        # 6.04.02 | [기본 모드] 고급모드 초대장 카드 & 심플한 [고급버튼]
+        # 6.04.02 | [기본 모드] 고급모드 초대장 카드 & 심플한 [고급버튼] (수정 멘트 반영)
         st.markdown("""
 <div style="background: radial-gradient(circle at top, #1e293b 0%, #0b1120 100%); border: 1.5px solid #F59E0B; border-radius: 16px; padding: 24px 22px; text-align: center; box-shadow: 0 4px 18px rgba(245, 158, 11, 0.2); margin: 16px 0;">
 <div style="font-size: 34px; margin-bottom: 6px;">📜</div>
 <div style="font-size: 19px; font-weight: 850; color: #FDE68A; margin-bottom: 8px;">이게 다 일까요?</div>
 <div style="font-size: 14.5px; color: #E2E8F0; line-height: 1.7; word-break: keep-all; max-width: 650px; margin: 0 auto 18px auto;">
 만약 우리 집의 <b>진짜 순자산 궤적</b>과 <b>자녀 학자금·은퇴 타임라인</b>,<br>
-그리고 숨겨진 <b>파이프라인의 가능성</b>까지 시뮬레이션해보고 싶다면...
+그리고 숨겨진 <b>파이프라인의 가능성</b>까지 시뮬레이션해보고 싶다면..., 아래 <b>'고급버튼'</b>을 눌러보세요.
 </div>
 </div>
 """, unsafe_allow_html=True)
@@ -1904,13 +1923,8 @@ else:
 
     else:
         # [고급 모드] 모든 마이크로 모듈(6.04.01 ~ 6.04.07) 완전 탑재
-        adv_top_col1, adv_top_col2 = st.columns([4, 1])
-        with adv_top_col2:
-            if st.button("🌿 기본 모드로 전환", key="btn_lock_basic", use_container_width=True):
-                st.session_state["advanced_mode"] = False
-                st.session_state["_pending_nav"] = "우리집 가계부"
-                st.rerun()
-
+        st.caption("AI는 평가자가 아닌, 내가 작성한 삶과 숫자를 객관적인 거울처럼 비춰주는 성찰 파트너입니다.")
+        
         sib_names = [f"{it['label']}({it.get('age',0)}세)" for it in st.session_state.get("sibling_items", []) if it.get("age", 0) > 0]
         retire_age = st.session_state.get("retirement_age", 60)
         user_gender = st.session_state.get("gender", "🙋‍♂️ 남성")
@@ -2128,6 +2142,7 @@ else:
             st.info("‘AI 리포트 생성’ 버튼을 누르면 Gemini 초고속 엔진이 삶과 재무의 성찰 리포트를 생성합니다.")
 
         st.markdown("<div style='height: 20px;'></div>", unsafe_allow_html=True)
+        # 6.04.07 | 📋 AI 질의용 재무제표 expander
         with st.expander("📋 AI 질의용 재무제표"):
             st.markdown("<div style='font-size: 13.5px; color: #94A3B8; margin-bottom: 8px;'>프롬프트 지시문 없이, 내가 입력한 재무제표와 가족 생애 통계만 정리된 텍스트입니다. ChatGPT 등에 복사해서 자유롭게 추가 상담을 진행할 수 있습니다.</div>", unsafe_allow_html=True)
             raw_summary_report = f"""### 나침반 재무제표 및 생애주기 요약 데이터
@@ -2146,3 +2161,12 @@ else:
 - 은퇴 후 월 희망 생활비: {getv('retirement_monthly_expenses', 200):,.0f}만 원
 - 가족 구성: {', '.join([f'{k}: {v}' for k, v in family_desc.items()]) if family_desc else '미등록'}"""
             st.code(raw_summary_report, language="markdown")
+
+        # [위치 이동] 상단에서 화면 맨 아래로 정갈하게 내려온 기본 모드 전환 버튼
+        st.markdown("<div style='height: 16px;'></div>", unsafe_allow_html=True)
+        _, adv_btm_col = st.columns([4, 1])
+        with adv_btm_col:
+            if st.button("🌿 기본 모드로 전환", key="btn_lock_basic_bottom", use_container_width=True):
+                st.session_state["advanced_mode"] = False
+                st.session_state["_pending_nav"] = "우리집 가계부"
+                st.rerun()
