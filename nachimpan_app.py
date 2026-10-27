@@ -440,12 +440,12 @@ if "started" not in st.session_state:
 if "answers" not in st.session_state:
     st.session_state.answers = {}
 if "advanced_mode" not in st.session_state:
-    st.session_state.advanced_mode = False  # 기본값: 누구나 부담 없는 3분 산책 기본 모드로 시작
+    st.session_state.advanced_mode = False  # 기본값: 누구나 부담 없는 기본 모드로 시작
 
 def getv(key, default=0):
     val = st.session_state.get(key, default)
     return default if val is None else val
-
+    
 # 2.01.02 | 동기화 키 목록 및 압축 인코더 (export_diagnosis_code, advanced_mode 포함)
 SYNC_KEYS = [
     "anonymous_id", "person_name", "person_age", "gender", "job_form", "job_spouse_form", "career_stage",
@@ -793,7 +793,7 @@ def call_gemini_text(prompt_text):
 # 4.01.00 | 사이드바 프로필 요약 및 복원
 # ------------------------------------------------------------------------------
 
-# 4.01.01 | 사이드바 컴포넌트 렌더링 (하단 비밀 스위치 🧭 포함)
+# 4.01.01 | 사이드바 컴포넌트 렌더링 (사이드바 고급 모드 토글 버튼 탑재)
 with st.sidebar:
     st.markdown(f"""
 <div style="background: rgba(30, 41, 59, 0.4); border: 1px solid #334155; border-radius: 10px; padding: 12px 14px; text-align: center; margin-bottom: 20px;">
@@ -829,16 +829,16 @@ with st.sidebar:
 
     st.markdown("<div style='height: 14px;'></div>", unsafe_allow_html=True)
     
-    # [비밀 스위치] 안내문과 나란히 배치된 아는 사람만 누르는 🧭 토글 버튼
-    disc_col1, disc_col2 = st.columns([8.8, 1.2])
-    with disc_col1:
-        st.caption("※ 나침반은 외부 서버에 저장되지 않는 일회성 안전 세션입니다.")
-    with disc_col2:
-        if st.button("🧭", key="secret_adv_toggle", help="모드 전환"):
-            st.session_state.advanced_mode = not st.session_state.get("advanced_mode", False)
-            st.rerun()
+    # [사이드바 모드 전환 버튼: 심플한 정식 이름표 장착]
+    is_currently_adv = st.session_state.get("advanced_mode", False)
+    mode_btn_label = "🌿 기본 모드로 전환" if is_currently_adv else "🧭 고급 모드로 전환"
+    if st.button(mode_btn_label, key="sidebar_mode_toggle_btn", use_container_width=True):
+        st.session_state.advanced_mode = not is_currently_adv
+        st.rerun()
 
-# 4.01.02 | 개발용 테스트 메뉴 (실명 소림 ➜ 가명 혜림 교체 적용)
+    st.caption("※ 나침반은 외부 서버에 저장되지 않는 일회성 안전 세션입니다.")
+
+# 4.01.02 | 개발용 테스트 메뉴
 _dev_enabled = (
     st.secrets.get("DEV_MODE", False)
     and st.query_params.get("dev") == "1"
@@ -1093,7 +1093,7 @@ selected_page = {
 
 
 # ================================================================================
-# [Module 6.00.00] 메인 뷰 페이지 (Main View Tabs: 기본 3분 산책 vs 정밀 심층 모드)
+# [Module 6.00.00] 메인 뷰 페이지 (Main View Tabs: 기본 3분 산책 vs 고급 정밀 모드)
 # ================================================================================
 
 # ==============================================================================
@@ -1145,10 +1145,10 @@ if selected_page == "우리집 가계부":
                 st.rerun()
 
     else:
-        # [정밀 고급 모드] 모든 마이크로 모듈(6.01.01 ~ 6.01.07) 100% 완전 복원
+        # [고급 모드] 모든 마이크로 모듈(6.01.01 ~ 6.01.07) 완전 탑재
         st.markdown("## 우리집 가계부")
         with st.form("finance_form"):
-            # 6.01.01 | ⓪ 우리집 소득 성격 (성별, 직업, 경력 연차 pills)
+            # 6.01.01 | ⓪ 우리집 소득 성격 및 재무 입력 폼
             with st.container(border=True, key="job-panel"):
                 st.markdown("### ⓪ 우리집 소득 성격")
                 gender_options = ["🙋‍♂️ 남성", "🙋‍♀️ 여성"]
@@ -1369,7 +1369,7 @@ elif selected_page == "삶과 생계수단":
     is_adv = st.session_state.get("advanced_mode", False)
     
     if not is_adv:
-        # [기본 모드] '돌쇠와 똘똘이' 우화 단독 노출 (물통 vs 파이프라인 개념 각인)
+        # [기본 모드] '돌쇠와 똘똘이' 우화 단독 노출
         st.markdown("## 삶과 생계수단")
         st.caption("가벼운 3분 산책: 소득의 크기보다 중요한 '소득의 성격'을 한 편의 지혜로운 이야기로 마주합니다.")
         
@@ -1412,7 +1412,7 @@ elif selected_page == "삶과 생계수단":
                 st.rerun()
 
     else:
-        # [고급 모드] 모든 마이크로 모듈(6.02.01 ~ 6.02.04) 100% 완전 복원
+        # [고급 모드] 모든 마이크로 모듈(6.02.01 ~ 6.02.04) 완전 탑재
         st.markdown("## 삶과 생계수단")
         
         # 6.02.01 | 소득의 모습 2x2 사분면 (물통 vs 구축B/접속I)
@@ -1584,7 +1584,7 @@ elif selected_page == "인생의 사계절":
                 st.rerun()
 
     else:
-        # [고급 모드] 모든 마이크로 모듈(6.03.01 ~ 6.03.07) 100% 완전 복원
+        # [고급 모드] 모든 마이크로 모듈(6.03.01 ~ 6.03.07) 완전 탑재
         st.markdown("## 인생의 사계절")
         st.markdown("자연에 사계절이 있듯 사람의 삶에도 준비(봄) · 성장(여름) · 결실(가을) · 음미(겨울)의 시간이 있습니다.")
 
@@ -1809,10 +1809,10 @@ elif selected_page == "인생의 사계절":
 
         # 6.03.07 | [위치 이동] 인생의 사계절과 맞이할 겨울의 시간 (사계절 카드)
         st.markdown("### 4. 인생의 사계절과 맞이할 겨울의 시간")
-        if cur_age <= 27: cur_season = "spring"
-        elif 28 <= cur_age <= 45: cur_season = "summer"
-        elif 46 <= cur_age < retire_age: cur_season = "autumn"
-        else: cur_season = "winter"
+        if cur_age <= 27: cur_season, s_icon, s_color, s_desc = "봄 (준비기)", "🌱", "#4ADE80", "부모님의 부양으로 배우고 성장하는 적자 구간"
+        elif 28 <= cur_age <= 45: cur_season, s_icon, s_color, s_desc = "여름 (성장기)", "☀️", "#F59E0B", "성실하게 일하여 가정을 일구고 최대 흑자를 만드는 시기"
+        elif 46 <= cur_age < retire_age: cur_season, s_icon, s_color, s_desc = "가을 (결실기)", "🍂", "#FB923C", "자녀 독립 & 똘똘이의 파이프라인을 다질 골든타임"
+        else: cur_season, s_icon, s_color, s_desc = "겨울 (음미기)", "❄️", "#38BDF8", "근로소득 중단 (통계청 {user_gender.split()[1]} {life_expectancy}세 수명)<br><b style='color:#38BDF8;'>약 {winter_years}년 ({winter_months}개월)</b>"
 
         def get_season_card_ui(season_key, icon, title, age_range, desc):
             is_current = (cur_season == season_key)
@@ -1853,158 +1853,167 @@ else:
     st.markdown("## AI 시선")
     st.markdown("AI는 평가자가 아닌, 내가 작성한 삶과 숫자를 객관적인 거울처럼 비춰주는 성찰 파트너입니다.")
     
-    # 6.04.01 | 재무/가족 팩트 데이터 정제 (0세 필터링 및 ESBI 판별)
+    is_adv = st.session_state.get("advanced_mode", False)
     summary = current_financial_summary()
-    sib_names = [f"{it['label']}({it.get('age',0)}세)" for it in st.session_state.get("sibling_items", []) if it.get("age", 0) > 0]
-    
     person_name = st.session_state.get("person_name", "나")
     person_age = st.session_state.get("person_age", 35)
-    retire_age = st.session_state.get("retirement_age", 60)
-    user_gender = st.session_state.get("gender", "🙋‍♂️ 남성")
-    is_female = ("여성" in user_gender)
-    life_expectancy = 87 if is_female else 81
-    winter_years = max(0, life_expectancy - int(retire_age))
-    child_count_str = st.session_state.get("child_count", "입력 안 함")
 
-    q_self = active_quadrant(st.session_state.get("job_form", "직장인"))
-    q_spouse = active_quadrant(st.session_state.get("job_spouse_form", ""))
-    career_st = st.session_state.get("career_stage", "🌱 3년 이하 (초년생)")
-    has_pipeline = (q_self in ["B", "I"]) or (q_spouse in ["B", "I"])
+    if not is_adv:
+        # 6.04.01 | [기본 모드] AI 1문단 자동 성찰 (버튼 없이 자동 렌더링)
+        inc_val = float(getv("income_self", 0) or 0)
+        exp_val = float(getv("expense_living", 0) or 0)
+        surplus_val = inc_val - exp_val
 
-    family_desc = {}
-    if getv("spouse_age", 0) > 0:
-        family_desc["배우자"] = f"{int(getv('spouse_age'))}세"
+        if "basic_ai_comment" not in st.session_state or st.session_state.get("basic_ai_last_input") != (inc_val, exp_val):
+            prompt_basic = f"""[역할 정의] 가계 재무를 객관적인 거울처럼 정직하고 따뜻하게 짚어주는 성찰 파트너.
+인터뷰이: {person_name}님 (만 {person_age}세), 월 실수령 소득 {inc_val:,.0f}만 원, 월 기본 생활비 {exp_val:,.0f}만 원, 월 저축여력 {surplus_val:,.0f}만 원.
+[요청 사항]
+- 자기소개나 인사말 없이 '{person_name}님,'으로 시작하여 딱 1~2문장(120~180자 내외)으로 담백하고 다정하게 작성하세요.
+- 현재 일상 수지의 플러스/마이너스 팩트를 정직하게 짚고, 노동을 멈추었을 때의 지속 가능성을 편안하게 성찰할 수 있는 화두를 던지세요."""
+            with st.spinner("AI가 일상의 수지 밸런스를 성찰 중입니다..."):
+                comment, _ = call_gemini_text(prompt_basic)
+                st.session_state.basic_ai_comment = comment.strip() if comment else "일상의 소중한 현금흐름을 성찰 중입니다."
+                st.session_state.basic_ai_last_input = (inc_val, exp_val)
 
-    children_list = []
-    if child_count_str in ["1명", "2명", "3명", "4명 이상"] and getv("child_age", 0) > 0:
-        children_list.append(f"첫째 {int(getv('child_age'))}세")
-    if child_count_str in ["2명", "3명", "4명 이상"] and getv("child_age2", 0) > 0:
-        children_list.append(f"둘째 {int(getv('child_age2'))}세")
-    if child_count_str in ["3명", "4명 이상"] and getv("child_age3", 0) > 0:
-        children_list.append(f"셋째 {int(getv('child_age3'))}세")
-    if child_count_str == "4명 이상" and getv("child_age4", 0) > 0:
-        children_list.append(f"넷째 {int(getv('child_age4'))}세")
+        st.markdown("<div style='height: 10px;'></div>", unsafe_allow_html=True)
+        st.markdown("### AI 성찰 리포트")
+        st.markdown(f"""
+<div class='soft-card' style='white-space: pre-wrap; line-height: 1.7; word-break: keep-all; font-size: 16px;'>
+{st.session_state.get("basic_ai_comment", "")}
+</div>
+""", unsafe_allow_html=True)
 
-    if children_list:
-        family_desc["자녀"] = f"총 {len(children_list)}명 ({', '.join(children_list)})"
-    elif child_count_str == "없음":
-        family_desc["자녀"] = "자녀 없음"
+        st.markdown("<div style='height: 20px;'></div>", unsafe_allow_html=True)
 
-    if getv("father_age", 0) > 0:
-        family_desc["아버지"] = f"{int(getv('father_age'))}세"
-    if getv("mother_age", 0) > 0:
-        family_desc["어머니"] = f"{int(getv('mother_age'))}세"
-    if sib_names:
-        family_desc["형제자매"] = ", ".join(sib_names)
+        # 6.04.02 | [기본 모드] 고급모드 초대장 카드 & 심플한 [고급버튼]
+        st.markdown("""
+<div style="background: radial-gradient(circle at top, #1e293b 0%, #0b1120 100%); border: 1.5px solid #F59E0B; border-radius: 16px; padding: 24px 22px; text-align: center; box-shadow: 0 4px 18px rgba(245, 158, 11, 0.2); margin: 16px 0;">
+<div style="font-size: 34px; margin-bottom: 6px;">📜</div>
+<div style="font-size: 19px; font-weight: 850; color: #FDE68A; margin-bottom: 8px;">이게 다 일까요?</div>
+<div style="font-size: 14.5px; color: #E2E8F0; line-height: 1.7; word-break: keep-all; max-width: 650px; margin: 0 auto 18px auto;">
+만약 우리 집의 <b>진짜 순자산 궤적</b>과 <b>자녀 학자금·은퇴 타임라인</b>,<br>
+그리고 숨겨진 <b>파이프라인의 가능성</b>까지 시뮬레이션해보고 싶다면...
+</div>
+</div>
+""", unsafe_allow_html=True)
 
-    details = {
-        "이름/별칭": person_name,
-        "나이": person_age,
-        "성별": user_gender,
-        "나의 소득 형태": f"{st.session_state.get('job_form','직장인')}({q_self})",
-        "현업 경력 연차": career_st,
-        "배우자 소득 형태": f"{st.session_state.get('job_spouse_form','해당 없음')}({q_spouse})",
-        "파이프라인 보유 여부": "보유함 (사업가 B 또는 투자자 I 포함)" if has_pipeline else "미보유 (순수 근로/자영업 E·S)",
-        "월수입(정기)": f"{summary['regular_income']:,.0f}만 원",
-        "연간 상여금(비정기)": f"{summary['annual_bonus']:,.0f}만 원",
-        "연간 총소득": f"{summary['annual_total_income']:,.0f}만 원",
-        "월평균 지출": f"{summary['expenses']:,.0f}만 원",
-        "연간 순저축 여력": f"{summary['annual_net_surplus']:,.0f}만 원 (월환산 {summary['monthly_effective_surplus']:,.0f}만 원)",
-        "순자산": f"{summary['net_worth']/10000:,.2f}억 원 (자산 {summary['assets']:,.0f}만 원 - 부채 {summary['debts']:,.0f}만 원)",
-        "은퇴 후 예상 월연금": f"{getv('income_pension', 0):,.0f}만 원",
-        "은퇴 후 월 생활비": f"{getv('retirement_monthly_expenses', 200):,.0f}만 원",
-        "희망 은퇴 나이": f"{retire_age}세 (은퇴 후 겨울 약 {winter_years}년, {user_gender.split()[1]} {life_expectancy}세 수명 기준)",
-        "가족 구성": family_desc if family_desc else "기본 정보만 등록됨",
-        "가족 계획": {
-            "결혼": st.session_state.get("marriage_plan", "미정"),
-            "출산/자녀": st.session_state.get("child_plan", "미정"),
-            "주거": st.session_state.get("housing_plan", "미정")
+        if st.button("고급버튼", type="primary", use_container_width=True, key="btn_unlock_advanced"):
+            st.session_state["advanced_mode"] = True
+            st.session_state["_pending_nav"] = "우리집 가계부"
+            st.rerun()
+
+    else:
+        # [고급 모드] 모든 마이크로 모듈(6.04.01 ~ 6.04.07) 완전 탑재
+        adv_top_col1, adv_top_col2 = st.columns([4, 1])
+        with adv_top_col2:
+            if st.button("🌿 기본 모드로 전환", key="btn_lock_basic", use_container_width=True):
+                st.session_state["advanced_mode"] = False
+                st.session_state["_pending_nav"] = "우리집 가계부"
+                st.rerun()
+
+        sib_names = [f"{it['label']}({it.get('age',0)}세)" for it in st.session_state.get("sibling_items", []) if it.get("age", 0) > 0]
+        retire_age = st.session_state.get("retirement_age", 60)
+        user_gender = st.session_state.get("gender", "🙋‍♂️ 남성")
+        is_female = ("여성" in user_gender)
+        life_expectancy = 87 if is_female else 81
+        winter_years = max(0, life_expectancy - int(retire_age))
+        child_count_str = st.session_state.get("child_count", "입력 안 함")
+
+        q_self = active_quadrant(st.session_state.get("job_form", "직장인"))
+        q_spouse = active_quadrant(st.session_state.get("job_spouse_form", ""))
+        career_st = st.session_state.get("career_stage", "🌱 3년 이하 (초년생)")
+        has_pipeline = (q_self in ["B", "I"]) or (q_spouse in ["B", "I"])
+
+        family_desc = {}
+        if getv("spouse_age", 0) > 0: family_desc["배우자"] = f"{int(getv('spouse_age'))}세"
+        children_list = []
+        if child_count_str in ["1명", "2명", "3명", "4명 이상"] and getv("child_age", 0) > 0: children_list.append(f"첫째 {int(getv('child_age'))}세")
+        if child_count_str in ["2명", "3명", "4명 이상"] and getv("child_age2", 0) > 0: children_list.append(f"둘째 {int(getv('child_age2'))}세")
+        if child_count_str in ["3명", "4명 이상"] and getv("child_age3", 0) > 0: children_list.append(f"셋째 {int(getv('child_age3'))}세")
+        if child_count_str == "4명 이상" and getv("child_age4", 0) > 0: children_list.append(f"넷째 {int(getv('child_age4'))}세")
+        if children_list: family_desc["자녀"] = f"총 {len(children_list)}명 ({', '.join(children_list)})"
+        elif child_count_str == "없음": family_desc["자녀"] = "자녀 없음"
+        if getv("father_age", 0) > 0: family_desc["아버지"] = f"{int(getv('father_age'))}세"
+        if getv("mother_age", 0) > 0: family_desc["어머니"] = f"{int(getv('mother_age'))}세"
+
+        details = {
+            "이름/별칭": person_name, "나이": person_age, "성별": user_gender,
+            "나의 소득 형태": f"{st.session_state.get('job_form','직장인')}({q_self})",
+            "현업 경력 연차": career_st,
+            "배우자 소득 형태": f"{st.session_state.get('job_spouse_form','해당 없음')}({q_spouse})",
+            "파이프라인 보유 여부": "보유함 (사업가 B 또는 투자자 I 포함)" if has_pipeline else "미보유 (순수 근로/자영업 E·S)",
+            "월수입(정기)": f"{summary['regular_income']:,.0f}만 원", "연간 상여금(비정기)": f"{summary['annual_bonus']:,.0f}만 원",
+            "연간 총소득": f"{summary['annual_total_income']:,.0f}만 원", "월평균 지출": f"{summary['expenses']:,.0f}만 원",
+            "연간 순저축 여력": f"{summary['annual_net_surplus']:,.0f}만 원 (월환산 {summary['monthly_effective_surplus']:,.0f}만 원)",
+            "순자산": f"{summary['net_worth']/10000:,.2f}억 원 (자산 {summary['assets']:,.0f}만 원 - 부채 {summary['debts']:,.0f}만 원)",
+            "은퇴 후 예상 월연금": f"{getv('income_pension', 0):,.0f}만 원", "은퇴 후 월 생활비": f"{getv('retirement_monthly_expenses', 200):,.0f}만 원",
+            "희망 은퇴 나이": f"{retire_age}세 (은퇴 후 겨울 약 {winter_years}년, {user_gender.split()[1]} {life_expectancy}세 수명 기준)",
+            "가족 구성": family_desc if family_desc else "기본 정보만 등록됨",
+            "가족 계획": {"결혼": st.session_state.get("marriage_plan", "미정"), "출산/자녀": st.session_state.get("child_plan", "미정"), "주거": st.session_state.get("housing_plan", "미정")}
         }
-    }
 
-    if q_self in ["B", "I"]:
-        income_instruction = f"""[소득 개선 방향 - B/I 파이프라인 보유형 지침]
+        if q_self in ["B", "I"]:
+            income_instruction = f"""[소득 개선 방향 - B/I 파이프라인 보유형 지침]
 인터뷰이는 현재 사분면상 '{q_self}'(사업가/투자자)로서 이미 시스템과 자산에서 발생하는 파이프라인과 상당한 자산 기반({summary['net_worth']/10000:,.1f}억 원)을 확보하고 계십니다.
 절대 억지로 노동 의존형 물통이라고 규정하지 마시고, 구축하신 파이프라인과 자산의 성취를 있는 그대로 존중하세요.
 배우자의 노동 소득이 결합되어 있다면 가계 전체의 현금흐름 다변화 및 사업 시스템의 영속성을 점검하는 관점을 객관적으로 비춰주세요."""
-    else:
-        income_instruction = f"""[소득 개선 방향 - E/S 근로/자영업 지침]
+        else:
+            income_instruction = f"""[소득 개선 방향 - E/S 근로/자영업 지침]
 현재 부부의 소득은 일손을 멈추면 수입이 중단되는 노동 의존형(E/S) 성격임을 정중하게 짚으세요.
 본업을 충실히 유지하면서, 시간과 노동력에만 매이지 않고 시스템과 자산에서 흘러나오는 '파이프라인'을 장기적으로 준비해야 하는 이유를 객관적인 관점에서 정중히 제안하세요."""
 
-    # 6.04.02 | ⚙️ AI 프롬프트 접이식 설정 (기본값 보통맛 & 기본 접힘 & 지시문 조립 완결)
-    current_taste_val = st.session_state.get("pills_ai_taste", "🧭 보통맛 (정직한 거울)")
-    short_taste_tag = "☕ 순한맛" if "순한맛" in current_taste_val else ("🌶️ 매운맛" if "매운맛" in current_taste_val else "🧭 보통맛")
-    
-    expander_title = f"⚙️ AI 프롬프트 설정 [{short_taste_tag}]"
+        current_taste_val = st.session_state.get("pills_ai_taste", "🧭 보통맛 (정직한 거울)")
+        short_taste_tag = "☕ 순한맛" if "순한맛" in current_taste_val else ("🌶️ 매운맛" if "매운맛" in current_taste_val else "🧭 보통맛")
+        expander_title = f"⚙️ AI 프롬프트 설정 [{short_taste_tag}]"
 
-    # [핵심] 기본적으로 항상 얌전하게 접힌 상태(expanded=False) 유지
-    with st.expander(expander_title, expanded=False):
-        st.markdown("<div style='font-size:16px; font-weight:800; color:#F8FAFC; margin-bottom:6px;'>1. 분석 강도(맛) 선택</div>", unsafe_allow_html=True)
-        taste_mode = st.pills(
-            "분석 강도 선택",
-            ["☕ 순한맛 (위로/은유)", "🧭 보통맛 (정직한 거울)", "🌶️ 매운맛 (뼈아픈 직언)"],
-            default="🧭 보통맛 (정직한 거울)",
-            key="pills_ai_taste",
-            label_visibility="collapsed"
-        )
+        with st.expander(expander_title, expanded=False):
+            st.markdown("<div style='font-size:16px; font-weight:800; color:#F8FAFC; margin-bottom:6px;'>1. 분석 강도(맛) 선택</div>", unsafe_allow_html=True)
+            taste_mode = st.pills("분석 강도 선택", ["☕ 순한맛 (위로/은유)", "🧭 보통맛 (정직한 거울)", "🌶️ 매운맛 (뼈아픈 직언)"], default="🧭 보통맛 (정직한 거울)", key="pills_ai_taste", label_visibility="collapsed")
+            st.markdown("<div style='height:12px;'></div>", unsafe_allow_html=True)
+            st.markdown("<div style='font-size:16px; font-weight:800; color:#F8FAFC; margin-bottom:6px;'>2. AI 핵심 원칙 (선택 및 제외)</div>", unsafe_allow_html=True)
+            col_r1, col_r2 = st.columns(2)
+            with col_r1:
+                chk_1 = st.checkbox("평가/가르침 배제, '객관적 거울' 유지", value=True, key="chk_r1")
+                chk_2 = st.checkbox("훈계, 잔소리, 공포 유발, 결론 강요 금지", value=True, key="chk_r2")
+                chk_3 = st.checkbox("데이터에 없는 사실(결혼/주거 등) 임의 추정 금지", value=True, key="chk_r3")
+            with col_r2:
+                chk_4 = st.checkbox("계산된 예상값과 실현된 사실 엄격 구분", value=True, key="chk_r4")
+                chk_5 = st.checkbox("순자산 0원이나 초년생 단계를 실패로 규정 금지", value=True, key="chk_r5")
+                chk_6 = st.checkbox("사분면/경력만으로 소득 성격이나 안정성 단정 금지", value=True, key="chk_r6")
+            st.markdown("<div style='height:12px;'></div>", unsafe_allow_html=True)
+            st.markdown("<div style='font-size:16px; font-weight:800; color:#F8FAFC; margin-bottom:6px;'>3. ✍️ 내가 직접 추가할 요청 사항 (선택)</div>", unsafe_allow_html=True)
+            user_custom_instruction = st.text_area("추가 요청사항", placeholder="예: 30대 초반 주거 독립과 차량 유지비 관점도 함께 짚어줘", height=70, key="inp_user_custom_prompt", label_visibility="collapsed")
 
-        st.markdown("<div style='height:12px;'></div>", unsafe_allow_html=True)
-        st.markdown("<div style='font-size:16px; font-weight:800; color:#F8FAFC; margin-bottom:6px;'>2. AI 핵심 원칙 (선택 및 제외)</div>", unsafe_allow_html=True)
-        
-        col_r1, col_r2 = st.columns(2)
-        with col_r1:
-            chk_1 = st.checkbox("평가/가르침 배제, '객관적 거울' 유지", value=True, key="chk_r1")
-            chk_2 = st.checkbox("훈계, 잔소리, 공포 유발, 결론 강요 금지", value=True, key="chk_r2")
-            chk_3 = st.checkbox("데이터에 없는 사실(결혼/주거 등) 임의 추정 금지", value=True, key="chk_r3")
-        with col_r2:
-            chk_4 = st.checkbox("계산된 예상값과 실현된 사실 엄격 구분", value=True, key="chk_r4")
-            chk_5 = st.checkbox("순자산 0원이나 초년생 단계를 실패로 규정 금지", value=True, key="chk_r5")
-            chk_6 = st.checkbox("사분면/경력만으로 소득 성격이나 안정성 단정 금지", value=True, key="chk_r6")
-
-        st.markdown("<div style='height:12px;'></div>", unsafe_allow_html=True)
-        st.markdown("<div style='font-size:16px; font-weight:800; color:#F8FAFC; margin-bottom:6px;'>3. ✍️ 내가 직접 추가할 요청 사항 (선택)</div>", unsafe_allow_html=True)
-        user_custom_instruction = st.text_area(
-            "추가 요청사항",
-            placeholder="예: 30대 초반 주거 독립과 차량 유지비 관점도 함께 짚어줘 (비워두셔도 좋습니다)",
-            height=70,
-            key="inp_user_custom_prompt",
-            label_visibility="collapsed"
-        )
-
-    # 선택된 맛(강도)에 따른 지시문 생성
-    if "순한맛" in taste_mode:
-        taste_directive = """[분석 톤앤매너: ☕ 순한맛]
+        if "순한맛" in taste_mode:
+            taste_directive = """[분석 톤앤매너: ☕ 순한맛]
 - 직접적이거나 뼈아픈 표현을 지양하고, 은유적이고 다정하며 온기 있는 어조를 유지하세요.
 - 조상의 지혜인 "산 입에 거미줄 치랴"의 넉넉한 여유를 담고, 불안감을 자극하지 마세요.
 - 지금까지 성실하게 삶을 꾸려온 노고에 대한 깊은 인정과 위로를 중심으로 부드럽게 서술하세요."""
-    elif "매운맛" in taste_mode:
-        taste_directive = """[분석 톤앤매너: 🌶️ 매운맛]
+        elif "매운맛" in taste_mode:
+            taste_directive = """[분석 톤앤매너: 🌶️ 매운맛]
 - 겉치레 립서비스와 안일한 위로를 일체 배제하고, 냉정하고 서늘할 정도로 팩트를 직설적으로 서술하세요.
 - 숫자가 가리키는 결손과 한계를 에둘러 말하지 말고 명확히 짚어, 환상을 깨고 현실을 직시할 수 있도록 뼈아프게 직언하세요."""
-    else:
-        taste_directive = """[분석 톤앤매너: 🧭 보통맛]
+        else:
+            taste_directive = """[분석 톤앤매너: 🧭 보통맛]
 - 힘을 빼고, 정직하되, 전문가답고, 정중한 태도를 견지하세요.
 - 과도한 낙관론과 과장된 위협을 모두 배제하고, 숫자를 있는 그대로 차분히 비춰주는 객관적 거울의 태도를 유지하세요."""
 
-    # 체크된 원칙들 동적 리스트 조립
-    active_principles = []
-    if chk_1: active_principles.append("당신은 인터뷰이를 평가하거나 가르치지 않는 '정직하고 따뜻한 객관적 거울'입니다.")
-    if chk_2: active_principles.append("훈계, 잔소리, 공포를 유발하는 표현, 특정 행동이나 결론의 강요를 금지합니다.")
-    active_principles.append("자기소개, 인사말, 마크다운 가로선(---)을 쓰지 마세요.")
-    active_principles.append(f"[호칭 규칙]: [소득 개선 방향] 첫머리에서만 '{person_name}님,'을 사용할 수 있습니다. [은퇴 안정성]에서는 이름을 다시 부르지 마세요.")
-    active_principles.append(f"경력 단계({career_st}), 순자산 및 가족 생애 정보는 입력 데이터가 실제로 뒷받침하는 범위에서만 활용하세요.")
-    if chk_4: active_principles.append("입력된 사실, 수치로 계산할 수 있는 결과, 아직 확인되지 않은 가능성을 구분하세요. 계산된 예상값을 실제로 실현된 사실처럼 표현하지 마세요.")
-    if chk_3: active_principles.append("데이터에 없거나 '미정', '미등록', 공란으로 표시된 정보는 임의로 추정하지 마세요. 결혼, 출산, 주택 구입, 부모 지원 등의 계획을 예정된 사실처럼 서술하지 마세요.")
-    if chk_6: active_principles.append("사분면이나 경력 단계만으로 실제 소득의 성격, 파이프라인 보유 여부 또는 재무적 안정성을 단정하지 마세요.")
-    if chk_5: active_principles.append("순자산이 적거나 0에 가깝더라도 이를 실패로 규정하지 마세요. 소득, 지출, 저축 여력 등 다른 지표와 함께 해석하세요.")
-    active_principles.append("입력된 자료만으로 판단할 수 없는 사항은 단정하지 말고, 필요한 경우 확인이 필요하다고 짧게 밝혀주세요.")
+        active_principles = []
+        if chk_1: active_principles.append("당신은 인터뷰이를 평가하거나 가르치지 않는 '정직하고 따뜻한 객관적 거울'입니다.")
+        if chk_2: active_principles.append("훈계, 잔소리, 공포를 유발하는 표현, 특정 행동이나 결론의 강요를 금지합니다.")
+        active_principles.append("자기소개, 인사말, 마크다운 가로선(---)을 쓰지 마세요.")
+        active_principles.append(f"[호칭 규칙]: [소득 개선 방향] 첫머리에서만 '{person_name}님,'을 사용할 수 있습니다. [은퇴 안정성]에서는 이름을 다시 부르지 마세요.")
+        active_principles.append(f"경력 단계({career_st}), 순자산 및 가족 생애 정보는 입력 데이터가 실제로 뒷받침하는 범위에서만 활용하세요.")
+        if chk_4: active_principles.append("입력된 사실, 수치로 계산할 수 있는 결과, 아직 확인되지 않은 가능성을 구분하세요. 계산된 예상값을 실제로 실현된 사실처럼 표현하지 마세요.")
+        if chk_3: active_principles.append("데이터에 없거나 '미정', '미등록', 공란으로 표시된 정보는 임의로 추정하지 마세요. 결혼, 출산, 주택 구입, 부모 지원 등의 계획을 예정된 사실처럼 서술하지 마세요.")
+        if chk_6: active_principles.append("사분면이나 경력 단계만으로 실제 소득의 성격, 파이프라인 보유 여부 또는 재무적 안정성을 단정하지 마세요.")
+        if chk_5: active_principles.append("순자산이 적거나 0에 가깝더라도 이를 실패로 규정하지 마세요. 소득, 지출, 저축 여력 등 다른 지표와 함께 해석하세요.")
+        active_principles.append("입력된 자료만으로 판단할 수 없는 사항은 단정하지 말고, 필요한 경우 확인이 필요하다고 짧게 밝혀주세요.")
 
-    principles_text = "\n".join([f"{i+1}. {p}" for i, p in enumerate(active_principles)])
-    custom_section = f"\n[사용자 맞춤 추가 요청사항]\n{user_custom_instruction.strip()}" if user_custom_instruction.strip() else ""
+        principles_text = "\n".join([f"{i+1}. {p}" for i, p in enumerate(active_principles)])
+        custom_section = f"\n[사용자 맞춤 추가 요청사항]\n{user_custom_instruction.strip()}" if user_custom_instruction.strip() else ""
 
-    # 6.04.03 | 프롬프트 조립 및 Gemini API 호출 실행부
-    full_prompt_text = f"""[절대 엄수 원칙]
+        full_prompt_text = f"""[절대 엄수 원칙]
 {principles_text}
 {taste_directive}
 {custom_section}
@@ -2025,77 +2034,70 @@ else:
 은퇴 후 월 희망 생활비와 예상 월연금의 차이를 설명하되, 입력된 값의 성격과 산출 근거가 불분명하면 안정성이 확보되었다고 단정하지 마세요. 두 금액의 단순 차액과 실제 은퇴 안정성은 구분하세요.
 은퇴 후 약 {winter_years}년은 통계청 {user_gender.split()[1]} 기대수명({life_expectancy}세)에 기초한 계산상 가정으로 취급하세요. 현재 경력 단계와 순자산을 연결해 설명하되, 실제 현금 보유액이나 유동성 자료가 없다면 유동성 준비 상태를 평가하지 마세요. 결혼, 자녀, 주거 계획 등 확인되지 않은 미래 사건을 전제로 삼지 말고, 정중하고 담백하게 서술하세요."""
 
-    if st.button("⚡ AI 리포트 생성", type="primary", use_container_width=True):
-        st.session_state.ai_summary = summary
-        st.session_state.ai_comment = None
-        
-        with st.spinner(f"AI가 {taste_mode.split()[0]} 모드로 지표를 분석 중입니다 (약 15~20초 소요)..."):
-            comment, error = call_gemini_text(full_prompt_text)
-            st.session_state.ai_comment = comment if comment else error
-        st.rerun()
+        if st.button("⚡ AI 리포트 생성", type="primary", use_container_width=True):
+            st.session_state.ai_summary = summary
+            st.session_state.ai_comment = None
+            with st.spinner(f"AI가 {taste_mode.split()[0]} 모드로 지표를 분석 중입니다 (약 15~20초 소요)..."):
+                comment, error = call_gemini_text(full_prompt_text)
+                st.session_state.ai_comment = comment if comment else error
+            st.rerun()
 
-    # 6.04.04 | AI 성찰 리포트 렌더링 (소득 개선 선행, 은퇴 안정성 후속)
-    if st.session_state.get("ai_summary") and st.session_state.get("ai_comment"):
-        s = st.session_state.ai_summary
-        st.markdown("### 재무제표 요약")
-        cols = st.columns(4)
-        cols[0].metric("월 정기수입", money(s["regular_income"]))
-        cols[1].metric("월 현금지출", money(s["expenses"]))
-        cols[2].metric("연간 순저축", money(s["annual_net_surplus"]), f"월환산 {money(s['monthly_effective_surplus'])}")
-        cols[3].metric("순자산", fmt_eok(s["net_worth"]))
+        if st.session_state.get("ai_summary") and st.session_state.get("ai_comment"):
+            s = st.session_state.ai_summary
+            st.markdown("### 재무제표 요약")
+            cols = st.columns(4)
+            cols[0].metric("월 정기수입", money(s["regular_income"]))
+            cols[1].metric("월 현금지출", money(s["expenses"]))
+            cols[2].metric("연간 순저축", money(s["annual_net_surplus"]), f"월환산 {money(s['monthly_effective_surplus'])}")
+            cols[3].metric("순자산", fmt_eok(s["net_worth"]))
 
-        st.markdown("### AI (Gemini) 리포트")
-        comment_text = str(st.session_state.get("ai_comment", ""))
-        
-        cleaned_text = re.sub(r'-{3,}', '', comment_text)
-        cleaned_text = re.sub(r'\n{3,}', '\n\n', cleaned_text.strip())
-        normalized = cleaned_text.replace("\r\n", "\n").replace("\r", "\n")
-        
-        match_retire = re.search(r"(?im)^\s*(?:#{1,6}\s*)?(?:\*\*|__)?\s*(?:\[\s*)?은퇴\s*안정성\s*(?:\])?\s*(?:\*\*|__)?\s*:?\s*$", normalized)
-        if match_retire:
-            income_comment = normalized[:match_retire.start()]
-            retirement_comment = normalized[match_retire.end():]
-        else:
-            income_comment, retirement_comment = normalized, ""
+            st.markdown("### AI (Gemini) 리포트")
+            comment_text = str(st.session_state.get("ai_comment", ""))
+            cleaned_text = re.sub(r'-{3,}', '', comment_text)
+            cleaned_text = re.sub(r'\n{3,}', '\n\n', cleaned_text.strip())
+            normalized = cleaned_text.replace("\r\n", "\n").replace("\r", "\n")
+            match_retire = re.search(r"(?im)^\s*(?:#{1,6}\s*)?(?:\*\*|__)?\s*(?:\[\s*)?은퇴\s*안정성\s*(?:\])?\s*(?:\*\*|__)?\s*:?\s*$", normalized)
+            if match_retire:
+                income_comment = normalized[:match_retire.start()]
+                retirement_comment = normalized[match_retire.end():]
+            else:
+                income_comment, retirement_comment = normalized, ""
 
-        income_comment = re.sub(r"(?i)\[\s*소득\s*개선\s*방향\s*\]", "", income_comment).strip()
-        retirement_comment = re.sub(r"(?i)\[\s*은퇴\s*안정성\s*\]", "", retirement_comment).strip()
+            income_comment = re.sub(r"(?i)\[\s*소득\s*개선\s*방향\s*\]", "", income_comment).strip()
+            retirement_comment = re.sub(r"(?i)\[\s*은퇴\s*안정성\s*\]", "", retirement_comment).strip()
+            noise_pattern = r"(?i)^.*?살펴보겠습니다[\.\!\?\s\n]*"
+            income_comment = re.sub(noise_pattern, "", income_comment).strip()
+            retirement_comment = re.sub(noise_pattern, "", retirement_comment).strip()
+            retirement_comment = re.sub(r"^(?:.*?님[\,\s]*)+", "", retirement_comment).strip()
 
-        noise_pattern = r"(?i)^.*?살펴보겠습니다[\.\!\?\s\n]*"
-        income_comment = re.sub(noise_pattern, "", income_comment).strip()
-        retirement_comment = re.sub(noise_pattern, "", retirement_comment).strip()
+            def format_readable_paragraph(txt):
+                sentences = re.split(r'(?<=[.!?])\s+', txt.strip())
+                if len(sentences) <= 2: return txt.strip()
+                grouped = [" ".join(sentences[i:i+2]) for i in range(0, len(sentences), 2)]
+                return "\n\n".join(grouped)
 
-        retirement_comment = re.sub(r"^(?:.*?님[\,\s]*)+", "", retirement_comment).strip()
+            formatted_income = format_readable_paragraph(income_comment)
+            formatted_retire = format_readable_paragraph(retirement_comment)
 
-        def format_readable_paragraph(txt):
-            sentences = re.split(r'(?<=[.!?])\s+', txt.strip())
-            if len(sentences) <= 2: return txt.strip()
-            grouped = [" ".join(sentences[i:i+2]) for i in range(0, len(sentences), 2)]
-            return "\n\n".join(grouped)
-
-        formatted_income = format_readable_paragraph(income_comment)
-        formatted_retire = format_readable_paragraph(retirement_comment)
-
-        st.markdown("#### 소득 개선 관점 (파이프라인)")
-        st.markdown(f"""
+            st.markdown("#### 소득 개선 관점 (파이프라인)")
+            st.markdown(f"""
 <div class='soft-card' style='white-space: pre-wrap; line-height: 1.7; word-break: keep-all;'>
 {formatted_income or '분석 결과를 정리 중입니다. 다시 시도해 주세요.'}
 </div>
 """, unsafe_allow_html=True)
 
-        st.markdown("#### 은퇴 안정성 관점")
-        st.markdown(f"""
+            st.markdown("#### 은퇴 안정성 관점")
+            st.markdown(f"""
 <div class='soft-card' style='white-space: pre-wrap; line-height: 1.7; word-break: keep-all;'>
 {formatted_retire}
 </div>
 """, unsafe_allow_html=True)
 
-        st.caption("※ AI의 코멘트는 참고용 거울이며, 삶의 가장 중요한 결정은 온전히 당신의 것입니다.")
+            st.caption("※ AI의 코멘트는 참고용 거울이며, 삶의 가장 중요한 결정은 온전히 당신의 것입니다.")
 
-        st.markdown("<div style='height: 20px;'></div>", unsafe_allow_html=True)
-
-        # 6.04.05 | 💬 카카오톡 전송용 순수 텍스트 리포트 (옐로우 코드블록)
-        kakao_clean_report = f"""[나침반 🧭 현실점검 & 재무 진단 리포트]
+            st.markdown("<div style='height: 20px;'></div>", unsafe_allow_html=True)
+            sync_code = export_diagnosis_code()
+            kakao_clean_report = f"""[나침반 🧭 현실점검 & 재무 진단 리포트]
 • 진단자: {person_name} ({person_age}세, {career_st})
 • 소득 형태: {st.session_state.get('job_form','직장인')} (배우자: {st.session_state.get('job_spouse_form','해당 없음')})
 • 분석 모드: {taste_mode}
@@ -2111,97 +2113,24 @@ else:
 
 [은퇴 안정성 성찰]
 {formatted_retire}"""
+            st.markdown("### 💬 카카오톡 전송용 리포트")
+            st.caption("※ 아래 리포트를 복사하여 카카오톡 대화방에 바로 붙여넣기(Ctrl+V)하세요.")
+            st.code(kakao_clean_report, language="markdown")
 
-        st.markdown("### 💬 카카오톡 전송용 리포트")
-        st.caption("※ 아래 리포트를 복사하여 카카오톡 대화방에 바로 붙여넣기(Ctrl+V)하세요.")
-        st.code(kakao_clean_report, language="markdown")
-
-        # 6.04.06 | 🔑 동기화 복원코드 독립 iframe 100% 클립보드 복사 버튼
-        sync_code = export_diagnosis_code()
-
-        st.markdown("<div style='height: 4px;'></div>", unsafe_allow_html=True)
-        copy_btn_html = f"""
-<!DOCTYPE html>
-<html>
-<head>
-<meta charset="utf-8">
-<style>
-body {{
-    margin: 0;
-    padding: 0;
-    background: transparent;
-    overflow: hidden;
-}}
-#copyBtn {{
-    background: #1E293B;
-    border: 1.5px solid #38BDF8;
-    color: #38BDF8;
-    padding: 10px 18px;
-    border-radius: 8px;
-    font-weight: 800;
-    font-size: 15px;
-    cursor: pointer;
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-    transition: background 0.15s ease;
-}}
-#copyBtn:hover {{
-    background: #334155;
-    color: #FFFFFF;
-}}
-</style>
-</head>
-<body>
-<button id="copyBtn">
-    <span>🔑</span><span>동기화 복원코드 복사</span>
-</button>
-<script>
-document.getElementById('copyBtn').addEventListener('click', function() {{
-    var code = '{sync_code}';
-    var ta = document.createElement('textarea');
-    ta.value = code;
-    ta.style.position = 'fixed';
-    ta.style.left = '-999999px';
-    ta.style.top = '-999999px';
-    document.body.appendChild(ta);
-    ta.focus();
-    ta.select();
-    var success = false;
-    try {{
-        success = document.execCommand('copy');
-    }} catch (e) {{
-        success = false;
-    }}
-    document.body.removeChild(ta);
-    
-    if (!success && navigator.clipboard && window.isSecureContext) {{
-        navigator.clipboard.writeText(code).then(function() {{
-            alert('동기화 복원코드가 복사되었습니다!\\n인터뷰어에게 카톡으로 붙여넣기(Ctrl+V)해 주세요.');
-        }}).catch(function() {{
-            prompt('복원코드를 직접 복사(Ctrl+C)하세요:', code);
-        }});
-    }} else if (success) {{
-        alert('동기화 복원코드가 복사되었습니다!\\n인터뷰어에게 카톡으로 붙여넣기(Ctrl+V)해 주세요.');
-    }} else {{
-        prompt('복원코드를 직접 복사(Ctrl+C)하세요:', code);
-    }}
-}});
-</script>
-</body>
-</html>
+            st.markdown("<div style='height: 4px;'></div>", unsafe_allow_html=True)
+            copy_btn_html = f"""
+<!DOCTYPE html><html><head><meta charset="utf-8"><style>body {{ margin: 0; padding: 0; background: transparent; overflow: hidden; }} #copyBtn {{ background: #1E293B; border: 1.5px solid #38BDF8; color: #38BDF8; padding: 10px 18px; border-radius: 8px; font-weight: 800; font-size: 15px; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; transition: background 0.15s ease; }} #copyBtn:hover {{ background: #334155; color: #FFFFFF; }}</style></head>
+<body><button id="copyBtn"><span>🔑</span><span>동기화 복원코드 복사</span></button><script>document.getElementById('copyBtn').addEventListener('click', function() {{ var code = '{sync_code}'; var ta = document.createElement('textarea'); ta.value = code; ta.style.position = 'fixed'; ta.style.left = '-999999px'; ta.style.top = '-999999px'; document.body.appendChild(ta); ta.focus(); ta.select(); var success = false; try {{ success = document.execCommand('copy'); }} catch (e) {{ success = false; }} document.body.removeChild(ta); if (!success && navigator.clipboard && window.isSecureContext) {{ navigator.clipboard.writeText(code).then(function() {{ alert('동기화 복원코드가 복사되었습니다!\\n인터뷰어에게 카톡으로 붙여넣기(Ctrl+V)해 주세요.'); }}).catch(function() {{ prompt('복원코드를 직접 복사(Ctrl+C)하세요:', code); }}); }} else if (success) {{ alert('동기화 복원코드가 복사되었습니다!\\n인터뷰어에게 카톡으로 붙여넣기(Ctrl+V)해 주세요.'); }} else {{ prompt('복원코드를 직접 복사(Ctrl+C)하세요:', code); }} }});</script></body></html>
 """
-        st.components.v1.html(copy_btn_html, height=54)
+            st.components.v1.html(copy_btn_html, height=54)
 
-    else:
-        st.info("‘AI 리포트 생성’ 버튼을 누르면 Gemini 초고속 엔진이 삶과 재무의 성찰 리포트를 생성합니다.")
+        else:
+            st.info("‘AI 리포트 생성’ 버튼을 누르면 Gemini 초고속 엔진이 삶과 재무의 성찰 리포트를 생성합니다.")
 
-    # 6.04.07 | 📋 AI 질의용 재무제표 expander
-    st.markdown("<div style='height: 20px;'></div>", unsafe_allow_html=True)
-    with st.expander("📋 AI 질의용 재무제표"):
-        st.markdown("<div style='font-size: 13.5px; color: #94A3B8; margin-bottom: 8px;'>프롬프트 지시문 없이, 내가 입력한 재무제표와 가족 생애 통계만 정리된 텍스트입니다. ChatGPT 등에 복사해서 자유롭게 추가 상담을 진행할 수 있습니다.</div>", unsafe_allow_html=True)
-        raw_summary_report = f"""### 나침반 재무제표 및 생애주기 요약 데이터
+        st.markdown("<div style='height: 20px;'></div>", unsafe_allow_html=True)
+        with st.expander("📋 AI 질의용 재무제표"):
+            st.markdown("<div style='font-size: 13.5px; color: #94A3B8; margin-bottom: 8px;'>프롬프트 지시문 없이, 내가 입력한 재무제표와 가족 생애 통계만 정리된 텍스트입니다. ChatGPT 등에 복사해서 자유롭게 추가 상담을 진행할 수 있습니다.</div>", unsafe_allow_html=True)
+            raw_summary_report = f"""### 나침반 재무제표 및 생애주기 요약 데이터
 - 성명(별칭): {person_name} (만 {person_age}세, {user_gender}, {career_st})
 - 가구 소득 형태: 나({st.session_state.get('job_form','직장인')}) + 배우자({st.session_state.get('job_spouse_form','해당 없음')})
 - 월 정기 수입: {summary['regular_income']:,.0f}만 원
@@ -2216,4 +2145,4 @@ document.getElementById('copyBtn').addEventListener('click', function() {{
 - 은퇴 후 예상 월연금: {getv('income_pension', 0):,.0f}만 원
 - 은퇴 후 월 희망 생활비: {getv('retirement_monthly_expenses', 200):,.0f}만 원
 - 가족 구성: {', '.join([f'{k}: {v}' for k, v in family_desc.items()]) if family_desc else '미등록'}"""
-        st.code(raw_summary_report, language="markdown")
+            st.code(raw_summary_report, language="markdown")
