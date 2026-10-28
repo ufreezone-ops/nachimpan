@@ -1960,6 +1960,16 @@ elif selected_page == "인생의 사계절":
             hovertemplate="나이: %{x}세<br>연 지출: <b>%{y:,.0f}만 원</b><extra></extra>"
         ), row=1, col=1)
 
+
+
+        # 디버깅용 확인 코드 (이 코드를 코드 중간에 넣어보세요)
+        st.write(f"디버그 -> 현재나이(cur_age): {locals().get('cur_age', '정의안됨')}")
+        st.write(f"디버그 -> 수집된 자녀나이 리스트(existing_child_ages): {existing_child_ages}")
+        st.write(f"디버그 -> 계산된 육아시작/끝: {childcare_start} ~ {childcare_end}")
+
+
+
+        
         # [Row 1] 현재 나이 기준선
         fig_my_nta.add_vline(x=cur_age, line_dash="solid", line_color="#38BDF8", line_width=2.0)
         fig_my_nta.add_annotation(
