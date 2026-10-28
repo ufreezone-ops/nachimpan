@@ -1770,7 +1770,6 @@ elif selected_page == "인생의 사계절":
         # 2) 👶 출산·육아 집중기 구간 산정 (과거·현재·미래 전 생애 기준 역산)
         childcare_windows = []
         if existing_child_ages:
-            # 낳은 자녀들의 0~6세 영유아기 부모 나이
             for ca in existing_child_ages:
                 birth_p_age = cur_age - ca
                 childcare_windows.append((max(20, birth_p_age), min(85, birth_p_age + 6)))
@@ -1800,16 +1799,23 @@ elif selected_page == "인생의 사계절":
         my_income_curve = []
         my_expense_curve = []
 
+        # 은퇴자(D사례 등) 과거 전성기 소득 보정
+        is_already_retired = (cur_age >= retire_age) or (cur_annual_income < 1200 and cur_age >= 60)
+        if is_already_retired:
+            base_career_income = max(cur_annual_income, ret_annual_pension * 1.8, cur_annual_expense * 1.5, 5200.0)
+        else:
+            base_career_income = cur_annual_income
+
         for a in ages_sim:
             # --- [소득 곡선 계산] ---
             if a < retire_age:
                 growth_rate = 0.022 if "초년생" in career_st else 0.015
                 if a <= 46:
-                    w = 1.0 + (growth_rate * (a - cur_age))
+                    dist_46 = 46 - a
+                    w = 1.0 - (growth_rate * dist_46)
                 else:
-                    peak_w = 1.0 + (growth_rate * (46 - cur_age))
-                    w = max(0.65, peak_w - (0.012 * (a - 46)))
-                w = max(0.20, w)
+                    w = 1.0 - (0.012 * (a - 46))
+                w = max(0.30, w)
 
                 if childcare_start and childcare_end and (childcare_start <= a <= childcare_end):
                     mid_c = (childcare_start + childcare_end) / 2.0
@@ -1817,9 +1823,9 @@ elif selected_page == "인생의 사계절":
                     dip_factor = 0.70 + (0.035 * (dist ** 2))
                     w *= min(0.95, dip_factor)
 
-                inc_val = cur_annual_income * w
+                inc_val = base_career_income * w
             else:
-                inc_val = ret_annual_pension
+                inc_val = ret_annual_pension if ret_annual_pension > 0 else (cur_annual_income if is_already_retired else 0)
             my_income_curve.append(inc_val)
 
             # --- [지출 곡선 계산] ---
@@ -1835,7 +1841,7 @@ elif selected_page == "인생의 사계절":
                 if a < 30 and cur_age >= 30:
                     exp_factor *= 0.75
 
-                base_exp = cur_annual_expense * exp_factor
+                base_exp = (cur_annual_expense if not is_already_retired else (ret_annual_expense * 1.25)) * exp_factor
                 college_kids_count = sum(1 for (cs, ce) in college_windows if cs <= a <= ce)
                 extra_college_exp = college_kids_count * 1500.0
 
@@ -1868,9 +1874,7 @@ elif selected_page == "인생의 사계절":
 
         # 6) 상단 차트 고도 레벨 산정
         y_max = max(max(my_income_curve), max(my_expense_curve)) if my_income_curve else 6000
-        y_top = y_max * 1.18
-        alt_level_5 = y_top * 0.90
-        alt_level_4 = y_top * 0.68
+        y_top = y_max * 1.16
         alt_level_2 = y_top * 0.32
         alt_level_1 = y_top * 0.10
 
@@ -1882,46 +1886,31 @@ elif selected_page == "인생의 사계절":
             row_heights=[0.58, 0.42]
         )
 
-        # [배경 띠 1] 👶 출산·육아 집중기 (전 생애 표시)
+        # [배경 띠 1] 👶 출산·육아 집중기 (라벨 내장으로 실종 방지)
         if childcare_start and childcare_end and (childcare_end > childcare_start):
             fig_my_nta.add_vrect(
                 x0=childcare_start, x1=childcare_end,
-                fillcolor="rgba(249, 115, 22, 0.28)", layer="below", line_width=0
-            )
-            fig_my_nta.add_annotation(
-                x=(childcare_start + childcare_end) / 2.0, y=alt_level_5,
-                text="👶 출산·육아", showarrow=False,
-                font=dict(size=11, color="#FDBA74", weight="bold"),
-                bgcolor="rgba(15, 23, 42, 0.8)", bordercolor="#F97316", borderpad=2,
-                row=1, col=1
+                fillcolor="rgba(249, 115, 22, 0.28)", layer="below", line_width=0,
+                annotation_text="👶 출산·육아", annotation_position="top left",
+                annotation=dict(font=dict(size=11, color="#FDBA74", weight="bold"))
             )
 
-        # [배경 띠 2] 🎓 자녀 대학교 학자금 집중기 (전 생애 표시)
+        # [배경 띠 2] 🎓 자녀 대학교 학자금 집중기 (라벨 내장)
         if college_band_start and college_band_end and (college_band_end > college_band_start):
             fig_my_nta.add_vrect(
                 x0=college_band_start, x1=college_band_end,
-                fillcolor="rgba(168, 85, 247, 0.28)", layer="below", line_width=0
-            )
-            fig_my_nta.add_annotation(
-                x=(college_band_start + college_band_end) / 2.0, y=alt_level_4,
-                text="🎓 자녀 대학 피크", showarrow=False,
-                font=dict(size=11, color="#E9D5FF", weight="bold"),
-                bgcolor="rgba(15, 23, 42, 0.8)", bordercolor="#A855F7", borderpad=2,
-                row=1, col=1
+                fillcolor="rgba(168, 85, 247, 0.28)", layer="below", line_width=0,
+                annotation_text="🎓 자녀 대학 피크", annotation_position="top left",
+                annotation=dict(font=dict(size=11, color="#E9D5FF", weight="bold"))
             )
 
-        # [배경 띠 3] ❄️ 은퇴 후 겨울
+        # [배경 띠 3] ❄️ 은퇴 후 겨울 (라벨 내장)
         if retire_age < 85:
             fig_my_nta.add_vrect(
                 x0=retire_age, x1=85,
-                fillcolor="rgba(56, 189, 248, 0.22)", layer="below", line_width=0
-            )
-            fig_my_nta.add_annotation(
-                x=(retire_age + 85) / 2.0, y=alt_level_5,
-                text="❄️ 은퇴 후 겨울", showarrow=False,
-                font=dict(size=11, color="#BAE6FD", weight="bold"),
-                bgcolor="rgba(15, 23, 42, 0.8)", bordercolor="#38BDF8", borderpad=2,
-                row=1, col=1
+                fillcolor="rgba(56, 189, 248, 0.22)", layer="below", line_width=0,
+                annotation_text="❄️ 은퇴 후 겨울", annotation_position="top left",
+                annotation=dict(font=dict(size=11, color="#BAE6FD", weight="bold"))
             )
 
         # [Row 1] 소득 & 지출 (3대 심플 범례)
