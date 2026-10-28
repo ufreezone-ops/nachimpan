@@ -2136,7 +2136,7 @@ elif selected_page == "인생의 사계절":
 
         st.markdown("""
 <div style="background: rgba(30, 41, 59, 0.55); border-left: 4px solid #F59E0B; border-radius: 6px; padding: 12px 18px; margin: 12px 0 16px 0;">
-<div style="font-size: 15px; font-weight: 800; color: #FDE68A; margin-bottom: 6px;">👩‍👧 여성 출산·육아 경력단절의 현실 지표 (여성가족부·국가데이터처 조사)</div>
+<div style="font-size: 15px; font-weight: 800; color: #FDE68A; margin-bottom: 6px;">👩‍👧 여성 출산·육아 경력단절의 현실(여성가족부·국가데이터처)</div>
 <div style="font-size: 13.5px; color: #CBD5E1; line-height: 1.6;">
 • <b>재취업까지 소요 기간</b>: 평균 <b>7.5년</b> (단기 공백이 아닌 장기화)<br>
 • <b>복귀 후 실질 임금</b>: 단절 이전의 약 <b>80% 수준</b>으로 하락
@@ -2150,9 +2150,6 @@ elif selected_page == "인생의 사계절":
 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 14px;">
 <a href="{OFFICIAL_PDF_URL}" target="_blank" style="background:#1E293B; border:1px solid #475569; border-radius:8px; padding:12px 14px; text-align:center; text-decoration:none; color:#38BDF8 !important; font-size:15px; font-weight:700; display:flex; align-items:center; justify-content:center; gap:8px;">
 <span style="font-size:18px;">📄</span><span style="color:#38BDF8 !important;">2024년 국가데이터처 통계 보도자료</span>
-</a>
-<a href="{OFFICIAL_RELEASE_URL}" target="_blank" style="background:#1E293B; border:1px solid #475569; border-radius:8px; padding:12px 14px; text-align:center; text-decoration:none; color:#38BDF8 !important; font-size:15px; font-weight:700; display:flex; align-items:center; justify-content:center; gap:8px;">
-<span style="font-size:18px;">🌐</span><span style="color:#38BDF8 !important;">국가데이터처 공식 발표 페이지</span>
 </a></div>
 """, unsafe_allow_html=True)
         st.markdown("<div style='height: 20px;'></div>", unsafe_allow_html=True)
