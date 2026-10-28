@@ -1887,7 +1887,7 @@ elif selected_page == "인생의 사계절":
             row_heights=[0.58, 0.42]
         )
 
-        # [배경 띠 1] 👶 출산·육아 집중기 (안전장치 적용)
+        # [배경 띠 1] 👶 출산·육아 집중기 (과거 구간도 표시되도록 수정)
         if childcare_start and childcare_end:
             c_band_x0 = max(20, min(childcare_start, 85))
             c_band_x1 = max(20, min(childcare_end, 85))
@@ -1905,7 +1905,7 @@ elif selected_page == "인생의 사계절":
                     row=1, col=1
                 )
 
-        # [배경 띠 2] 🎓 자녀 대학교 학자금 집중기 (안전장치 적용)
+        # [배경 띠 2] 🎓 자녀 대학교 학자금 집중기 (과거 구간도 표시되도록 수정)
         if college_band_start and college_band_end:
             k_band_x0 = max(20, min(college_band_start, 85))
             k_band_x1 = max(20, min(college_band_end, 85))
