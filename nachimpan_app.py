@@ -1877,17 +1877,9 @@ elif selected_page == "인생의 사계절":
         y_top = y_max * 1.16
         alt_level_2 = y_top * 0.32
         alt_level_1 = y_top * 0.10
-        alt_level_5 = y_top * 0.85  # 타이틀 뱃지 높이
+        alt_level_5 = y_top * 0.85  # 타이틀 뱃지 높이 (1단 차트 기준)
 
-        # 💡 [핵심 수정] 서브플롯 객체(fig_my_nta)를 배경 띠를 그리기 '반드시 전'에 선언!
-        fig_my_nta = make_subplots(
-            rows=2, cols=1,
-            shared_xaxes=True,
-            vertical_spacing=0.06,
-            row_heights=[0.58, 0.42]
-        )
-
-        # [배경 띠 1] 👶 출산·육아 집중기 (과거 구간도 표시되도록 수정)
+        # [배경 띠 1] 👶 출산·육아 집중기 (위아래 전체 관통)
         if childcare_start and childcare_end:
             c_band_x0 = max(20, min(childcare_start, 85))
             c_band_x1 = max(20, min(childcare_end, 85))
@@ -1895,7 +1887,7 @@ elif selected_page == "인생의 사계절":
                 fig_my_nta.add_vrect(
                     x0=c_band_x0, x1=c_band_x1,
                     fillcolor="rgba(249, 115, 22, 0.28)", layer="below", line_width=0,
-                    row=1, col=1
+                    row="all", col=1  # 👈 핵심: 위아래 서브플롯 전체 관통!
                 )
                 fig_my_nta.add_annotation(
                     x=(c_band_x0 + c_band_x1) / 2.0, y=alt_level_5,
@@ -1905,7 +1897,7 @@ elif selected_page == "인생의 사계절":
                     row=1, col=1
                 )
 
-        # [배경 띠 2] 🎓 자녀 대학교 학자금 집중기 (과거 구간도 표시되도록 수정)
+        # [배경 띠 2] 🎓 자녀 대학교 학자금 집중기 (위아래 전체 관통)
         if college_band_start and college_band_end:
             k_band_x0 = max(20, min(college_band_start, 85))
             k_band_x1 = max(20, min(college_band_end, 85))
@@ -1913,7 +1905,7 @@ elif selected_page == "인생의 사계절":
                 fig_my_nta.add_vrect(
                     x0=k_band_x0, x1=k_band_x1,
                     fillcolor="rgba(168, 85, 247, 0.28)", layer="below", line_width=0,
-                    row=1, col=1
+                    row="all", col=1  # 👈 핵심: 위아래 전체 관통!
                 )
                 fig_my_nta.add_annotation(
                     x=(k_band_x0 + k_band_x1) / 2.0, y=alt_level_5,
@@ -1923,7 +1915,7 @@ elif selected_page == "인생의 사계절":
                     row=1, col=1
                 )
 
-        # [배경 띠 3] ❄️ 은퇴 후 겨울
+        # [배경 띠 3] ❄️ 은퇴 후 겨울 (위아래 전체 관통)
         if retire_age < 85:
             r_band_x0 = max(20, min(retire_age, 85))
             r_band_x1 = 85
@@ -1931,7 +1923,7 @@ elif selected_page == "인생의 사계절":
                 fig_my_nta.add_vrect(
                     x0=r_band_x0, x1=r_band_x1,
                     fillcolor="rgba(56, 189, 248, 0.22)", layer="below", line_width=0,
-                    row=1, col=1
+                    row="all", col=1  # 👈 핵심: 위아래 전체 관통!
                 )
                 fig_my_nta.add_annotation(
                     x=(r_band_x0 + r_band_x1) / 2.0, y=alt_level_5,
