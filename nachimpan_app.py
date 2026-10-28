@@ -1747,9 +1747,9 @@ elif selected_page == "인생의 사계절":
 </div></div>
 """, unsafe_allow_html=True)
 
-        # 6.03.05 | 나만의 생애주기 소득·소비 곡선 (통계청 실증 피팅 & 생애 이벤트 3대 밴드)
-        st.markdown("### 2. 나만의 생애주기 소득·소비 곡선 (국민이전계정 개인화 번역)")
-        st.caption("※ 통계청 국민이전계정(NTA) 공식 데이터와 한국보건사회연구원 패널 통계를 기반으로, 나의 실제 가족·소득·지출을 정밀하게 피팅한 곡선입니다.")
+        # 6.03.05 | 나만의 생애주기 곡선 (통계청 실증 피팅 & 고도 분리 밴드)
+        st.markdown("### 2. 나만의 생애주기 곡선")
+        st.caption("※ 통계청 국민이전계정(NTA) 통계 기반으로, 나의 실제 가족·소득·지출을 개략적으로 맞춘 곡선입니다.")
         s = current_financial_summary()
         cur_annual_income = s["annual_total_income"]
         cur_annual_expense = s["annual_total_expenses"]
@@ -1765,7 +1765,7 @@ elif selected_page == "인생의 사계절":
         # 1) 유효한 자녀 나이 수집
         existing_child_ages = [int(getv(k, 0)) for k in ["child_age", "child_age2", "child_age3", "child_age4"] if int(getv(k, 0)) > 0]
 
-        # 2) 👶 출산·육아 집중기 구간 산정 (보사연 통계: 초산 평균 33~35세, 소득 30% 급감 & 지출 증가)
+        # 2) 👶 출산·육아 집중기 구간 산정
         has_childcare_event = False
         childcare_start, childcare_end = 0, 0
         infant_ages = [ca for ca in existing_child_ages if ca <= 6]
@@ -1812,7 +1812,6 @@ elif selected_page == "인생의 사계절":
                     peak_w = 1.0 + (growth_rate * max(0, 46 - cur_age))
                     w = max(0.80, peak_w - (0.009 * (a - 46)))
 
-                # 👶 출산·육아기 소득 절벽 (실질 가구소득 -30% U자형 회복)
                 if has_childcare_event and (childcare_start <= a <= childcare_end):
                     mid_c = (childcare_start + childcare_end) / 2.0
                     dist = abs(a - mid_c)
@@ -1837,8 +1836,6 @@ elif selected_page == "인생의 사계절":
                     exp_factor *= 1.08
 
                 base_exp = cur_annual_expense * exp_factor
-
-                # 🎓 자녀 대학 학자금 가산 (재학 자녀 수 × 1,500만 원)
                 college_kids_count = sum(1 for (cs, ce) in college_windows if cs <= a <= ce)
                 extra_college_exp = college_kids_count * 1500.0
 
@@ -1847,39 +1844,60 @@ elif selected_page == "인생의 사계절":
                 exp_val = ret_annual_expense
             my_expense_curve.append(exp_val)
 
-        # 5) Plotly 차트 렌더링
+        # 5) 차트 Y축 고도 산정 (항공기 고도 분리 시스템)
+        y_max = max(max(my_income_curve), max(my_expense_curve)) if my_income_curve else 6000
+        y_top = y_max * 1.18  # 상단 여백 확보
+
+        alt_level_5 = y_top * 0.92  # 최상단: 👶 출산·육아 / ❄️ 은퇴 노후 라벨
+        alt_level_4 = y_top * 0.70  # 중상단: 🎓 자녀 대학 피크 라벨
+        alt_level_2 = y_top * 0.32  # 중하단: 은퇴(XX세) 뱃지
+        alt_level_1 = y_top * 0.10  # 최하단: 현재 나이(XX세) 뱃지
+
+        # 6) Plotly 차트 렌더링
         fig_my_nta = go.Figure()
 
-        # [배경 띠 1] 👶 출산·육아 집중기 (살구/오렌지 띠)
+        # [배경 띠 1] 👶 출산·육아 집중기 (또렷한 앰버 띠, 불투명도 0.28)
         if has_childcare_event and childcare_end > cur_age:
             c_band_x0 = max(cur_age, childcare_start)
             c_band_x1 = childcare_end
             if c_band_x1 > c_band_x0:
                 fig_my_nta.add_vrect(
                     x0=c_band_x0, x1=c_band_x1,
-                    fillcolor="rgba(249, 115, 22, 0.12)", layer="below", line_width=0,
-                    annotation_text="👶 출산·육아 소득절벽", annotation_position="top left",
-                    annotation=dict(font=dict(size=11, color="#FB923C", weight="bold"))
+                    fillcolor="rgba(249, 115, 22, 0.28)", layer="below", line_width=0
+                )
+                fig_my_nta.add_annotation(
+                    x=(c_band_x0 + c_band_x1) / 2.0, y=alt_level_5,
+                    text="👶 출산·육아 소득절벽", showarrow=False,
+                    font=dict(size=12, color="#FDBA74", weight="bold"),
+                    bgcolor="rgba(15, 23, 42, 0.75)", bordercolor="#F97316", borderpad=3
                 )
 
-        # [배경 띠 2] 🎓 자녀 대학교 학자금 집중기 (보라/인디고 띠)
+        # [배경 띠 2] 🎓 자녀 대학교 학자금 집중기 (또렷한 퍼플 띠, 불투명도 0.28)
         if college_band_start and college_band_end and college_band_end > cur_age:
             col_x0 = max(cur_age, college_band_start)
             col_x1 = college_band_end
             if col_x1 > col_x0:
                 fig_my_nta.add_vrect(
                     x0=col_x0, x1=col_x1,
-                    fillcolor="rgba(168, 85, 247, 0.13)", layer="below", line_width=0,
-                    annotation_text="🎓 자녀 대학·독립 피크", annotation_position="top left",
-                    annotation=dict(font=dict(size=11, color="#C084FC", weight="bold"))
+                    fillcolor="rgba(168, 85, 247, 0.28)", layer="below", line_width=0
+                )
+                fig_my_nta.add_annotation(
+                    x=(col_x0 + col_x1) / 2.0, y=alt_level_4,
+                    text="🎓 자녀 대학·독립 피크", showarrow=False,
+                    font=dict(size=12, color="#E9D5FF", weight="bold"),
+                    bgcolor="rgba(15, 23, 42, 0.75)", bordercolor="#A855F7", borderpad=3
                 )
 
-        # [배경 띠 3] ❄️ 은퇴 후 겨울 (스카이블루 띠)
+        # [배경 띠 3] ❄️ 은퇴 후 겨울 (또렷한 스카이블루 띠, 불투명도 0.22)
         fig_my_nta.add_vrect(
             x0=retire_age, x1=85,
-            fillcolor="rgba(56, 189, 248, 0.08)", layer="below", line_width=0,
-            annotation_text="❄️ 은퇴 후 겨울 (소득단절)", annotation_position="top left",
-            annotation=dict(font=dict(size=11, color="#38BDF8", weight="bold"))
+            fillcolor="rgba(56, 189, 248, 0.22)", layer="below", line_width=0
+        )
+        fig_my_nta.add_annotation(
+            x=(retire_age + 85) / 2.0, y=alt_level_5,
+            text="❄️ 은퇴 후 겨울 (소득단절)", showarrow=False,
+            font=dict(size=12, color="#BAE6FD", weight="bold"),
+            bgcolor="rgba(15, 23, 42, 0.75)", bordercolor="#38BDF8", borderpad=3
         )
 
         fig_my_nta.add_trace(go.Scatter(
@@ -1895,26 +1913,29 @@ elif selected_page == "인생의 사계절":
             hovertemplate="나이: %{x}세<br>연 지출: <b>%{y:,.0f}만 원</b><extra></extra>"
         ))
 
-        fig_my_nta.add_vline(x=cur_age, line_dash="solid", line_color="#38BDF8", line_width=2)
+        # 현재 나이 기준선 (시안 실선 & 최하단 고도 1 배치)
+        fig_my_nta.add_vline(x=cur_age, line_dash="solid", line_color="#38BDF8", line_width=2.2)
         fig_my_nta.add_annotation(
-            x=cur_age, y=max(my_income_curve) * 0.96,
+            x=cur_age, y=alt_level_1,
             text=f"현재 나이 ({cur_age}세)",
             showarrow=True, arrowhead=2, arrowcolor="#38BDF8",
-            font=dict(size=12, color="#BAE6FD"), ay=-30,
-            bgcolor="rgba(15, 23, 42, 0.85)", bordercolor="#38BDF8"
+            font=dict(size=12, color="#BAE6FD", weight="bold"), ay=-24,
+            bgcolor="rgba(15, 23, 42, 0.9)", bordercolor="#38BDF8", borderpad=4
         )
 
-        fig_my_nta.add_vline(x=retire_age, line_dash="dash", line_color="#EF4444", line_width=2)
+        # 은퇴 시점 기준선 (오렌지 점선과 완벽히 구별되는 선명한 화이트 점선 & 중하단 고도 2 배치)
+        retire_line_color = "#F8FAFC"
+        fig_my_nta.add_vline(x=retire_age, line_dash="dot", line_color=retire_line_color, line_width=2.5)
         fig_my_nta.add_annotation(
-            x=retire_age, y=my_income_curve[ages_sim.index(retire_age)],
+            x=retire_age, y=alt_level_2,
             text=f"은퇴 ({retire_age}세)",
-            showarrow=True, arrowhead=2, arrowcolor="#EF4444",
-            font=dict(size=12, color="#FCA5A5"), ay=32,
-            bgcolor="rgba(15, 23, 42, 0.85)", bordercolor="#EF4444"
+            showarrow=True, arrowhead=2, arrowcolor=retire_line_color,
+            font=dict(size=12, color="#F8FAFC", weight="bold"), ay=-24,
+            bgcolor="rgba(15, 23, 42, 0.9)", bordercolor=retire_line_color, borderpad=4
         )
 
         fig_my_nta.update_layout(
-            height=390,
+            height=400,
             margin=dict(l=20, r=20, t=35, b=35),
             paper_bgcolor="rgba(0,0,0,0)",
             plot_bgcolor="rgba(0,0,0,0)",
@@ -1930,6 +1951,7 @@ elif selected_page == "인생의 사계절":
                 title=dict(text="연간 금액 (만 원)", font=dict(size=14, color="#94A3B8")),
                 tickfont=dict(size=13, color="#94A3B8"),
                 tickformat=",.0f",
+                range=[0, y_top],
                 gridcolor="rgba(100, 116, 139, 0.2)",
                 fixedrange=True
             ),
@@ -1944,10 +1966,11 @@ elif selected_page == "인생의 사계절":
             hovermode="x unified"
         )
         st.plotly_chart(fig_my_nta, use_container_width=True, config={"displayModeBar": False, "scrollZoom": False, "doubleClick": False, "showAxisDragHandles": False})
+
         st.markdown("<div style='height: 14px;'></div>", unsafe_allow_html=True)
 
-        # 6.03.06 | 국가데이터처 공식 생애 통계 지표 (단위 다이어트 & <생애주기적자> 차트)
-        st.markdown("### 3. 국가데이터처 공식 생애 통계 지표 (대한민국 평균 기준)")
+        # 6.03.06 | 국가데이터처 통계
+        st.markdown("### 3. 국가데이터처 통계")
         st.caption("※ 통계청 국민이전계정(NTA) 공식 발표 자료 기준")
         col_m1, col_m2, col_m3 = st.columns(3)
         col_m1.metric("한국인 평균 흑자 진입", "28세", help="노동소득이 소비를 추월하는 연령")
