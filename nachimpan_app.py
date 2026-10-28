@@ -1879,6 +1879,14 @@ elif selected_page == "인생의 사계절":
         alt_level_1 = y_top * 0.10
         alt_level_5 = y_top * 0.85  # 타이틀 뱃지 높이 (1단 차트 기준)
 
+        # 💡 [필수] 배경 띠를 그리기 전에 서브플롯 객체를 가장 먼저 선언합니다!
+        fig_my_nta = make_subplots(
+            rows=2, cols=1,
+            shared_xaxes=True,
+            vertical_spacing=0.06,
+            row_heights=[0.58, 0.42]
+        )
+
         # [배경 띠 1] 👶 출산·육아 집중기 (위아래 전체 관통)
         if childcare_start and childcare_end:
             c_band_x0 = max(20, min(childcare_start, 85))
@@ -1887,7 +1895,7 @@ elif selected_page == "인생의 사계절":
                 fig_my_nta.add_vrect(
                     x0=c_band_x0, x1=c_band_x1,
                     fillcolor="rgba(249, 115, 22, 0.28)", layer="below", line_width=0,
-                    row="all", col=1  # 👈 핵심: 위아래 서브플롯 전체 관통!
+                    row="all", col=1
                 )
                 fig_my_nta.add_annotation(
                     x=(c_band_x0 + c_band_x1) / 2.0, y=alt_level_5,
@@ -1905,7 +1913,7 @@ elif selected_page == "인생의 사계절":
                 fig_my_nta.add_vrect(
                     x0=k_band_x0, x1=k_band_x1,
                     fillcolor="rgba(168, 85, 247, 0.28)", layer="below", line_width=0,
-                    row="all", col=1  # 👈 핵심: 위아래 전체 관통!
+                    row="all", col=1
                 )
                 fig_my_nta.add_annotation(
                     x=(k_band_x0 + k_band_x1) / 2.0, y=alt_level_5,
@@ -1923,7 +1931,7 @@ elif selected_page == "인생의 사계절":
                 fig_my_nta.add_vrect(
                     x0=r_band_x0, x1=r_band_x1,
                     fillcolor="rgba(56, 189, 248, 0.22)", layer="below", line_width=0,
-                    row="all", col=1  # 👈 핵심: 위아래 전체 관통!
+                    row="all", col=1
                 )
                 fig_my_nta.add_annotation(
                     x=(r_band_x0 + r_band_x1) / 2.0, y=alt_level_5,
@@ -1932,7 +1940,6 @@ elif selected_page == "인생의 사계절":
                     bgcolor="rgba(15, 23, 42, 0.8)", bordercolor="#38BDF8", borderpad=2,
                     row=1, col=1
                 )
-
         # [Row 1] 소득 & 지출 (3대 심플 범례)
         fig_my_nta.add_trace(go.Scatter(
             x=ages_sim, y=my_income_curve, mode="lines",
