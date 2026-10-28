@@ -2068,6 +2068,15 @@ elif selected_page == "인생의 사계절":
 
         st.markdown("<div style='height: 14px;'></div>", unsafe_allow_html=True)
 
+
+
+        # 디버깅용 확인 코드 (이 코드를 코드 중간에 넣어보세요)
+        st.write(f"디버그 -> 현재나이(cur_age): {locals().get('cur_age', '정의안됨')}")
+        st.write(f"디버그 -> 수집된 자녀나이 리스트(existing_child_ages): {existing_child_ages}")
+        st.write(f"디버그 -> 계산된 육아시작/끝: {childcare_start} ~ {childcare_end}")
+
+
+
         # 6.03.06 | 국가데이터처 통계
         st.markdown("### 3. 국가데이터처 통계")
         st.caption("※ 통계청 국민이전계정(NTA) 공식 발표 자료 기준")
