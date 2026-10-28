@@ -1636,7 +1636,7 @@ elif selected_page == "인생의 사계절":
         # [고급 모드] 모든 마이크로 모듈(6.03.01 ~ 6.03.07) 완전 탑재
         # 6.03.01 | 가족 구성원 나이 입력 폼 (3대 직계 가족 슬림화)
         # 6.03.02 | (형제자매 기능 전면 폐기 ➜ 직계 부양가족 집중 완료)
-        st.markdown("### 1. 가족 구성원과 은퇴 시점의 나이")
+        st.markdown("### 1. 우리 가족과 나의 은퇴 나이")
         child_options = ["입력 안 함", "없음", "1명", "2명", "3명", "4명 이상"]
         prev_c_count = st.session_state.get("child_count", "입력 안 함")
         if prev_c_count not in child_options: prev_c_count = "입력 안 함"
@@ -1669,10 +1669,10 @@ elif selected_page == "인생의 사계절":
             st.markdown("#### 앞으로의 가족 계획 (선택)")
             p_c1, p_c2, p_c3 = st.columns(3)
             with p_c1:
-                marriage_options = ["미정", "계획 없음", "1~3년 내 결혼 생각 있음", "3년 이후 결혼 생각 있음", "결혼 예정/준비 중"]
+                marriage_options = ["미정", "계획 없음", "이미 결혼함", "1~3년 내 결혼 생각 있음", "3년 이후 결혼 생각 있음", "결혼 예정"]
                 marriage_plan = st.selectbox("결혼 계획", marriage_options, index=marriage_options.index(st.session_state.get("marriage_plan", "미정")) if st.session_state.get("marriage_plan", "미정") in marriage_options else 0)
             with p_c2:
-                child_plan_options = ["미정", "계획 없음", "자녀 계획 있음", "출산 예정/준비 중", "추가 자녀 계획 있음"]
+                child_plan_options = ["미정", "계획 없음", "자녀 계획 있음", "출산 예정", "추가 자녀 계획 있음"]
                 child_plan = st.selectbox("출산·자녀 계획", child_plan_options, index=child_plan_options.index(st.session_state.get("child_plan", "미정")) if st.session_state.get("child_plan", "미정") in child_plan_options else 0)
             with p_c3:
                 housing_options = ["미정", "현재 주거 유지", "전세·월세 이동 고려", "주택 구입 고려", "주거 계획 확정"]
@@ -1735,7 +1735,7 @@ elif selected_page == "인생의 사계절":
             st.markdown(f"""
 <div style="background: rgba(234, 88, 12, 0.12); border-left: 4px solid #EA580C; border-radius: 6px; padding: 14px 18px; margin: 12px 0 20px 0;">
 <div style="font-size: 15px; font-weight: 750; color: #F8FAFC; line-height: 1.6;">
-🎯 <b>생애 주요지출</b>: 첫째 자녀가 대학에 입학하는 만 20세가 되면, 나의 나이는 <b>만 {college_my_age}세</b>가 되는구나.<br>
+<b>생애 주요지출</b><br>: 첫째가 대학에 입학하는 만 20세가 되면, 나의 나이는 <b>만 {college_my_age}세</b>가 되는구나...,<br>
 <span style="font-size: 13.5px; color: #CBD5E1;">국가데이터처 통계상 소득 정점(45세)은 지나가면서, 자녀 학자금과 독립 비용으로 <b>인생에서 가장 큰 지출이 집중되는 결정적 시기</b>입니다.</span>
 </div></div>
 """, unsafe_allow_html=True)
