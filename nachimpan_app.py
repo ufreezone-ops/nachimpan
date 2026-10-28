@@ -841,7 +841,7 @@ with st.sidebar:
 # 4.01.02 | 개발용 테스트 메뉴
 _dev_enabled = (
     st.secrets.get("DEV_MODE", False)
-    and st.query_params.get("dev") == "1"
+    or st.query_params.get("dev") == "1"
 )
 
 if _dev_enabled:
