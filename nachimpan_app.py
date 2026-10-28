@@ -2147,10 +2147,14 @@ elif selected_page == "인생의 사계절":
         st.plotly_chart(fig_official_nta, use_container_width=True, config={"displayModeBar": False, "scrollZoom": False, "doubleClick": False, "showAxisDragHandles": False})
         
         st.markdown(f"""
-<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 14px;">
-<a href="{OFFICIAL_PDF_URL}" target="_blank" style="background:#1E293B; border:1px solid #475569; border-radius:8px; padding:12px 14px; text-align:center; text-decoration:none; color:#38BDF8 !important; font-size:15px; font-weight:700; display:flex; align-items:center; justify-content:center; gap:8px;">
-<span style="font-size:18px;">📄</span><span style="color:#38BDF8 !important;">2024년 국가데이터처 통계</span>
-</a></div>
+
+<div style="display: flex; justify-content: center; margin-top: 14px;">
+  <a href="{OFFICIAL_PDF_URL}" target="_blank" style="background:#1E293B; border:1px solid #475569; border-radius:8px; padding:12px 20px; text-decoration:none; color:#38BDF8 !important; font-size:15px; font-weight:700; display:inline-flex; align-items:center; justify-content:center; gap:8px; white-space: nowrap;">
+    <span style="font-size:18px;">📄</span>
+    <span style="color:#38BDF8 !important; white-space: nowrap;">2024년 국가데이터처 통계 보도자료</span>
+  </a>
+</div>
+
 """, unsafe_allow_html=True)
         st.markdown("<div style='height: 20px;'></div>", unsafe_allow_html=True)
 
@@ -2181,7 +2185,7 @@ elif selected_page == "인생의 사계절":
         st.markdown(f"""
 <div style="background: rgba(30, 41, 59, 0.6); border: 1px solid #334155; border-radius: 12px; padding: 18px 20px; margin: 16px 0 24px 0;">
 <div style="font-size: 15px; color: #F8FAFC; line-height: 1.6; word-break: keep-all;">
-💡 <b>산책로의 질문</b>:<br>은퇴 후 우리가 맞이할 겨울은 <b>약 {winter_years}년 </b>입니다. (통계청 {user_gender.split()[1]} 기대수명 {life_expectancy}세 기준)<br>
+💡 <b>산책로의 질문</b><br>은퇴 후 우리가 맞이할 겨울은 <b>약 {winter_years}년 </b>입니다. (통계청 {user_gender.split()[1]} 기대수명 {life_expectancy}세 기준)<br>
 <span style="color: #94A3B8;">이 긴 겨울 동안 매달 무거운 물통을 지고 눈길을 걸을 것인가, 방 안에서 따뜻하게 흘러나오는 파이프라인을 맞이할 것인가는 <b>지금 '가을'의 준비</b>에 달려 있습니다.</span>
 </div></div>
 """, unsafe_allow_html=True)
