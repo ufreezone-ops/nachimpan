@@ -1877,6 +1877,7 @@ elif selected_page == "인생의 사계절":
         y_top = y_max * 1.16
         alt_level_2 = y_top * 0.32
         alt_level_1 = y_top * 0.10
+        alt_level_5 = y_top * 0.85  # 👈 타이틀 뱃지 높이 복원!
 
         # 7) 2단 서브플롯 생성
         fig_my_nta = make_subplots(
