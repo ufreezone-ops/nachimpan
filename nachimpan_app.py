@@ -1872,50 +1872,67 @@ elif selected_page == "인생의 사계절":
         surplus_fine = [max(0.0, v) for v in flow_fine]
         deficit_fine = [min(0.0, v) for v in flow_fine]
 
-        # 6) 상단 차트 고도 레벨 산정
+# 6) 상단 차트 고도 레벨 산정
         y_max = max(max(my_income_curve), max(my_expense_curve)) if my_income_curve else 6000
         y_top = y_max * 1.16
         alt_level_2 = y_top * 0.32
         alt_level_1 = y_top * 0.10
-        alt_level_5 = y_top * 0.85  # 👈 타이틀 뱃지 높이 복원!
+        alt_level_5 = y_top * 0.85  # 타이틀 뱃지 높이
 
-        # 7) 2단 서브플롯 생성
-        fig_my_nta = make_subplots(
-            rows=2, cols=1,
-            shared_xaxes=True,
-            vertical_spacing=0.06,
-            row_heights=[0.58, 0.42]
-        )
+        # [배경 띠 1] 👶 출산·육아 집중기 (안전장치 적용)
+        if childcare_start and childcare_end:
+            # 과거 구간은 자르고 현재~끝 구간으로 설정하되, 범위가 꼬이지 않게 처리
+            c_band_x0 = max(20, min(childcare_start, 85))
+            c_band_x1 = max(20, min(childcare_end, 85))
+            if c_band_x1 > c_band_x0:
+                fig_my_nta.add_vrect(
+                    x0=c_band_x0, x1=c_band_x1,
+                    fillcolor="rgba(249, 115, 22, 0.28)", layer="below", line_width=0,
+                    row=1, col=1
+                )
+                fig_my_nta.add_annotation(
+                    x=(c_band_x0 + c_band_x1) / 2.0, y=alt_level_5,
+                    text="👶 출산·육아", showarrow=False,
+                    font=dict(size=11, color="#FDBA74", weight="bold"),
+                    bgcolor="rgba(15, 23, 42, 0.8)", bordercolor="#F97316", borderpad=2,
+                    row=1, col=1
+                )
 
-        # [배경 띠 1] 👶 출산·육아 집중기 (라벨 내장으로 실종 방지)
-        if childcare_start and childcare_end and (childcare_end > childcare_start):
-            fig_my_nta.add_vrect(
-                x0=childcare_start, x1=childcare_end,
-                fillcolor="rgba(249, 115, 22, 0.28)", layer="below", line_width=0,
-                annotation_text="👶 출산·육아", annotation_position="top left",
-                annotation=dict(font=dict(size=11, color="#FDBA74", weight="bold")),
-                row=1, col=1
-            )
+        # [배경 띠 2] 🎓 자녀 대학교 학자금 집중기 (안전장치 적용)
+        if college_band_start and college_band_end:
+            k_band_x0 = max(20, min(college_band_start, 85))
+            k_band_x1 = max(20, min(college_band_end, 85))
+            if k_band_x1 > k_band_x0:
+                fig_my_nta.add_vrect(
+                    x0=k_band_x0, x1=k_band_x1,
+                    fillcolor="rgba(168, 85, 247, 0.28)", layer="below", line_width=0,
+                    row=1, col=1
+                )
+                fig_my_nta.add_annotation(
+                    x=(k_band_x0 + k_band_x1) / 2.0, y=alt_level_5,
+                    text="🎓 자녀 대학 피크", showarrow=False,
+                    font=dict(size=11, color="#E9D5FF", weight="bold"),
+                    bgcolor="rgba(15, 23, 42, 0.8)", bordercolor="#A855F7", borderpad=2,
+                    row=1, col=1
+                )
 
-        # [배경 띠 2] 🎓 자녀 대학교 학자금 집중기 (라벨 내장)
-        if college_band_start and college_band_end and (college_band_end > college_band_start):
-            fig_my_nta.add_vrect(
-                x0=college_band_start, x1=college_band_end,
-                fillcolor="rgba(168, 85, 247, 0.28)", layer="below", line_width=0,
-                annotation_text="🎓 자녀 대학 피크", annotation_position="top left",
-                annotation=dict(font=dict(size=11, color="#E9D5FF", weight="bold")),
-                row=1, col=1
-            )
-
-        # [배경 띠 3] ❄️ 은퇴 후 겨울 (라벨 내장)
+        # [배경 띠 3] ❄️ 은퇴 후 겨울
         if retire_age < 85:
-            fig_my_nta.add_vrect(
-                x0=retire_age, x1=85,
-                fillcolor="rgba(56, 189, 248, 0.22)", layer="below", line_width=0,
-                annotation_text="❄️ 은퇴 후 겨울", annotation_position="top left",
-                annotation=dict(font=dict(size=11, color="#BAE6FD", weight="bold")),
-                row=1, col=1
-            )
+            r_band_x0 = max(20, min(retire_age, 85))
+            r_band_x1 = 85
+            if r_band_x1 > r_band_x0:
+                fig_my_nta.add_vrect(
+                    x0=r_band_x0, x1=r_band_x1,
+                    fillcolor="rgba(56, 189, 248, 0.22)", layer="below", line_width=0,
+                    row=1, col=1
+                )
+                fig_my_nta.add_annotation(
+                    x=(r_band_x0 + r_band_x1) / 2.0, y=alt_level_5,
+                    text="❄️ 은퇴 후 겨울", showarrow=False,
+                    font=dict(size=11, color="#BAE6FD", weight="bold"),
+                    bgcolor="rgba(15, 23, 42, 0.8)", bordercolor="#38BDF8", borderpad=2,
+                    row=1, col=1
+                )
 
         # [Row 1] 소득 & 지출 (3대 심플 범례)
         fig_my_nta.add_trace(go.Scatter(
