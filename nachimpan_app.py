@@ -1747,7 +1747,7 @@ elif selected_page == "인생의 사계절":
 </div></div>
 """, unsafe_allow_html=True)
 
-        # 6.03.05 | 나만의 생애주기 곡선 & 흑자/적자 2단 연동 차트
+# 6.03.05 | 나만의 생애주기 곡선 & 흑자/적자 2단 연동 차트
         from plotly.subplots import make_subplots
 
         st.markdown("### 2. 나만의 생애주기 곡선")
@@ -1767,7 +1767,7 @@ elif selected_page == "인생의 사계절":
         # 1) 유효한 자녀 나이 수집
         existing_child_ages = [int(getv(k, 0)) for k in ["child_age", "child_age2", "child_age3", "child_age4"] if int(getv(k, 0)) > 0]
 
-        # 2) 👶 출산·육아 집중기 구간 산정 (과거·현재·미래 전 생애 기준 역산)
+        # 2) 👶 출산·육아 집중기 구간 산정
         childcare_windows = []
         if existing_child_ages:
             for ca in existing_child_ages:
@@ -1780,7 +1780,7 @@ elif selected_page == "인생의 사계절":
         childcare_start = min([w[0] for w in childcare_windows]) if childcare_windows else None
         childcare_end = max([w[1] for w in childcare_windows]) if childcare_windows else None
 
-        # 3) 🎓 자녀 대학교 학자금 피크 구간 (과거·현재·미래 전 생애 19~24세 기준 역산)
+        # 3) 🎓 자녀 대학교 학자금 피크 구간
         college_windows = []
         if existing_child_ages:
             for ca in existing_child_ages:
@@ -1799,7 +1799,7 @@ elif selected_page == "인생의 사계절":
         my_income_curve = []
         my_expense_curve = []
 
-        # 은퇴자(D사례 등) 과거 전성기 소득 보정
+        # 은퇴자 과거 전성기 소득 보정
         is_already_retired = (cur_age >= retire_age) or (cur_annual_income < 1200 and cur_age >= 60)
         if is_already_retired:
             base_career_income = max(cur_annual_income, ret_annual_pension * 1.8, cur_annual_expense * 1.5, 5200.0)
@@ -1872,16 +1872,23 @@ elif selected_page == "인생의 사계절":
         surplus_fine = [max(0.0, v) for v in flow_fine]
         deficit_fine = [min(0.0, v) for v in flow_fine]
 
-# 6) 상단 차트 고도 레벨 산정
+        # 6) 상단 차트 고도 레벨 산정
         y_max = max(max(my_income_curve), max(my_expense_curve)) if my_income_curve else 6000
         y_top = y_max * 1.16
         alt_level_2 = y_top * 0.32
         alt_level_1 = y_top * 0.10
         alt_level_5 = y_top * 0.85  # 타이틀 뱃지 높이
 
+        # 💡 [핵심 수정] 서브플롯 객체(fig_my_nta)를 배경 띠를 그리기 '반드시 전'에 선언!
+        fig_my_nta = make_subplots(
+            rows=2, cols=1,
+            shared_xaxes=True,
+            vertical_spacing=0.06,
+            row_heights=[0.58, 0.42]
+        )
+
         # [배경 띠 1] 👶 출산·육아 집중기 (안전장치 적용)
         if childcare_start and childcare_end:
-            # 과거 구간은 자르고 현재~끝 구간으로 설정하되, 범위가 꼬이지 않게 처리
             c_band_x0 = max(20, min(childcare_start, 85))
             c_band_x1 = max(20, min(childcare_end, 85))
             if c_band_x1 > c_band_x0:
@@ -2019,7 +2026,7 @@ elif selected_page == "인생의 사계절":
             row=2, col=1
         )
 
-        # 전체 레이아웃 (모바일 3대 심플 범례)
+        # 전체 레이아웃
         fig_my_nta.update_layout(
             height=490,
             margin=dict(l=10, r=10, t=25, b=25),
@@ -2037,7 +2044,7 @@ elif selected_page == "인생의 사계절":
             hovermode="x unified"
         )
 
-        # X축: 10세 단위 수평 고정
+        # X축
         fig_my_nta.update_xaxes(
             tickmode="linear", tick0=20, dtick=10,
             tickangle=0,
