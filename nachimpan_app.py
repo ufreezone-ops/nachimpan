@@ -1892,7 +1892,8 @@ elif selected_page == "인생의 사계절":
                 x0=childcare_start, x1=childcare_end,
                 fillcolor="rgba(249, 115, 22, 0.28)", layer="below", line_width=0,
                 annotation_text="👶 출산·육아", annotation_position="top left",
-                annotation=dict(font=dict(size=11, color="#FDBA74", weight="bold"))
+                annotation=dict(font=dict(size=11, color="#FDBA74", weight="bold")),
+                row=1, col=1
             )
 
         # [배경 띠 2] 🎓 자녀 대학교 학자금 집중기 (라벨 내장)
@@ -1901,7 +1902,8 @@ elif selected_page == "인생의 사계절":
                 x0=college_band_start, x1=college_band_end,
                 fillcolor="rgba(168, 85, 247, 0.28)", layer="below", line_width=0,
                 annotation_text="🎓 자녀 대학 피크", annotation_position="top left",
-                annotation=dict(font=dict(size=11, color="#E9D5FF", weight="bold"))
+                annotation=dict(font=dict(size=11, color="#E9D5FF", weight="bold")),
+                row=1, col=1
             )
 
         # [배경 띠 3] ❄️ 은퇴 후 겨울 (라벨 내장)
@@ -1910,7 +1912,8 @@ elif selected_page == "인생의 사계절":
                 x0=retire_age, x1=85,
                 fillcolor="rgba(56, 189, 248, 0.22)", layer="below", line_width=0,
                 annotation_text="❄️ 은퇴 후 겨울", annotation_position="top left",
-                annotation=dict(font=dict(size=11, color="#BAE6FD", weight="bold"))
+                annotation=dict(font=dict(size=11, color="#BAE6FD", weight="bold")),
+                row=1, col=1
             )
 
         # [Row 1] 소득 & 지출 (3대 심플 범례)
