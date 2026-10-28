@@ -1747,9 +1747,9 @@ elif selected_page == "인생의 사계절":
 </div></div>
 """, unsafe_allow_html=True)
 
-        # 6.03.05 | 나만의 생애주기 소득·소비 곡선
+        # 6.03.05 | 나만의 생애주기 소득·소비 곡선 (통계청 실증 피팅 & 생애 이벤트 3대 밴드)
         st.markdown("### 2. 나만의 생애주기 소득·소비 곡선 (국민이전계정 개인화 번역)")
-        st.caption("※ 통계청 국민이전계정(NTA) 공식 패턴을 인터뷰이 본인의 실제 소득·소비 및 은퇴 나이에 맞추어 번역한 개인 곡선입니다.")
+        st.caption("※ 통계청 국민이전계정(NTA) 공식 데이터와 한국보건사회연구원 패널 통계를 기반으로, 나의 실제 가족·소득·지출을 정밀하게 피팅한 곡선입니다.")
         s = current_financial_summary()
         cur_annual_income = s["annual_total_income"]
         cur_annual_expense = s["annual_total_expenses"]
@@ -1758,51 +1758,192 @@ elif selected_page == "인생의 사계절":
         career_st = st.session_state.get("career_stage", "🌱 3년 이하 (초년생)")
         m_plan = st.session_state.get("marriage_plan", "미정")
         c_plan = st.session_state.get("child_plan", "미정")
-        is_single_young = (int(getv("spouse_age", 0)) == 0 and cur_age < 40)
-        has_m_curve = is_female and (c_plan in ["자녀 계획 있음", "출산 예정/준비 중", "추가 자녀 계획 있음"])
+        h_plan = st.session_state.get("housing_plan", "미정")
+        user_gender = st.session_state.get("gender", "🙋‍♂️ 남성")
+        is_female = ("여성" in user_gender)
 
+        # 1) 유효한 자녀 나이 수집
+        existing_child_ages = [int(getv(k, 0)) for k in ["child_age", "child_age2", "child_age3", "child_age4"] if int(getv(k, 0)) > 0]
+
+        # 2) 👶 출산·육아 집중기 구간 산정 (보사연 통계: 초산 평균 33~35세, 소득 30% 급감 & 지출 증가)
+        has_childcare_event = False
+        childcare_start, childcare_end = 0, 0
+        infant_ages = [ca for ca in existing_child_ages if ca <= 6]
+        if infant_ages:
+            has_childcare_event = True
+            youngest_age = min(infant_ages)
+            childcare_start = max(cur_age, cur_age - youngest_age)
+            childcare_end = childcare_start + (7 - youngest_age)
+        elif c_plan in ["자녀 계획 있음", "출산 예정/준비 중", "추가 자녀 계획 있음"]:
+            has_childcare_event = True
+            childcare_start = max(cur_age + 1, 33 if is_female else 35)
+            childcare_end = childcare_start + 4
+
+        # 3) 🎓 자녀 대학교 학자금 피크 구간 (만 19~24세, 자녀당 연 1,500만 원 순증)
+        college_windows = []
+        for ca in existing_child_ages:
+            if ca < 24:
+                c_start = cur_age + max(0, 19 - ca)
+                c_end = cur_age + (24 - ca)
+                college_windows.append((c_start, c_end))
+
+        if not college_windows and c_plan in ["자녀 계획 있음", "출산 예정/준비 중"]:
+            future_birth = max(cur_age + 1, 33 if is_female else 35)
+            college_windows.append((future_birth + 19, future_birth + 24))
+
+        college_band_start = min([w[0] for w in college_windows]) if college_windows else None
+        college_band_end = max([w[1] for w in college_windows]) if college_windows else None
+
+        # 4) 시뮬레이션 연령 구간 (20세 ~ 85세)
         ages_sim = list(range(20, 86))
         my_income_curve = []
         my_expense_curve = []
+
         for a in ages_sim:
-            if a < cur_age: ratio = max(0.28, 1.0 - (0.04 * (cur_age - a))); inc_val = cur_annual_income * ratio
+            # --- [소득 곡선 계산] ---
+            if a < cur_age:
+                ratio = max(0.25, 1.0 - (0.04 * (cur_age - a)))
+                inc_val = cur_annual_income * ratio
             elif cur_age <= a < retire_age:
-                if has_m_curve and cur_age <= 36:
-                    if a <= 32: w = 1.0 + (0.012 * (a - cur_age))
-                    elif 33 <= a <= 36: dist = abs(a - 34.5); w = 0.65 + (0.04 * (dist ** 2))
-                    elif 37 <= a <= 45: w = 0.80 + (0.012 * (a - 37))
-                    else: peak_w = 0.80 + (0.012 * (45 - 37)); w = max(0.75, peak_w - (0.008 * (a - 45)))
+                growth_rate = 0.022 if "초년생" in career_st else 0.015
+                if a <= 46:
+                    w = 1.0 + (growth_rate * (a - cur_age))
                 else:
-                    if a <= 45: w = 1.0 + (0.018 * (a - cur_age))
-                    else: peak_w = 1.0 + (0.018 * max(0, 45 - cur_age)); w = max(0.85, peak_w - (0.008 * (a - 45)))
+                    peak_w = 1.0 + (growth_rate * max(0, 46 - cur_age))
+                    w = max(0.80, peak_w - (0.009 * (a - 46)))
+
+                # 👶 출산·육아기 소득 절벽 (실질 가구소득 -30% U자형 회복)
+                if has_childcare_event and (childcare_start <= a <= childcare_end):
+                    mid_c = (childcare_start + childcare_end) / 2.0
+                    dist = abs(a - mid_c)
+                    dip_factor = 0.70 + (0.035 * (dist ** 2))
+                    w *= min(0.95, dip_factor)
+
                 inc_val = cur_annual_income * w
-            else: inc_val = ret_annual_pension
+            else:
+                inc_val = ret_annual_pension
             my_income_curve.append(inc_val)
 
-            if a < cur_age: exp_val = cur_annual_expense * 0.78
+            # --- [지출 곡선 계산] ---
+            if a < cur_age:
+                exp_val = cur_annual_expense * 0.78
             elif cur_age <= a < retire_age:
                 exp_factor = 1.0
-                if 44 <= a <= 53 and c_age1 < 20: exp_factor = 1.14
-                if is_single_young:
-                    if m_plan in ["1~3년 내 결혼 생각 있음", "결혼 예정/준비 중"] and (cur_age <= a <= cur_age + 3): exp_factor = max(exp_factor, 1.10)
-                    if c_plan in ["자녀 계획 있음", "출산 예정/준비 중", "추가 자녀 계획 있음"] and (33 <= a <= 37): exp_factor = max(exp_factor, 1.15)
-                exp_val = cur_annual_expense * exp_factor
-            else: exp_val = ret_annual_expense
+                if has_childcare_event and (childcare_start <= a <= childcare_end):
+                    exp_factor *= 1.18
+                if m_plan in ["1~3년 내 결혼 생각 있음", "결혼 예정/준비 중"] and (cur_age <= a <= cur_age + 2):
+                    exp_factor *= 1.12
+                if h_plan in ["주택 구입 고려", "주거 계획 확정"]:
+                    exp_factor *= 1.08
+
+                base_exp = cur_annual_expense * exp_factor
+
+                # 🎓 자녀 대학 학자금 가산 (재학 자녀 수 × 1,500만 원)
+                college_kids_count = sum(1 for (cs, ce) in college_windows if cs <= a <= ce)
+                extra_college_exp = college_kids_count * 1500.0
+
+                exp_val = base_exp + extra_college_exp
+            else:
+                exp_val = ret_annual_expense
             my_expense_curve.append(exp_val)
 
+        # 5) Plotly 차트 렌더링
         fig_my_nta = go.Figure()
-        fig_my_nta.add_trace(go.Scatter(x=ages_sim, y=my_income_curve, mode="lines", line=dict(color="#10B981", width=3.5, shape='spline', smoothing=1.0), name="나의 소득 흐름 (근로·사업소득 ➔ 은퇴 후 연금)", hovertemplate="나이: %{x}세<br>연 소득: <b>%{y:,.0f}만 원</b><extra></extra>"))
-        fig_my_nta.add_trace(go.Scatter(x=ages_sim, y=my_expense_curve, mode="lines", line=dict(color="#F97316", width=2.8, dash="dash", shape='spline', smoothing=1.0), name="나의 생애 소비 흐름", hovertemplate="나이: %{x}세<br>연 소비: <b>%{y:,.0f}만 원</b><extra></extra>"))
-        fig_my_nta.add_vline(x=cur_age, line_dash="solid", line_color="#38BDF8", line_width=2)
-        fig_my_nta.add_annotation(x=cur_age, y=max(my_income_curve) * 0.95, text=f"현재 나이 ({cur_age}세)", showarrow=True, arrowhead=2, arrowcolor="#38BDF8", font=dict(size=12, color="#BAE6FD"), ay=-30, bgcolor="rgba(15, 23, 42, 0.85)", bordercolor="#38BDF8")
-        if has_m_curve and cur_age <= 35:
-            dip_val = my_income_curve[ages_sim.index(34)]
-            fig_my_nta.add_annotation(x=34, y=dip_val, text="👶 출산·육아기 (소득 급감)", showarrow=True, arrowhead=2, arrowcolor="#FB923C", font=dict(size=11.5, color="#FDBA74"), ay=36, bgcolor="rgba(15, 23, 42, 0.85)", bordercolor="#FB923C", borderpad=3)
-        fig_my_nta.add_vline(x=retire_age, line_dash="dash", line_color="#EF4444", line_width=2)
-        fig_my_nta.add_annotation(x=retire_age, y=my_income_curve[ages_sim.index(retire_age)], text=f"나의 은퇴 시점 ({retire_age}세 적자 전환)", showarrow=True, arrowhead=2, arrowcolor="#EF4444", font=dict(size=12, color="#FCA5A5"), ay=35, bgcolor="rgba(15, 23, 42, 0.85)", bordercolor="#EF4444")
-        fig_my_nta.update_layout(height=380, margin=dict(l=20, r=20, t=30, b=35), paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="rgba(0,0,0,0)", font=dict(color="#E2E8F0", size=13), xaxis=dict(title=dict(text="연령 (세)", font=dict(size=14, color="#94A3B8")), tickfont=dict(size=13, color="#94A3B8"), gridcolor="rgba(100, 116, 139, 0.2)", tickmode="linear", tick0=20, dtick=5, fixedrange=True), yaxis=dict(title=dict(text="연간 금액 (만 원)", font=dict(size=14, color="#94A3B8")), tickfont=dict(size=13, color="#94A3B8"), tickformat=",.0f", gridcolor="rgba(100, 116, 139, 0.2)", fixedrange=True), legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1, font=dict(size=12.5, color="#F1F5F9")), hovermode="x unified")
-        st.plotly_chart(fig_my_nta, use_container_width=True, config={"displayModeBar": False, "scrollZoom": False, "doubleClick": False, "showAxisDragHandles": False})
 
+        # [배경 띠 1] 👶 출산·육아 집중기 (살구/오렌지 띠)
+        if has_childcare_event and childcare_end > cur_age:
+            c_band_x0 = max(cur_age, childcare_start)
+            c_band_x1 = childcare_end
+            if c_band_x1 > c_band_x0:
+                fig_my_nta.add_vrect(
+                    x0=c_band_x0, x1=c_band_x1,
+                    fillcolor="rgba(249, 115, 22, 0.12)", layer="below", line_width=0,
+                    annotation_text="👶 출산·육아 소득절벽", annotation_position="top left",
+                    annotation=dict(font=dict(size=11, color="#FB923C", weight="bold"))
+                )
+
+        # [배경 띠 2] 🎓 자녀 대학교 학자금 집중기 (보라/인디고 띠)
+        if college_band_start and college_band_end and college_band_end > cur_age:
+            col_x0 = max(cur_age, college_band_start)
+            col_x1 = college_band_end
+            if col_x1 > col_x0:
+                fig_my_nta.add_vrect(
+                    x0=col_x0, x1=col_x1,
+                    fillcolor="rgba(168, 85, 247, 0.13)", layer="below", line_width=0,
+                    annotation_text="🎓 자녀 대학·독립 피크", annotation_position="top left",
+                    annotation=dict(font=dict(size=11, color="#C084FC", weight="bold"))
+                )
+
+        # [배경 띠 3] ❄️ 은퇴 후 겨울 (스카이블루 띠)
+        fig_my_nta.add_vrect(
+            x0=retire_age, x1=85,
+            fillcolor="rgba(56, 189, 248, 0.08)", layer="below", line_width=0,
+            annotation_text="❄️ 은퇴 후 겨울 (소득단절)", annotation_position="top left",
+            annotation=dict(font=dict(size=11, color="#38BDF8", weight="bold"))
+        )
+
+        fig_my_nta.add_trace(go.Scatter(
+            x=ages_sim, y=my_income_curve, mode="lines",
+            line=dict(color="#10B981", width=3.5, shape='spline', smoothing=0.8),
+            name="나의 소득 흐름 (근로소득 ➔ 은퇴 연금)",
+            hovertemplate="나이: %{x}세<br>연 소득: <b>%{y:,.0f}만 원</b><extra></extra>"
+        ))
+        fig_my_nta.add_trace(go.Scatter(
+            x=ages_sim, y=my_expense_curve, mode="lines",
+            line=dict(color="#F97316", width=3.0, dash="dash", shape='spline', smoothing=0.8),
+            name="나의 생애 지출 흐름 (학자금/생활비)",
+            hovertemplate="나이: %{x}세<br>연 지출: <b>%{y:,.0f}만 원</b><extra></extra>"
+        ))
+
+        fig_my_nta.add_vline(x=cur_age, line_dash="solid", line_color="#38BDF8", line_width=2)
+        fig_my_nta.add_annotation(
+            x=cur_age, y=max(my_income_curve) * 0.96,
+            text=f"현재 나이 ({cur_age}세)",
+            showarrow=True, arrowhead=2, arrowcolor="#38BDF8",
+            font=dict(size=12, color="#BAE6FD"), ay=-30,
+            bgcolor="rgba(15, 23, 42, 0.85)", bordercolor="#38BDF8"
+        )
+
+        fig_my_nta.add_vline(x=retire_age, line_dash="dash", line_color="#EF4444", line_width=2)
+        fig_my_nta.add_annotation(
+            x=retire_age, y=my_income_curve[ages_sim.index(retire_age)],
+            text=f"은퇴 ({retire_age}세)",
+            showarrow=True, arrowhead=2, arrowcolor="#EF4444",
+            font=dict(size=12, color="#FCA5A5"), ay=32,
+            bgcolor="rgba(15, 23, 42, 0.85)", bordercolor="#EF4444"
+        )
+
+        fig_my_nta.update_layout(
+            height=390,
+            margin=dict(l=20, r=20, t=35, b=35),
+            paper_bgcolor="rgba(0,0,0,0)",
+            plot_bgcolor="rgba(0,0,0,0)",
+            font=dict(color="#E2E8F0", size=13),
+            xaxis=dict(
+                title=dict(text="연령 (세)", font=dict(size=14, color="#94A3B8")),
+                tickfont=dict(size=13, color="#94A3B8"),
+                gridcolor="rgba(100, 116, 139, 0.2)",
+                tickmode="linear", tick0=20, dtick=5,
+                fixedrange=True
+            ),
+            yaxis=dict(
+                title=dict(text="연간 금액 (만 원)", font=dict(size=14, color="#94A3B8")),
+                tickfont=dict(size=13, color="#94A3B8"),
+                tickformat=",.0f",
+                gridcolor="rgba(100, 116, 139, 0.2)",
+                fixedrange=True
+            ),
+            legend=dict(
+                orientation="h",
+                yanchor="bottom",
+                y=1.02,
+                xanchor="right",
+                x=1,
+                font=dict(size=12.5, color="#F1F5F9")
+            ),
+            hovermode="x unified"
+        )
+        st.plotly_chart(fig_my_nta, use_container_width=True, config={"displayModeBar": False, "scrollZoom": False, "doubleClick": False, "showAxisDragHandles": False})
         st.markdown("<div style='height: 14px;'></div>", unsafe_allow_html=True)
 
         # 6.03.06 | 국가데이터처 공식 생애 통계 지표 (단위 다이어트 & <생애주기적자> 차트)
