@@ -1602,7 +1602,7 @@ elif selected_page == "인생의 사계절":
         
     if not is_adv:
         # [기본 모드] 중복 제목 없이 3대 지표 + 내 계절 배지만 노출
-        st.caption("가벼운 3분 산책: 대한민국 통계청 공식 지표를 통해 내 인생의 사계절 중 어디쯤 와 있는지 확인합니다.")
+        st.caption("가벼운 3분 산책: 대한민국 국가데이터처 공식 지표를 통해 내 인생의 사계절 중 어디쯤 와 있는지 확인합니다.")
 
         if cur_age <= 27: cur_season, s_icon, s_color, s_desc = "봄 (준비기)", "🌱", "#4ADE80", "부모님의 부양으로 배우고 성장하는 계절"
         elif 28 <= cur_age <= 45: cur_season, s_icon, s_color, s_desc = "여름 (성장기)", "☀️", "#F59E0B", "성실하게 일하여 가정을 일구고 최대 흑자를 만드는 계절"
@@ -1735,8 +1735,8 @@ elif selected_page == "인생의 사계절":
             st.markdown(f"""
 <div style="background: rgba(234, 88, 12, 0.12); border-left: 4px solid #EA580C; border-radius: 6px; padding: 14px 18px; margin: 12px 0 20px 0;">
 <div style="font-size: 15px; font-weight: 750; color: #F8FAFC; line-height: 1.6;">
-🎯 <b>생애 지출 피크 자각 포인트</b>: 첫째 자녀가 대학에 입학하는 만 20세가 되면, 나의 나이는 <b>만 {college_my_age}세</b>가 됩니다.<br>
-<span style="font-size: 13.5px; color: #CBD5E1;">통계청 국민이전계정 상 소득 정점(45세)은 지나가면서, 자녀 학자금과 독립 비용으로 <b>인생에서 가장 큰 지출이 집중되는 결정적 시기</b>입니다.</span>
+🎯 <b>생애 주요지출</b>: 첫째 자녀가 대학에 입학하는 만 20세가 되면, 나의 나이는 <b>만 {college_my_age}세</b>가 되는구나.<br>
+<span style="font-size: 13.5px; color: #CBD5E1;">국가데이터처 통계상 소득 정점(45세)은 지나가면서, 자녀 학자금과 독립 비용으로 <b>인생에서 가장 큰 지출이 집중되는 결정적 시기</b>입니다.</span>
 </div></div>
 """, unsafe_allow_html=True)
         elif c_age1 >= 20:
@@ -1751,7 +1751,7 @@ elif selected_page == "인생의 사계절":
         from plotly.subplots import make_subplots
 
         st.markdown("### 2. 나만의 생애주기 곡선")
-        st.caption("※ 통계청 국민이전계정(NTA) 통계 기반으로, 나의 실제 가족·소득·지출을 개략적으로 맞춘 곡선입니다. (단위: 연간 만 원)")
+        st.caption("※ 국가데이터처 국민이전계정(NTA) 통계 기반으로, 나의 실제 가족·소득·지출을 개략적으로 맞춘 곡선입니다. (단위: 연간 만 원)")
         s = current_financial_summary()
         cur_annual_income = s["annual_total_income"]
         cur_annual_expense = s["annual_total_expenses"]
@@ -2128,7 +2128,7 @@ elif selected_page == "인생의 사계절":
 
         # 6.03.06 | 국가데이터처 통계
         st.markdown("### 3. 국가데이터처 통계")
-        st.caption("※ 통계청 국민이전계정(NTA) 공식 발표 자료 기준")
+        st.caption("※ 국가데이터처 국민이전계정(NTA) 공식 발표 자료 기준")
         col_m1, col_m2, col_m3 = st.columns(3)
         col_m1.metric("한국인 평균 흑자 진입", "28세", help="노동소득이 소비를 추월하는 연령")
         col_m2.metric("최대 흑자 정점", "45세", "연 1,932만 원")
@@ -2185,7 +2185,7 @@ elif selected_page == "인생의 사계절":
         st.markdown(f"""
 <div style="background: rgba(30, 41, 59, 0.6); border: 1px solid #334155; border-radius: 12px; padding: 18px 20px; margin: 16px 0 24px 0;">
 <div style="font-size: 15px; color: #F8FAFC; line-height: 1.6; word-break: keep-all;">
-💡 <b>산책로의 질문</b><br>은퇴 후 내가 맞이할 겨울은 <b>약 {winter_years}년 </b>입니다. (통계청 {user_gender.split()[1]} 기대수명 {life_expectancy}세 기준)<br>
+💡 <b>산책로의 질문</b><br>은퇴 후 내가 맞이할 겨울은 <b>약 {winter_years}년 </b>입니다. (국가데이터처 {user_gender.split()[1]} 기대수명 {life_expectancy}세 기준)<br>
 <span style="color: #94A3B8;">이 긴 겨울 동안 매달 무거운 물통을 지고 눈길을 걸을 것인가, 방 안에서 따뜻하게 흘러나오는 파이프라인을 맞이할 것인가는 <b>지금 '가을'의 준비</b>에 달려 있습니다.</span>
 </div></div>
 """, unsafe_allow_html=True)
@@ -2377,7 +2377,7 @@ else:
 [은퇴 안정성]
 반드시 '은퇴 안정성 측면에서는'으로 시작하고 이름을 부르지 마세요.
 은퇴 후 월 희망 생활비와 예상 월연금의 차이를 설명하되, 입력된 값의 성격과 산출 근거가 불분명하면 안정성이 확보되었다고 단정하지 마세요. 두 금액의 단순 차액과 실제 은퇴 안정성은 구분하세요.
-은퇴 후 약 {winter_years}년은 통계청 {user_gender.split()[1]} 기대수명({life_expectancy}세)에 기초한 계산상 가정으로 취급하세요. 현재 경력 단계와 순자산을 연결해 설명하되, 실제 현금 보유액이나 유동성 자료가 없다면 유동성 준비 상태를 평가하지 마세요. 결혼, 자녀, 주거 계획 등 확인되지 않은 미래 사건을 전제로 삼지 말고, 정중하고 담백하게 서술하세요."""
+은퇴 후 약 {winter_years}년은 국가데이터처 {user_gender.split()[1]} 기대수명({life_expectancy}세)에 기초한 계산상 가정으로 취급하세요. 현재 경력 단계와 순자산을 연결해 설명하되, 실제 현금 보유액이나 유동성 자료가 없다면 유동성 준비 상태를 평가하지 마세요. 결혼, 자녀, 주거 계획 등 확인되지 않은 미래 사건을 전제로 삼지 말고, 정중하고 담백하게 서술하세요."""
 
         if st.button("⚡ AI 리포트 생성", type="primary", use_container_width=True):
             st.session_state.ai_summary = summary
