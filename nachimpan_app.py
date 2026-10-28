@@ -1849,7 +1849,7 @@ elif selected_page == "인생의 사계절":
         # 5) 연간 순수지 (소득 - 지출) 산출: 흑자(+) vs 적자(-)
         net_flow = [i - e for i, e in zip(my_income_curve, my_expense_curve)]
 
-        # 0 교차점 보간으로 흑자(녹색)와 적자(붉은색) 음영 완벽 분리
+        # 0 교차점 보간으로 흑자(녹색)와 적자(붉은색) 음영 분리
         ages_fine = []
         flow_fine = []
         for idx in range(len(ages_sim) - 1):
@@ -1876,7 +1876,7 @@ elif selected_page == "인생의 사계절":
         alt_level_2 = y_top * 0.32
         alt_level_1 = y_top * 0.10
 
-        # 7) 2단 서브플롯 생성 (차트 제목 생략으로 세로 공간 100% 확보)
+        # 7) 2단 서브플롯 생성
         fig_my_nta = make_subplots(
             rows=2, cols=1,
             shared_xaxes=True,
@@ -1931,22 +1931,22 @@ elif selected_page == "인생의 사계절":
             row=1, col=1
         )
 
-        # [Row 1] 소득 곡선 (에메랄드 그린) & 지출 곡선 (오렌지 점선)
+        # [Row 1] 소득 & 지출 (심플 범례)
         fig_my_nta.add_trace(go.Scatter(
             x=ages_sim, y=my_income_curve, mode="lines",
             line=dict(color="#10B981", width=3.2, shape='spline', smoothing=0.8),
-            name="나의 소득 흐름",
+            name="소득",
             hovertemplate="나이: %{x}세<br>연 소득: <b>%{y:,.0f}만 원</b><extra></extra>"
         ), row=1, col=1)
 
         fig_my_nta.add_trace(go.Scatter(
             x=ages_sim, y=my_expense_curve, mode="lines",
             line=dict(color="#F97316", width=2.8, dash="dash", shape='spline', smoothing=0.8),
-            name="나의 생애 지출 흐름",
+            name="지출",
             hovertemplate="나이: %{x}세<br>연 지출: <b>%{y:,.0f}만 원</b><extra></extra>"
         ), row=1, col=1)
 
-        # [Row 1] 현재 나이 기준선 & 뱃지 (최하단 고도 1)
+        # [Row 1] 현재 나이 기준선 & 뱃지
         fig_my_nta.add_vline(x=cur_age, line_dash="solid", line_color="#38BDF8", line_width=2.0)
         fig_my_nta.add_annotation(
             x=cur_age, y=alt_level_1,
@@ -1957,7 +1957,7 @@ elif selected_page == "인생의 사계절":
             row=1, col=1
         )
 
-        # [Row 1] 은퇴 기준선 & 뱃지 (화이트 점선 & 중하단 고도 2)
+        # [Row 1] 은퇴 기준선 & 뱃지 (화이트 점선)
         retire_line_color = "#F8FAFC"
         fig_my_nta.add_vline(x=retire_age, line_dash="dot", line_color=retire_line_color, line_width=2.2)
         fig_my_nta.add_annotation(
@@ -1969,56 +1969,54 @@ elif selected_page == "인생의 사계절":
             row=1, col=1
         )
 
-        # [Row 2] 0선 기준선 (수평 실선)
+        # [Row 2] 0선 기준선
         fig_my_nta.add_hline(y=0, line_dash="solid", line_color="#94A3B8", line_width=1.5, row=2, col=1)
 
-        # [Row 2] 흑자 영역 (녹색 음영, y >= 0)
+        # [Row 2] 흑자 영역 (녹색, 범례 숨김)
         fig_my_nta.add_trace(go.Scatter(
             x=ages_fine, y=surplus_fine, mode="lines",
             line=dict(width=0, color="rgba(0,0,0,0)"),
             fill='tozeroy', fillcolor='rgba(16, 185, 129, 0.28)',
-            name="흑자 구간 (+)",
+            showlegend=False,
             hoverinfo="skip"
         ), row=2, col=1)
 
-        # [Row 2] 적자 영역 (붉은색 음영, y <= 0)
+        # [Row 2] 적자 영역 (붉은색, 범례 숨김)
         fig_my_nta.add_trace(go.Scatter(
             x=ages_fine, y=deficit_fine, mode="lines",
             line=dict(width=0, color="rgba(0,0,0,0)"),
             fill='tozeroy', fillcolor='rgba(239, 68, 68, 0.28)',
-            name="적자 구간 (-)",
+            showlegend=False,
             hoverinfo="skip"
         ), row=2, col=1)
 
-        # [Row 2] 연간 순수지 실선 (실버 라인)
+        # [Row 2] 연간 순수지 실선 (범례: '소득-지출')
         fig_my_nta.add_trace(go.Scatter(
             x=ages_sim, y=net_flow, mode="lines",
             line=dict(color="#CBD5E1", width=2.4, shape='spline', smoothing=0.8),
-            name="순수지 (소득 - 지출)",
+            name="소득-지출",
             hovertemplate="나이: %{x}세<br>순수지: <b>%{y:,.0f}만 원</b><extra></extra>"
         ), row=2, col=1)
 
-        # Row 2 직관적 흑자/적자 뱃지
-        max_surplus = max(net_flow)
-        min_deficit = min(net_flow)
-        if max_surplus > 0:
-            fig_my_nta.add_annotation(
-                x=42, y=max_surplus * 0.70,
-                text="▲ 흑자 (소득 > 지출)", showarrow=False,
-                font=dict(size=11, color="#86EFAC", weight="bold"),
-                bgcolor="rgba(15, 23, 42, 0.75)", bordercolor="rgba(34, 197, 94, 0.5)", borderpad=3,
-                row=2, col=1
-            )
-        if min_deficit < 0:
-            fig_my_nta.add_annotation(
-                x=70, y=min_deficit * 0.65,
-                text="▼ 적자 (지출 > 소득)", showarrow=False,
-                font=dict(size=11, color="#FCA5A5", weight="bold"),
-                bgcolor="rgba(15, 23, 42, 0.75)", bordercolor="rgba(239, 68, 68, 0.5)", borderpad=3,
-                row=2, col=1
-            )
+        # Row 2 중심축(y=0)에 착 붙인 흑자/적자 뱃지
+        fig_my_nta.add_annotation(
+            x=38, y=0,
+            text="▲ 흑자 (소득 > 지출)", showarrow=False,
+            yshift=14,
+            font=dict(size=10.5, color="#86EFAC", weight="bold"),
+            bgcolor="rgba(15, 23, 42, 0.8)", bordercolor="rgba(34, 197, 94, 0.5)", borderpad=2,
+            row=2, col=1
+        )
+        fig_my_nta.add_annotation(
+            x=68, y=0,
+            text="▼ 적자 (지출 > 소득)", showarrow=False,
+            yshift=-14,
+            font=dict(size=10.5, color="#FCA5A5", weight="bold"),
+            bgcolor="rgba(15, 23, 42, 0.8)", bordercolor="rgba(239, 68, 68, 0.5)", borderpad=2,
+            row=2, col=1
+        )
 
-        # 전체 레이아웃 (모바일 폭 100% 활용, 좌측 타이틀 제거, 10세 단위 수평 눈금)
+        # 전체 레이아웃 (3대 심플 범례, 모바일 최적화)
         fig_my_nta.update_layout(
             height=490,
             margin=dict(l=10, r=10, t=25, b=25),
@@ -2031,12 +2029,12 @@ elif selected_page == "인생의 사계절":
                 y=1.03,
                 xanchor="center",
                 x=0.5,
-                font=dict(size=11, color="#F1F5F9")
+                font=dict(size=12, color="#F1F5F9")
             ),
             hovermode="x unified"
         )
 
-        # X축: 10세 단위, 수평 고정 (tickangle=0)
+        # X축: 10세 단위, 수평 고정
         fig_my_nta.update_xaxes(
             tickmode="linear", tick0=20, dtick=10,
             tickangle=0,
@@ -2046,7 +2044,7 @@ elif selected_page == "인생의 사계절":
         )
         fig_my_nta.update_xaxes(title=dict(text="연령 (세)", font=dict(size=12, color="#94A3B8")), row=2, col=1)
 
-        # Y축: 좌측 세로 제목 제거(title=None)로 모바일 화면 폭 100% 확보
+        # Y축
         fig_my_nta.update_yaxes(
             title=None,
             tickfont=dict(size=11, color="#94A3B8"),
