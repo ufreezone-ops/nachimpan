@@ -1747,7 +1747,7 @@ elif selected_page == "인생의 사계절":
 </div></div>
 """, unsafe_allow_html=True)
 
-        # 6.03.05 | 나만의 생애주기 곡선 & 생애주기적자 2단 연동 차트
+        # 6.03.05 | 나만의 생애주기 곡선 & 흑자/적자 2단 연동 차트
         from plotly.subplots import make_subplots
 
         st.markdown("### 2. 나만의 생애주기 곡선")
@@ -1846,8 +1846,27 @@ elif selected_page == "인생의 사계절":
                 exp_val = ret_annual_expense
             my_expense_curve.append(exp_val)
 
-        # 5) 생애주기적자 (지출 - 소득) 산출
-        deficit_curve = [e - i for e, i in zip(my_expense_curve, my_income_curve)]
+        # 5) 연간 순수지 (소득 - 지출) 산출: 흑자(+) vs 적자(-)
+        net_flow = [i - e for i, e in zip(my_income_curve, my_expense_curve)]
+
+        # 0 교차점 보간으로 흑자(녹색)와 적자(붉은색) 음영 완벽 분리
+        ages_fine = []
+        flow_fine = []
+        for idx in range(len(ages_sim) - 1):
+            a1, a2 = ages_sim[idx], ages_sim[idx+1]
+            v1, v2 = net_flow[idx], net_flow[idx+1]
+            ages_fine.append(a1)
+            flow_fine.append(v1)
+            if (v1 > 0 and v2 < 0) or (v1 < 0 and v2 > 0):
+                t = abs(v1) / (abs(v1) + abs(v2))
+                a_zero = a1 + t * (a2 - a1)
+                ages_fine.append(a_zero)
+                flow_fine.append(0.0)
+        ages_fine.append(ages_sim[-1])
+        flow_fine.append(net_flow[-1])
+
+        surplus_fine = [max(0.0, v) for v in flow_fine]
+        deficit_fine = [min(0.0, v) for v in flow_fine]
 
         # 6) 상단 차트 고도 레벨 산정
         y_max = max(max(my_income_curve), max(my_expense_curve)) if my_income_curve else 6000
@@ -1857,13 +1876,12 @@ elif selected_page == "인생의 사계절":
         alt_level_2 = y_top * 0.32
         alt_level_1 = y_top * 0.10
 
-        # 7) 2단 서브플롯 생성 (공유 X축, 모바일 여백 극대화)
+        # 7) 2단 서브플롯 생성 (차트 제목 생략으로 세로 공간 100% 확보)
         fig_my_nta = make_subplots(
             rows=2, cols=1,
             shared_xaxes=True,
-            vertical_spacing=0.09,
-            row_heights=[0.58, 0.42],
-            subplot_titles=("소득 vs 지출 흐름 (3대 밴드)", "나만의 생애주기적자 (지출 - 소득)")
+            vertical_spacing=0.06,
+            row_heights=[0.58, 0.42]
         )
 
         # [배경 띠 1] 👶 출산·육아 집중기 (앰버 띠)
@@ -1951,41 +1969,59 @@ elif selected_page == "인생의 사계절":
             row=1, col=1
         )
 
-        # [Row 2] 생애주기적자 0선 (기준선)
-        fig_my_nta.add_hline(y=0, line_dash="solid", line_color="#64748B", line_width=1.5, row=2, col=1)
+        # [Row 2] 0선 기준선 (수평 실선)
+        fig_my_nta.add_hline(y=0, line_dash="solid", line_color="#94A3B8", line_width=1.5, row=2, col=1)
 
-        # [Row 2] 생애주기적자 영역 (지출 - 소득)
+        # [Row 2] 흑자 영역 (녹색 음영, y >= 0)
         fig_my_nta.add_trace(go.Scatter(
-            x=ages_sim, y=deficit_curve, mode="lines",
-            line=dict(color="#38BDF8", width=2.6, shape='spline', smoothing=0.8),
-            fill='tozeroy', fillcolor='rgba(147, 197, 253, 0.35)',
-            name="생애주기적자 (지출 - 소득)",
-            hovertemplate="나이: %{x}세<br>적자/흑자: <b>%{y:,.0f}만 원</b><extra></extra>"
+            x=ages_fine, y=surplus_fine, mode="lines",
+            line=dict(width=0, color="rgba(0,0,0,0)"),
+            fill='tozeroy', fillcolor='rgba(16, 185, 129, 0.28)',
+            name="흑자 구간 (+)",
+            hoverinfo="skip"
         ), row=2, col=1)
 
-        # Row 2 적자/흑자 안내 텍스트 뱃지
-        fig_my_nta.add_annotation(
-            x=24, y=max(deficit_curve) * 0.75 if max(deficit_curve) > 0 else 500,
-            text="▲ 적자 (지출 > 소득)", showarrow=False,
-            font=dict(size=10.5, color="#FCA5A5", weight="bold"),
-            bgcolor="rgba(15, 23, 42, 0.7)", bordercolor="rgba(239, 68, 68, 0.4)", borderpad=2,
-            row=2, col=1
-        )
-        fig_my_nta.add_annotation(
-            x=45, y=min(deficit_curve) * 0.75 if min(deficit_curve) < 0 else -500,
-            text="▼ 흑자 (소득 > 지출)", showarrow=False,
-            font=dict(size=10.5, color="#86EFAC", weight="bold"),
-            bgcolor="rgba(15, 23, 42, 0.7)", bordercolor="rgba(34, 197, 94, 0.4)", borderpad=2,
-            row=2, col=1
-        )
+        # [Row 2] 적자 영역 (붉은색 음영, y <= 0)
+        fig_my_nta.add_trace(go.Scatter(
+            x=ages_fine, y=deficit_fine, mode="lines",
+            line=dict(width=0, color="rgba(0,0,0,0)"),
+            fill='tozeroy', fillcolor='rgba(239, 68, 68, 0.28)',
+            name="적자 구간 (-)",
+            hoverinfo="skip"
+        ), row=2, col=1)
 
-        # 서브플롯 타이틀 스타일링
-        fig_my_nta.for_each_annotation(lambda a: a.update(font=dict(size=12, color="#E2E8F0")) if a.text in ["소득 vs 지출 흐름 (3대 밴드)", "나만의 생애주기적자 (지출 - 소득)"] else None)
+        # [Row 2] 연간 순수지 실선 (실버 라인)
+        fig_my_nta.add_trace(go.Scatter(
+            x=ages_sim, y=net_flow, mode="lines",
+            line=dict(color="#CBD5E1", width=2.4, shape='spline', smoothing=0.8),
+            name="순수지 (소득 - 지출)",
+            hovertemplate="나이: %{x}세<br>순수지: <b>%{y:,.0f}만 원</b><extra></extra>"
+        ), row=2, col=1)
+
+        # Row 2 직관적 흑자/적자 뱃지
+        max_surplus = max(net_flow)
+        min_deficit = min(net_flow)
+        if max_surplus > 0:
+            fig_my_nta.add_annotation(
+                x=42, y=max_surplus * 0.70,
+                text="▲ 흑자 (소득 > 지출)", showarrow=False,
+                font=dict(size=11, color="#86EFAC", weight="bold"),
+                bgcolor="rgba(15, 23, 42, 0.75)", bordercolor="rgba(34, 197, 94, 0.5)", borderpad=3,
+                row=2, col=1
+            )
+        if min_deficit < 0:
+            fig_my_nta.add_annotation(
+                x=70, y=min_deficit * 0.65,
+                text="▼ 적자 (지출 > 소득)", showarrow=False,
+                font=dict(size=11, color="#FCA5A5", weight="bold"),
+                bgcolor="rgba(15, 23, 42, 0.75)", bordercolor="rgba(239, 68, 68, 0.5)", borderpad=3,
+                row=2, col=1
+            )
 
         # 전체 레이아웃 (모바일 폭 100% 활용, 좌측 타이틀 제거, 10세 단위 수평 눈금)
         fig_my_nta.update_layout(
-            height=510,
-            margin=dict(l=10, r=10, t=30, b=25),
+            height=490,
+            margin=dict(l=10, r=10, t=25, b=25),
             paper_bgcolor="rgba(0,0,0,0)",
             plot_bgcolor="rgba(0,0,0,0)",
             font=dict(color="#E2E8F0", size=12),
