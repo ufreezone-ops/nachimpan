@@ -1756,7 +1756,7 @@ elif selected_page == "인생의 사계절":
 </div></div>
 """, unsafe_allow_html=True)
 
-# 6.03.05 | 나만의 생애주기 곡선 & 흑자/적자 2단 연동 차트
+        # 6.03.05 | 나만의 생애주기 곡선 & 흑자/적자 2단 연동 차트
         from plotly.subplots import make_subplots
 
         st.markdown("### 2. 나만의 생애주기 곡선")
@@ -1776,7 +1776,7 @@ elif selected_page == "인생의 사계절":
         # 1) 유효한 자녀 나이 수집
         existing_child_ages = [int(getv(k, 0)) for k in ["child_age", "child_age2", "child_age3", "child_age4"] if int(getv(k, 0)) > 0]
 
-        # 2) 👶 출산·육아 집중기 구간 산정
+        # 2) 출산·육아 집중기 구간 산정
         childcare_windows = []
         if existing_child_ages:
             for ca in existing_child_ages:
@@ -1789,7 +1789,7 @@ elif selected_page == "인생의 사계절":
         childcare_start = min([w[0] for w in childcare_windows]) if childcare_windows else None
         childcare_end = max([w[1] for w in childcare_windows]) if childcare_windows else None
 
-        # 3) 🎓 자녀 대학교 학자금 피크 구간
+        # 3) 자녀 대학교 학자금 피크 구간
         college_windows = []
         if existing_child_ages:
             for ca in existing_child_ages:
@@ -1808,7 +1808,6 @@ elif selected_page == "인생의 사계절":
         my_income_curve = []
         my_expense_curve = []
 
-        # 은퇴자 과거 전성기 소득 보정
         is_already_retired = (cur_age >= retire_age) or (cur_annual_income < 1200 and cur_age >= 60)
         if is_already_retired:
             base_career_income = max(cur_annual_income, ret_annual_pension * 1.8, cur_annual_expense * 1.5, 5200.0)
@@ -1862,7 +1861,6 @@ elif selected_page == "인생의 사계절":
         # 5) 연간 순수지 (소득 - 지출): 흑자(+) vs 적자(-)
         net_flow = [i - e for i, e in zip(my_income_curve, my_expense_curve)]
 
-        # 0 교차점 보간으로 흑자(녹색)와 적자(붉은색) 음영 완벽 분리
         ages_fine = []
         flow_fine = []
         for idx in range(len(ages_sim) - 1):
@@ -1886,75 +1884,70 @@ elif selected_page == "인생의 사계절":
         y_top = y_max * 1.16
         alt_level_2 = y_top * 0.32
         alt_level_1 = y_top * 0.10
-        alt_level_5 = y_top * 0.85  # 타이틀 뱃지 높이 (1단 차트 기준)
 
-        # 💡 [필수] 배경 띠를 그리기 전에 서브플롯 객체를 가장 먼저 선언합니다!
         fig_my_nta = make_subplots(
             rows=2, cols=1,
             shared_xaxes=True,
-            vertical_spacing=0.06,
+            vertical_spacing=0.08,
             row_heights=[0.58, 0.42]
         )
 
-        # [배경 띠 1] 👶 출산·육아 집중기 (1단, 2단 각각 명시적 적용)
+        # [상하 차트 일관 관통 배경 밴드 & 차트 사이 중앙 타이틀 뱃지]
+        # 1. 출산·육아 밴드
         if childcare_start and childcare_end:
             c_band_x0 = max(20, min(childcare_start, 85))
             c_band_x1 = max(20, min(childcare_end, 85))
             if c_band_x1 > c_band_x0:
-                for r_idx in [1, 2]:  # 👈 위아래 차트 모두에 띠 추가
-                    fig_my_nta.add_vrect(
-                        x0=c_band_x0, x1=c_band_x1,
-                        fillcolor="rgba(249, 115, 22, 0.30)", layer="below", line_width=0,
-                        row=r_idx, col=1
-                    )
-                # 타이틀 뱃지는 상단(1단)에만 예쁘게 고정
+                fig_my_nta.add_shape(
+                    type="rect", xref="x", yref="paper",
+                    x0=c_band_x0, x1=c_band_x1, y0=0, y1=1,
+                    fillcolor="rgba(249, 115, 22, 0.22)", line_width=0, layer="below"
+                )
                 fig_my_nta.add_annotation(
-                    x=(c_band_x0 + c_band_x1) / 2.0, y=alt_level_5,
-                    text="👶 출산·육아", showarrow=False,
+                    xref="x", yref="paper",
+                    x=(c_band_x0 + c_band_x1) / 2.0, y=0.415,
+                    text="출산·육아", showarrow=False,
                     font=dict(size=11, color="#FDBA74", weight="bold"),
-                    bgcolor="rgba(15, 23, 42, 0.85)", bordercolor="#F97316", borderpad=2,
-                    row=1, col=1
+                    bgcolor="rgba(15, 23, 42, 0.92)", bordercolor="#F97316", borderpad=3
                 )
 
-        # [배경 띠 2] 🎓 자녀 대학교 학자금 피크 (1단, 2단 각각 명시적 적용)
+        # 2. 자녀 대학 밴드
         if college_band_start and college_band_end:
             k_band_x0 = max(20, min(college_band_start, 85))
             k_band_x1 = max(20, min(college_band_end, 85))
             if k_band_x1 > k_band_x0:
-                for r_idx in [1, 2]:
-                    fig_my_nta.add_vrect(
-                        x0=k_band_x0, x1=k_band_x1,
-                        fillcolor="rgba(168, 85, 247, 0.30)", layer="below", line_width=0,
-                        row=r_idx, col=1
-                    )
+                fig_my_nta.add_shape(
+                    type="rect", xref="x", yref="paper",
+                    x0=k_band_x0, x1=k_band_x1, y0=0, y1=1,
+                    fillcolor="rgba(168, 85, 247, 0.22)", line_width=0, layer="below"
+                )
                 fig_my_nta.add_annotation(
-                    x=(k_band_x0 + k_band_x1) / 2.0, y=alt_level_5,
-                    text="🎓 자녀 대학 피크", showarrow=False,
+                    xref="x", yref="paper",
+                    x=(k_band_x0 + k_band_x1) / 2.0, y=0.415,
+                    text="자녀 대학", showarrow=False,
                     font=dict(size=11, color="#E9D5FF", weight="bold"),
-                    bgcolor="rgba(15, 23, 42, 0.85)", bordercolor="#A855F7", borderpad=2,
-                    row=1, col=1
+                    bgcolor="rgba(15, 23, 42, 0.92)", bordercolor="#A855F7", borderpad=3
                 )
 
-        # [배경 띠 3] ❄️ 은퇴 후 겨울 (1단, 2단 각각 명시적 적용)
+        # 3. 은퇴 밴드
         if retire_age < 85:
             r_band_x0 = max(20, min(retire_age, 85))
             r_band_x1 = 85
             if r_band_x1 > r_band_x0:
-                for r_idx in [1, 2]:
-                    fig_my_nta.add_vrect(
-                        x0=r_band_x0, x1=r_band_x1,
-                        fillcolor="rgba(56, 189, 248, 0.22)", layer="below", line_width=0,
-                        row=r_idx, col=1
-                    )
-                fig_my_nta.add_annotation(
-                    x=(r_band_x0 + r_band_x1) / 2.0, y=alt_level_5,
-                    text="❄️ 은퇴 후 겨울", showarrow=False,
-                    font=dict(size=11, color="#BAE6FD", weight="bold"),
-                    bgcolor="rgba(15, 23, 42, 0.85)", bordercolor="#38BDF8", borderpad=2,
-                    row=1, col=1
+                fig_my_nta.add_shape(
+                    type="rect", xref="x", yref="paper",
+                    x0=r_band_x0, x1=r_band_x1, y0=0, y1=1,
+                    fillcolor="rgba(56, 189, 248, 0.18)", line_width=0, layer="below"
                 )
-                
-        # [Row 1] 소득 & 지출 (3대 심플 범례)
+                fig_my_nta.add_annotation(
+                    xref="x", yref="paper",
+                    x=(r_band_x0 + r_band_x1) / 2.0, y=0.415,
+                    text="은퇴", showarrow=False,
+                    font=dict(size=11, color="#BAE6FD", weight="bold"),
+                    bgcolor="rgba(15, 23, 42, 0.92)", bordercolor="#38BDF8", borderpad=3
+                )
+
+        # [Row 1] 소득 & 지출
         fig_my_nta.add_trace(go.Scatter(
             x=ages_sim, y=my_income_curve, mode="lines",
             line=dict(color="#10B981", width=3.2, shape='spline', smoothing=0.8),
@@ -1969,16 +1962,6 @@ elif selected_page == "인생의 사계절":
             hovertemplate="나이: %{x}세<br>연 지출: <b>%{y:,.0f}만 원</b><extra></extra>"
         ), row=1, col=1)
 
-
-
-        # 디버깅용 확인 코드 (이 코드를 코드 중간에 넣어보세요)
-        st.write(f"디버그 -> 현재나이(cur_age): {locals().get('cur_age', '정의안됨')}")
-        st.write(f"디버그 -> 수집된 자녀나이 리스트(existing_child_ages): {existing_child_ages}")
-        st.write(f"디버그 -> 계산된 육아시작/끝: {childcare_start} ~ {childcare_end}")
-
-
-
-        
         # [Row 1] 현재 나이 기준선
         fig_my_nta.add_vline(x=cur_age, line_dash="solid", line_color="#38BDF8", line_width=2.0)
         fig_my_nta.add_annotation(
@@ -2005,7 +1988,7 @@ elif selected_page == "인생의 사계절":
         # [Row 2] 0선 기준선
         fig_my_nta.add_hline(y=0, line_dash="solid", line_color="#94A3B8", line_width=1.5, row=2, col=1)
 
-        # [Row 2] 흑자 영역 (녹색, 범례 숨김)
+        # [Row 2] 흑자 영역 (녹색 음영)
         fig_my_nta.add_trace(go.Scatter(
             x=ages_fine, y=surplus_fine, mode="lines",
             line=dict(width=0, color="rgba(0,0,0,0)"),
@@ -2014,7 +1997,7 @@ elif selected_page == "인생의 사계절":
             hoverinfo="skip"
         ), row=2, col=1)
 
-        # [Row 2] 적자 영역 (붉은색, 범례 숨김)
+        # [Row 2] 적자 영역 (붉은색 음영)
         fig_my_nta.add_trace(go.Scatter(
             x=ages_fine, y=deficit_fine, mode="lines",
             line=dict(width=0, color="rgba(0,0,0,0)"),
@@ -2023,7 +2006,7 @@ elif selected_page == "인생의 사계절":
             hoverinfo="skip"
         ), row=2, col=1)
 
-        # [Row 2] 연간 순수지 (범례: '소득-지출')
+        # [Row 2] 연간 순수지 실선
         fig_my_nta.add_trace(go.Scatter(
             x=ages_sim, y=net_flow, mode="lines",
             line=dict(color="#CBD5E1", width=2.4, shape='spline', smoothing=0.8),
@@ -2031,9 +2014,9 @@ elif selected_page == "인생의 사계절":
             hovertemplate="나이: %{x}세<br>순수지: <b>%{y:,.0f}만 원</b><extra></extra>"
         ), row=2, col=1)
 
-        # Row 2 중심축(y=0)에 착 붙인 흑자/적자 뱃지
+        # [Row 2] 중심축(y=0) 기준 흑자/적자 뱃지 (45세 및 75세 중심으로 수평이동)
         fig_my_nta.add_annotation(
-            x=38, y=0,
+            x=45, y=0,
             text="▲ 흑자 (소득 > 지출)", showarrow=False,
             yshift=14,
             font=dict(size=10.5, color="#86EFAC", weight="bold"),
@@ -2041,7 +2024,7 @@ elif selected_page == "인생의 사계절":
             row=2, col=1
         )
         fig_my_nta.add_annotation(
-            x=68, y=0,
+            x=75, y=0,
             text="▼ 적자 (지출 > 소득)", showarrow=False,
             yshift=-14,
             font=dict(size=10.5, color="#FCA5A5", weight="bold"),
@@ -2051,7 +2034,7 @@ elif selected_page == "인생의 사계절":
 
         # 전체 레이아웃
         fig_my_nta.update_layout(
-            height=490,
+            height=510,
             margin=dict(l=10, r=10, t=25, b=25),
             paper_bgcolor="rgba(0,0,0,0)",
             plot_bgcolor="rgba(0,0,0,0)",
@@ -2067,7 +2050,7 @@ elif selected_page == "인생의 사계절":
             hovermode="x unified"
         )
 
-        # X축
+        # X축 설정
         fig_my_nta.update_xaxes(
             tickmode="linear", tick0=20, dtick=10,
             tickangle=0,
@@ -2077,7 +2060,7 @@ elif selected_page == "인생의 사계절":
         )
         fig_my_nta.update_xaxes(title=dict(text="연령 (세)", font=dict(size=12, color="#94A3B8")), row=2, col=1)
 
-        # Y축
+        # Y축 설정
         fig_my_nta.update_yaxes(
             title=None,
             tickfont=dict(size=11, color="#94A3B8"),
@@ -2090,15 +2073,6 @@ elif selected_page == "인생의 사계절":
         st.plotly_chart(fig_my_nta, use_container_width=True, config={"displayModeBar": False, "scrollZoom": False, "doubleClick": False, "showAxisDragHandles": False})
 
         st.markdown("<div style='height: 14px;'></div>", unsafe_allow_html=True)
-
-
-
-        # 디버깅용 확인 코드 (이 코드를 코드 중간에 넣어보세요)
-        st.write(f"디버그 -> 현재나이(cur_age): {locals().get('cur_age', '정의안됨')}")
-        st.write(f"디버그 -> 수집된 자녀나이 리스트(existing_child_ages): {existing_child_ages}")
-        st.write(f"디버그 -> 계산된 육아시작/끝: {childcare_start} ~ {childcare_end}")
-
-
 
         # 6.03.06 | 국가데이터처 통계
         st.markdown("### 3. 국가데이터처 통계")
