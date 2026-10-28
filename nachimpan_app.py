@@ -2149,13 +2149,13 @@ elif selected_page == "인생의 사계절":
         st.markdown(f"""
 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 14px;">
 <a href="{OFFICIAL_PDF_URL}" target="_blank" style="background:#1E293B; border:1px solid #475569; border-radius:8px; padding:12px 14px; text-align:center; text-decoration:none; color:#38BDF8 !important; font-size:15px; font-weight:700; display:flex; align-items:center; justify-content:center; gap:8px;">
-<span style="font-size:18px;">📄</span><span style="color:#38BDF8 !important;">2024년 국가데이터처 통계 보도자료</span>
+<span style="font-size:18px;">📄</span><span style="color:#38BDF8 !important;">2024년 국가데이터처 통계</span>
 </a></div>
 """, unsafe_allow_html=True)
         st.markdown("<div style='height: 20px;'></div>", unsafe_allow_html=True)
 
-        # 6.03.07 | [위치 이동] 인생의 사계절과 맞이할 겨울의 시간 (사계절 카드)
-        st.markdown("### 4. 인생의 사계절과 맞이할 겨울의 시간")
+        # 6.03.07 | [위치 이동] 인생의 사계절 (사계절 카드)
+        st.markdown("### 4. 인생의 사계절")
         if cur_age <= 27: cur_season = "spring"
         elif 28 <= cur_age <= 45: cur_season = "summer"
         elif 46 <= cur_age < retire_age: cur_season = "autumn"
@@ -2167,10 +2167,10 @@ elif selected_page == "인생의 사계절":
             badge_html = "<div style='min-height:22px; margin-bottom:4px;'><span style='background:#EA580C; color:#FFFFFF; font-size:11.5px; font-weight:800; padding:2px 7px; border-radius:4px;'>📍 지금 나의 계절</span></div>" if is_current else "<div style='min-height:22px; margin-bottom:4px;'></div>"
             return f'<div class="soft-card" style="text-align:center; min-height:205px; {card_border} padding:14px 10px; margin:0;">{badge_html}<div style="font-size:28px;">{icon}</div><div style="font-size:16.5px; font-weight:800; color:#F8FAFC; margin:4px 0;">{title}</div><div style="font-size:13px; color:#94A3B8;">{age_range}</div><div style="font-size:13px; color:#CBD5E1; margin-top:8px; line-height:1.4;">{desc}</div></div>'
 
-        card_spring = get_season_card_ui("spring", "🌱", "봄 (준비기)", "0세 ~ 27세", "부모님의 부양으로 배우고 성장하는 적자 구간")
-        card_summer = get_season_card_ui("summer", "☀️", "여름 (성장기)", "28세 ~ 45세", "성실하게 일하여 가정을 일구고 최대 흑자를 만드는 시기")
-        card_autumn = get_season_card_ui("autumn", "🍂", "가을 (결실기)", f"46세 ~ {retire_age}세", "자녀 독립 & 똘똘이의 파이프라인을 다질 골든타임")
-        card_winter = get_season_card_ui("winter", "❄️", "겨울 (음미기)", f"{retire_age}세 ~ {life_expectancy}세", f"근로소득 중단 (통계청 {user_gender.split()[1]} {life_expectancy}세 수명)<br><b style='color:#38BDF8;'>약 {winter_years}년 ({winter_months}개월)</b>")
+        card_spring = get_season_card_ui("spring", "🌱", "봄 (준비기)", "0세 ~ 27세", "부모님의 부양. 배우고 성장. 적자 구간")
+        card_summer = get_season_card_ui("summer", "☀️", "여름 (성장기)", "28세 ~ 45세", "성실하게 일하여 가정을 세움. 최대 흑자 시기")
+        card_autumn = get_season_card_ui("autumn", "🍂", "가을 (결실기)", f"46세 ~ {retire_age}세", "자녀독립 & 파이프라인을 준비할 골든타임")
+        card_winter = get_season_card_ui("winter", "❄️", "겨울 (음미기)", f"{retire_age}세 ~ {life_expectancy}세", f"근로소득 중단")
 
         s_col1, s_col2, s_col3, s_col4 = st.columns(4)
         with s_col1: st.markdown(card_spring, unsafe_allow_html=True)
@@ -2181,7 +2181,7 @@ elif selected_page == "인생의 사계절":
         st.markdown(f"""
 <div style="background: rgba(30, 41, 59, 0.6); border: 1px solid #334155; border-radius: 12px; padding: 18px 20px; margin: 16px 0 24px 0;">
 <div style="font-size: 15px; color: #F8FAFC; line-height: 1.6; word-break: keep-all;">
-💡 <b>산책로의 질문</b>: 은퇴 후 우리가 맞이할 겨울의 시간은 <b>약 {winter_years}년 ({winter_months:,}개월)</b>입니다. (통계청 {user_gender.split()[1]} 기대수명 {life_expectancy}세 기준)<br>
+💡 <b>산책로의 질문</b>: 은퇴 후 우리가 맞이할 겨울은 <b>약 {winter_years}년 </b>입니다. (통계청 {user_gender.split()[1]} 기대수명 {life_expectancy}세 기준)<br>
 <span style="color: #94A3B8;">이 긴 겨울 동안 매달 무거운 물통을 지고 눈길을 걸을 것인가, 방 안에서 따뜻하게 흘러나오는 파이프라인을 맞이할 것인가는 <b>지금 '가을'의 준비</b>에 달려 있습니다.</span>
 </div></div>
 """, unsafe_allow_html=True)
