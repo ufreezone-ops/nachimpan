@@ -1566,6 +1566,15 @@ elif selected_page == "인생의 사계절":
         fig_official_nta.add_annotation(x=45, y=-16, text="흑자", showarrow=False, font=dict(size=13, color="#93C5FD", weight="bold"))
         fig_official_nta.add_annotation(x=73, y=5, text="적자", showarrow=False, font=dict(size=13, color="#93C5FD", weight="bold"))
 
+
+
+        # 디버깅용 확인 코드 (이 코드를 코드 중간에 넣어보세요)
+        st.write(f"디버그 -> 현재나이(cur_age): {locals().get('cur_age', '정의안됨')}")
+        st.write(f"디버그 -> 수집된 자녀나이 리스트(existing_child_ages): {existing_child_ages}")
+        st.write(f"디버그 -> 계산된 육아시작/끝: {childcare_start} ~ {childcare_end}")
+
+
+        
         fig_official_nta.update_layout(
             title=dict(text="&lt; 생 애 주 기 적 자 &gt;", x=0.5, xanchor="center", font=dict(size=16, color="#F8FAFC")),
             height=390,
