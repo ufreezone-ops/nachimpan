@@ -1776,7 +1776,7 @@ elif selected_page == "인생의 사계절":
         # 1) 유효한 자녀 나이 수집
         existing_child_ages = [int(getv(k, 0)) for k in ["child_age", "child_age2", "child_age3", "child_age4"] if int(getv(k, 0)) > 0]
 
-        # 2) 출산·육아 집중기 구간 산정
+        # 2) 출산·육아 집중기 구간 (0~6세)
         childcare_windows = []
         if existing_child_ages:
             for ca in existing_child_ages:
@@ -1789,7 +1789,13 @@ elif selected_page == "인생의 사계절":
         childcare_start = min([w[0] for w in childcare_windows]) if childcare_windows else None
         childcare_end = max([w[1] for w in childcare_windows]) if childcare_windows else None
 
-        # 3) 자녀 대학교 학자금 피크 구간
+        # 3) 주택 구입 집중기 구간 (고려/확정 시 향후 3~4년)
+        housing_start, housing_end = None, None
+        if h_plan in ["주택 구입 고려", "주거 계획 확정"]:
+            housing_start = max(20, cur_age + 2)
+            housing_end = min(85, housing_start + 4)
+
+        # 4) 자녀 대학교 학자금 피크 구간 (19~24세)
         college_windows = []
         if existing_child_ages:
             for ca in existing_child_ages:
@@ -1803,7 +1809,19 @@ elif selected_page == "인생의 사계절":
         college_band_start = min([w[0] for w in college_windows]) if college_windows else None
         college_band_end = max([w[1] for w in college_windows]) if college_windows else None
 
-        # 4) 시뮬레이션 연령 구간 (20세 ~ 85세)
+        # 5) 자녀 결혼 지원 구간 (자녀 만 30~34세 시점)
+        wedding_windows = []
+        if existing_child_ages:
+            for ca in existing_child_ages:
+                w_start = cur_age + (30 - ca)
+                w_end = cur_age + (34 - ca)
+                if w_end >= 20 and w_start <= 85:
+                    wedding_windows.append((max(20, w_start), min(85, w_end)))
+
+        wedding_start = min([w[0] for w in wedding_windows]) if wedding_windows else None
+        wedding_end = max([w[1] for w in wedding_windows]) if wedding_windows else None
+
+        # 6) 시뮬레이션 연령 구간 (20세 ~ 85세)
         ages_sim = list(range(20, 86))
         my_income_curve = []
         my_expense_curve = []
@@ -1843,8 +1861,8 @@ elif selected_page == "인생의 사계절":
                     exp_factor *= 1.18
                 if m_plan in ["1~3년 내 결혼 생각 있음", "결혼 예정/준비 중"] and (cur_age <= a <= cur_age + 2):
                     exp_factor *= 1.12
-                if h_plan in ["주택 구입 고려", "주거 계획 확정"]:
-                    exp_factor *= 1.08
+                if housing_start and housing_end and (housing_start <= a <= housing_end):
+                    exp_factor *= 1.10
 
                 if a < 30 and cur_age >= 30:
                     exp_factor *= 0.75
@@ -1853,12 +1871,15 @@ elif selected_page == "인생의 사계절":
                 college_kids_count = sum(1 for (cs, ce) in college_windows if cs <= a <= ce)
                 extra_college_exp = college_kids_count * 1500.0
 
-                exp_val = base_exp + extra_college_exp
+                wedding_kids_count = sum(1 for (ws, we) in wedding_windows if ws <= a <= we)
+                extra_wedding_exp = wedding_kids_count * 1200.0
+
+                exp_val = base_exp + extra_college_exp + extra_wedding_exp
             else:
                 exp_val = ret_annual_expense
             my_expense_curve.append(exp_val)
 
-        # 5) 연간 순수지 (소득 - 지출): 흑자(+) vs 적자(-)
+        # 7) 연간 순수지 (소득 - 지출): 흑자(+) vs 적자(-)
         net_flow = [i - e for i, e in zip(my_income_curve, my_expense_curve)]
 
         ages_fine = []
@@ -1879,7 +1900,7 @@ elif selected_page == "인생의 사계절":
         surplus_fine = [max(0.0, v) for v in flow_fine]
         deficit_fine = [min(0.0, v) for v in flow_fine]
 
-        # 6) 상단 차트 고도 레벨 산정
+        # 8) 고도 레벨 및 서브플롯 생성 (간격 2배 확장: vertical_spacing=0.16)
         y_max = max(max(my_income_curve), max(my_expense_curve)) if my_income_curve else 6000
         y_top = y_max * 1.16
         alt_level_2 = y_top * 0.32
@@ -1888,11 +1909,13 @@ elif selected_page == "인생의 사계절":
         fig_my_nta = make_subplots(
             rows=2, cols=1,
             shared_xaxes=True,
-            vertical_spacing=0.08,
-            row_heights=[0.58, 0.42]
+            vertical_spacing=0.16,
+            row_heights=[0.57, 0.43]
         )
 
-        # [상하 차트 일관 관통 배경 밴드 & 차트 사이 중앙 타이틀 뱃지]
+        # [차트 사이 중앙 뱃지 기준 높이 (paper y축 0.44)]
+        center_y = 0.44
+
         # 1. 출산·육아 밴드
         if childcare_start and childcare_end:
             c_band_x0 = max(20, min(childcare_start, 85))
@@ -1901,17 +1924,35 @@ elif selected_page == "인생의 사계절":
                 fig_my_nta.add_shape(
                     type="rect", xref="x", yref="paper",
                     x0=c_band_x0, x1=c_band_x1, y0=0, y1=1,
-                    fillcolor="rgba(249, 115, 22, 0.22)", line_width=0, layer="below"
+                    fillcolor="rgba(249, 115, 22, 0.20)", line_width=0, layer="below"
                 )
                 fig_my_nta.add_annotation(
                     xref="x", yref="paper",
-                    x=(c_band_x0 + c_band_x1) / 2.0, y=0.415,
+                    x=(c_band_x0 + c_band_x1) / 2.0, y=center_y,
                     text="출산·육아", showarrow=False,
                     font=dict(size=11, color="#FDBA74", weight="bold"),
-                    bgcolor="rgba(15, 23, 42, 0.92)", bordercolor="#F97316", borderpad=3
+                    bgcolor="rgba(15, 23, 42, 0.95)", bordercolor="#F97316", borderpad=3
                 )
 
-        # 2. 자녀 대학 밴드
+        # 2. 주택구입 밴드
+        if housing_start and housing_end:
+            h_band_x0 = max(20, min(housing_start, 85))
+            h_band_x1 = max(20, min(housing_end, 85))
+            if h_band_x1 > h_band_x0:
+                fig_my_nta.add_shape(
+                    type="rect", xref="x", yref="paper",
+                    x0=h_band_x0, x1=h_band_x1, y0=0, y1=1,
+                    fillcolor="rgba(20, 184, 166, 0.20)", line_width=0, layer="below"
+                )
+                fig_my_nta.add_annotation(
+                    xref="x", yref="paper",
+                    x=(h_band_x0 + h_band_x1) / 2.0, y=center_y,
+                    text="주택구입", showarrow=False,
+                    font=dict(size=11, color="#5EEAD4", weight="bold"),
+                    bgcolor="rgba(15, 23, 42, 0.95)", bordercolor="#14B8A6", borderpad=3
+                )
+
+        # 3. 자녀 대학 밴드
         if college_band_start and college_band_end:
             k_band_x0 = max(20, min(college_band_start, 85))
             k_band_x1 = max(20, min(college_band_end, 85))
@@ -1919,17 +1960,35 @@ elif selected_page == "인생의 사계절":
                 fig_my_nta.add_shape(
                     type="rect", xref="x", yref="paper",
                     x0=k_band_x0, x1=k_band_x1, y0=0, y1=1,
-                    fillcolor="rgba(168, 85, 247, 0.22)", line_width=0, layer="below"
+                    fillcolor="rgba(168, 85, 247, 0.20)", line_width=0, layer="below"
                 )
                 fig_my_nta.add_annotation(
                     xref="x", yref="paper",
-                    x=(k_band_x0 + k_band_x1) / 2.0, y=0.415,
+                    x=(k_band_x0 + k_band_x1) / 2.0, y=center_y,
                     text="자녀 대학", showarrow=False,
                     font=dict(size=11, color="#E9D5FF", weight="bold"),
-                    bgcolor="rgba(15, 23, 42, 0.92)", bordercolor="#A855F7", borderpad=3
+                    bgcolor="rgba(15, 23, 42, 0.95)", bordercolor="#A855F7", borderpad=3
                 )
 
-        # 3. 은퇴 밴드
+        # 4. 자녀결혼 밴드
+        if wedding_start and wedding_end:
+            w_band_x0 = max(20, min(wedding_start, 85))
+            w_band_x1 = max(20, min(wedding_end, 85))
+            if w_band_x1 > w_band_x0:
+                fig_my_nta.add_shape(
+                    type="rect", xref="x", yref="paper",
+                    x0=w_band_x0, x1=w_band_x1, y0=0, y1=1,
+                    fillcolor="rgba(244, 63, 94, 0.20)", line_width=0, layer="below"
+                )
+                fig_my_nta.add_annotation(
+                    xref="x", yref="paper",
+                    x=(w_band_x0 + w_band_x1) / 2.0, y=center_y,
+                    text="자녀결혼", showarrow=False,
+                    font=dict(size=11, color="#FECDD3", weight="bold"),
+                    bgcolor="rgba(15, 23, 42, 0.95)", bordercolor="#F43F5E", borderpad=3
+                )
+
+        # 5. 은퇴 밴드
         if retire_age < 85:
             r_band_x0 = max(20, min(retire_age, 85))
             r_band_x1 = 85
@@ -1937,14 +1996,14 @@ elif selected_page == "인생의 사계절":
                 fig_my_nta.add_shape(
                     type="rect", xref="x", yref="paper",
                     x0=r_band_x0, x1=r_band_x1, y0=0, y1=1,
-                    fillcolor="rgba(56, 189, 248, 0.18)", line_width=0, layer="below"
+                    fillcolor="rgba(56, 189, 248, 0.16)", line_width=0, layer="below"
                 )
                 fig_my_nta.add_annotation(
                     xref="x", yref="paper",
-                    x=(r_band_x0 + r_band_x1) / 2.0, y=0.415,
+                    x=(r_band_x0 + r_band_x1) / 2.0, y=center_y,
                     text="은퇴", showarrow=False,
                     font=dict(size=11, color="#BAE6FD", weight="bold"),
-                    bgcolor="rgba(15, 23, 42, 0.92)", bordercolor="#38BDF8", borderpad=3
+                    bgcolor="rgba(15, 23, 42, 0.95)", bordercolor="#38BDF8", borderpad=3
                 )
 
         # [Row 1] 소득 & 지출
@@ -2014,7 +2073,7 @@ elif selected_page == "인생의 사계절":
             hovertemplate="나이: %{x}세<br>순수지: <b>%{y:,.0f}만 원</b><extra></extra>"
         ), row=2, col=1)
 
-        # [Row 2] 중심축(y=0) 기준 흑자/적자 뱃지 (45세 및 75세 중심으로 수평이동)
+        # [Row 2] 중심축(y=0) 기준 흑자/적자 뱃지
         fig_my_nta.add_annotation(
             x=45, y=0,
             text="▲ 흑자 (소득 > 지출)", showarrow=False,
@@ -2032,9 +2091,9 @@ elif selected_page == "인생의 사계절":
             row=2, col=1
         )
 
-        # 전체 레이아웃
+        # 전체 레이아웃 (높이를 570px로 넉넉하게 확장)
         fig_my_nta.update_layout(
-            height=510,
+            height=570,
             margin=dict(l=10, r=10, t=25, b=25),
             paper_bgcolor="rgba(0,0,0,0)",
             plot_bgcolor="rgba(0,0,0,0)",
@@ -2050,22 +2109,24 @@ elif selected_page == "인생의 사계절":
             hovermode="x unified"
         )
 
-        # X축 설정
+        # X축 설정 (상하 차트 각각 또렷한 다크 테두리 사각 박스 처리)
         fig_my_nta.update_xaxes(
             tickmode="linear", tick0=20, dtick=10,
             tickangle=0,
             tickfont=dict(size=12, color="#94A3B8"),
             gridcolor="rgba(100, 116, 139, 0.18)",
+            showline=True, linecolor="#334155", linewidth=1.5, mirror=True,
             fixedrange=True
         )
         fig_my_nta.update_xaxes(title=dict(text="연령 (세)", font=dict(size=12, color="#94A3B8")), row=2, col=1)
 
-        # Y축 설정
+        # Y축 설정 (상하 차트 각각 또렷한 다크 테두리 사각 박스 처리)
         fig_my_nta.update_yaxes(
             title=None,
             tickfont=dict(size=11, color="#94A3B8"),
             tickformat=",.0f",
             gridcolor="rgba(100, 116, 139, 0.18)",
+            showline=True, linecolor="#334155", linewidth=1.5, mirror=True,
             fixedrange=True
         )
         fig_my_nta.update_yaxes(range=[0, y_top], row=1, col=1)
