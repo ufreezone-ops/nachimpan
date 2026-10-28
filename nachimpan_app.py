@@ -1887,59 +1887,64 @@ elif selected_page == "인생의 사계절":
             row_heights=[0.58, 0.42]
         )
 
-        # [배경 띠 1] 👶 출산·육아 집중기 (위아래 전체 관통)
+        # [배경 띠 1] 👶 출산·육아 집중기 (1단, 2단 각각 명시적 적용)
         if childcare_start and childcare_end:
             c_band_x0 = max(20, min(childcare_start, 85))
             c_band_x1 = max(20, min(childcare_end, 85))
             if c_band_x1 > c_band_x0:
-                fig_my_nta.add_vrect(
-                    x0=c_band_x0, x1=c_band_x1,
-                    fillcolor="rgba(249, 115, 22, 0.28)", layer="below", line_width=0,
-                    row="all", col=1
-                )
+                for r_idx in [1, 2]:  # 👈 위아래 차트 모두에 띠 추가
+                    fig_my_nta.add_vrect(
+                        x0=c_band_x0, x1=c_band_x1,
+                        fillcolor="rgba(249, 115, 22, 0.30)", layer="below", line_width=0,
+                        row=r_idx, col=1
+                    )
+                # 타이틀 뱃지는 상단(1단)에만 예쁘게 고정
                 fig_my_nta.add_annotation(
                     x=(c_band_x0 + c_band_x1) / 2.0, y=alt_level_5,
                     text="👶 출산·육아", showarrow=False,
                     font=dict(size=11, color="#FDBA74", weight="bold"),
-                    bgcolor="rgba(15, 23, 42, 0.8)", bordercolor="#F97316", borderpad=2,
+                    bgcolor="rgba(15, 23, 42, 0.85)", bordercolor="#F97316", borderpad=2,
                     row=1, col=1
                 )
 
-        # [배경 띠 2] 🎓 자녀 대학교 학자금 집중기 (위아래 전체 관통)
+        # [배경 띠 2] 🎓 자녀 대학교 학자금 피크 (1단, 2단 각각 명시적 적용)
         if college_band_start and college_band_end:
             k_band_x0 = max(20, min(college_band_start, 85))
             k_band_x1 = max(20, min(college_band_end, 85))
             if k_band_x1 > k_band_x0:
-                fig_my_nta.add_vrect(
-                    x0=k_band_x0, x1=k_band_x1,
-                    fillcolor="rgba(168, 85, 247, 0.28)", layer="below", line_width=0,
-                    row="all", col=1
-                )
+                for r_idx in [1, 2]:
+                    fig_my_nta.add_vrect(
+                        x0=k_band_x0, x1=k_band_x1,
+                        fillcolor="rgba(168, 85, 247, 0.30)", layer="below", line_width=0,
+                        row=r_idx, col=1
+                    )
                 fig_my_nta.add_annotation(
                     x=(k_band_x0 + k_band_x1) / 2.0, y=alt_level_5,
                     text="🎓 자녀 대학 피크", showarrow=False,
                     font=dict(size=11, color="#E9D5FF", weight="bold"),
-                    bgcolor="rgba(15, 23, 42, 0.8)", bordercolor="#A855F7", borderpad=2,
+                    bgcolor="rgba(15, 23, 42, 0.85)", bordercolor="#A855F7", borderpad=2,
                     row=1, col=1
                 )
 
-        # [배경 띠 3] ❄️ 은퇴 후 겨울 (위아래 전체 관통)
+        # [배경 띠 3] ❄️ 은퇴 후 겨울 (1단, 2단 각각 명시적 적용)
         if retire_age < 85:
             r_band_x0 = max(20, min(retire_age, 85))
             r_band_x1 = 85
             if r_band_x1 > r_band_x0:
-                fig_my_nta.add_vrect(
-                    x0=r_band_x0, x1=r_band_x1,
-                    fillcolor="rgba(56, 189, 248, 0.22)", layer="below", line_width=0,
-                    row="all", col=1
-                )
+                for r_idx in [1, 2]:
+                    fig_my_nta.add_vrect(
+                        x0=r_band_x0, x1=r_band_x1,
+                        fillcolor="rgba(56, 189, 248, 0.22)", layer="below", line_width=0,
+                        row=r_idx, col=1
+                    )
                 fig_my_nta.add_annotation(
                     x=(r_band_x0 + r_band_x1) / 2.0, y=alt_level_5,
                     text="❄️ 은퇴 후 겨울", showarrow=False,
                     font=dict(size=11, color="#BAE6FD", weight="bold"),
-                    bgcolor="rgba(15, 23, 42, 0.8)", bordercolor="#38BDF8", borderpad=2,
+                    bgcolor="rgba(15, 23, 42, 0.85)", bordercolor="#38BDF8", borderpad=2,
                     row=1, col=1
                 )
+                
         # [Row 1] 소득 & 지출 (3대 심플 범례)
         fig_my_nta.add_trace(go.Scatter(
             x=ages_sim, y=my_income_curve, mode="lines",
