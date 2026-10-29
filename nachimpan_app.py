@@ -1192,30 +1192,30 @@ if selected_page == "우리집 가계부":
                     income_bonus = st.number_input("연간 비정기 소득 (상여금·성과급·연말수입)", min_value=0, value=st.session_state.get("income_bonus"), step=100, placeholder="1년 합계 금액 (없으면 빈칸)")
             with expense_col:
                 with st.container(border=True, key="expense-panel"):
-                    st.markdown("### ② 나가는 돈 (월, 만원)")
-                    expense_living = st.number_input("기본 생활비 (식비·관리비·통신비·가족생활)", min_value=0, value=st.session_state.get("expense_living"), step=10, placeholder="월 생활 유지비")
-                    expense_loan = st.number_input("대출 원리금 상환액 (원금+이자 합계)", min_value=0, value=st.session_state.get("expense_loan"), step=10, placeholder="은행 납입 합계")
-                    expense_other = st.number_input("그 밖의 월평균 지출 (연간 여행·경조사·세금÷12)", min_value=0, value=st.session_state.get("expense_other"), step=10, placeholder="비정기 지출 월평균")
+                    st.markdown("### ② 나가는 돈 (만원)")
+                    expense_living = st.number_input("기본 월 생활비 (식비·관리비·통신비 등)", min_value=0, value=st.session_state.get("expense_living"), step=10, placeholder="월 생활 유지비")
+                    expense_loan = st.number_input("대출 원리금 월 상환액 (원금+이자 합계)", min_value=0, value=st.session_state.get("expense_loan"), step=10, placeholder="은행 납입 합계")
+                    expense_other = st.number_input("그 밖의 연간 비정기 지출 (여행·경조사·세금)", min_value=0, value=st.session_state.get("expense_other"), step=10, placeholder="비정기 지출 월평균")
 
             # 6.01.03 | ③ 가지고 있는 것 vs ④ 갚아야 할 돈 입력 패널
             asset_col, debt_col = st.columns(2)
             with asset_col:
                 with st.container(border=True, key="asset-panel"):
-                    st.markdown("### ③ 가지고 있는 것 (시세, 만원)")
+                    st.markdown("### ③ 가지고 있는 것 (만원)")
                     asset_cash = st.number_input("현금·예적금", min_value=0, value=st.session_state.get("asset_cash"), step=100, placeholder="금액")
-                    asset_financial = st.number_input("주식·채권 등 금융자산", min_value=0, value=st.session_state.get("asset_financial"), step=100, placeholder="금액")
+                    asset_financial = st.number_input("주식·채권 등", min_value=0, value=st.session_state.get("asset_financial"), step=100, placeholder="금액")
                     asset_home = st.number_input("부동산 시세", min_value=0, value=st.session_state.get("asset_home"), step=100, placeholder="금액")
                     asset_deposit = st.number_input("전세보증금", min_value=0, value=st.session_state.get("asset_deposit"), step=100, placeholder="금액")
-                    asset_other = st.number_input("그 밖의 자산 (현금화 가능한 사업체·지분 등)", min_value=0, value=st.session_state.get("asset_other"), step=100, placeholder="금액")
+                    asset_other = st.number_input("그외 자산 (사업체·지분 등)", min_value=0, value=st.session_state.get("asset_other"), step=100, placeholder="금액")
             with debt_col:
                 with st.container(border=True, key="debt-panel"):
-                    st.markdown("### ④ 갚아야 할 돈 (원금, 만원)")
-                    debt_home = st.number_input("주택담보·전세대출 잔액", min_value=0, value=st.session_state.get("debt_home"), step=100, placeholder="금액")
-                    debt_other = st.number_input("그 밖의 부채 잔액 (신용·마이너스통장)", min_value=0, value=st.session_state.get("debt_other"), step=100, placeholder="금액")
+                    st.markdown("### ④ 갚아야 할 돈 (만원)")
+                    debt_home = st.number_input("주택·전세 대출잔액", min_value=0, value=st.session_state.get("debt_home"), step=100, placeholder="금액")
+                    debt_other = st.number_input("그외 부채 (신용·마이너스통장)", min_value=0, value=st.session_state.get("debt_other"), step=100, placeholder="금액")
 
             # 6.01.04 | 은퇴 후 가정 입력 및 세션 상태 저장
             with st.container(border=True, key="retirement-panel"):
-                st.markdown("### 은퇴 후에는? (월, 만원)")
+                st.markdown("### 은퇴 후에는? (만원)")
                 pension_col, retirement_expense_col = st.columns(2)
                 with pension_col:
                     income_pension = st.number_input("은퇴 후 받을 월 연금", min_value=0, value=st.session_state.get("income_pension"), step=10, placeholder="모르면 빈칸으로 두세요")
@@ -1388,14 +1388,14 @@ elif selected_page == "삶과 생계수단":
 <div style="font-size: 17.5px; font-weight: 800; color: #38BDF8; margin-bottom: 6px;">🧠 똘똘이의 선택 (파이프라인의 삶)</div>
 <div style="font-size: 14px; color: #CBD5E1; line-height: 1.6; word-break: keep-all;">
 "저는 첫 달에 <b>쌀 한 되(1kg)</b>만 주시고, 매달 곱절(2되, 4되, 8되...)로 주십시오."<br>
-똘똘이는 <b>'복리의 지혜'(파이프라인의 속성)</b>로 훗날 힘겨운 물통으로부터 자유로워졌습니다. <b>하지만 당장 첫 달에 쌀 한 되만 받았다면 굶어 죽었을 것입니다.</b>
+똘똘이는 <b>'복리의 지혜'(파이프라인의 속성)</b>로 훗날 힘겨운 물통으로부터 자유로워졌습니다. <br><b>하지만 당장 첫 달에 쌀 한 되만 받았다면 굶어 죽었을 것입니다.</b>
 </div>
 </div>
 </div>
 
 <div style="background: rgba(234, 88, 12, 0.14); border-left: 4px solid #EA580C; border-radius: 4px; padding: 14px 18px;">
 <div style="font-size: 15px; font-weight: 750; color: #F8FAFC; line-height: 1.6; word-break: keep-all;">
-💡 <b>나침반의 성찰</b>: 누구의 선택이 옳다는 것이 아닙니다.<br>
+<b>나침반의 성찰</b><br>: 누구의 선택이 옳다는 것이 아닙니다.<br>
 낮에는 돌쇠처럼 성실하게 가족의 생계(쌀 한 가마)를 책임지면서, 저녁과 주말의 시간에 똘똘이의 지혜(파이프라인)를 한 되, 두 되 차근차근 놓아가는 <b>'현명한 플랜 B'</b>가 필요한 이유입니다.
 </div>
 </div>
@@ -1490,14 +1490,14 @@ elif selected_page == "삶과 생계수단":
 <div style="background: rgba(30, 41, 59, 0.35); border-left: 3.5px solid #64748B; border-radius: 4px; padding: 12px 16px; display: flex; align-items: baseline; gap: 12px;"><span style="font-size: 14px; font-weight: 800; color: #94A3B8; min-width: 24px;">01</span><span style="font-size: 18.5px; font-weight: 800; color: #F8FAFC; line-height: 1.5; word-break: keep-all;">'일을 하고 있는 것'과 '생계를 위해 반드시 일해야 하는 것'은 같은가?</span></div>
 <div style="background: rgba(30, 41, 59, 0.35); border-left: 3.5px solid #64748B; border-radius: 4px; padding: 12px 16px; display: flex; align-items: baseline; gap: 12px;"><span style="font-size: 14px; font-weight: 800; color: #94A3B8; min-width: 24px;">02</span><span style="font-size: 18.5px; font-weight: 800; color: #F8FAFC; line-height: 1.5; word-break: keep-all;">'소득이 발생하는 것'과 '내가 직접 일해야 소득이 발생하는 것'은 같은가?</span></div>
 <div style="background: rgba(30, 41, 59, 0.35); border-left: 3.5px solid #64748B; border-radius: 4px; padding: 12px 16px; display: flex; align-items: baseline; gap: 12px;"><span style="font-size: 14px; font-weight: 800; color: #94A3B8; min-width: 24px;">03</span><span style="font-size: 18.5px; font-weight: 800; color: #F8FAFC; line-height: 1.5; word-break: keep-all;">'직장을 그만두는 것'과 '은퇴'는 같은가?</span></div>
-<div style="background: rgba(30, 41, 59, 0.35); border-left: 3.5px solid #64748B; border-radius: 4px; padding: 12px 16px; display: flex; align-items: baseline; gap: 12px;"><span style="font-size: 14px; font-weight: 800; color: #94A3B8; min-width: 24px;">04</span><span style="font-size: 18.5px; font-weight: 800; color: #F8FAFC; line-height: 1.5; word-break: keep-all;">'은퇴'란 무엇이며, '나'는 은퇴를 어떻게 바라볼 수 있을까?</span></div>
+<div style="background: rgba(30, 41, 59, 0.35); border-left: 3.5px solid #64748B; border-radius: 4px; padding: 12px 16px; display: flex; align-items: baseline; gap: 12px;"><span style="font-size: 14px; font-weight: 800; color: #94A3B8; min-width: 24px;">04</span><span style="font-size: 18.5px; font-weight: 800; color: #F8FAFC; line-height: 1.5; word-break: keep-all;">'은퇴'란 무엇이며, '나'는 은퇴를 어떻게 바라보고 있나?</span></div>
 </div></div>
 """, unsafe_allow_html=True)
 
         # 6.02.04 | 내가 생각하는 은퇴 예상 나이 (질문 순서 위아래 교체)
         st.markdown("""
 <div style="background: rgba(24, 32, 47, 0.65); border: 1.5px solid #3b4b66; border-radius: 14px; padding: 20px 22px; margin-bottom: 22px;">
-<div style="font-size: 17px; font-weight: 750; color: #FDE68A; line-height: 1.6; word-break: keep-all; margin-bottom: 6px;">나는 언제부터 생계를 위해 반드시 일해야 하는 삶에서 벗어날 수 있을까?</div>
+<div style="font-size: 17px; font-weight: 750; color: #FDE68A; line-height: 1.6; word-break: keep-all; margin-bottom: 6px;">나의 일은 생계를 위한 것인가? 그런 일이라면 벗어날 순 없을까?</div>
 <div style="font-size: 20px; font-weight: 850; color: #F8FAFC; margin-bottom: 12px;">내가 생각하는 은퇴 예상 나이</div>
 """, unsafe_allow_html=True)
 
@@ -1735,7 +1735,7 @@ elif selected_page == "인생의 사계절":
             st.markdown(f"""
 <div style="background: rgba(234, 88, 12, 0.12); border-left: 4px solid #EA580C; border-radius: 6px; padding: 14px 18px; margin: 12px 0 20px 0;">
 <div style="font-size: 15px; font-weight: 750; color: #F8FAFC; line-height: 1.6;">
-<b>생애 주요지출</b><br>: 첫째가 대학에 입학하는 만 20세가 되면, 나의 나이는 <b>만 {college_my_age}세</b>가 되는구나...,<br>
+<b>생애 주요지출</b><br>: '첫째가 대학에 입학하는 만 20세가 되면, 나의 나이는 <b>만 {college_my_age}세</b>가 되는구나...,'<br>
 <span style="font-size: 13.5px; color: #CBD5E1;">국가데이터처 통계상 소득 정점(45세)은 지나가면서, 자녀 학자금과 독립 비용으로 <b>인생에서 가장 큰 지출이 집중되는 결정적 시기</b>입니다.</span>
 </div></div>
 """, unsafe_allow_html=True)
@@ -1750,7 +1750,7 @@ elif selected_page == "인생의 사계절":
         # 6.03.05 | 나만의 생애주기 곡선 & 흑자/적자 2단 연동 차트
         from plotly.subplots import make_subplots
 
-        st.markdown("### 2. 나만의 생애주기 곡선")
+        st.markdown("### 2. 나의 생애주기 곡선")
         st.caption("※ 국가데이터처 국민이전계정(NTA) 통계 기반으로, 나의 실제 가족·소득·지출을 개략적으로 맞춘 곡선입니다. (단위: 연간 만 원)")
         s = current_financial_summary()
         cur_annual_income = s["annual_total_income"]
