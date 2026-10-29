@@ -1658,7 +1658,7 @@ elif selected_page == "인생의 사계절":
             st.markdown("#### 앞으로의 가족 계획 (선택)")
             p_c1, p_c2, p_c3 = st.columns(3)
             with p_c1:
-                marriage_options = ["미정", "계획 없음", "이미 결혼함", "1~3년 내 결혼 생각 있음", "3년 이후 결혼 생각 있음", "결혼 예정"]
+                marriage_options = ["미정", "계획 없음", "결혼함", "1~3년 내 결혼 생각 있음", "3년 이후 결혼 생각 있음", "결혼 예정"]
                 marriage_plan = st.selectbox("결혼 계획", marriage_options, index=marriage_options.index(st.session_state.get("marriage_plan", "미정")) if st.session_state.get("marriage_plan", "미정") in marriage_options else 0)
             with p_c2:
                 child_plan_options = ["미정", "계획 없음", "자녀 계획 있음", "출산 예정", "추가 자녀 계획 있음"]
