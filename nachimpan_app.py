@@ -1545,10 +1545,10 @@ elif selected_page == "삶과 생계수단":
 
             st.markdown("""
 <div style="background: rgba(15, 23, 42, 0.85); border: 1px solid #475569; border-radius: 10px; padding: 16px 18px; margin-top: 12px;">
-<div style="font-size: 15px; font-weight: 800; color: #38BDF8; margin-bottom: 10px;">📊 국가데이터처(통계청) 통계로 본 대한민국 3대 은퇴 분기점</div>
+<div style="font-size: 15px; font-weight: 800; color: #38BDF8; margin-bottom: 10px;">📊 국가데이터처 통계로 본 대한민국 3대 은퇴 분기점</div>
 <div style="display: flex; flex-direction: column; gap: 8px; font-size: 14.5px; color: #E2E8F0; line-height: 1.6;">
   <div>• <b>"근로소득의 정점 및 본업 졸업"</b> 관점이라면 ➔ <span style="color: #F59E0B; font-weight: 800;">55~60세 전후</span> <span style="font-size: 13px; color: #94A3B8;">(주된 일자리 퇴직 평균 53세)</span></div>
-  <div>• <b>"통계청 흑자·적자 수지 균형"</b> 관점이라면 ➔ <span style="color: #F59E0B; font-weight: 800;">61세</span> <span style="font-size: 13px; color: #94A3B8;">(국민이전계정 NTA 공식 적자 재전환 연령)</span></div>
+  <div>• <b>"국가 통계적 흑자·적자 수지 균형"</b> 관점이라면 ➔ <span style="color: #F59E0B; font-weight: 800;">61세</span> <span style="font-size: 13px; color: #94A3B8;">(국민이전계정 NTA 공식 적자 재전환 연령)</span></div>
   <div>• <b>"완전히 노동을 손에서 놓는 시점"</b> 관점이라면 ➔ <span style="color: #F59E0B; font-weight: 800;">72~73세</span> <span style="font-size: 13px; color: #94A3B8;">(OECD 실질 은퇴 연령 및 2·3차 일자리 종료)</span></div>
 </div>
 </div>
