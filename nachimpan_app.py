@@ -2197,7 +2197,7 @@ else:
 
     if not is_adv:
         # [기본 모드] AI 1문단 자동 성찰 & 초대장 카드 + 심플한 [고급버튼]
-        st.caption("AI는 평가자가 아닌, 내가 작성한 삶과 숫자를 객관적인 거울처럼 비춰주는 성찰 파트너입니다.")
+        st.caption("AI는 평가자가 아닌, 내가 작성한 삶의 숫자를 객관적인 거울처럼 비춰주는 성찰 파트너입니다.")
         inc_val = float(getv("income_self", 0) or 0)
         exp_val = float(getv("expense_living", 0) or 0)
         surplus_val = inc_val - exp_val
@@ -2243,7 +2243,7 @@ else:
 
     else:
         # [고급 모드] 모든 마이크로 모듈(6.04.01 ~ 6.04.07) 완전 탑재
-        st.caption("AI는 평가자가 아닌, 내가 작성한 삶과 숫자를 객관적인 거울처럼 비춰주는 성찰 파트너입니다.")
+        st.caption("AI는 평가자가 아닌, 내가 작성한 삶의 숫자를 객관적인 거울처럼 비춰주는 성찰 파트너입니다.")
         
         sib_names = [f"{it['label']}({it.get('age',0)}세)" for it in st.session_state.get("sibling_items", []) if it.get("age", 0) > 0]
         retire_age = st.session_state.get("retirement_age", 60)
