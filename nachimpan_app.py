@@ -1362,16 +1362,15 @@ if selected_page == "우리집 가계부":
 # ==============================================================================
 # 6.02.00 | Tab 2 — 삶과 생계수단
 # ==============================================================================
-
 elif selected_page == "삶과 생계수단":
     is_adv = st.session_state.get("advanced_mode", False)
 
 
-# 6.02.01 | 공통 함수 — 지혜로운 산책: 돌쇠와 똘똘이 우화 카드
+    # 6.02.01 | 공통 함수 — 지혜로운 산책: 돌쇠와 똘똘이 우화 카드
 
-def render_dolssoe_story_card():
-    """기본 모드와 고급 모드에서 공통으로 사용하는 우화 카드"""
-    st.markdown("""
+    def render_dolssoe_story_card():
+        """기본 모드와 고급 모드에서 공통으로 사용하는 우화 카드"""
+        st.markdown("""
 <div style="background: rgba(45, 35, 20, 0.55); border: 1.5px solid #6d4a1a; border-radius: 14px; padding: 24px 26px; margin: 16px 0 24px 0;">
 <div style="font-size: 21px; font-weight: 850; color: #FDE68A; margin-bottom: 12px;">🌾 지혜로운 산책: 돌쇠와 똘똘이</div>
 <div style="font-size: 14.5px; color: #E2E8F0; margin-bottom: 16px;">옛날 어느 마을, 머슴을 구하는 대감댁에 두 젊은이가 찾아왔습니다.</div>
