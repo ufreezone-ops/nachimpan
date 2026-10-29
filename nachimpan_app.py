@@ -1422,7 +1422,7 @@ elif selected_page == "삶과 생계수단":
         # 6.02.01 | 소득의 모습 2x2 사분면 (헤더 심플화: '물통과 파이프라인')
         st.markdown("""
 <div style="background: rgba(30, 41, 59, 0.45); border: 1.5px solid #334155; border-radius: 14px; padding: 18px 22px; margin-bottom: 22px;">
-<div style="font-size: 20px; font-weight: 850; color: #F8FAFC; margin-bottom: 14px;">물통과 파이프라인</div>
+<div style="font-size: 20px; font-weight: 850; color: #F8FAFC; margin-bottom: 14px;">물통 그리고 파이프라인</div>
 """, unsafe_allow_html=True)
         
         q_self = active_quadrant(st.session_state.get("job_form", "직장인"))
