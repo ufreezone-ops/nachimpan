@@ -1434,6 +1434,64 @@ elif selected_page == "삶과 생계수단":
             if q_spouse == target_code: badges.append("<span style='background:#0284C7; color:#FFFFFF; font-size:12px; font-weight:800; padding:2px 8px; border-radius:4px;'>배우자</span>")
             return f"<div style='min-height:22px; margin-bottom:4px; display:flex; justify-content:center; gap:6px;'>{' '.join(badges)}</div>" if badges else "<div style='min-height:22px; margin-bottom:4px;'></div>"
 
+
+        def make_livelihood_icon(kind):
+            """물통과 파이프라인을 SVG 아이콘으로 표현"""
+            icons = {
+                "small_bucket": """
+                <svg viewBox="0 0 100 100" width="76" height="76" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M25 35 L75 35 L68 78 Q50 88 32 78 Z"
+                        fill="#D97706" stroke="#FCD34D" stroke-width="4" stroke-linejoin="round"/>
+                  <path d="M31 35 Q50 8 69 35" fill="none" stroke="#FCD34D" stroke-width="5"/>
+                  <path d="M32 53 Q50 58 69 53" fill="none" stroke="#FDE68A" stroke-width="3"/>
+                  <path d="M38 65 L42 75 M50 65 L50 77 M62 65 L58 75"
+                        stroke="#FDE68A" stroke-width="3" stroke-linecap="round"/>
+                </svg>
+                """,
+                "large_tank": """
+                <svg viewBox="0 0 100 100" width="94" height="94" xmlns="http://www.w3.org/2000/svg">
+                  <ellipse cx="50" cy="24" rx="31" ry="11" fill="#94A3B8" stroke="#E2E8F0" stroke-width="3"/>
+                  <path d="M19 24 V73 Q50 94 81 73 V24"
+                        fill="#64748B" stroke="#CBD5E1" stroke-width="3"/>
+                  <ellipse cx="50" cy="73" rx="31" ry="11" fill="#475569" stroke="#CBD5E1" stroke-width="3"/>
+                  <path d="M25 42 H75 M25 57 H75" stroke="#CBD5E1" stroke-width="2" opacity=".8"/>
+                  <path d="M34 88 V95 M66 88 V95" stroke="#CBD5E1" stroke-width="5" stroke-linecap="round"/>
+                </svg>
+                """,
+                "pipeline_build": """
+                <svg viewBox="0 0 120 100" width="94" height="82" xmlns="http://www.w3.org/2000/svg">
+                  <g fill="none" stroke="#38BDF8" stroke-width="12" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M12 25 H42 V50 H76 V25 H108"/>
+                    <path d="M42 50 V78 H88"/>
+                  </g>
+                  <g fill="none" stroke="#BAE6FD" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M12 20 H37 V45 H71 V20 H108"/>
+                    <path d="M37 45 V73 H88"/>
+                  </g>
+                  <g fill="#0F172A" stroke="#7DD3FC" stroke-width="3">
+                    <circle cx="42" cy="50" r="8"/>
+                    <circle cx="76" cy="25" r="8"/>
+                  </g>
+                </svg>
+                """,
+                "pipeline_connect": """
+                <svg viewBox="0 0 120 100" width="94" height="82" xmlns="http://www.w3.org/2000/svg">
+                  <g fill="none" stroke="#38BDF8" stroke-width="12" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M10 28 H110"/>
+                    <path d="M60 28 V78"/>
+                  </g>
+                  <g fill="none" stroke="#BAE6FD" stroke-width="3">
+                    <path d="M10 23 H110 M55 28 V78"/>
+                  </g>
+                  <rect x="46" y="18" width="28" height="20" rx="4"
+                        fill="#0F172A" stroke="#FCD34D" stroke-width="4"/>
+                  <path d="M48 78 H72" stroke="#FCD34D" stroke-width="7" stroke-linecap="round"/>
+                </svg>
+                """
+            }
+            return icons[kind]
+
+        
         def render_livelihood_quad(code, icon_html, title, sub_title, desc, is_right=False):
             is_self = (q_self == code)
             is_spouse = (q_spouse == code)
@@ -1446,12 +1504,18 @@ elif selected_page == "삶과 생계수단":
                 border_style = f"border: 1px solid {border_color}; background: {bg_color};"
             badge_html = get_quad_badge(code)
             accent_color = "#38BDF8" if is_right else "#F59E0B"
-            return f'<div style="{border_style} border-radius: 12px; padding: 14px 10px; text-align: center; display: flex; flex-direction: column; justify-content: center; align-items: center; height: 100%; min-height: 195px; box-sizing: border-box; width: 100%;">{badge_html}<div style="font-size: 26px; margin-bottom: 2px;">{icon_html}</div><div style="font-size: 17.5px; font-weight: 850; color: #F8FAFC; line-height: 1.2;">{title}</div><div style="font-size: 13px; font-weight: 700; color: {accent_color}; margin: 3px 0 5px 0; line-height: 1.3;">{sub_title}</div><div style="font-size: 12.5px; color: #CBD5E1; line-height: 1.4; word-break: keep-all; text-align: center;">{desc}</div></div>'
+            return f'<div style="{border_style} border-radius: 12px; padding: 14px 10px; text-align: center; display: flex; flex-direction: column; justify-content: center; align-items: center; height: 100%; min-height: 195px; box-sizing: border-box; width: 100%;">{badge_html}<div style="height: 100px; display: flex; align-items: center; justify-content: center; margin-bottom: 4px;">
+    {icon_html}
+</div><div style="font-size: 17.5px; font-weight: 850; color: #F8FAFC; line-height: 1.2;">{title}</div><div style="font-size: 13px; font-weight: 700; color: {accent_color}; margin: 3px 0 5px 0; line-height: 1.3;">{sub_title}</div><div style="font-size: 12.5px; color: #CBD5E1; line-height: 1.4; word-break: keep-all; text-align: center;">{desc}</div></div>'
 
-        card_e = render_livelihood_quad("E", "🪣🪣🪣", "작은 물통 (E)", "나의 시간과 돈을 1:1 맞교환", "직접 일한 시간만큼 소득 창출<br><span style='color:#F59E0B; font-weight:600;'>(노동을 멈추면 수입도 멈춤)</span>", is_right=False)
-        card_s = render_livelihood_quad("S", "🛢️", "큰 물통 (S)", "전문성과 몸값으로 키운 물통", "한 번에 담는 물통의 양을 키운 모습<br><span style='color:#F59E0B; font-weight:600;'>(큰 물통이지만 여전히 지고 다님)</span>", is_right=False)
-        card_b = render_livelihood_quad("B", "⚙️", "파이프라인<br>구축 (B)", "시스템 소유", "스스로 굴러가는 비즈니스 소유<br><span style='color:#38BDF8; font-weight:600;'>(내가 멈추어도 시스템이 일함)</span>", is_right=True)
-        card_i = render_livelihood_quad("I", "🚰➰", "파이프라인<br>접속 (I)", "플랫폼·자본 접속", "이미 구축된 플랫폼에 접속 레버리지<br><span style='color:#38BDF8; font-weight:600;'>(자산과 네트워크가 소득을 만듦)</span>", is_right=True)
+
+        card_e = render_livelihood_quad("E", make_livelihood_icon("small_bucket"), "작은 물통 (E)", "나의 시간과 돈을 1:1 맞교환", "직접 일한 시간만큼 소득 창출<br><span style='color:#F59E0B; font-weight:600;'>(노동을 멈추면 수입도 멈춤)</span>", is_right=False)
+
+        card_s = render_livelihood_quad("S", make_livelihood_icon("large_tank"), "큰 물통 (S)", "전문성과 몸값으로 키운 물통", "한 번에 담는 물통의 양을 키운 모습<br><span style='color:#F59E0B; font-weight:600;'>(큰 물통이지만 여전히 지고 다님)</span>", is_right=False)
+
+        card_b = render_livelihood_quad("B", make_livelihood_icon("pipeline_build"), "파이프라인<br>구축 (B)", "시스템 소유", "스스로 굴러가는 비즈니스 소유<br><span style='color:#38BDF8; font-weight:600;'>(내가 멈추어도 시스템이 일함)</span>", is_right=True)
+
+        card_i = render_livelihood_quad("I", make_livelihood_icon("pipeline_connect"), "파이프라인<br>접속 (I)", "플랫폼·자본 접속", "이미 구축된 플랫폼에 접속 레버리지<br><span style='color:#38BDF8; font-weight:600;'>(자산과 네트워크가 소득을 만듦)</span>", is_right=True)
 
         st.markdown(f"""
 <div style="margin: 6px 0 16px 0;">
