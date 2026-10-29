@@ -1390,8 +1390,8 @@ elif selected_page == "삶과 생계수단":
 <div style="background: rgba(15, 23, 42, 0.75); border: 1px solid #0369a1; border-radius: 10px; padding: 16px 18px;">
 <div style="font-size: 17.5px; font-weight: 800; color: #38BDF8; margin-bottom: 6px;">🧠 똘똘이의 선택 (파이프라인의 삶)</div>
 <div style="font-size: 14px; color: #CBD5E1; line-height: 1.6; word-break: keep-all;">
-"저는 첫 달에 <b>쌀 한 되(1kg)</b>만 주시고, 매달 곱절(2되, 4되, ...)로 주십시오."<br>
-똘똘이는 <b>'복리'(파이프라인의 속성)</b>로 훗날을 기약했습니다. <br><b>하지만 당장 첫 달에 쌀 한 되만 받아서 가족들을 부양할 수 없었습니다.</b>
+"저는 첫 달에 <b>쌀 한 되(1kg)</b>만 주시고, 매달 곱절로 주십시오."<br>
+똘똘이는 <b>'복리'(파이프라인의 속성)</b>로 훗날을 기약했습니다. <br><b>하지만 당장 첫 달 받은 쌀 한 되로는 가족들을 부양할 수 없었습니다.</b>
 </div>
 </div>
 </div>
