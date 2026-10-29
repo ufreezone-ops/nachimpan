@@ -2175,7 +2175,7 @@ elif selected_page == "인생의 사계절":
 <div style="background: rgba(30, 41, 59, 0.6); border: 1px solid #334155; border-radius: 12px; padding: 18px 20px; margin: 16px 0 24px 0;">
 <div style="font-size: 15px; color: #F8FAFC; line-height: 1.6; word-break: keep-all;">
 💡 <b>산책로의 질문</b><br>은퇴 후 내가 맞이할 겨울은 <b>약 {winter_years}년 </b>입니다. (국가데이터처 {user_gender.split()[1]} 기대수명 {life_expectancy}세 기준)<br>
-<span style="color: #94A3B8;">이 긴 겨울 동안 매달 무거운 물통을 지고 눈길을 걸을 것인가, 방 안에서 따뜻하게 흘러나오는 파이프라인을 맞이할 것인가는 <b>지금 '가을'의 준비</b>에 달려 있습니다.</span>
+<span style="color: #94A3B8;">이 긴 겨울 동안 매달 무거운 물통을 지고 눈길을 걸을 것인가, 방 안에서 따뜻하게 흘러나오는 파이프라인을 맞이할 것인가는 <b>운명이 아니라 선택입니다.</span>
 </div></div>
 """, unsafe_allow_html=True)
 
