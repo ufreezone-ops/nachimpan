@@ -1398,8 +1398,8 @@ elif selected_page == "삶과 생계수단":
 
 <div style="background: rgba(234, 88, 12, 0.14); border-left: 4px solid #EA580C; border-radius: 4px; padding: 14px 18px;">
 <div style="font-size: 15px; font-weight: 750; color: #F8FAFC; line-height: 1.6; word-break: keep-all;">
-<b>나침반의 성찰</b><br>: 누구의 선택이 옳다는 것이 아닙니다.<br>
-낮에는 돌쇠처럼 성실하게 가족의 생계(쌀 한 가마)를 책임지면서, 저녁과 주말의 시간에 똘똘이의 지혜(파이프라인)를 한 되, 두 되 차근차근 놓아가는 <b>'현명한 플랜 B'</b>도 있다는 것을 볼 수있는 힘을 키우자는 얘기입니다. 어느길을 걸을지는 스스로의 선택입니다.
+<b>나침반의 성찰</b><br>: 이 우화는 누구의 선택을 두둔하는 얘기가 아닙니다.<br>
+낮에는 돌쇠처럼 성실하게 가족의 생계(쌀 한 가마)를 책임지면서도, 여가 시간에 똘똘이의 파이프라인을 구축하는 <b>'현명한 플랜 B'</b>도 있다는 것을 보여줍니다.
 </div>
 </div>
 </div>
