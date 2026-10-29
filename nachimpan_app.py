@@ -1398,7 +1398,7 @@ elif selected_page == "삶과 생계수단":
 
 <div style="background: rgba(234, 88, 12, 0.14); border-left: 4px solid #EA580C; border-radius: 4px; padding: 14px 18px;">
 <div style="font-size: 15px; font-weight: 750; color: #F8FAFC; line-height: 1.6; word-break: keep-all;">
-<b>나침반의 성찰</b><br>: 이 우화는 누구의 선택을 두둔하는 얘기가 아닙니다. 둘 다 우리가 원하는 결과가 아니기 때문입니다.
+<b>나침반의 성찰:</b><br>이 우화는 누구의 선택을 두둔하는 얘기가 아닙니다. 둘 다 우리가 원하는 결과가 아니기 때문입니다.<br>
 돌쇠처럼 성실하게 당장의 가족 생계를 책임지면서도, 똘똘이가 구상한 파이프라인을 덧붙일 수 있는 길은 없을까요?<br>바로 그 <b>'현명한 플랜 B'</b>를 생각하게 하는 얘기입니다.
 </div>
 </div>
