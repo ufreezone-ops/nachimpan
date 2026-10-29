@@ -1509,37 +1509,52 @@ elif selected_page == "삶과 생계수단":
 </div></div>
 """, unsafe_allow_html=True)
 
-        # 6.02.04 | 내가 생각하는 은퇴 예상 나이 (질문 순서 위아래 교체)
+        # 6.02.04 | 내가 생각하는 은퇴 예상 나이 & 통계청 3대 은퇴 벤치마크
         st.markdown("""
 <div style="background: rgba(24, 32, 47, 0.65); border: 1.5px solid #3b4b66; border-radius: 14px; padding: 20px 22px; margin-bottom: 22px;">
-<div style="font-size: 17px; font-weight: 750; color: #FDE68A; line-height: 1.6; word-break: keep-all; margin-bottom: 6px;">나의 일은 생계를 위한 것인가? 그런 일이라면 벗어날 순 없을까?</div>
+<div style="font-size: 17px; font-weight: 750; color: #FDE68A; line-height: 1.6; word-break: keep-all; margin-bottom: 6px;">나는 언제부터 생계를 위해 반드시 일해야 하는 삶에서 벗어날 수 있을까?</div>
 <div style="font-size: 20px; font-weight: 850; color: #F8FAFC; margin-bottom: 12px;">내가 생각하는 은퇴 예상 나이</div>
 """, unsafe_allow_html=True)
 
         cur_user_age = int(st.session_state.person_age)
         default_retire = int(st.session_state.get("retirement_age") or 60)
-        if default_retire < cur_user_age: default_retire = cur_user_age
+        if default_retire < cur_user_age:
+            default_retire = cur_user_age
 
         with st.form("retirement_inline_form"):
             r_col1, r_col2 = st.columns([3.2, 1.0])
             with r_col1:
-                retirement_input = st.number_input("지금 하는 현업을 졸업(은퇴)하고 싶은 나이", min_value=cur_user_age, max_value=100, value=default_retire, step=1, label_visibility="collapsed")
+                retirement_input = st.number_input(
+                    "지금 하는 현업을 졸업(은퇴)하고 싶은 나이",
+                    min_value=cur_user_age,
+                    max_value=100,
+                    value=default_retire,
+                    step=1,
+                    label_visibility="collapsed"
+                )
             with r_col2:
                 retirement_saved = st.form_submit_button("은퇴 나이 확인", use_container_width=True, type="primary")
 
         if retirement_saved:
             st.session_state["retirement_age"] = int(retirement_input)
-            st.success(f"은퇴 예상 나이({retirement_input}세)가 반영되었습니다.")
+            st.session_state["retire_age_saved_notice"] = True
+
+        # 은퇴 나이 확인 버튼을 눌렀거나, 이미 은퇴 나이가 설정되어 있는 경우 노출
+        if st.session_state.get("retire_age_saved_notice", False) or "retirement_age" in st.session_state:
+            st.success(f"은퇴 예상 나이({st.session_state.get('retirement_age', retirement_input)}세)가 반영되었습니다.")
+
+            st.markdown("""
+<div style="background: rgba(15, 23, 42, 0.85); border: 1px solid #475569; border-radius: 10px; padding: 16px 18px; margin-top: 12px;">
+<div style="font-size: 15px; font-weight: 800; color: #38BDF8; margin-bottom: 10px;">📊 국가데이터처(통계청) 통계로 본 대한민국 3대 은퇴 분기점</div>
+<div style="display: flex; flex-direction: column; gap: 8px; font-size: 14.5px; color: #E2E8F0; line-height: 1.6;">
+  <div>• <b>"근로소득의 정점 및 본업 졸업"</b> 관점이라면 ➔ <span style="color: #F59E0B; font-weight: 800;">55~60세 전후</span> <span style="font-size: 13px; color: #94A3B8;">(주된 일자리 퇴직 평균 53세)</span></div>
+  <div>• <b>"통계청 흑자·적자 수지 균형"</b> 관점이라면 ➔ <span style="color: #F59E0B; font-weight: 800;">61세</span> <span style="font-size: 13px; color: #94A3B8;">(국민이전계정 NTA 공식 적자 재전환 연령)</span></div>
+  <div>• <b>"완전히 노동을 손에서 놓는 시점"</b> 관점이라면 ➔ <span style="color: #F59E0B; font-weight: 800;">72~73세</span> <span style="font-size: 13px; color: #94A3B8;">(OECD 실질 은퇴 연령 및 2·3차 일자리 종료)</span></div>
+</div>
+</div>
+""", unsafe_allow_html=True)
 
         st.markdown("</div>", unsafe_allow_html=True)
-
-        _, next_col = st.columns([5, 1])
-        with next_col:
-            if st.button("다음 →", key="livelihood_next", use_container_width=True, type="primary"):
-                st.session_state["retirement_age"] = int(st.session_state.get("retirement_age_input", retirement_input))
-                st.session_state["_pending_nav"] = "인생의 사계절"
-                st.session_state["_scroll_to_top_once"] = True
-                st.rerun()
 
 
 # ==============================================================================
