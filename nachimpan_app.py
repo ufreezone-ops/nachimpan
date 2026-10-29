@@ -1096,45 +1096,6 @@ selected_page = {
 # [Module 6.00.00] 메인 뷰 페이지 (Main View Tabs: 기본 3분 산책 vs 고급 정밀 모드)
 # ================================================================================
 
-# 6.00.01 | 공통 함수 — 지혜로운 산책: 돌쇠와 똘똘이 우화 카드
-
-def render_dolssoe_story_card():
-    """기본 모드와 고급 모드에서 공통으로 사용하는 우화 카드"""
-    st.markdown("""
-<div style="background: rgba(45, 35, 20, 0.55); border: 1.5px solid #6d4a1a; border-radius: 14px; padding: 24px 26px; margin: 16px 0 24px 0;">
-<div style="font-size: 21px; font-weight: 850; color: #FDE68A; margin-bottom: 12px;">🌾 지혜로운 산책: 돌쇠와 똘똘이</div>
-<div style="font-size: 14.5px; color: #E2E8F0; margin-bottom: 16px;">옛날 어느 마을, 머슴을 구하는 대감댁에 두 젊은이가 찾아왔습니다.</div>
-
-<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px;">
-<div style="background: rgba(15, 23, 42, 0.75); border: 1px solid #78350f; border-radius: 10px; padding: 16px 18px;">
-<div style="font-size: 17.5px; font-weight: 800; color: #F59E0B; margin-bottom: 6px;">💪 돌쇠의 선택 (물통의 삶)</div>
-<div style="font-size: 14px; color: #CBD5E1; line-height: 1.6; word-break: keep-all;">
-"대감마님, 저는 첫 달부터 매달 <b>쌀 한 가마(80kg)</b>씩을 주십시오."<br>
-돌쇠는 첫 달부터 쌀 한 가마를 받아 가족을 부양했습니다. 하지만 늙어 힘이 빠질 때까지 지게를 내려놓지 못했습니다.
-</div>
-</div>
-
-<div style="background: rgba(15, 23, 42, 0.75); border: 1px solid #0369a1; border-radius: 10px; padding: 16px 18px;">
-<div style="font-size: 17.5px; font-weight: 800; color: #38BDF8; margin-bottom: 6px;">🧠 똘똘이의 선택 (파이프라인의 삶)</div>
-<div style="font-size: 14px; color: #CBD5E1; line-height: 1.6; word-break: keep-all;">
-"저는 첫 달에 <b>쌀 한 되(1kg)</b>만 주시고, 매달 곱절(2되, 4되, 8되...)로 주십시오."<br>
-똘똘이는 <b>'복리의 지혜'(파이프라인의 속성)</b>로 훗날 힘겨운 물통으로부터 자유로워졌습니다. <br><b>하지만 당장 첫 달에 쌀 한 되만 받았다면 굶어 죽었을 것입니다.</b>
-</div>
-</div>
-</div>
-
-<div style="background: rgba(234, 88, 12, 0.14); border-left: 4px solid #EA580C; border-radius: 4px; padding: 14px 18px;">
-<div style="font-size: 15px; font-weight: 750; color: #F8FAFC; line-height: 1.6; word-break: keep-all;">
-<b>나침반의 성찰</b><br>: 누구의 선택이 옳다는 것이 아닙니다.<br>
-낮에는 돌쇠처럼 성실하게 가족의 생계(쌀 한 가마)를 책임지면서, 저녁과 주말의 시간에 똘똘이의 지혜(파이프라인)를 한 되, 두 되 차근차근 놓아가는 <b>'현명한 플랜 B'</b>가 필요한 이유입니다.
-</div>
-</div>
-</div>
-""", unsafe_allow_html=True)
-
-
-
-
 # ==============================================================================
 # 6.01.00 | Tab 1 — 우리집 가계부
 # ==============================================================================
@@ -1404,6 +1365,43 @@ if selected_page == "우리집 가계부":
 
 elif selected_page == "삶과 생계수단":
     is_adv = st.session_state.get("advanced_mode", False)
+
+
+# 6.02.01 | 공통 함수 — 지혜로운 산책: 돌쇠와 똘똘이 우화 카드
+
+def render_dolssoe_story_card():
+    """기본 모드와 고급 모드에서 공통으로 사용하는 우화 카드"""
+    st.markdown("""
+<div style="background: rgba(45, 35, 20, 0.55); border: 1.5px solid #6d4a1a; border-radius: 14px; padding: 24px 26px; margin: 16px 0 24px 0;">
+<div style="font-size: 21px; font-weight: 850; color: #FDE68A; margin-bottom: 12px;">🌾 지혜로운 산책: 돌쇠와 똘똘이</div>
+<div style="font-size: 14.5px; color: #E2E8F0; margin-bottom: 16px;">옛날 어느 마을, 머슴을 구하는 대감댁에 두 젊은이가 찾아왔습니다.</div>
+
+<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px;">
+<div style="background: rgba(15, 23, 42, 0.75); border: 1px solid #78350f; border-radius: 10px; padding: 16px 18px;">
+<div style="font-size: 17.5px; font-weight: 800; color: #F59E0B; margin-bottom: 6px;">💪 돌쇠의 선택 (물통의 삶)</div>
+<div style="font-size: 14px; color: #CBD5E1; line-height: 1.6; word-break: keep-all;">
+"대감마님, 저는 첫 달부터 매달 <b>쌀 한 가마(80kg)</b>씩을 주십시오."<br>
+돌쇠는 첫 달부터 쌀 한 가마를 받아 가족을 부양했습니다. 하지만 늙어 힘이 빠질 때까지 지게를 내려놓지 못했습니다.
+</div>
+</div>
+
+<div style="background: rgba(15, 23, 42, 0.75); border: 1px solid #0369a1; border-radius: 10px; padding: 16px 18px;">
+<div style="font-size: 17.5px; font-weight: 800; color: #38BDF8; margin-bottom: 6px;">🧠 똘똘이의 선택 (파이프라인의 삶)</div>
+<div style="font-size: 14px; color: #CBD5E1; line-height: 1.6; word-break: keep-all;">
+"저는 첫 달에 <b>쌀 한 되(1kg)</b>만 주시고, 매달 곱절(2되, 4되, 8되...)로 주십시오."<br>
+똘똘이는 <b>'복리의 지혜'(파이프라인의 속성)</b>로 훗날 힘겨운 물통으로부터 자유로워졌습니다. <br><b>하지만 당장 첫 달에 쌀 한 되만 받았다면 굶어 죽었을 것입니다.</b>
+</div>
+</div>
+</div>
+
+<div style="background: rgba(234, 88, 12, 0.14); border-left: 4px solid #EA580C; border-radius: 4px; padding: 14px 18px;">
+<div style="font-size: 15px; font-weight: 750; color: #F8FAFC; line-height: 1.6; word-break: keep-all;">
+<b>나침반의 성찰</b><br>: 누구의 선택이 옳다는 것이 아닙니다.<br>
+낮에는 돌쇠처럼 성실하게 가족의 생계(쌀 한 가마)를 책임지면서, 저녁과 주말의 시간에 똘똘이의 지혜(파이프라인)를 한 되, 두 되 차근차근 놓아가는 <b>'현명한 플랜 B'</b>가 필요한 이유입니다.
+</div>
+</div>
+</div>
+""", unsafe_allow_html=True)
     
     if not is_adv:
         # [기본 모드] 중복 제목 없이 '돌쇠와 똘똘이' 우화 단독 노출
