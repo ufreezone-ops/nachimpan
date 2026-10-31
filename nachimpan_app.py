@@ -499,6 +499,57 @@ def import_diagnosis_code(raw_input):
 # 2.01.04 | 개발용 테스트 사례 및 Google Sheets 저장/불러오기
 from datetime import datetime
 
+# [인터뷰어 전용 체험 사례 2종]
+INTERVIEWER_CASES = {
+    "case_32_female": {
+        "person_name": "32세 여성 (미혼, 4년차)",
+        "person_age": 32,
+        "gender": "🙋‍♀️ 여성",
+        "job_form": "직장인",
+        "job_spouse_form": "해당 없음",
+        "career_stage": "🌿 4~9년 (성장기)",
+        "income_self": 290, "income_spouse": 0, "income_other": 0,
+        "income_bonus": 200, "income_pension": 120, # 부부 합산 예상 국민연금
+        "expense_living": 130, "expense_loan": 0, "expense_other": 25, # 비정기 지출 300만원 ÷ 12
+        "retirement_monthly_expenses": 180,
+        "asset_cash": 800, "asset_financial": 700, "asset_home": 0, "asset_deposit": 0, "asset_other": 0,
+        "debt_home": 0, "debt_other": 0,
+        "retirement_age": 60, "spouse_age": 0,
+        "child_count": "없음", "child_age": 0, "child_age2": 0, "child_age3": 0, "child_age4": 0,
+        "father_age": 63, "mother_age": 60,
+        "marriage_plan": "1~3년 내 결혼 생각 있음", # 35세 결혼 예정
+        "child_plan": "자녀 계획 있음",           # 37세 첫째 출산 예정
+        "housing_plan": "주택 구입 고려",
+        "income_pension_self": 60,
+        "income_pension_spouse": 60,
+        "pension_start_age": 65
+    },
+    "case_45_female": {
+        "person_name": "45세 여성 (기혼, 재취업)",
+        "person_age": 45,
+        "gender": "🙋‍♀️ 여성",
+        "job_form": "직장인",
+        "job_spouse_form": "직장인",
+        "career_stage": "🌿 4~9년 (성장기)", # 재취업 4년차
+        "income_self": 260, "income_spouse": 360, "income_other": 0,
+        "income_bonus": 300, # 본인 100 + 배우자 200
+        "income_pension": 120, # 부부 합산 예상 국민연금
+        "expense_living": 330, "expense_loan": 100, "expense_other": 42, # 비정기 지출 500만원 ÷ 12
+        "retirement_monthly_expenses": 280,
+        "asset_cash": 1500, "asset_financial": 2500, "asset_home": 40000, "asset_deposit": 0, "asset_other": 0,
+        "debt_home": 15000, "debt_other": 0,
+        "retirement_age": 60, "spouse_age": 47,
+        "child_count": "1명", "child_age": 15, "child_age2": 0, "child_age3": 0, "child_age4": 0,
+        "father_age": 75, "mother_age": 72,
+        "marriage_plan": "결혼함",
+        "child_plan": "계획 없음",
+        "housing_plan": "현재 주거 유지",
+        "income_pension_self": 60,
+        "income_pension_spouse": 60,
+        "pension_start_age": 65
+    }
+}
+
 DEV_CASES = {
     "A. 30대 1인 가구 (여성, 초년생 M자 검증)": {
         "person_name": "테스트 A (여성)",
@@ -796,14 +847,45 @@ def call_gemini_text(prompt_text):
 # 4.01.00 | 사이드바 프로필 요약 및 복원
 # ------------------------------------------------------------------------------
 
-# 4.01.01 | 사이드바 컴포넌트 렌더링 (사이드바 고급 모드 토글 버튼 탑재)
+# 4.01.01 | 사이드바 컴포넌트 렌더링 (인터뷰어 영역 & 상단 새로고침)
 with st.sidebar:
+    # 1) 인터뷰어용 화면 새로고침
+    if st.button("↻ 화면 새로고침", key="sidebar_screen_refresh", use_container_width=True):
+        st.rerun()
+
     st.markdown(f"""
-<div style="background: rgba(30, 41, 59, 0.4); border: 1px solid #334155; border-radius: 10px; padding: 12px 14px; text-align: center; margin-bottom: 20px;">
+<div style="background: rgba(30, 41, 59, 0.4); border: 1px solid #334155; border-radius: 10px; padding: 12px 14px; text-align: center; margin: 12px 0 16px 0;">
 <div style="font-size: 11.5px; color: #94a3b8; font-weight: 600; letter-spacing: 0.04em;">익명 진단 고유번호</div>
 <div style="font-size: 20px; font-weight: 750; color: #cbd5e1; letter-spacing: 1px; margin-top: 3px;">{st.session_state.anonymous_id}</div>
 </div>
 """, unsafe_allow_html=True)
+
+    # 2) 인터뷰어 체험용 2대 대표 사례 버튼 (상단 인터뷰어 영역)
+    st.markdown("<div style='font-size: 13.5px; font-weight: 700; color: #94A3B8; margin-bottom: 6px;'>체험용 대표 사례</div>", unsafe_allow_html=True)
+    c_btn1, c_btn2 = st.columns(2)
+    
+    def apply_case_payload(case_dict):
+        for k, v in case_dict.items():
+            st.session_state[k] = v
+        if "gender" in case_dict: st.session_state["pills_gender"] = case_dict["gender"]
+        if "job_form" in case_dict: st.session_state["pills_job_self"] = case_dict["job_form"]
+        if "career_stage" in case_dict: st.session_state["pills_career_stage"] = case_dict["career_stage"]
+        if "job_spouse_form" in case_dict: st.session_state["pills_job_spouse"] = case_dict["job_spouse_form"]
+        st.session_state["started"] = True
+        st.session_state["answers"] = {}
+        st.session_state["advanced_mode"] = True
+        st.session_state["_pending_nav"] = "우리집 가계부"
+
+    with c_btn1:
+        if st.button("32세 여성", key="btn_case_32", use_container_width=True, help="미혼 / 직장 4년차 / 결혼·출산 준비"):
+            apply_case_payload(INTERVIEWER_CASES["case_32_female"])
+            st.rerun()
+    with c_btn2:
+        if st.button("45세 여성", key="btn_case_45", use_container_width=True, help="기혼 / 경단 후 재취업 / 자녀 15세"):
+            apply_case_payload(INTERVIEWER_CASES["case_45_female"])
+            st.rerun()
+
+    st.markdown("<div style='height: 10px;'></div>", unsafe_allow_html=True)
 
     if st.session_state.started:
         st.markdown("#### 나의 기본 정보")
@@ -818,21 +900,9 @@ with st.sidebar:
         dual_income_str = " + ".join(types_desc) if types_desc else "아직 미선택"
         st.markdown(f"**우리집 소득 형태:** {dual_income_str}")
 
-    st.markdown("<div style='height: 10px;'></div>", unsafe_allow_html=True)
-    with st.expander("📥 카톡 리포트 불러오기"):
-        st.markdown("<div style='font-size: 13px; color: #CBD5E1; margin-bottom: 6px;'>전달받은 <b>리포트 전문</b> 또는 <b>NC-코드</b>를 붙여넣으세요.</div>", unsafe_allow_html=True)
-        pasted_code_sb = st.text_area("카톡 내용 붙여넣기", placeholder="NC-코드를 붙여넣으세요", height=90, key="sb_pasted_code", label_visibility="collapsed")
-        if st.button("🔄 데이터 동기화", type="primary", use_container_width=True, key="sb_btn_sync"):
-            ok, msg = import_diagnosis_code(pasted_code_sb)
-            if ok:
-                st.success(msg)
-                st.rerun()
-            else:
-                st.error(msg)
-
     st.markdown("<div style='height: 14px;'></div>", unsafe_allow_html=True)
     
-    # [사이드바 모드 전환 버튼: 심플한 정식 이름표 장착]
+    # [사이드바 모드 전환 버튼]
     is_currently_adv = st.session_state.get("advanced_mode", False)
     mode_btn_label = "🌿 기본 모드로 전환" if is_currently_adv else "🧭 고급 모드로 전환"
     if st.button(mode_btn_label, key="sidebar_mode_toggle_btn", use_container_width=True):
@@ -841,7 +911,7 @@ with st.sidebar:
 
     st.caption("※ 나침반은 외부 서버에 저장되지 않는 일회성 안전 세션입니다.")
 
-# 4.01.02 | 개발용 테스트 메뉴
+# 4.01.02 | 개발용 테스트 메뉴 (카톡 expander 하단 이동)
 _dev_enabled = (
     st.secrets.get("DEV_MODE", False)
     or st.query_params.get("dev") == "1"
@@ -850,17 +920,25 @@ _dev_enabled = (
 if _dev_enabled:
     with st.sidebar:
         st.divider()
-        st.markdown("### 🧪 개발용 테스트")
-        
-        if st.button("↻ 개발용 새로고침", key="dev_menu_refresh", use_container_width=True):
-            st.rerun()
+        st.markdown("### 🧪 개발자 영역")
+
+        # [위치 이동] 카톡 리포트 불러오기가 개발자 영역으로 이동
+        with st.expander("📥 카톡 리포트 불러오기"):
+            st.markdown("<div style='font-size: 13px; color: #CBD5E1; margin-bottom: 6px;'>전달받은 <b>리포트 전문</b> 또는 <b>NC-코드</b>를 붙여넣으세요.</div>", unsafe_allow_html=True)
+            pasted_code_sb = st.text_area("카톡 내용 붙여넣기", placeholder="NC-코드를 붙여넣으세요", height=90, key="sb_pasted_code", label_visibility="collapsed")
+            if st.button("🔄 데이터 동기화", type="primary", use_container_width=True, key="sb_btn_sync"):
+                ok, msg = import_diagnosis_code(pasted_code_sb)
+                if ok:
+                    st.success(msg)
+                    st.rerun()
+                else:
+                    st.error(msg)
 
         st.caption("테스트 사례의 금액은 기능 검증을 위한 예시입니다.")
 
         _cases = get_test_cases()
         _all_names = list(_cases.keys())
 
-        # [실명 박멸] 가명 '혜림'으로 검색 placeholder 교체
         _search_kw = st.text_input(
             "🔍 사례 검색 (이름 또는 키워드)",
             placeholder="예: 여성, 혜림, 30대...",
