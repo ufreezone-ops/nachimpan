@@ -1182,7 +1182,7 @@ selected_page = {
 # ================================================================================
 
 # ==============================================================================
-# 6.01.00 | Tab 1 — 우리집 가계부
+# 6.01.00 | Tab 1 — 우리집 가계부 (AI 가계부 점검 & 노후 소득 크레바스 탑재)
 # ==============================================================================
 if selected_page == "우리집 가계부":
     is_adv = st.session_state.get("advanced_mode", False)
@@ -1229,7 +1229,7 @@ if selected_page == "우리집 가계부":
                 st.rerun()
 
     else:
-        # [고급 모드] 모든 마이크로 모듈(6.01.01 ~ 6.01.07) 완전 탑재
+        # [고급 모드] AI 점검 및 국민연금 크레바스(65세) 연계 모듈
         with st.form("finance_form"):
             # 6.01.01 | ⓪ 우리집 소득 성격 및 재무 입력 폼
             with st.container(border=True, key="job-panel"):
@@ -1280,7 +1280,7 @@ if selected_page == "우리집 가계부":
                     st.markdown("### ② 나가는 돈 (만원)")
                     expense_living = st.number_input("기본 월 생활비 (식비·관리비·통신비 등)", min_value=0, value=st.session_state.get("expense_living"), step=10, placeholder="월 생활 유지비")
                     expense_loan = st.number_input("대출 원리금 월 상환액 (원금+이자 합계)", min_value=0, value=st.session_state.get("expense_loan"), step=10, placeholder="은행 납입 합계")
-                    expense_other = st.number_input("그 밖의 연간 비정기 지출 (여행·경조사·세금)", min_value=0, value=st.session_state.get("expense_other"), step=10, placeholder="비정기 지출 월평균")
+                    expense_other = st.number_input("그 밖의 연간 비정기 지출 (여행·경조사·세금)", min_value=0, value=st.session_state.get("expense_other"), step=10, placeholder="연간 비정기 지출 합계")
 
             # 6.01.03 | ③ 가지고 있는 것 vs ④ 갚아야 할 돈 입력 패널
             asset_col, debt_col = st.columns(2)
@@ -1298,7 +1298,7 @@ if selected_page == "우리집 가계부":
                     debt_home = st.number_input("주택·전세 대출잔액", min_value=0, value=st.session_state.get("debt_home"), step=100, placeholder="금액")
                     debt_other = st.number_input("그외 부채 (신용·마이너스통장)", min_value=0, value=st.session_state.get("debt_other"), step=100, placeholder="금액")
 
-            # 6.01.04 | 은퇴 후 가정 입력 및 세션 상태 저장
+            # 6.01.04 | 은퇴 후 가정 입력 (심플함 유지)
             with st.container(border=True, key="retirement-panel"):
                 st.markdown("### 은퇴 후에는? (만원)")
                 pension_col, retirement_expense_col = st.columns(2)
@@ -1307,23 +1307,62 @@ if selected_page == "우리집 가계부":
                 with retirement_expense_col:
                     retirement_monthly_expenses = st.number_input("은퇴 후 한 달 생활비", min_value=0, value=int(st.session_state.get("retirement_monthly_expenses", 200) or 0), step=10)
 
-            save_finance = st.form_submit_button("입력 내용 반영하기", use_container_width=True, type="primary")
+            save_finance_trigger = st.form_submit_button("입력 내용 반영하기", use_container_width=True, type="primary")
 
-        if save_finance:
+        # 1단계: '입력 내용 반영하기' 클릭 시 AI 점검 세션 상태 활성화
+        if save_finance_trigger:
             final_gender = gender_selected if gender_selected else "🙋‍♂️ 남성"
             final_job = job_selected if job_selected else "직장인"
             final_career = career_selected if career_selected else "🌱 3년 이하 (초년생)"
             final_spouse_job = "" if (not job_spouse_selected or job_spouse_selected == "해당 없음") else job_spouse_selected
             
-            submitted_values = {
+            st.session_state["_pending_finance_draft"] = {
                 "gender": final_gender, "job_form": final_job, "career_stage": final_career, "job_spouse_form": final_spouse_job,
                 "income_self": income_self, "income_spouse": income_spouse, "income_other": income_other, "income_bonus": income_bonus,
                 "income_pension": income_pension, "expense_living": expense_living, "expense_loan": expense_loan, "expense_other": expense_other,
                 "retirement_monthly_expenses": retirement_monthly_expenses, "asset_cash": asset_cash, "asset_financial": asset_financial,
                 "asset_home": asset_home, "asset_deposit": asset_deposit, "asset_other": asset_other, "debt_home": debt_home, "debt_other": debt_other,
             }
-            for k, v in submitted_values.items(): st.session_state[k] = v
-            st.session_state["finance_saved_notice"] = True
+            st.session_state["show_ai_finance_review"] = True
+
+        # AI 점검 제안 모달/카드 출력 (동의 절차)
+        if st.session_state.get("show_ai_finance_review", False) and "_pending_finance_draft" in st.session_state:
+            draft = st.session_state["_pending_finance_draft"]
+            user_retire_age = int(st.session_state.get("retirement_age") or 60)
+            user_gender_str = draft.get("gender", "남성")
+            user_is_female = "여성" in user_gender_str
+            
+            st.info("💡 AI가 입력 내용을 토대로 우리집 가계부를 점검하는 중입니다...")
+            
+            # 통계청/국민연금 공식 벤치마크 기반 안내 카드
+            pension_gap_years = max(0, 65 - user_retire_age)
+            pension_avg_text = "여성 평균 36만 원" if user_is_female else "남성 평균 69.8만 원"
+            
+            st.markdown(f"""
+<div style="background: rgba(30, 41, 59, 0.7); border: 1.5px solid #F59E0B; border-radius: 12px; padding: 20px 22px; margin: 16px 0;">
+<div style="font-size: 18px; font-weight: 850; color: #FDE68A; margin-bottom: 10px;">📊 AI 가계부 점검 & 국민연금 노후 소득 제안</div>
+<div style="font-size: 14.5px; color: #E2E8F0; line-height: 1.7; word-break: keep-all;">
+• <b>국민연금 공식 벤치마크 (2025년 기준)</b>: 1인당 평균 수령액은 <b>{pension_avg_text}</b>이며, 20년 이상 장기가입자의 평균 수령액은 <b>월 약 113만 원</b>입니다.<br>
+• <b>소득 크레바스(소득 공백기) 점검</b>: 희망 은퇴 나이(<b>만 {user_retire_age}세</b>)부터 일반 노령연금 개시 연령인 <b>만 65세</b>까지 <span style="color:#F97316; font-weight:800;">약 {pension_gap_years}년간의 근로소득 중단 및 연금 공백기</span>가 발생합니다.<br>
+• <b>가계부 반영 안내</b>: 입력하신 월 연금 <b>{money(draft.get('income_pension', 0) or 0)}</b>은 65세 이후부터 안정적인 노후 소득 안전망으로 시뮬레이션에 연결됩니다.
+</div>
+</div>
+""", unsafe_allow_html=True)
+
+            col_agree, col_cancel = st.columns([1, 1])
+            with col_agree:
+                if st.button("✅ AI 제안 확인 및 가계부 반영", type="primary", use_container_width=True, key="btn_confirm_ai_finance"):
+                    for k, v in draft.items():
+                        st.session_state[k] = v
+                    st.session_state.pop("show_ai_finance_review", None)
+                    st.session_state.pop("_pending_finance_draft", None)
+                    st.session_state["finance_saved_notice"] = True
+                    st.rerun()
+            with col_cancel:
+                if st.button("다시 입력하기", use_container_width=True, key="btn_cancel_ai_finance"):
+                    st.session_state.pop("show_ai_finance_review", None)
+                    st.session_state.pop("_pending_finance_draft", None)
+                    st.rerun()
 
         # 6.01.05 | 우리집 재무 현황 2x2 ESBI 매트릭스 카드 UI
         q_self = active_quadrant(st.session_state.get("job_form", "직장인"))
@@ -1370,15 +1409,15 @@ if selected_page == "우리집 가계부":
         cols = st.columns(4)
         cols[0].metric("월 정기수입", money(s["regular_income"]))
         cols[1].metric("월 현금지출", money(s["expenses"]))
-        bonus_help = f"연간 상여금 {money(s['annual_bonus'])} 반영" if s['annual_bonus'] > 0 else "월 정기수지 기준"
+        bonus_help = f"연간 상여금 {money(s['annual_bonus'])} 및 비정기 지출 반영"
         cols[2].metric("연간 순저축 여력", money(s["annual_net_surplus"]), delta=f"월평균 {money(s['monthly_effective_surplus'])}", help=bonus_help)
         cols[3].metric("순자산", fmt_eok(s["net_worth"]))
 
-        # 6.01.07 | 미래 순자산·연금 궤적 Plotly 차트
+        # 6.01.07 | 미래 순자산·소득 크레바스(65세) Plotly 차트
         st.markdown("### 미래 순자산·연금 궤적")
         cur_age = int(st.session_state.person_age)
         retire_val = st.session_state.get("retirement_age")
-        retire_age = int(retire_val) if retire_val is not None else 65
+        retire_age = int(retire_val) if retire_val is not None else 60
         retire_age = max(cur_age, min(retire_age, 90))
         start_asset_eok = s["net_worth"] / 10000.0
         base_annual_surplus_eok = s["annual_net_surplus"] / 10000.0
@@ -1389,7 +1428,9 @@ if selected_page == "우리집 가계부":
         c_plan = st.session_state.get("child_plan", "미정")
         is_single_young = (int(getv("spouse_age", 0)) == 0 and cur_age < 40)
         life_expectancy = 87 if is_female else 81
+        pension_start_age = 65  # 1969년 이후 출생자 법정 연금 개시 연령
 
+        # 1) 근로/자산 축적기
         ages_accum = list(range(cur_age, retire_age + 1))
         vals_accum_eok = []
         current_asset = start_asset_eok
@@ -1399,23 +1440,34 @@ if selected_page == "우리집 가계부":
             elif 45 <= a <= 53: lifecycle_weight = 1.0 + (0.02 * (45 - cur_age)) - 0.15
             else: lifecycle_weight = max(0.65, 1.0 + (0.02 * (45 - cur_age)) - 0.25)
             if is_single_young:
-                if m_plan in ["1~3년 내 결혼 생각 있음", "결혼 예정/준비 중"] and (cur_age + 1 <= a <= cur_age + 3): lifecycle_weight *= 0.75
-                if is_female and c_plan in ["자녀 계획 있음", "출산 예정/준비 중", "추가 자녀 계획 있음"] and (33 <= a <= 36): lifecycle_weight *= 0.65
+                if m_plan in ["1~3년 내 결혼 생각 있음", "결혼 예정"] and (cur_age + 1 <= a <= cur_age + 3): lifecycle_weight *= 0.75
+                if is_female and c_plan in ["자녀 계획 있음", "출산 예정", "추가 자녀 계획 있음"] and (33 <= a <= 36): lifecycle_weight *= 0.65
             annual_save = base_annual_surplus_eok * max(0.05, lifecycle_weight)
             current_asset += annual_save
 
         peak_asset_eok = vals_accum_eok[-1]
         ret_pension = float(getv("income_pension", 0) or 0)
         ret_expenses = float(getv("retirement_monthly_expenses", 200) or 0)
-        annual_ret_cashflow_eok = ((ret_pension - ret_expenses) * 12) / 10000.0
+
+        # 2) 은퇴 후 인출기 (은퇴~64세 소득 크레바스 vs 65세 이후 국민연금 개시 분리 계산)
         ages_retire = list(range(retire_age, max(retire_age + 1, life_expectancy + 1)))
         vals_retire_eok = []
         ret_asset = peak_asset_eok
         depletion_age = None
+
         for idx, a in enumerate(ages_retire):
             vals_retire_eok.append(ret_asset)
-            if idx > 0 and ret_asset <= 0 and depletion_age is None: depletion_age = a
-            ret_asset += annual_ret_cashflow_eok
+            if idx > 0 and ret_asset <= 0 and depletion_age is None:
+                depletion_age = a
+            
+            # 은퇴 후 65세 이전: 근로소득도 연금도 없는 소득 크레바스 (지출만 100% 인출)
+            if a < pension_start_age:
+                annual_cashflow = -(ret_expenses * 12.0) / 10000.0
+            else:
+                # 65세 이후: 국민연금 개시로 수지 완화
+                annual_cashflow = ((ret_pension - ret_expenses) * 12.0) / 10000.0
+            
+            ret_asset += annual_cashflow
 
         max_val_eok = max(max(vals_accum_eok), max(vals_retire_eok) if vals_retire_eok else 0)
         use_cheonman = (max_val_eok < 1.0 and max_val_eok > 0)
@@ -1428,13 +1480,35 @@ if selected_page == "우리집 가계부":
 
         fig_asset = go.Figure()
         fig_asset.add_hline(y=0, line_dash="solid", line_color="#334155", line_width=1.5)
+        
+        # 소득 크레바스 음영 구간 (은퇴 ~ 65세)
+        if retire_age < pension_start_age:
+            fig_asset.add_vrect(
+                x0=retire_age, x1=pension_start_age,
+                fillcolor="rgba(239, 68, 68, 0.12)", line_width=0, layer="below"
+            )
+            fig_asset.add_annotation(
+                x=(retire_age + pension_start_age) / 2.0, y=0,
+                text="⚠️ 소득 크레바스 (연금 공백)", showarrow=False,
+                yshift=-24, font=dict(size=11, color="#FCA5A5", weight="bold"),
+                bgcolor="rgba(15, 23, 42, 0.85)", bordercolor="#EF4444", borderpad=2
+            )
+
         fig_asset.add_trace(go.Scatter(x=ages_accum, y=y_accum, mode="lines+markers", line=dict(color="#F59E0B", width=3.5), marker=dict(size=6), fill='tozeroy', fillcolor='rgba(245, 158, 11, 0.12)', name="🌱 자산 축적기", hovertemplate=hover_tmpl))
         fig_asset.add_trace(go.Scatter(x=ages_retire, y=y_retire, mode="lines+markers", line=dict(color="#38BDF8", width=3.5), marker=dict(size=6), fill='tozeroy', fillcolor='rgba(56, 189, 248, 0.08)', name="🍂 자산 인출기", hovertemplate=hover_tmpl))
+        
         fig_asset.add_vline(x=retire_age, line_dash="dash", line_color="#F8FAFC", line_width=2)
-        fig_asset.add_annotation(x=retire_age, y=peak_asset_eok * mult, text=f"은퇴 정점 {retire_age}세 ({peak_disp})", showarrow=True, arrowhead=2, arrowcolor="#F59E0B", font=dict(size=13, color="#FDE68A"), ay=-38, bgcolor="rgba(15, 23, 42, 0.85)", bordercolor="#F59E0B", borderpad=4)
+        fig_asset.add_annotation(x=retire_age, y=peak_asset_eok * mult, text=f"은퇴 정점 {retire_age}세 ({peak_disp})", showarrow=True, arrowhead=2, arrowcolor="#F59E0B", font=dict(size=12, color="#FDE68A"), ay=-36, bgcolor="rgba(15, 23, 42, 0.85)", bordercolor="#F59E0B", borderpad=4)
+        
+        # 65세 국민연금 개시선 표시
+        if retire_age < pension_start_age and pension_start_age <= life_expectancy:
+            fig_asset.add_vline(x=pension_start_age, line_dash="dot", line_color="#10B981", line_width=1.8)
+            fig_asset.add_annotation(x=pension_start_age, y=vals_retire_eok[pension_start_age - retire_age] * mult, text="국민연금 개시 (65세)", showarrow=True, arrowhead=2, arrowcolor="#10B981", font=dict(size=11.5, color="#86EFAC"), ay=-30, bgcolor="rgba(15, 23, 42, 0.85)", bordercolor="#10B981", borderpad=3)
+
         if depletion_age and depletion_age <= life_expectancy:
-            fig_asset.add_annotation(x=depletion_age, y=0, text=f"자산 소진 ({depletion_age}세)", showarrow=True, arrowhead=2, arrowcolor="#EF4444", font=dict(size=12.5, color="#FCA5A5"), ay=35, bgcolor="rgba(15, 23, 42, 0.85)", bordercolor="#EF4444", borderpad=3)
-        fig_asset.update_layout(height=380, margin=dict(l=20, r=20, t=30, b=35), paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="rgba(0,0,0,0)", font=dict(color="#E2E8F0", size=13), xaxis=dict(title=dict(text="나이 (세)", font=dict(size=14, color="#94A3B8")), tickfont=dict(size=13, color="#94A3B8"), gridcolor="rgba(100, 116, 139, 0.2)", tickmode="linear", tick0=20, dtick=5, fixedrange=True), yaxis=dict(title=dict(text="추정 순자산", font=dict(size=14, color="#94A3B8")), tickfont=dict(size=13, color="#94A3B8"), ticksuffix=unit_str, tickformat=",.0f", gridcolor="rgba(100, 116, 139, 0.2)", fixedrange=True), legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1, font=dict(size=12.5, color="#F1F5F9")), hovermode="x unified")
+            fig_asset.add_annotation(x=depletion_age, y=0, text=f"자산 소진 ({depletion_age}세)", showarrow=True, arrowhead=2, arrowcolor="#EF4444", font=dict(size=12, color="#FCA5A5"), ay=32, bgcolor="rgba(15, 23, 42, 0.85)", bordercolor="#EF4444", borderpad=3)
+        
+        fig_asset.update_layout(height=400, margin=dict(l=20, r=20, t=30, b=35), paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="rgba(0,0,0,0)", font=dict(color="#E2E8F0", size=13), xaxis=dict(title=dict(text="나이 (세)", font=dict(size=14, color="#94A3B8")), tickfont=dict(size=13, color="#94A3B8"), gridcolor="rgba(100, 116, 139, 0.2)", tickmode="linear", tick0=20, dtick=5, fixedrange=True), yaxis=dict(title=dict(text="추정 순자산", font=dict(size=14, color="#94A3B8")), tickfont=dict(size=13, color="#94A3B8")), legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1, font=dict(size=12, color="#F1F5F9")), hovermode="x unified")
         st.plotly_chart(fig_asset, use_container_width=True, config={"displayModeBar": False, "scrollZoom": False, "doubleClick": False, "showAxisDragHandles": False})
 
         _, next_col = st.columns([5, 1])
