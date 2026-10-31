@@ -2133,7 +2133,12 @@ elif selected_page == "인생의 사계절":
         user_gender = st.session_state.get("gender", "🙋‍♂️ 남성")
         is_female = ("여성" in user_gender)
 
-        # 1) 유효한 자녀 나이 수집
+        # [핵심 보정] 인터뷰이가 AI 제안에서 직접 수정한 맞춤 타임라인 나이 우선 적용
+        confirmed_m_age = int(getv("target_marriage_age", 0))
+        confirmed_b_age = int(getv("target_birth_age", 0))
+        confirmed_h_age = int(getv("target_housing_age", 0))
+
+        # 1) 유효한 기존 자녀 나이 수집
         existing_child_ages = [int(getv(k, 0)) for k in ["child_age", "child_age2", "child_age3", "child_age4"] if int(getv(k, 0)) > 0]
 
         # 2) 출산·육아 집중기 구간 (0~6세)
@@ -2142,6 +2147,9 @@ elif selected_page == "인생의 사계절":
             for ca in existing_child_ages:
                 birth_p_age = cur_age - ca
                 childcare_windows.append((max(20, birth_p_age), min(85, birth_p_age + 6)))
+        elif confirmed_b_age > 0:
+            # 인터뷰이가 확정한 출산 나이 반영
+            childcare_windows.append((confirmed_b_age, min(85, confirmed_b_age + 6)))
         elif c_plan in ["자녀 계획 있음", "출산 예정", "추가 자녀 계획 있음"]:
             future_birth = max(cur_age + 1, 33 if is_female else 35)
             childcare_windows.append((future_birth, future_birth + 5))
@@ -2149,10 +2157,13 @@ elif selected_page == "인생의 사계절":
         childcare_start = min([w[0] for w in childcare_windows]) if childcare_windows else None
         childcare_end = max([w[1] for w in childcare_windows]) if childcare_windows else None
 
-        # 3) 주택 구입 집중기 구간
+        # 3) 주택 구입 집중기 구간 (인터뷰이가 확정한 주택구입 나이 100% 반영)
         housing_start, housing_end = None, None
-        if h_plan in ["주택 구입 고려", "주거 계획 확정"]:
-            housing_start = max(20, cur_age + 2)
+        if confirmed_h_age > 0:
+            housing_start = max(20, confirmed_h_age)
+            housing_end = min(85, housing_start + 4)
+        elif h_plan in ["주택 구입 고려", "주거 계획 확정"]:
+            housing_start = max(20, cur_age + 5)
             housing_end = min(85, housing_start + 4)
 
         # 4) 자녀 대학교 학자금 피크 구간 (19~24세)
@@ -2162,6 +2173,8 @@ elif selected_page == "인생의 사계절":
                 c_start = cur_age + (19 - ca)
                 c_end = cur_age + (24 - ca)
                 college_windows.append((max(20, c_start), min(85, c_end)))
+        elif confirmed_b_age > 0:
+            college_windows.append((min(85, confirmed_b_age + 19), min(85, confirmed_b_age + 24)))
         elif c_plan in ["자녀 계획 있음", "출산 예정"]:
             future_birth = max(cur_age + 1, 33 if is_female else 35)
             college_windows.append((future_birth + 19, future_birth + 24))
@@ -2177,6 +2190,9 @@ elif selected_page == "인생의 사계절":
                 w_end = cur_age + (34 - ca)
                 if w_end >= 20 and w_start <= 85:
                     wedding_windows.append((max(20, w_start), min(85, w_end)))
+        elif confirmed_b_age > 0:
+            if confirmed_b_age + 30 <= 85:
+                wedding_windows.append((confirmed_b_age + 30, min(85, confirmed_b_age + 34)))
 
         wedding_start = min([w[0] for w in wedding_windows]) if wedding_windows else None
         wedding_end = max([w[1] for w in wedding_windows]) if wedding_windows else None
@@ -2219,8 +2235,14 @@ elif selected_page == "인생의 사계절":
                 exp_factor = 1.0
                 if childcare_start and childcare_end and (childcare_start <= a <= childcare_end):
                     exp_factor *= 1.18
-                if m_plan in ["1~3년 내 결혼 생각 있음", "결혼 예정"] and (cur_age <= a <= cur_age + 2):
+                
+                # 결혼 지출 피크
+                if confirmed_m_age > 0 and (confirmed_m_age <= a <= confirmed_m_age + 1):
+                    exp_factor *= 1.15
+                elif m_plan in ["1~3년 내 결혼 생각 있음", "결혼 예정"] and (cur_age <= a <= cur_age + 2):
                     exp_factor *= 1.12
+
+                # 주택 구입 지출 피크
                 if housing_start and housing_end and (housing_start <= a <= housing_end):
                     exp_factor *= 1.10
 
@@ -2273,7 +2295,7 @@ elif selected_page == "인생의 사계절":
             row_heights=[0.55, 0.45]
         )
 
-        # [차트 사이 2단 타이틀 높이 레벨: 25% 추가 간격 확장]
+        # [차트 사이 2단 타이틀 높이 레벨]
         y_tier_1 = 0.485  # 1단(상단): 출산육아, 자녀대학, 은퇴
         y_tier_2 = 0.395  # 2단(하단): 주택구입, 자녀결혼
 
@@ -2295,7 +2317,7 @@ elif selected_page == "인생의 사계절":
                     bgcolor="rgba(15, 23, 42, 0.95)", bordercolor="#F97316", borderpad=2.5
                 )
 
-        # 2. 주택구입 밴드 (2단)
+        # 2. 주택구입 밴드 (2단) - 확정된 나이로 이동
         if housing_start and housing_end:
             h_band_x0 = max(20, min(housing_start, 85))
             h_band_x1 = max(20, min(housing_end, 85))
