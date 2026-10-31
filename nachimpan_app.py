@@ -1327,31 +1327,30 @@ if selected_page == "우리집 가계부":
             }
             st.session_state["_pending_finance_draft"] = draft_payload
 
-            # 연금액이 비어있거나 AI 재점검이 필요할 때 Gemini 호출
             cur_p_age = int(st.session_state.get("person_age", 35))
             has_spouse = (final_spouse_job != "")
             
             ai_pension_prompt = f"""[역할: 대한민국 국민연금 및 직역연금 통계 전문가]
 인터뷰이 정보:
-- 본인: {final_gender}, 만 {cur_p_age}세, 직종 {final_job}, 경력 {final_career}, 월 소득 {income_self or 0}만 원
-- 배우자: {final_spouse_job if has_spouse else '없음'}, 월 소득 {income_spouse or 0}만 원
+- 본인: {final_gender}, 만 {cur_p_age}세, 직종 {final_job}, 경력 {final_career}, 월 실수령 {income_self or 0}만 원
+- 배우자: {final_spouse_job if has_spouse else '없음'}, 월 실수령 {income_spouse or 0}만 원
 - 현재 직접 입력된 은퇴 후 예상연금: {income_pension or '미입력(0)'}만 원
 
 [통계적 팩트 기준]
-1. 2025년 국민연금 평균: 남성 약 70만 원, 여성 약 36만 원, 20년 이상 장기가입자 약 113만 원.
+1. 2025년 국민연금 평균: 남성 약 70만 원, 여성 약 36만 원, 20년 이상 장기가입자 평균 약 113만 원.
 2. 직종이 '공무원'인 경우 공무원연금 특성(퇴직 후 월 200~250만 원 안팎 수령 가능성)을 고려할 것.
-3. 배우자가 있는 경우 맞벌이 여부에 따른 합산 수령액을 유추할 것.
+3. 맞벌이 부부인 경우 두 사람의 합산 국민연금 예상액을 현실적으로 산출할 것 (예: 맞벌이 20년 이상 시 합산 200~230만 원 수준).
 
 [출력 형식 가이드]
-반드시 아래 JSON 포맷으로만 정확히 응답하세요 (설명문 없이 순수 JSON만 출력):
+반드시 아래 JSON 포맷으로만 정확히 응답하세요 (순수 JSON만 출력):
 {{
-  "suggested_pension": 권장월연금숫자(만원 단위 정수, 예: 120),
-  "analysis_comment": "2~3문장으로 담백하게 이유 설명. 통계적 평균(남/여)과 직종({final_job})의 특성을 고려하여 65세 개시 시점에 부부 합산 예상액이 어떻게 도출되었는지 친절히 안내."
+  "suggested_pension": 권장월연금숫자(만원 단위 정수만, 예: 210),
+  "analysis_comment": "2~3문장으로 담백하게 설명. 본문에서 언급하는 추천 금액(예: 210만 원)과 suggested_pension 숫자가 반드시 100% 일치해야 함."
 }}"""
 
             with st.spinner("AI가 입력 내용을 토대로 우리집 가계부와 예상 연금을 점검하는 중입니다..."):
                 raw_ai_res, ai_err = call_gemini_text(ai_pension_prompt)
-                suggested_val = 120 if has_spouse else 70
+                suggested_val = 210 if has_spouse else 110
                 analysis_msg = "국가데이터처 통계를 기준으로 65세 이후 수령 가능한 기본 연금액을 제안합니다."
                 
                 if raw_ai_res:
@@ -1364,8 +1363,8 @@ if selected_page == "우리집 가계부":
                     except Exception:
                         pass
                 
-                # 사용자가 이미 의미있는 연금을 입력했다면 사용자 값 우선, 비어있었다면 AI 추정값 추천
-                if income_pension and int(income_pension) > 0:
+                # 사용자가 0이 아닌 값을 명시적으로 입력하지 않았다면 AI 추천값 적용
+                if income_pension and int(income_pension) > 0 and int(income_pension) != 120:
                     final_suggested_pension = int(income_pension)
                 else:
                     final_suggested_pension = suggested_val
@@ -1374,14 +1373,16 @@ if selected_page == "우리집 가계부":
                     "suggested_val": final_suggested_pension,
                     "comment": analysis_msg
                 }
+                # number_input 위젯 세션 값 강제 일치화
+                st.session_state["input_adjusted_pension"] = final_suggested_pension
                 st.session_state["show_ai_finance_review"] = True
 
         # ----------------------------------------------------------------------
-        # [AI 제안 카드: 인터뷰이가 확인하고 직접 수정(공무원연금 등) 후 확정]
+        # [AI 제안 카드: 인터뷰이가 확인하고 직접 수정 후 확정]
         # ----------------------------------------------------------------------
         if st.session_state.get("show_ai_finance_review", False) and "_pending_finance_draft" in st.session_state:
             draft = st.session_state["_pending_finance_draft"]
-            ai_data = st.session_state.get("_ai_pension_result", {"suggested_val": 100, "comment": ""})
+            ai_data = st.session_state.get("_ai_pension_result", {"suggested_val": 120, "comment": ""})
             user_retire_age = int(st.session_state.get("retirement_age") or 60)
             pension_gap_years = max(0, 65 - user_retire_age)
 
@@ -1392,7 +1393,7 @@ if selected_page == "우리집 가계부":
 {ai_data.get('comment')}<br>
 <span style="color: #F97316; font-weight: 800;">⚠️ 소득 크레바스 주의:</span> 희망 은퇴 나이(만 {user_retire_age}세)부터 노령연금 개시(만 65세)까지 <b>약 {pension_gap_years}년간 소득 공백</b>이 발생합니다.
 </div>
-<div style="font-size: 13.5px; color: #94A3B8; margin-bottom: 6px;">💡 공무원연금, 사학연금 또는 추가 개인연금이 있으시면 아래 금액을 합산하여 수정하세요.</div>
+<div style="font-size: 13.5px; color: #94A3B8; margin-bottom: 6px;">💡 AI 추천 연금액이 아래 입력창에 세팅되었습니다. 공무원·개인연금이 있다면 합산 수정 후 확정하세요.</div>
 </div>
 """, unsafe_allow_html=True)
 
@@ -1402,7 +1403,7 @@ if selected_page == "우리집 가계부":
                     adjusted_pension = st.number_input(
                         "은퇴 후 최종 반영할 월 연금액 (만원)",
                         min_value=0, max_value=2000,
-                        value=int(ai_data.get("suggested_val", 100)),
+                        value=int(st.session_state.get("input_adjusted_pension", ai_data.get("suggested_val", 120))),
                         step=10,
                         key="input_adjusted_pension"
                     )
@@ -1870,9 +1871,8 @@ elif selected_page == "인생의 사계절":
                 st.rerun()
 
     else:
-        # [고급 모드] 모든 마이크로 모듈(6.03.01 ~ 6.03.07) 완전 탑재
+        
         # 6.03.01 | 가족 구성원 나이 입력 폼 (3대 직계 가족 슬림화)
-        # 6.03.02 | (형제자매 기능 전면 폐기 ➜ 직계 부양가족 집중 완료)
         st.markdown("### 1. 우리 가족과 나의 은퇴 나이")
         child_options = ["입력 안 함", "없음", "1명", "2명", "3명", "4명 이상"]
         prev_c_count = st.session_state.get("child_count", "입력 안 함")
@@ -1915,22 +1915,73 @@ elif selected_page == "인생의 사계절":
                 housing_options = ["미정", "현재 주거 유지", "전세·월세 이동 고려", "주택 구입 고려", "주거 계획 확정"]
                 housing_plan = st.selectbox("주거 계획", housing_options, index=housing_options.index(st.session_state.get("housing_plan", "미정")) if st.session_state.get("housing_plan", "미정") in housing_options else 0)
 
-            save_family = st.form_submit_button("가족 정보 반영하기", use_container_width=True, type="primary")
+            save_family_trigger = st.form_submit_button("가족 정보 반영하기", use_container_width=True, type="primary")
 
-        if save_family:
-            st.session_state.spouse_age = spouse_age
-            st.session_state.child_count = child_count
-            st.session_state.child_age = child_age1
-            st.session_state.child_age2 = child_age2
-            st.session_state.child_age3 = child_age3
-            st.session_state.child_age4 = child_age4
-            st.session_state.father_age = father_age
-            st.session_state.mother_age = mother_age
-            st.session_state.marriage_plan = marriage_plan
-            st.session_state.child_plan = child_plan
-            st.session_state.housing_plan = housing_plan
-            st.session_state.pop("sibling_items", None)
-            st.rerun()
+        # ----------------------------------------------------------------------
+        # 6.03.02 | [신설] AI 가족 미래 생애주기 설계 및 동의 절차
+        # ----------------------------------------------------------------------
+        if save_family_trigger:
+            family_draft = {
+                "spouse_age": spouse_age, "child_count": child_count,
+                "child_age": child_age1, "child_age2": child_age2, "child_age3": child_age3, "child_age4": child_age4,
+                "father_age": father_age, "mother_age": mother_age,
+                "marriage_plan": marriage_plan, "child_plan": child_plan, "housing_plan": housing_plan
+            }
+            st.session_state["_pending_family_draft"] = family_draft
+
+            ai_fam_prompt = f"""[역할: 대한민국 인구통계 기반 생애설계 파트너]
+인터뷰이 정보:
+- 본인: {user_gender}, 만 {cur_age}세
+- 현재 배우자 나이: {spouse_age}세
+- 현재 자녀: {child_count} (첫째 {child_age1}세, 둘째 {child_age2}세)
+- 가족 계획: 결혼 '{marriage_plan}', 출산·자녀 '{child_plan}', 주거 '{housing_plan}'
+
+[통계 참고 지표]
+- 여성 평균 초혼연령: 31.6세 / 첫째아 출산: 33.1세
+- 경력단절 여성 110만 명 중 육아(44%), 결혼(24%), 임신·출산(22%) 사유
+- 자녀 대학 학자금 집중기: 부모 48~55세 전후
+
+[요청 사항]
+인터뷰이의 나이와 가족 계획을 바탕으로 앞으로 맞이할 주요 생애사건의 예상 나이대와 재무적 시사점을 3~4문장으로 따뜻하고 정직하게 설계해 주세요. (예: "만 35세 결혼과 37세 첫째 출산 시나리오를 가정하면... 자녀 대학 진학 시 부모 나이는 56세가 되어...")
+확정된 사실이 아닌 합리적인 가상의 시나리오 제안임을 정중하게 밝혀주세요."""
+
+            with st.spinner("AI가 입력 내용을 토대로 미래의 가족 변화를 설계하는 중입니다..."):
+                fam_comment, _ = call_gemini_text(ai_fam_prompt)
+                st.session_state["_ai_family_comment"] = fam_comment if fam_comment else "통계 지표를 바탕으로 향후 가족 생애주기 타임라인을 점검했습니다."
+                st.session_state["show_ai_family_review"] = True
+
+        # AI 설계 결과 화면 출력 및 최종 동의
+        if st.session_state.get("show_ai_family_review", False) and "_pending_family_draft" in st.session_state:
+            f_draft = st.session_state["_pending_family_draft"]
+            f_comment = st.session_state.get("_ai_family_comment", "")
+
+            st.markdown(f"""
+<div style="background: rgba(30, 41, 59, 0.75); border: 2px solid #38BDF8; border-radius: 14px; padding: 22px 24px; margin: 18px 0;">
+<div style="font-size: 19px; font-weight: 850; color: #BAE6FD; margin-bottom: 8px;">🤖 AI 가족 생애주기 미래 설계안</div>
+<div style="font-size: 14.5px; color: #E2E8F0; line-height: 1.7; word-break: keep-all; margin-bottom: 14px;">
+{f_comment}
+</div>
+<div style="font-size: 13px; color: #94A3B8;">※ 위 설계안은 통계청 인구동향을 참고한 AI의 제안이며, 동의하시면 생애주기 곡선 및 은퇴 나이에 반영됩니다.</div>
+</div>
+""", unsafe_allow_html=True)
+
+            f_c1, f_c2 = st.columns([1, 1])
+            with f_c1:
+                if st.button("✅ AI 생애 설계안 동의 및 가족정보 반영", type="primary", use_container_width=True, key="btn_confirm_fam_ai"):
+                    for k, v in f_draft.items():
+                        st.session_state[k] = v
+                    st.session_state.pop("sibling_items", None)
+                    st.session_state.pop("show_ai_family_review", None)
+                    st.session_state.pop("_pending_family_draft", None)
+                    st.session_state.pop("_ai_family_comment", None)
+                    st.success("가족 정보와 미래 생애주기가 완벽히 반영되었습니다.")
+                    st.rerun()
+            with f_c2:
+                if st.button("다시 수정하기", use_container_width=True, key="btn_cancel_fam_ai"):
+                    st.session_state.pop("show_ai_family_review", None)
+                    st.session_state.pop("_pending_family_draft", None)
+                    st.session_state.pop("_ai_family_comment", None)
+                    st.rerun()
 
         # 6.03.03 | 은퇴 시점 가족 미래 나이 2열 슬림 카드 (직계 3대 집중)
         people = [(st.session_state.get("person_name", "나"), cur_age)]
