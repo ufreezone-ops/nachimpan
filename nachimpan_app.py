@@ -1918,7 +1918,7 @@ elif selected_page == "인생의 사계절":
             save_family_trigger = st.form_submit_button("가족 정보 반영하기", use_container_width=True, type="primary")
 
         # ----------------------------------------------------------------------
-        # 6.03.02 | [신설] AI 가족 미래 생애주기 설계 및 동의 절차
+        # 6.03.02 | AI 가족 생애주기 설계 및 인터뷰이 '직접 나이 수정' 레이어
         # ----------------------------------------------------------------------
         if save_family_trigger:
             family_draft = {
@@ -1929,59 +1929,143 @@ elif selected_page == "인생의 사계절":
             }
             st.session_state["_pending_family_draft"] = family_draft
 
-            ai_fam_prompt = f"""[역할: 대한민국 인구통계 기반 생애설계 파트너]
+            # AI에게 단순 글짓기가 아닌 [정확한 나이 숫자]를 JSON으로 산출하도록 요청
+            ai_fam_prompt = f"""[역할: 대한민국 인구통계 기반 생애주기 타임라인 설계 전문가]
 인터뷰이 정보:
 - 본인: {user_gender}, 만 {cur_age}세
 - 현재 배우자 나이: {spouse_age}세
 - 현재 자녀: {child_count} (첫째 {child_age1}세, 둘째 {child_age2}세)
 - 가족 계획: 결혼 '{marriage_plan}', 출산·자녀 '{child_plan}', 주거 '{housing_plan}'
+- 희망 은퇴 나이: {st.session_state.get('retirement_age', 60)}세
 
 [통계 참고 지표]
-- 여성 평균 초혼연령: 31.6세 / 첫째아 출산: 33.1세
-- 경력단절 여성 110만 명 중 육아(44%), 결혼(24%), 임신·출산(22%) 사유
-- 자녀 대학 학자금 집중기: 부모 48~55세 전후
+- 여성 평균 초혼 31.6세 / 첫째아 출산 33.1세 (남성은 약 2세 높음)
+- 주택 마련 소요 기간: 결혼 후 평균 4~7년
 
-[요청 사항]
-인터뷰이의 나이와 가족 계획을 바탕으로 앞으로 맞이할 주요 생애사건의 예상 나이대와 재무적 시사점을 3~4문장으로 따뜻하고 정직하게 설계해 주세요. (예: "만 35세 결혼과 37세 첫째 출산 시나리오를 가정하면... 자녀 대학 진학 시 부모 나이는 56세가 되어...")
-확정된 사실이 아닌 합리적인 가상의 시나리오 제안임을 정중하게 밝혀주세요."""
+[출력 형식 가이드]
+반드시 아래 JSON 포맷으로만 응답하세요 (순수 JSON만 출력):
+{{
+  "suggested_marriage_age": 예상결혼나이(정수, 기혼이거나 계획없으면 0),
+  "suggested_birth_age": 첫째출산시본인나이(정수, 이미있거나 계획없으면 0),
+  "suggested_housing_age": 주택구입시본인나이(정수, 계획없으면 0),
+  "suggested_retire_age": {st.session_state.get('retirement_age', 60)},
+  "summary_comment": "2~3문장으로 담백하게 이유 설명. 통계적 기준과 인터뷰이의 계획을 조화시킨 핵심 코멘트."
+}}"""
 
-            with st.spinner("AI가 입력 내용을 토대로 미래의 가족 변화를 설계하는 중입니다..."):
-                fam_comment, _ = call_gemini_text(ai_fam_prompt)
-                st.session_state["_ai_family_comment"] = fam_comment if fam_comment else "통계 지표를 바탕으로 향후 가족 생애주기 타임라인을 점검했습니다."
+            with st.spinner("AI가 입력 내용을 토대로 주요 생애사건 나이를 설계하는 중입니다..."):
+                raw_fam_res, _ = call_gemini_text(ai_fam_prompt)
+                
+                # 기본 통계 Fallback 계산
+                def_m_age = (cur_age + 2) if "1~3년" in marriage_plan else ((cur_age + 4) if "3년 이후" in marriage_plan else 0)
+                def_b_age = (def_m_age + 2) if def_m_age > 0 else (cur_age + 2 if "자녀 계획" in child_plan else 0)
+                def_h_age = (cur_age + 3) if "고려" in housing_plan else 0
+                def_r_age = int(st.session_state.get("retirement_age", 60))
+                def_comment = "국가데이터처 통계 지표를 바탕으로 향후 인생 주요 시점의 나이를 도출했습니다."
+
+                if raw_fam_res:
+                    try:
+                        clean_json = re.search(r"\{.*\}", raw_fam_res, re.DOTALL)
+                        if clean_json:
+                            parsed = json.loads(clean_json.group(0))
+                            def_m_age = int(parsed.get("suggested_marriage_age", def_m_age))
+                            def_b_age = int(parsed.get("suggested_birth_age", def_b_age))
+                            def_h_age = int(parsed.get("suggested_housing_age", def_h_age))
+                            def_r_age = int(parsed.get("suggested_retire_age", def_r_age))
+                            def_comment = str(parsed.get("summary_comment", def_comment))
+                    except Exception:
+                        pass
+
+                st.session_state["_ai_timeline_proposal"] = {
+                    "marriage_age": def_m_age,
+                    "birth_age": def_b_age,
+                    "housing_age": def_h_age,
+                    "retire_age": def_r_age,
+                    "comment": def_comment
+                }
+                
+                # 인터뷰이가 수정할 위젯 세션 값 세팅
+                st.session_state["inp_target_marriage_age"] = def_m_age
+                st.session_state["inp_target_birth_age"] = def_b_age
+                st.session_state["inp_target_housing_age"] = def_h_age
+                st.session_state["inp_target_retire_age"] = def_r_age
                 st.session_state["show_ai_family_review"] = True
 
-        # AI 설계 결과 화면 출력 및 최종 동의
+        # ----------------------------------------------------------------------
+        # [핵심 개선] AI 제안을 인터뷰이가 직접 검토하고 '나이 숫자를 수정'하는 카드
+        # ----------------------------------------------------------------------
         if st.session_state.get("show_ai_family_review", False) and "_pending_family_draft" in st.session_state:
             f_draft = st.session_state["_pending_family_draft"]
-            f_comment = st.session_state.get("_ai_family_comment", "")
+            prop = st.session_state.get("_ai_timeline_proposal", {})
 
             st.markdown(f"""
-<div style="background: rgba(30, 41, 59, 0.75); border: 2px solid #38BDF8; border-radius: 14px; padding: 22px 24px; margin: 18px 0;">
-<div style="font-size: 19px; font-weight: 850; color: #BAE6FD; margin-bottom: 8px;">🤖 AI 가족 생애주기 미래 설계안</div>
-<div style="font-size: 14.5px; color: #E2E8F0; line-height: 1.7; word-break: keep-all; margin-bottom: 14px;">
-{f_comment}
+<div style="background: rgba(30, 41, 59, 0.75); border: 2px solid #38BDF8; border-radius: 14px; padding: 20px 22px; margin: 18px 0 14px 0;">
+<div style="font-size: 19px; font-weight: 850; color: #BAE6FD; margin-bottom: 8px;">🤖 AI 가족 생애설계 시나리오 제안</div>
+<div style="font-size: 14.5px; color: #E2E8F0; line-height: 1.7; word-break: keep-all; margin-bottom: 12px;">
+{prop.get('comment', '')}
 </div>
-<div style="font-size: 13px; color: #94A3B8;">※ 위 설계안은 통계청 인구동향을 참고한 AI의 제안이며, 동의하시면 생애주기 곡선 및 은퇴 나이에 반영됩니다.</div>
+<div style="font-size: 13.5px; color: #FDE68A; font-weight: 700;">
+✍️ AI의 제안 나이를 확인해 보세요. 나의 생각이나 계획과 다르다면 아래 숫자를 직접 수정한 뒤 확정할 수 있습니다.
+</div>
 </div>
 """, unsafe_allow_html=True)
 
-            f_c1, f_c2 = st.columns([1, 1])
-            with f_c1:
-                if st.button("✅ AI 생애 설계안 동의 및 가족정보 반영", type="primary", use_container_width=True, key="btn_confirm_fam_ai"):
-                    for k, v in f_draft.items():
-                        st.session_state[k] = v
-                    st.session_state.pop("sibling_items", None)
-                    st.session_state.pop("show_ai_family_review", None)
-                    st.session_state.pop("_pending_family_draft", None)
-                    st.session_state.pop("_ai_family_comment", None)
-                    st.success("가족 정보와 미래 생애주기가 완벽히 반영되었습니다.")
-                    st.rerun()
-            with f_c2:
-                if st.button("다시 수정하기", use_container_width=True, key="btn_cancel_fam_ai"):
-                    st.session_state.pop("show_ai_family_review", None)
-                    st.session_state.pop("_pending_family_draft", None)
-                    st.session_state.pop("_ai_family_comment", None)
-                    st.rerun()
+            with st.container(border=True):
+                st.markdown("#### 🎯 인생의 주요 시점 나이 확인 및 수정 (만 나이)")
+                tc1, tc2, tc3, tc4 = st.columns(4)
+                
+                with tc1:
+                    adj_m_age = st.number_input(
+                        "💍 예상 결혼 나이 (없으면 0)",
+                        min_value=0, max_value=100,
+                        value=int(st.session_state.get("inp_target_marriage_age", prop.get("marriage_age", 0))),
+                        step=1,
+                        help="기혼이거나 미혼 유지를 원하시면 0으로 두세요."
+                    )
+                with tc2:
+                    adj_b_age = st.number_input(
+                        "👶 첫째 출산 나이 (없으면 0)",
+                        min_value=0, max_value=100,
+                        value=int(st.session_state.get("inp_target_birth_age", prop.get("birth_age", 0))),
+                        step=1,
+                        help="이미 자녀가 있거나 계획이 없으시면 0으로 두세요."
+                    )
+                with tc3:
+                    adj_h_age = st.number_input(
+                        "🏡 주택 구입 목표 나이 (없으면 0)",
+                        min_value=0, max_value=100,
+                        value=int(st.session_state.get("inp_target_housing_age", prop.get("housing_age", 0))),
+                        step=1,
+                        help="주택 구입 계획이 없으시면 0으로 두세요."
+                    )
+                with tc4:
+                    adj_r_age = st.number_input(
+                        "⛳ 희망 은퇴 나이",
+                        min_value=cur_age, max_value=100,
+                        value=int(st.session_state.get("inp_target_retire_age", prop.get("retire_age", 60))),
+                        step=1
+                    )
+
+                st.markdown("<div style='height: 8px;'></div>", unsafe_allow_html=True)
+                btn_confirm_timeline = st.button("✅ 이 타임라인으로 생애주기 곡선 확정하기", type="primary", use_container_width=True, key="btn_confirm_timeline_final")
+
+            if btn_confirm_timeline:
+                # 1) 기본 가족 드래프트 세션에 확정
+                for k, v in f_draft.items():
+                    st.session_state[k] = v
+                
+                # 2) 인터뷰이가 수정한 나이를 전역 세션 키에 확정 저장 (차트 밴드와 실시간 직결)
+                st.session_state["target_marriage_age"] = adj_m_age
+                st.session_state["target_birth_age"] = adj_b_age
+                st.session_state["target_housing_age"] = adj_h_age
+                st.session_state["retirement_age"] = adj_r_age
+                
+                # 3) 세션 청소 및 화면 새로고침
+                st.session_state.pop("sibling_items", None)
+                st.session_state.pop("show_ai_family_review", None)
+                st.session_state.pop("_pending_family_draft", None)
+                st.session_state.pop("_ai_timeline_proposal", None)
+                st.success("인터뷰이 맞춤 생애 타임라인이 생애주기 곡선에 완벽히 반영되었습니다.")
+                st.rerun()
 
         # 6.03.03 | 은퇴 시점 가족 미래 나이 2열 슬림 카드 (직계 3대 집중)
         people = [(st.session_state.get("person_name", "나"), cur_age)]
