@@ -510,15 +510,15 @@ INTERVIEWER_CASES = {
         "career_stage": "🌿 4~9년 (성장기)",
         "income_self": 290, "income_spouse": 0, "income_other": 0,
         "income_bonus": 200, "income_pension": 120, # 부부 합산 예상 국민연금
-        "expense_living": 130, "expense_loan": 0, "expense_other": 25, # 비정기 지출 300만원 ÷ 12
+        "expense_living": 130, "expense_loan": 0, "expense_other": 300, # 연간 비정기 지출 300만 원 (연간 입력)
         "retirement_monthly_expenses": 180,
         "asset_cash": 800, "asset_financial": 700, "asset_home": 0, "asset_deposit": 0, "asset_other": 0,
         "debt_home": 0, "debt_other": 0,
         "retirement_age": 60, "spouse_age": 0,
         "child_count": "없음", "child_age": 0, "child_age2": 0, "child_age3": 0, "child_age4": 0,
         "father_age": 63, "mother_age": 60,
-        "marriage_plan": "1~3년 내 결혼 생각 있음", # 35세 결혼 예정
-        "child_plan": "자녀 계획 있음",           # 37세 첫째 출산 예정
+        "marriage_plan": "1~3년 내 결혼 생각 있음",
+        "child_plan": "자녀 계획 있음",
         "housing_plan": "주택 구입 고려",
         "income_pension_self": 60,
         "income_pension_spouse": 60,
@@ -530,11 +530,11 @@ INTERVIEWER_CASES = {
         "gender": "🙋‍♀️ 여성",
         "job_form": "직장인",
         "job_spouse_form": "직장인",
-        "career_stage": "🌿 4~9년 (성장기)", # 재취업 4년차
+        "career_stage": "🌿 4~9년 (성장기)",
         "income_self": 260, "income_spouse": 360, "income_other": 0,
         "income_bonus": 300, # 본인 100 + 배우자 200
         "income_pension": 120, # 부부 합산 예상 국민연금
-        "expense_living": 330, "expense_loan": 100, "expense_other": 42, # 비정기 지출 500만원 ÷ 12
+        "expense_living": 330, "expense_loan": 100, "expense_other": 500, # 연간 비정기 지출 500만 원 (연간 입력)
         "retirement_monthly_expenses": 280,
         "asset_cash": 1500, "asset_financial": 2500, "asset_home": 40000, "asset_deposit": 0, "asset_other": 0,
         "debt_home": 15000, "debt_other": 0,
@@ -560,7 +560,7 @@ DEV_CASES = {
         "career_stage": "🌱 3년 이하 (초년생)",
         "income_self": 320, "income_spouse": 0,
         "income_other": 0, "income_bonus": 300, "income_pension": 0,
-        "expense_living": 150, "expense_loan": 0, "expense_other": 30,
+        "expense_living": 150, "expense_loan": 0, "expense_other": 360,
         "retirement_monthly_expenses": 180,
         "asset_cash": 800, "asset_financial": 300,
         "asset_home": 0, "asset_deposit": 3000, "asset_other": 0,
@@ -582,7 +582,7 @@ DEV_CASES = {
         "career_stage": "🌳 10년 이상 (베테랑)",
         "income_self": 450, "income_spouse": 300,
         "income_other": 30, "income_bonus": 1200, "income_pension": 0,
-        "expense_living": 280, "expense_loan": 130, "expense_other": 80,
+        "expense_living": 280, "expense_loan": 130, "expense_other": 960,
         "retirement_monthly_expenses": 350,
         "asset_cash": 3000, "asset_financial": 4000,
         "asset_home": 50000, "asset_deposit": 0, "asset_other": 0,
@@ -603,7 +603,7 @@ DEV_CASES = {
         "career_stage": "🌳 10년 이상 (베테랑)",
         "income_self": 500, "income_spouse": 200,
         "income_other": 50, "income_bonus": 1000, "income_pension": 220,
-        "expense_living": 300, "expense_loan": 50, "expense_other": 100,
+        "expense_living": 300, "expense_loan": 50, "expense_other": 1200,
         "retirement_monthly_expenses": 300,
         "asset_cash": 5000, "asset_financial": 10000,
         "asset_home": 65000, "asset_deposit": 0, "asset_other": 0,
@@ -624,7 +624,7 @@ DEV_CASES = {
         "career_stage": "🌳 10년 이상 (베테랑)",
         "income_self": 0, "income_spouse": 0,
         "income_other": 40, "income_bonus": 0, "income_pension": 220,
-        "expense_living": 200, "expense_loan": 0, "expense_other": 40,
+        "expense_living": 200, "expense_loan": 0, "expense_other": 480,
         "retirement_monthly_expenses": 220,
         "asset_cash": 4000, "asset_financial": 12000,
         "asset_home": 45000, "asset_deposit": 0, "asset_other": 0,
@@ -719,19 +719,23 @@ def active_quadrant(job):
 
 # 2.02.03 | 가계 종합 재무 집계 엔진
 def current_financial_summary():
+    # 1) 들어오는 돈 집계
     regular_income = sum(float(getv(k, 0)) for k in ["income_self", "income_spouse", "income_other"])
     annual_bonus = float(getv("income_bonus", 0))
-    
     annual_total_income = (regular_income * 12.0) + annual_bonus
     monthly_effective_income = annual_total_income / 12.0
     
-    expenses = sum(float(getv(k, 0)) for k in ["expense_living", "expense_loan", "expense_other"])
-    annual_total_expenses = expenses * 12.0
+    # 2) 나가는 돈 집계 (기본 생활비·대출은 월간, 기타 지출은 연간 비정기 지출로 처리)
+    monthly_regular_expenses = sum(float(getv(k, 0)) for k in ["expense_living", "expense_loan"])
+    annual_other_expense = float(getv("expense_other", 0))
+    annual_total_expenses = (monthly_regular_expenses * 12.0) + annual_other_expense
+    monthly_effective_expenses = annual_total_expenses / 12.0
     
-    monthly_regular_surplus = regular_income - expenses
+    # 3) 잉여/저축여력 집계
     annual_net_surplus = annual_total_income - annual_total_expenses
     monthly_effective_surplus = annual_net_surplus / 12.0
     
+    # 4) 자산 및 부채 집계
     assets = sum(float(getv(k, 0)) for k in ["asset_cash", "asset_financial", "asset_home", "asset_deposit", "asset_other"])
     debts = sum(float(getv(k, 0)) for k in ["debt_home", "debt_other"])
     net_worth = assets - debts
@@ -742,19 +746,17 @@ def current_financial_summary():
         "annual_total_income": annual_total_income,
         "monthly_effective_income": monthly_effective_income,
         "income": regular_income,
-        "expenses": expenses,
+        "expenses": monthly_effective_expenses, # 월평균 실질 지출
         "annual_total_expenses": annual_total_expenses,
-        "surplus": monthly_regular_surplus,
-        "monthly_regular_surplus": monthly_regular_surplus,
+        "annual_other_expense": annual_other_expense,
+        "surplus": monthly_effective_surplus,
+        "monthly_regular_surplus": regular_income - monthly_regular_expenses,
         "annual_net_surplus": annual_net_surplus,
         "monthly_effective_surplus": monthly_effective_surplus,
         "assets": assets,
         "debts": debts,
         "net_worth": net_worth
     }
-
-
-
 # ================================================================================
 # [Module 3.00.00] 외부 AI 연동 서비스 (Gemini API Pipeline)
 # ================================================================================
@@ -847,20 +849,20 @@ def call_gemini_text(prompt_text):
 # 4.01.00 | 사이드바 프로필 요약 및 복원
 # ------------------------------------------------------------------------------
 
-# 4.01.01 | 사이드바 컴포넌트 렌더링 (인터뷰어 영역 & 상단 새로고침)
+# 4.01.01 | 사이드바 컴포넌트 렌더링 (인터뷰어 영역)
 with st.sidebar:
-    # 1) 인터뷰어용 화면 새로고침
-    if st.button("↻ 화면 새로고침", key="sidebar_screen_refresh", use_container_width=True):
-        st.rerun()
-
     st.markdown(f"""
-<div style="background: rgba(30, 41, 59, 0.4); border: 1px solid #334155; border-radius: 10px; padding: 12px 14px; text-align: center; margin: 12px 0 16px 0;">
+<div style="background: rgba(30, 41, 59, 0.4); border: 1px solid #334155; border-radius: 10px; padding: 12px 14px; text-align: center; margin: 8px 0 6px 0;">
 <div style="font-size: 11.5px; color: #94a3b8; font-weight: 600; letter-spacing: 0.04em;">익명 진단 고유번호</div>
 <div style="font-size: 20px; font-weight: 750; color: #cbd5e1; letter-spacing: 1px; margin-top: 3px;">{st.session_state.anonymous_id}</div>
 </div>
 """, unsafe_allow_html=True)
 
-    # 2) 인터뷰어 체험용 2대 대표 사례 버튼 (상단 인터뷰어 영역)
+    # 고유번호 바로 아래에 일회성 세션 안내 문구 배치
+    st.caption("※ 나침반은 외부 서버에 저장되지 않는 일회성 안전 세션입니다.")
+    st.markdown("<div style='height: 8px;'></div>", unsafe_allow_html=True)
+
+    # 인터뷰어 체험용 2대 대표 사례 버튼 (상단 인터뷰어 영역)
     st.markdown("<div style='font-size: 13.5px; font-weight: 700; color: #94A3B8; margin-bottom: 6px;'>체험용 대표 사례</div>", unsafe_allow_html=True)
     c_btn1, c_btn2 = st.columns(2)
     
@@ -909,7 +911,9 @@ with st.sidebar:
         st.session_state.advanced_mode = not is_currently_adv
         st.rerun()
 
-    st.caption("※ 나침반은 외부 서버에 저장되지 않는 일회성 안전 세션입니다.")
+    # 모드 전환 버튼 바로 아래로 이동한 '화면 새로고침' 버튼
+    if st.button("↻ 화면 새로고침", key="sidebar_screen_refresh", use_container_width=True):
+        st.rerun()
 
 # 4.01.02 | 개발용 테스트 메뉴 (카톡 expander 하단 이동)
 _dev_enabled = (
@@ -1999,7 +2003,6 @@ elif selected_page == "인생의 사계절":
         surplus_fine = [max(0.0, v) for v in flow_fine]
         deficit_fine = [min(0.0, v) for v in flow_fine]
 
-        # 8) 고도 레벨 및 서브플롯 생성 (간격 2배 확장: vertical_spacing=0.16)
         y_max = max(max(my_income_curve), max(my_expense_curve)) if my_income_curve else 6000
         y_top = y_max * 1.16
         alt_level_2 = y_top * 0.32
@@ -2008,14 +2011,15 @@ elif selected_page == "인생의 사계절":
         fig_my_nta = make_subplots(
             rows=2, cols=1,
             shared_xaxes=True,
-            vertical_spacing=0.16,
-            row_heights=[0.57, 0.43]
+            vertical_spacing=0.17,
+            row_heights=[0.56, 0.44]
         )
 
-        # [차트 사이 중앙 뱃지 기준 높이 (paper y축 0.44)]
-        center_y = 0.44
+        # [차트 사이 2단 타이틀 높이 레벨]
+        y_tier_1 = 0.455  # 1단(상단): 출산육아, 자녀대학, 은퇴
+        y_tier_2 = 0.418  # 2단(하단): 주택구입, 자녀결혼
 
-        # 1. 출산·육아 밴드
+        # 1. 출산·육아 밴드 (1단)
         if childcare_start and childcare_end:
             c_band_x0 = max(20, min(childcare_start, 85))
             c_band_x1 = max(20, min(childcare_end, 85))
@@ -2027,13 +2031,13 @@ elif selected_page == "인생의 사계절":
                 )
                 fig_my_nta.add_annotation(
                     xref="x", yref="paper",
-                    x=(c_band_x0 + c_band_x1) / 2.0, y=center_y,
+                    x=(c_band_x0 + c_band_x1) / 2.0, y=y_tier_1,
                     text="출산·육아", showarrow=False,
                     font=dict(size=11, color="#FDBA74", weight="bold"),
-                    bgcolor="rgba(15, 23, 42, 0.95)", bordercolor="#F97316", borderpad=3
+                    bgcolor="rgba(15, 23, 42, 0.95)", bordercolor="#F97316", borderpad=2.5
                 )
 
-        # 2. 주택구입 밴드
+        # 2. 주택구입 밴드 (2단으로 분리하여 겹침 방지)
         if housing_start and housing_end:
             h_band_x0 = max(20, min(housing_start, 85))
             h_band_x1 = max(20, min(housing_end, 85))
@@ -2045,13 +2049,13 @@ elif selected_page == "인생의 사계절":
                 )
                 fig_my_nta.add_annotation(
                     xref="x", yref="paper",
-                    x=(h_band_x0 + h_band_x1) / 2.0, y=center_y,
+                    x=(h_band_x0 + h_band_x1) / 2.0, y=y_tier_2,
                     text="주택구입", showarrow=False,
                     font=dict(size=11, color="#5EEAD4", weight="bold"),
-                    bgcolor="rgba(15, 23, 42, 0.95)", bordercolor="#14B8A6", borderpad=3
+                    bgcolor="rgba(15, 23, 42, 0.95)", bordercolor="#14B8A6", borderpad=2.5
                 )
 
-        # 3. 자녀 대학 밴드
+        # 3. 자녀 대학 밴드 (1단)
         if college_band_start and college_band_end:
             k_band_x0 = max(20, min(college_band_start, 85))
             k_band_x1 = max(20, min(college_band_end, 85))
@@ -2063,13 +2067,13 @@ elif selected_page == "인생의 사계절":
                 )
                 fig_my_nta.add_annotation(
                     xref="x", yref="paper",
-                    x=(k_band_x0 + k_band_x1) / 2.0, y=center_y,
+                    x=(k_band_x0 + k_band_x1) / 2.0, y=y_tier_1,
                     text="자녀 대학", showarrow=False,
                     font=dict(size=11, color="#E9D5FF", weight="bold"),
-                    bgcolor="rgba(15, 23, 42, 0.95)", bordercolor="#A855F7", borderpad=3
+                    bgcolor="rgba(15, 23, 42, 0.95)", bordercolor="#A855F7", borderpad=2.5
                 )
 
-        # 4. 자녀결혼 밴드
+        # 4. 자녀결혼 밴드 (2단으로 분리)
         if wedding_start and wedding_end:
             w_band_x0 = max(20, min(wedding_start, 85))
             w_band_x1 = max(20, min(wedding_end, 85))
@@ -2081,13 +2085,13 @@ elif selected_page == "인생의 사계절":
                 )
                 fig_my_nta.add_annotation(
                     xref="x", yref="paper",
-                    x=(w_band_x0 + w_band_x1) / 2.0, y=center_y,
+                    x=(w_band_x0 + w_band_x1) / 2.0, y=y_tier_2,
                     text="자녀결혼", showarrow=False,
                     font=dict(size=11, color="#FECDD3", weight="bold"),
-                    bgcolor="rgba(15, 23, 42, 0.95)", bordercolor="#F43F5E", borderpad=3
+                    bgcolor="rgba(15, 23, 42, 0.95)", bordercolor="#F43F5E", borderpad=2.5
                 )
 
-        # 5. 은퇴 밴드
+        # 5. 은퇴 밴드 (1단)
         if retire_age < 85:
             r_band_x0 = max(20, min(retire_age, 85))
             r_band_x1 = 85
@@ -2099,10 +2103,10 @@ elif selected_page == "인생의 사계절":
                 )
                 fig_my_nta.add_annotation(
                     xref="x", yref="paper",
-                    x=(r_band_x0 + r_band_x1) / 2.0, y=center_y,
+                    x=(r_band_x0 + r_band_x1) / 2.0, y=y_tier_1,
                     text="은퇴", showarrow=False,
                     font=dict(size=11, color="#BAE6FD", weight="bold"),
-                    bgcolor="rgba(15, 23, 42, 0.95)", bordercolor="#38BDF8", borderpad=3
+                    bgcolor="rgba(15, 23, 42, 0.95)", bordercolor="#38BDF8", borderpad=2.5
                 )
 
         # [Row 1] 소득 & 지출
@@ -2190,9 +2194,8 @@ elif selected_page == "인생의 사계절":
             row=2, col=1
         )
 
-        # 전체 레이아웃 (높이를 570px로 넉넉하게 확장)
         fig_my_nta.update_layout(
-            height=570,
+            height=580,
             margin=dict(l=10, r=10, t=25, b=25),
             paper_bgcolor="rgba(0,0,0,0)",
             plot_bgcolor="rgba(0,0,0,0)",
@@ -2208,7 +2211,6 @@ elif selected_page == "인생의 사계절":
             hovermode="x unified"
         )
 
-        # X축 설정 (상하 차트 각각 또렷한 다크 테두리 사각 박스 처리)
         fig_my_nta.update_xaxes(
             tickmode="linear", tick0=20, dtick=10,
             tickangle=0,
@@ -2219,7 +2221,6 @@ elif selected_page == "인생의 사계절":
         )
         fig_my_nta.update_xaxes(title=dict(text="연령 (세)", font=dict(size=12, color="#94A3B8")), row=2, col=1)
 
-        # Y축 설정 (상하 차트 각각 또렷한 다크 테두리 사각 박스 처리)
         fig_my_nta.update_yaxes(
             title=None,
             tickfont=dict(size=11, color="#94A3B8"),
