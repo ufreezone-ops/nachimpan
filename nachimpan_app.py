@@ -1600,13 +1600,13 @@ if selected_page == "우리집 가계부":
         cols[3].metric("현재 파악된 금융자산", fmt_eok(s["net_worth"]))
 
 
-# 6.01.07 | 우리 가정 생애 소득(예상)
-st.markdown("### 우리 가정 생애 소득(예상)")
-st.caption(
-    "내 직업과 배우자의 직업에 따라 각각 하나의 기준곡선을 적용합니다. "
-    "연금은 각자의 수령 시작 시점부터 가구 합산 소득에 반영합니다. "
-    "그래프는 내 나이를 기준으로 표시합니다."
-)
+        # 6.01.07 | 우리 가정 생애 소득(예상)
+        st.markdown("### 우리 가정 생애 소득(예상)")
+        st.caption(
+            "내 직업과 배우자의 직업에 따라 각각 하나의 기준곡선을 적용합니다. "
+            "연금은 각자의 수령 시작 시점부터 가구 합산 소득에 반영합니다. "
+            "그래프는 내 나이를 기준으로 표시합니다."
+        )
         cur_age = int(st.session_state.get("person_age", 35) or 35)
         spouse_age = int(st.session_state.get("spouse_age", 0) or 0)
 
