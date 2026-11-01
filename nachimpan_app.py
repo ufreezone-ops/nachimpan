@@ -1910,7 +1910,10 @@ if selected_page == "우리집 가계부":
             plot_bgcolor="rgba(0,0,0,0)",
             font=dict(color="#E2E8F0", size=12),
             xaxis=dict(
-                title=" 나이 (세)",
+                title="내 나이(세)",
+                unifiedhovertitle=dict(
+                    text="내 나이: %{x}세"
+                ),
                 range=[20, 100],
                 tickmode="linear",
                 tick0=20,
