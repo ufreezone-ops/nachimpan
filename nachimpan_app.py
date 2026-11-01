@@ -1823,7 +1823,7 @@ if selected_page == "우리집 가계부":
             y=self_income_curve,
             mode="lines",
             name="내 소득",
-            line=dict(width=2.8),
+            line=dict(width=2.8, dash="dash"),
             hovertemplate=(
                 "내 연간 소득: %{y:,.0f}만 원<extra></extra>"
             )
