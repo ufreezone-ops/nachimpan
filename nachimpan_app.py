@@ -1802,44 +1802,58 @@ if selected_page == "우리집 가계부":
             spouse_income_curve.append(spouse_income)
             household_income_curve.append(household_income)
 
-        # 그래프: 정확히 3개 곡선
+        # 그래프: 배우자 유무에 따라 곡선 표시
         fig_income = go.Figure()
 
-        # ① 가구 합산 소득을 범례 맨 앞에 배치
-        fig_income.add_trace(go.Scatter(
-            x=ages,
-            y=household_income_curve,
-            mode="lines",
-            name="가구 합산 소득(연금 포함)",
-            line=dict(width=4),
-            hovertemplate=(
-                "가구 연간 소득: %{y:,.0f}만 원<extra></extra>"
-            )
-        ))
+        if has_spouse:
+            # ① 가구 합산 소득: 실선
+            fig_income.add_trace(go.Scatter(
+                x=ages,
+                y=household_income_curve,
+                mode="lines",
+                name="가구 합산 소득(연금 포함)",
+                line=dict(width=4),
+                hovertemplate=(
+                    "가구 연간 소득: %{y:,.0f}만 원<extra></extra>"
+                )
+            ))
 
-        # ② 내 소득
-        fig_income.add_trace(go.Scatter(
-            x=ages,
-            y=self_income_curve,
-            mode="lines",
-            name="내 소득",
-            line=dict(width=2.8, dash="dash"),
-            hovertemplate=(
-                "내 연간 소득: %{y:,.0f}만 원<extra></extra>"
-            )
-        ))
+            # ② 내 소득: 점선
+            fig_income.add_trace(go.Scatter(
+                x=ages,
+                y=self_income_curve,
+                mode="lines",
+                name="내 소득",
+                line=dict(width=2.8, dash="dash"),
+                hovertemplate=(
+                    "내 연간 소득: %{y:,.0f}만 원<extra></extra>"
+                )
+            ))
 
-        # ③ 배우자 소득
-        fig_income.add_trace(go.Scatter(
-            x=ages,
-            y=spouse_income_curve,
-            mode="lines",
-            name="배우자 소득",
-            line=dict(width=2.8, dash="dash"),
-            hovertemplate=(
-                "배우자 연간 소득: %{y:,.0f}만 원<extra></extra>"
-            )
-        ))
+            # ③ 배우자 소득: 점선
+            fig_income.add_trace(go.Scatter(
+                x=ages,
+                y=spouse_income_curve,
+                mode="lines",
+                name="배우자 소득",
+                line=dict(width=2.8, dash="dash"),
+                hovertemplate=(
+                    "배우자 연간 소득: %{y:,.0f}만 원<extra></extra>"
+                )
+            ))
+
+        else:
+            # 배우자가 없으면 내 소득만 실선으로 표시
+            fig_income.add_trace(go.Scatter(
+                x=ages,
+                y=self_income_curve,
+                mode="lines",
+                name="내 소득",
+                line=dict(width=3.5),
+                hovertemplate=(
+                    "내 연간 소득: %{y:,.0f}만 원<extra></extra>"
+                )
+            ))
 
         # 75세 이후 추정 연장 구간
         fig_income.add_vline(
