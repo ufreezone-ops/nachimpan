@@ -1813,7 +1813,6 @@ if selected_page == "우리집 가계부":
             name="가구 합산 소득(연금 포함)",
             line=dict(width=4),
             hovertemplate=(
-                "내 나이: %{x}세<br>"
                 "가구 연간 소득: %{y:,.0f}만 원<extra></extra>"
             )
         ))
@@ -1826,7 +1825,6 @@ if selected_page == "우리집 가계부":
             name="내 소득",
             line=dict(width=2.8),
             hovertemplate=(
-                "내 나이: %{x}세<br>"
                 "내 연간 소득: %{y:,.0f}만 원<extra></extra>"
             )
         ))
@@ -1839,7 +1837,6 @@ if selected_page == "우리집 가계부":
             name="배우자 소득",
             line=dict(width=2.8, dash="dash"),
             hovertemplate=(
-                "내 나이: %{x}세<br>"
                 "배우자 연간 소득: %{y:,.0f}만 원<extra></extra>"
             )
         ))
