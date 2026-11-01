@@ -1472,7 +1472,7 @@ if selected_page == "우리집 가계부":
         cols[3].metric("현재 파악된 금융자산", fmt_eok(s["net_worth"]))
 
         # 6.01.07 | 미래 순자산·연금 크레바스(65세) Plotly 차트
-        st.markdown("### 미래 순자산·연금 궤적")
+        st.markdown("### 나의 연간 소득 예상곡선")
         cur_age = int(st.session_state.person_age)
         retire_val = st.session_state.get("retirement_age")
         retire_age = int(retire_val) if retire_val is not None else 60
