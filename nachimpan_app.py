@@ -1465,11 +1465,11 @@ if selected_page == "우리집 가계부":
         s = current_financial_summary()
         st.markdown("### 현재 재무 요약")
         cols = st.columns(4)
-        cols[0].metric("월 정기수입", money(s["regular_income"]))
-        cols[1].metric("월 실질지출", money(s["expenses"]))
+        cols[0].metric("월 수입", money(s["regular_income"]))
+        cols[1].metric("월 지출", money(s["expenses"]))
         bonus_help = f"연간 상여금 {money(s['annual_bonus'])} 및 연간 비정기 지출 {money(s['annual_other_expense'])} 반영"
-        cols[2].metric("연간 순저축 여력", money(s["annual_net_surplus"]), delta=f"월평균 {money(s['monthly_effective_surplus'])}", help=bonus_help)
-        cols[3].metric("순자산", fmt_eok(s["net_worth"]))
+        cols[2].metric("연간 잉여자금", money(s["annual_net_surplus"]), delta=f"월평균 {money(s['monthly_effective_surplus'])}", help=bonus_help)
+        cols[3].metric("현재 파악된 금융자산", fmt_eok(s["net_worth"]))
 
         # 6.01.07 | 미래 순자산·연금 크레바스(65세) Plotly 차트
         st.markdown("### 미래 순자산·연금 궤적")
@@ -2678,8 +2678,8 @@ else:
             "파이프라인 보유 여부": "보유함 (사업가 B 또는 투자자 I 포함)" if has_pipeline else "미보유 (순수 근로/자영업 E·S)",
             "월수입(정기)": f"{summary['regular_income']:,.0f}만 원", "연간 상여금(비정기)": f"{summary['annual_bonus']:,.0f}만 원",
             "연간 총소득": f"{summary['annual_total_income']:,.0f}만 원", "월평균 지출": f"{summary['expenses']:,.0f}만 원",
-            "연간 순저축 여력": f"{summary['annual_net_surplus']:,.0f}만 원 (월환산 {summary['monthly_effective_surplus']:,.0f}만 원)",
-            "순자산": f"{summary['net_worth']/10000:,.2f}억 원 (자산 {summary['assets']:,.0f}만 원 - 부채 {summary['debts']:,.0f}만 원)",
+            "연간 잉여자금": f"{summary['annual_net_surplus']:,.0f}만 원 (월환산 {summary['monthly_effective_surplus']:,.0f}만 원)",
+            "현재 파악된 금융자산": f"{summary['net_worth']/10000:,.2f}억 원 (자산 {summary['assets']:,.0f}만 원 - 부채 {summary['debts']:,.0f}만 원)",
             "은퇴 후 예상 월연금": f"{getv('income_pension', 0):,.0f}만 원", "은퇴 후 월 생활비": f"{getv('retirement_monthly_expenses', 200):,.0f}만 원",
             "희망 은퇴 나이": f"{retire_age}세 (은퇴 후 겨울 약 {winter_years}년, {user_gender.split()[1]} {life_expectancy}세 수명 기준)",
             "가족 구성": family_desc if family_desc else "기본 정보만 등록됨",
