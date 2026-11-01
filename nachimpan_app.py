@@ -1471,98 +1471,125 @@ if selected_page == "우리집 가계부":
         cols[2].metric("연간 잉여자금", money(s["annual_net_surplus"]), delta=f"월평균 {money(s['monthly_effective_surplus'])}", help=bonus_help)
         cols[3].metric("현재 파악된 금융자산", fmt_eok(s["net_worth"]))
 
-        # 6.01.07 | 미래 순자산·연금 크레바스(65세) Plotly 차트
+        # 6.01.07 | 나의 연간 소득 예상곡선
         st.markdown("### 나의 연간 소득 예상곡선")
+
         cur_age = int(st.session_state.person_age)
-        retire_val = st.session_state.get("retirement_age")
-        retire_age = int(retire_val) if retire_val is not None else 60
-        retire_age = max(cur_age, min(retire_age, 90))
-        start_asset_eok = s["net_worth"] / 10000.0
-        base_annual_surplus_eok = s["annual_net_surplus"] / 10000.0
-        career_st = st.session_state.get("career_stage", "🌱 3년 이하 (초년생)")
-        user_gender = st.session_state.get("gender", "🙋‍♂️ 남성")
-        is_female = ("여성" in user_gender)
-        m_plan = st.session_state.get("marriage_plan", "미정")
-        c_plan = st.session_state.get("child_plan", "미정")
-        is_single_young = (int(getv("spouse_age", 0)) == 0 and cur_age < 40)
-        life_expectancy = 87 if is_female else 81
-        pension_start_age = 65
+        current_annual_income = float(s["annual_total_income"])
 
-        ages_accum = list(range(cur_age, retire_age + 1))
-        vals_accum_eok = []
-        current_asset = start_asset_eok
-        for a in ages_accum:
-            vals_accum_eok.append(current_asset)
-            if a < 45: growth_step = 0.025 if "초년생" in career_st else 0.018; lifecycle_weight = 1.0 + (growth_step * (a - cur_age))
-            elif 45 <= a <= 53: lifecycle_weight = 1.0 + (0.02 * (45 - cur_age)) - 0.15
-            else: lifecycle_weight = max(0.65, 1.0 + (0.02 * (45 - cur_age)) - 0.25)
-            if is_single_young:
-                if m_plan in ["1~3년 내 결혼 생각 있음", "결혼 예정"] and (cur_age + 1 <= a <= cur_age + 3): lifecycle_weight *= 0.75
-                if is_female and c_plan in ["자녀 계획 있음", "출산 예정", "추가 자녀 계획 있음"] and (33 <= a <= 36): lifecycle_weight *= 0.65
-            annual_save = base_annual_surplus_eok * max(0.05, lifecycle_weight)
-            current_asset += annual_save
+        # 기준 연령 및 월평균 소득 (단위: 만원)
+        ages_base = [20, 25, 30, 35, 40, 45, 50, 55, 60, 65, 70, 75]
 
-        peak_asset_eok = vals_accum_eok[-1]
-        ret_pension = float(getv("income_pension", 0) or 0)
-        ret_expenses = float(getv("retirement_monthly_expenses", 200) or 0)
+        employee_base = [
+            180, 270, 350, 420, 460, 469,
+            445, 360, 280, 210, 160, 120
+        ]
 
-        ages_retire = list(range(retire_age, max(retire_age + 1, life_expectancy + 1)))
-        vals_retire_eok = []
-        ret_asset = peak_asset_eok
-        depletion_age = None
+        self_employed_base = [
+            130, 210, 290, 350, 390, 410,
+            420, 400, 350, 290, 230, 170
+        ]
 
-        for idx, a in enumerate(ages_retire):
-            vals_retire_eok.append(ret_asset)
-            if idx > 0 and ret_asset <= 0 and depletion_age is None:
-                depletion_age = a
-            
-            if a < pension_start_age:
-                annual_cashflow = -(ret_expenses * 12.0) / 10000.0
-            else:
-                annual_cashflow = ((ret_pension - ret_expenses) * 12.0) / 10000.0
-            
-            ret_asset += annual_cashflow
+        # 현재 나이의 기준소득을 선형보간
+        def interpolate_income(age, values):
+            if age <= ages_base[0]:
+                return values[0]
+            if age >= ages_base[-1]:
+                return values[-1]
 
-        max_val_eok = max(max(vals_accum_eok), max(vals_retire_eok) if vals_retire_eok else 0)
-        use_cheonman = (max_val_eok < 1.0 and max_val_eok > 0)
-        mult = 10.0 if use_cheonman else 1.0
-        unit_str = "천만" if use_cheonman else "억"
-        y_accum = [v * mult for v in vals_accum_eok]
-        y_retire = [v * mult for v in vals_retire_eok]
-        peak_disp = f"{peak_asset_eok * mult:.0f}천만 원" if use_cheonman else (f"{peak_asset_eok:.0f}억 원" if abs(peak_asset_eok) >= 10 else f"{peak_asset_eok:.1f}억 원")
-        hover_tmpl = f"나이: %{{x}}세<br>추정 순자산: <b>%{{y:.{0 if use_cheonman else 1}f}}{unit_str} 원</b><extra></extra>"
+            for i in range(len(ages_base) - 1):
+                if ages_base[i] <= age <= ages_base[i + 1]:
+                    ratio = (
+                        (age - ages_base[i])
+                        / (ages_base[i + 1] - ages_base[i])
+                    )
+                    return values[i] + (
+                        values[i + 1] - values[i]
+                    ) * ratio
 
-        fig_asset = go.Figure()
-        fig_asset.add_hline(y=0, line_dash="solid", line_color="#334155", line_width=1.5)
-        
-        if retire_age < pension_start_age:
-            fig_asset.add_vrect(
-                x0=retire_age, x1=pension_start_age,
-                fillcolor="rgba(239, 68, 68, 0.12)", line_width=0, layer="below"
-            )
-            fig_asset.add_annotation(
-                x=(retire_age + pension_start_age) / 2.0, y=0,
-                text="⚠️ 소득 크레바스 (연금 공백)", showarrow=False,
-                yshift=-24, font=dict(size=11, color="#FCA5A5", weight="bold"),
-                bgcolor="rgba(15, 23, 42, 0.85)", bordercolor="#EF4444", borderpad=2
-            )
+        employee_current = interpolate_income(cur_age, employee_base)
+        self_employed_current = interpolate_income(cur_age, self_employed_base)
 
-        fig_asset.add_trace(go.Scatter(x=ages_accum, y=y_accum, mode="lines+markers", line=dict(color="#F59E0B", width=3.5), marker=dict(size=6), fill='tozeroy', fillcolor='rgba(245, 158, 11, 0.12)', name="🌱 자산 축적기", hovertemplate=hover_tmpl))
-        fig_asset.add_trace(go.Scatter(x=ages_retire, y=y_retire, mode="lines+markers", line=dict(color="#38BDF8", width=3.5), marker=dict(size=6), fill='tozeroy', fillcolor='rgba(56, 189, 248, 0.08)', name="🍂 자산 인출기", hovertemplate=hover_tmpl))
-        
-        fig_asset.add_vline(x=retire_age, line_dash="dash", line_color="#F8FAFC", line_width=2)
-        fig_asset.add_annotation(x=retire_age, y=peak_asset_eok * mult, text=f"은퇴 정점 {retire_age}세 ({peak_disp})", showarrow=True, arrowhead=2, arrowcolor="#F59E0B", font=dict(size=12, color="#FDE68A"), ay=-36, bgcolor="rgba(15, 23, 42, 0.85)", bordercolor="#F59E0B", borderpad=4)
-        
-        if retire_age < pension_start_age and pension_start_age <= life_expectancy:
-            fig_asset.add_vline(x=pension_start_age, line_dash="dot", line_color="#10B981", line_width=1.8)
-            fig_asset.add_annotation(x=pension_start_age, y=vals_retire_eok[pension_start_age - retire_age] * mult, text="국민연금 개시 (65세)", showarrow=True, arrowhead=2, arrowcolor="#10B981", font=dict(size=11.5, color="#86EFAC"), ay=-30, bgcolor="rgba(15, 23, 42, 0.85)", bordercolor="#10B981", borderpad=3)
+        # 현재 실제 연소득을 기준으로 각각 독립 피팅
+        employee_scale = current_annual_income / (employee_current * 12)
+        self_employed_scale = current_annual_income / (self_employed_current * 12)
 
-        if depletion_age and depletion_age <= life_expectancy:
-            fig_asset.add_annotation(x=depletion_age, y=0, text=f"자산 소진 ({depletion_age}세)", showarrow=True, arrowhead=2, arrowcolor="#EF4444", font=dict(size=12, color="#FCA5A5"), ay=32, bgcolor="rgba(15, 23, 42, 0.85)", bordercolor="#EF4444", borderpad=3)
-        
-        fig_asset.update_layout(height=400, margin=dict(l=20, r=20, t=30, b=35), paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="rgba(0,0,0,0)", font=dict(color="#E2E8F0", size=13), xaxis=dict(title=dict(text="나이 (세)", font=dict(size=14, color="#94A3B8")), tickfont=dict(size=13, color="#94A3B8"), gridcolor="rgba(100, 116, 139, 0.2)", tickmode="linear", tick0=20, dtick=5, fixedrange=True), yaxis=dict(title=dict(text="추정 순자산", font=dict(size=14, color="#94A3B8")), tickfont=dict(size=13, color="#94A3B8")), legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1, font=dict(size=12.5, color="#F1F5F9")), hovermode="x unified")
-        st.plotly_chart(fig_asset, use_container_width=True, config={"displayModeBar": False, "scrollZoom": False, "doubleClick": False, "showAxisDragHandles": False})
+        employee_annual = [
+            value * 12 * employee_scale for value in employee_base
+        ]
+        self_employed_annual = [
+            value * 12 * self_employed_scale for value in self_employed_base
+        ]
 
+        fig_income = go.Figure()
+
+        fig_income.add_trace(go.Scatter(
+            x=ages_base,
+            y=employee_annual,
+            mode="lines+markers",
+            name="직장인 기준곡선",
+            line=dict(width=3.5),
+            hovertemplate="나이: %{x}세<br>연간 소득: %{y:,.0f}만 원<extra></extra>"
+        ))
+
+        fig_income.add_trace(go.Scatter(
+            x=ages_base,
+            y=self_employed_annual,
+            mode="lines+markers",
+            name="자영업자 기준곡선",
+            line=dict(width=3.5, dash="dash"),
+            hovertemplate="나이: %{x}세<br>연간 소득: %{y:,.0f}만 원<extra></extra>"
+        ))
+
+        fig_income.add_vline(
+            x=cur_age,
+            line_dash="dot",
+            line_color="#F8FAFC",
+            line_width=1.8
+        )
+
+        fig_income.add_annotation(
+            x=cur_age,
+            y=current_annual_income,
+            text=f"현재 {cur_age}세 · 연소득 {current_annual_income:,.0f}만 원",
+            showarrow=True,
+            arrowhead=2,
+            ay=-35
+        )
+
+        fig_income.update_layout(
+            height=420,
+            margin=dict(l=20, r=20, t=35, b=35),
+            paper_bgcolor="rgba(0,0,0,0)",
+            plot_bgcolor="rgba(0,0,0,0)",
+            font=dict(color="#E2E8F0", size=13),
+            xaxis=dict(
+                title="나이 (세)",
+                tickmode="linear",
+                tick0=20,
+                dtick=5,
+                gridcolor="rgba(100, 116, 139, 0.2)"
+            ),
+            yaxis=dict(
+                title="예상 연간 소득 (만원)",
+                tickformat=",",
+                gridcolor="rgba(100, 116, 139, 0.2)"
+            ),
+            legend=dict(
+                orientation="h",
+                yanchor="bottom",
+                y=1.02,
+                xanchor="right",
+                x=1
+            ),
+            hovermode="x unified"
+        )
+
+        st.plotly_chart(
+            fig_income,
+            use_container_width=True,
+            config={"displayModeBar": False}
+        )
         _, next_col = st.columns([5, 1])
         with next_col:
             if st.button("다음 →", key="finance_next", use_container_width=True, type="primary"):
