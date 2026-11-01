@@ -1600,14 +1600,13 @@ if selected_page == "우리집 가계부":
         cols[3].metric("현재 파악된 금융자산", fmt_eok(s["net_worth"]))
 
 
-        # 6.01.07 | 우리 가정의 생애 소득 예상곡선
-        st.markdown("### 우리 가정의 생애 소득 예상곡선")
-        st.caption(
-            "본인과 배우자의 직업군에 따라 각각 하나의 기준곡선을 적용합니다. "
-            "연금은 각자의 수령 시작 시점부터 가구 합산 소득에 반영합니다. "
-            "그래프는 인터뷰이 나이를 기준으로 표시합니다."
-        )
-
+# 6.01.07 | 우리 가정 생애 소득(예상)
+st.markdown("### 우리 가정 생애 소득(예상)")
+st.caption(
+    "내 직업과 배우자의 직업에 따라 각각 하나의 기준곡선을 적용합니다. "
+    "연금은 각자의 수령 시작 시점부터 가구 합산 소득에 반영합니다. "
+    "그래프는 내 나이를 기준으로 표시합니다."
+)
         cur_age = int(st.session_state.get("person_age", 35) or 35)
         spouse_age = int(st.session_state.get("spouse_age", 0) or 0)
 
@@ -1806,18 +1805,33 @@ if selected_page == "우리집 가계부":
         # 그래프: 정확히 3개 곡선
         fig_income = go.Figure()
 
+        # ① 가구 합산 소득을 범례 맨 앞에 배치
+        fig_income.add_trace(go.Scatter(
+            x=ages,
+            y=household_income_curve,
+            mode="lines",
+            name="가구 합산 소득(연금 포함)",
+            line=dict(width=4),
+            hovertemplate=(
+                "내 나이: %{x}세<br>"
+                "가구 연간 소득: %{y:,.0f}만 원<extra></extra>"
+            )
+        ))
+
+        # ② 내 소득
         fig_income.add_trace(go.Scatter(
             x=ages,
             y=self_income_curve,
             mode="lines",
-            name="본인 소득",
+            name="내 소득",
             line=dict(width=2.8),
             hovertemplate=(
-                "인터뷰이 나이: %{x}세<br>"
-                "본인 연간 소득: %{y:,.0f}만 원<extra></extra>"
+                "내 나이: %{x}세<br>"
+                "내 연간 소득: %{y:,.0f}만 원<extra></extra>"
             )
         ))
 
+        # ③ 배우자 소득
         fig_income.add_trace(go.Scatter(
             x=ages,
             y=spouse_income_curve,
@@ -1825,20 +1839,8 @@ if selected_page == "우리집 가계부":
             name="배우자 소득",
             line=dict(width=2.8, dash="dash"),
             hovertemplate=(
-                "인터뷰이 나이: %{x}세<br>"
+                "내 나이: %{x}세<br>"
                 "배우자 연간 소득: %{y:,.0f}만 원<extra></extra>"
-            )
-        ))
-
-        fig_income.add_trace(go.Scatter(
-            x=ages,
-            y=household_income_curve,
-            mode="lines",
-            name="가구 합산 소득 (연금 포함)",
-            line=dict(width=4),
-            hovertemplate=(
-                "인터뷰이 나이: %{x}세<br>"
-                "가구 연간 소득: %{y:,.0f}만 원<extra></extra>"
             )
         ))
 
@@ -1863,7 +1865,7 @@ if selected_page == "우리집 가계부":
         fig_income.add_annotation(
             x=cur_age,
             y=current_monthly_income * 12,
-            text=f"본인 현재 {cur_age}세",
+            text=f"나 {cur_age}세",
             showarrow=True,
             arrowhead=2,
             ay=-35
@@ -1874,7 +1876,7 @@ if selected_page == "우리집 가계부":
             fig_income.add_annotation(
                 x=cur_age,
                 y=spouse_monthly_income * 12,
-                text=f"배우자 현재 {spouse_age}세",
+                text=f"배우자 {spouse_age}세",
                 showarrow=True,
                 arrowhead=2,
                 ay=35
@@ -1900,7 +1902,7 @@ if selected_page == "우리집 가계부":
             line_dash="dash",
             line_color="#F59E0B",
             line_width=1.8,
-            annotation_text=f"본인 은퇴 ({retire_age}세)",
+            annotation_text=f" 은퇴 ({retire_age}세)",
             annotation_position="bottom right"
         )
 
@@ -1911,7 +1913,7 @@ if selected_page == "우리집 가계부":
             plot_bgcolor="rgba(0,0,0,0)",
             font=dict(color="#E2E8F0", size=12),
             xaxis=dict(
-                title="인터뷰이 나이 (세)",
+                title=" 나이 (세)",
                 range=[20, 100],
                 tickmode="linear",
                 tick0=20,
@@ -1919,7 +1921,7 @@ if selected_page == "우리집 가계부":
                 gridcolor="rgba(100, 116, 139, 0.2)"
             ),
             yaxis=dict(
-                title="예상 연간 소득 (만원)",
+                title="연간 소득 (만원)",
                 rangemode="tozero",
                 tickformat=",",
                 gridcolor="rgba(100, 116, 139, 0.2)"
