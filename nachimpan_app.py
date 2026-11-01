@@ -1207,7 +1207,7 @@ if selected_page == "우리집 가계부":
                         min_value=0, value=int(st.session_state.get("expense_living", 0) or 0), step=10,
                         placeholder="월 생활비"
                     )
-            save_basic = st.form_submit_button("입력 내용 반영하기", use_container_width=True, type="primary")
+            save_basic = st.form_submit_button("입력 내용 AI 점검", use_container_width=True, type="primary")
 
         if save_basic:
             st.session_state["income_self"] = basic_income
@@ -1307,7 +1307,7 @@ if selected_page == "우리집 가계부":
                 with retirement_expense_col:
                     retirement_monthly_expenses = st.number_input("은퇴 후 한 달 생활비", min_value=0, value=int(st.session_state.get("retirement_monthly_expenses", 200) or 0), step=10)
 
-            save_finance_trigger = st.form_submit_button("입력 내용 반영하기", use_container_width=True, type="primary")
+            save_finance_trigger = st.form_submit_button("입력 내용 AI 점검", use_container_width=True, type="primary")
 
         # ----------------------------------------------------------------------
         # [실제 Gemini AI 호출을 통한 지능형 연금 추정 및 가계부 점검]
@@ -1393,7 +1393,7 @@ if selected_page == "우리집 가계부":
 {ai_data.get('comment')}<br>
 <span style="color: #F97316; font-weight: 800;">⚠️ 소득 크레바스 주의:</span> 희망 은퇴 나이(만 {user_retire_age}세)부터 노령연금 개시(만 65세)까지 <b>약 {pension_gap_years}년간 소득 공백</b>이 발생합니다.
 </div>
-<div style="font-size: 13.5px; color: #94A3B8; margin-bottom: 6px;">💡 AI 추천 연금액이 아래 입력창에 세팅되었습니다. 공무원·개인연금이 있다면 합산 수정 후 확정하세요.</div>
+<div style="font-size: 13.5px; color: #94A3B8; margin-bottom: 6px;">💡공무원·개인연금이 있다면 합산 수정하세요.</div>
 </div>
 """, unsafe_allow_html=True)
 
