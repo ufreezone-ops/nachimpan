@@ -1531,8 +1531,19 @@ if selected_page == "우리집 가계부":
 
             if btn_confirm:
                 draft["income_pension"] = adjusted_pension
+                # 이미 생성된 위젯의 key는 재대입하지 않음
+                widget_keys = {
+                    "other_pension_self_enabled",
+                    "other_pension_self_amount",
+                    "other_pension_self_age",
+                    "other_pension_spouse_enabled",
+                    "other_pension_spouse_amount",
+                    "other_pension_spouse_age",
+                }
+
                 for k, v in draft.items():
-                st.session_state[k] = v
+                    if k not in widget_keys:
+                        st.session_state[k] = v
                 st.session_state.pop("show_ai_finance_review", None)
                 st.session_state.pop("_pending_finance_draft", None)
                 st.session_state.pop("_ai_pension_result", None)
