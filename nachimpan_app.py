@@ -2409,7 +2409,7 @@ elif selected_page == "인생의 사계절":
 
             save_family_trigger = st.form_submit_button("가족 정보 반영하기", use_container_width=True, type="primary")
 
-        # ----------------------------------------------------------------------
+
         # 6.03.02 | AI 가족 생애주기 설계 및 인터뷰이 '직접 나이 수정' 레이어
         # ----------------------------------------------------------------------
         if save_family_trigger:
@@ -2421,7 +2421,6 @@ elif selected_page == "인생의 사계절":
             }
             st.session_state["_pending_family_draft"] = family_draft
 
-            # [수정] 현실적 국토연구원 통계 반영 (무주택 신혼부부 첫 집 마련 평균 13.1년, 가구주 42세)
             ai_fam_prompt = f"""[역할: 대한민국 인구·주거 통계 기반 생애주기 타임라인 설계 전문가]
 인터뷰이 정보:
 - 본인: {user_gender}, 만 {cur_age}세
@@ -2432,7 +2431,7 @@ elif selected_page == "인생의 사계절":
 
 [통계 참고 지표]
 - 여성 평균 초혼 31.6세 / 첫째아 출산 33.1세 (남성은 약 2세 높음)
-- 주택 마련 현실 통계: 국토연구원 조사 기준 무주택 신혼부부가 첫 집을 마련하기까지 평균 13.1년 소요 (주택 구입 시 평균 연령 만 42.2세). 4~7년 같은 비현실적인 단기 가정을 피하고 현실적인 10년 안팎의 기간을 감안할 것.
+- 주택 마련 현실 통계: 국토연구원 조사 기준 무주택 신혼부부가 첫 집을 마련하기까지 평균 13.1년 소요 (주택 구입 시 평균 연령 만 42.2세). 현실적인 10년 안팎의 기간을 감안할 것.
 
 [출력 형식 가이드]
 반드시 아래 JSON 포맷으로만 응답하세요 (순수 JSON만 출력):
@@ -2446,8 +2445,7 @@ elif selected_page == "인생의 사계절":
 
             with st.spinner("AI가 입력 내용을 토대로 주요 생애사건 나이를 설계하는 중입니다..."):
                 raw_fam_res, _ = call_gemini_text(ai_fam_prompt)
-                
-                # 기본 통계 Fallback 계산 (주택구입은 현실적으로 10년 안팎 감안)
+
                 def_m_age = (cur_age + 2) if "1~3년" in marriage_plan else ((cur_age + 4) if "3년 이후" in marriage_plan else 0)
                 def_b_age = (def_m_age + 2) if def_m_age > 0 else (cur_age + 2 if "자녀 계획" in child_plan else 0)
                 def_h_age = max(cur_age + 5, 42) if "고려" in housing_plan else 0
@@ -2474,8 +2472,7 @@ elif selected_page == "인생의 사계절":
                     "retire_age": def_r_age,
                     "comment": def_comment
                 }
-                
-                # 인터뷰이가 수정할 위젯 세션 값 세팅
+
                 st.session_state["inp_target_marriage_age"] = def_m_age
                 st.session_state["inp_target_birth_age"] = def_b_age
                 st.session_state["inp_target_housing_age"] = def_h_age
@@ -2504,57 +2501,91 @@ elif selected_page == "인생의 사계절":
             with st.container(border=True):
                 st.markdown("#### 🎯 인생의 주요 시점 나이 확인 및 수정")
                 tc1, tc2, tc3, tc4 = st.columns(4)
-                
+
                 with tc1:
                     adj_m_age = st.number_input(
-                        "결혼 예상",
-                        min_value=0, max_value=100,
+                        "결혼 예상", min_value=0, max_value=100,
                         value=int(st.session_state.get("inp_target_marriage_age", prop.get("marriage_age", 0))),
                         step=1,
                         help="기혼이거나 미혼 유지를 원하시면 0으로 두세요."
                     )
                 with tc2:
                     adj_b_age = st.number_input(
-                        "첫째 출산",
-                        min_value=0, max_value=100,
+                        "첫째 출산", min_value=0, max_value=100,
                         value=int(st.session_state.get("inp_target_birth_age", prop.get("birth_age", 0))),
                         step=1,
                         help="이미 자녀가 있거나 계획이 없으시면 0으로 두세요."
                     )
                 with tc3:
                     adj_h_age = st.number_input(
-                        "주택 구입",
-                        min_value=0, max_value=100,
+                        "주택 구입", min_value=0, max_value=100,
                         value=int(st.session_state.get("inp_target_housing_age", prop.get("housing_age", 0))),
                         step=1,
                         help="주택 구입 계획이 없으시면 0으로 두세요."
                     )
                 with tc4:
                     adj_r_age = st.number_input(
-                        "은퇴",
-                        min_value=cur_age, max_value=100,
+                        "은퇴", min_value=cur_age, max_value=100,
                         value=int(st.session_state.get("inp_target_retire_age", prop.get("retire_age", 60))),
                         step=1
                     )
 
                 st.markdown("<div style='height: 8px;'></div>", unsafe_allow_html=True)
-                btn_confirm_timeline = st.button("✅ 이 타임라인으로 생애주기 곡선 확정하기", type="primary", use_container_width=True, key="btn_confirm_timeline_final")
+                btn_confirm_timeline = st.button(
+                    "✅ 이 타임라인으로 생애주기 곡선 확정하기",
+                    type="primary", use_container_width=True,
+                    key="btn_confirm_timeline_final"
+                )
 
             if btn_confirm_timeline:
                 for k, v in f_draft.items():
                     st.session_state[k] = v
-                
+
                 st.session_state["target_marriage_age"] = adj_m_age
                 st.session_state["target_birth_age"] = adj_b_age
                 st.session_state["target_housing_age"] = adj_h_age
                 st.session_state["retirement_age"] = adj_r_age
-                
+
+                # 주택 구입 계획이 있는 경우에만 추가 선택 단계 표시
+                st.session_state["show_housing_price_selector"] = adj_h_age > 0
+
                 st.session_state.pop("sibling_items", None)
                 st.session_state.pop("show_ai_family_review", None)
                 st.session_state.pop("_pending_family_draft", None)
                 st.session_state.pop("_ai_timeline_proposal", None)
-                st.success("인터뷰이 맞춤 생애 타임라인이 생애주기 곡선에 완벽히 반영되었습니다.")
+                st.success("인터뷰이 맞춤 생애 타임라인이 생애주기 곡선에 반영되었습니다.")
                 st.rerun()
+
+        # ----------------------------------------------------------------------
+        # [추가 UI] 주택 구입 계획자의 주택 유형 및 지역 선택
+        # ----------------------------------------------------------------------
+        if st.session_state.get("show_housing_price_selector", False):
+            with st.container(border=True):
+                st.markdown("#### 🏠 주택 구입 기준 선택")
+                st.caption("주택 구입을 계획하는 경우, 희망하는 주택 유형과 지역을 선택해 주세요.")
+
+                housing_type_options = ["선택하세요", "주택종합", "아파트"]
+                housing_region_options = [
+                    "선택하세요", "서울", "부산", "대구", "인천", "광주", "대전",
+                    "울산", "세종", "경기", "강원", "충북", "충남", "전북",
+                    "전남", "경북", "경남", "제주"
+                ]
+
+                hc1, hc2 = st.columns(2)
+                with hc1:
+                    st.selectbox(
+                        "주택 유형",
+                        housing_type_options,
+                        key="housing_type"
+                    )
+                with hc2:
+                    st.selectbox(
+                        "구입 희망 지역",
+                        housing_region_options,
+                        key="housing_region"
+                    )
+
+                st.caption("선택한 내용은 저장되며, 주택가격 기준 통계와 계산식은 다음 단계에서 연결합니다.")
 
         # 6.03.03 | 은퇴 시점 가족 미래 나이 2열 슬림 카드 (직계 3대 집중)
         people = [(st.session_state.get("person_name", "나"), cur_age)]
