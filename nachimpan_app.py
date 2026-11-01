@@ -1532,7 +1532,7 @@ if selected_page == "우리집 가계부":
             if btn_confirm:
                 draft["income_pension"] = adjusted_pension
                 for k, v in draft.items():
-                    st.session_state[k] = v
+                st.session_state[k] = v
                 st.session_state.pop("show_ai_finance_review", None)
                 st.session_state.pop("_pending_finance_draft", None)
                 st.session_state.pop("_ai_pension_result", None)
