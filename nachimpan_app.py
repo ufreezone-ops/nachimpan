@@ -1431,7 +1431,7 @@ if selected_page == "우리집 가계부":
                 st.session_state["show_ai_finance_review"] = True
 
         # ----------------------------------------------------------------------
-        # [AI 제안 카드: 인터뷰이가 확인하고 직접 수정 후 확정]
+        # [AI 제안 및 은퇴 후 연금 최종 반영: 통합 영역]
         # ----------------------------------------------------------------------
         if (
             st.session_state.get("show_ai_finance_review", False)
@@ -1448,17 +1448,6 @@ if selected_page == "우리집 가계부":
             )
             pension_gap_years = max(0, 65 - user_retire_age)
 
-            st.markdown(f"""
-<div style="background: rgba(30, 41, 59, 0.75); border: 2px solid #F59E0B; border-radius: 14px; padding: 22px 24px; margin: 18px 0;">
-<div style="font-size: 19px; font-weight: 850; color: #FDE68A; margin-bottom: 8px;">🤖 AI 가계부 점검 & 은퇴 연금액 제안</div>
-<div style="font-size: 14.5px; color: #E2E8F0; line-height: 1.7; word-break: keep-all; margin-bottom: 14px;">
-{ai_data.get('comment')}<br>
-<span style="color: #F97316; font-weight: 800;">⚠️ 소득 크레바스 주의:</span> 희망 은퇴 나이(만 {user_retire_age}세)부터 노령연금 개시(만 65세)까지 <b>약 {pension_gap_years}년간 소득 공백</b>이 발생합니다.
-</div>
-<div style="font-size: 13.5px; color: #94A3B8; margin-bottom: 6px;">💡 국민연금 외 퇴직연금·개인연금은 아래에서 별도로 입력해 주세요.</div>
-</div>
-""", unsafe_allow_html=True)
-
             review_spouse_job = str(
                 draft.get("job_spouse_form", "") or ""
             )
@@ -1472,7 +1461,23 @@ if selected_page == "우리집 가계부":
                 st.session_state["other_pension_spouse_amount"] = 0
                 st.session_state["other_pension_spouse_age"] = 65
 
+            # AI 제안과 추가 연금 입력을 하나의 영역으로 통합
             with st.container(border=True):
+
+                st.markdown("### 🤖 AI 가계부 점검 & 은퇴 연금액 제안")
+
+                st.markdown(
+                    ai_data.get("comment", "")
+                )
+
+                st.markdown(
+                    f"**⚠️ 소득 공백 참고:** 희망 은퇴 나이(만 "
+                    f"{user_retire_age}세)부터 노령연금 개시(만 65세)까지 "
+                    f"약 **{pension_gap_years}년간** 소득 공백이 발생합니다."
+                )
+
+                st.divider()
+
                 adjusted_pension = st.number_input(
                     "은퇴 후 최종 반영할 월 국민연금액 (만원)",
                     min_value=0,
@@ -1489,30 +1494,20 @@ if selected_page == "우리집 가계부":
 
                 st.markdown("#### 국민연금 외 다른 연금")
 
-                st.caption(
-                    "퇴직연금, 개인연금 등 국민연금 이외에 받을 연금이 있다면 "
-                    "수령액과 시작 연령을 입력해 주세요."
-                )
-
-                other_pension_self_enabled = st.checkbox(
-                    "나에게 국민연금 외 다른 연금이 있나요?",
-                    value=bool(st.session_state.get(
-                        "other_pension_self_enabled", False
-                    )),
-                    key="other_pension_self_enabled"
+                st.markdown(
+                    "**당신에게 국민연금 외 다른 연금이 있다면 아래에 입력하세요.**"
                 )
 
                 self_pension_col1, self_pension_col2 = st.columns(2)
 
                 with self_pension_col1:
-                    st.number_input(
+                    self_pension_amount = st.number_input(
                         "나의 월 예상 수령액 (만원)",
                         min_value=0,
                         value=int(st.session_state.get(
                             "other_pension_self_amount", 0
                         ) or 0),
                         step=5,
-                        disabled=not other_pension_self_enabled,
                         key="other_pension_self_amount"
                     )
 
@@ -1525,32 +1520,31 @@ if selected_page == "우리집 가계부":
                             "other_pension_self_age", 65
                         ) or 65),
                         step=1,
-                        disabled=not other_pension_self_enabled,
                         key="other_pension_self_age"
                     )
+
+                # 입력한 연금액이 0보다 클 때만 그래프에 반영
+                st.session_state["other_pension_self_enabled"] = (
+                    self_pension_amount > 0
+                )
 
                 if review_has_spouse:
                     st.divider()
 
-                    other_pension_spouse_enabled = st.checkbox(
-                        "배우자에게 국민연금 외 다른 연금이 있나요?",
-                        value=bool(st.session_state.get(
-                            "other_pension_spouse_enabled", False
-                        )),
-                        key="other_pension_spouse_enabled"
+                    st.markdown(
+                        "**배우자에게 국민연금 외 다른 연금이 있다면 아래에 입력하세요.**"
                     )
 
                     spouse_pension_col1, spouse_pension_col2 = st.columns(2)
 
                     with spouse_pension_col1:
-                        st.number_input(
+                        spouse_pension_amount = st.number_input(
                             "배우자의 월 예상 수령액 (만원)",
                             min_value=0,
                             value=int(st.session_state.get(
                                 "other_pension_spouse_amount", 0
                             ) or 0),
                             step=5,
-                            disabled=not other_pension_spouse_enabled,
                             key="other_pension_spouse_amount"
                         )
 
@@ -1563,9 +1557,12 @@ if selected_page == "우리집 가계부":
                                 "other_pension_spouse_age", 65
                             ) or 65),
                             step=1,
-                            disabled=not other_pension_spouse_enabled,
                             key="other_pension_spouse_age"
                         )
+
+                    st.session_state["other_pension_spouse_enabled"] = (
+                        spouse_pension_amount > 0
+                    )
 
                 st.divider()
 
@@ -1597,9 +1594,7 @@ if selected_page == "우리집 가계부":
                     if k not in widget_keys:
                         st.session_state[k] = v
 
-                st.session_state.pop("show_ai_finance_review", None)
-                st.session_state.pop("_pending_finance_draft", None)
-                st.session_state.pop("_ai_pension_result", None)
+                # 최종 확정 후에도 AI 제안 및 연금 입력 영역 유지
                 st.session_state["finance_saved_notice"] = True
                 st.rerun()
 
