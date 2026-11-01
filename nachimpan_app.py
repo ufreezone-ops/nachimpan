@@ -1775,20 +1775,26 @@ if selected_page == "우리집 가계부":
             # 가구 합산 소득: 본인 + 배우자
             household_income = self_income + spouse_income
 
-            # 국민연금: 부부 합산 확정액을 절반씩 나누어 각자 개시 시점부터 반영
+            # 국민연금: 부부는 50:50, 싱글은 전액 본인에게 반영
             if has_spouse:
                 if age >= national_pension_start_age:
                     household_income += annual_pension / 2
 
                 if spouse_current_age >= national_pension_start_age:
                     household_income += annual_pension / 2
+
             else:
                 if age >= national_pension_start_age:
+                    self_income += annual_pension
                     household_income += annual_pension
 
             # 국민연금 외 본인 연금
             if other_self_enabled and age >= other_self_start_age:
                 household_income += other_self_annual
+
+                # 싱글은 본인 소득선에도 추가
+                if not has_spouse:
+                    self_income += other_self_annual
 
             # 국민연금 외 배우자 연금
             if (
@@ -1797,10 +1803,6 @@ if selected_page == "우리집 가계부":
                 and spouse_current_age >= other_spouse_start_age
             ):
                 household_income += other_spouse_annual
-
-            self_income_curve.append(self_income)
-            spouse_income_curve.append(spouse_income)
-            household_income_curve.append(household_income)
 
         # 그래프: 배우자 유무에 따라 곡선 표시
         fig_income = go.Figure()
