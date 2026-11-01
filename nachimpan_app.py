@@ -1472,12 +1472,31 @@ if selected_page == "우리집 가계부":
         cols[3].metric("현재 파악된 금융자산", fmt_eok(s["net_worth"]))
 
         # 6.01.07 | 나의 연간 소득 예상곡선
-        st.markdown("### 나의 연간 소득 예상곡선")
+        st.markdown("### 나의 생애 개인소득 예상곡선")
+        st.caption(
+            "현재 본인의 소득을 기준으로 직장인·자영업자 기준 추정곡선을 각각 보정합니다. "
+            "은퇴 이후에는 확정한 연금액을 반영합니다."
+        )
 
         cur_age = int(st.session_state.person_age)
-        current_annual_income = float(s["annual_total_income"])
 
-        # 기준 연령 및 월평균 소득 (단위: 만원)
+        # 본인 1인 기준 월소득 및 연금
+        current_monthly_income = float(
+            st.session_state.get("income_self", 0) or 0
+        )
+        current_annual_income = current_monthly_income * 12
+
+        monthly_pension = float(
+            st.session_state.get("income_pension", 0) or 0
+        )
+        annual_pension = monthly_pension * 12
+
+        retire_age = int(
+            st.session_state.get("retirement_age", 60) or 60
+        )
+        pension_start_age = max(retire_age, 65)
+
+        # 20~75세 기준 추정곡선 (월평균 소득, 만원)
         ages_base = [20, 25, 30, 35, 40, 45, 50, 55, 60, 65, 70, 75]
 
         employee_base = [
@@ -1490,10 +1509,11 @@ if selected_page == "우리집 가계부":
             420, 400, 350, 290, 230, 170
         ]
 
-        # 현재 나이의 기준소득을 선형보간
+        # 기준곡선의 연령별 소득 보간
         def interpolate_income(age, values):
             if age <= ages_base[0]:
                 return values[0]
+
             if age >= ages_base[-1]:
                 return values[-1]
 
@@ -1503,44 +1523,101 @@ if selected_page == "우리집 가계부":
                         (age - ages_base[i])
                         / (ages_base[i + 1] - ages_base[i])
                     )
-                    return values[i] + (
-                        values[i + 1] - values[i]
-                    ) * ratio
+                    return (
+                        values[i]
+                        + (values[i + 1] - values[i]) * ratio
+                    )
 
-        employee_current = interpolate_income(cur_age, employee_base)
-        self_employed_current = interpolate_income(cur_age, self_employed_base)
+        # 75세 이후: 70~75세 감소 추세를 100세까지 연장
+        # 공식 통계가 아닌 가정 구간이며, 소득은 0 아래로 내려가지 않음
+        def extended_base_income(age, values):
+            if age <= 75:
+                return interpolate_income(age, values)
 
-        # 현재 실제 연소득을 기준으로 각각 독립 피팅
-        employee_scale = current_annual_income / (employee_current * 12)
-        self_employed_scale = current_annual_income / (self_employed_current * 12)
+            slope = (values[-1] - values[-2]) / 5
+            return max(0, values[-1] + slope * (age - 75))
 
-        employee_annual = [
-            value * 12 * employee_scale for value in employee_base
-        ]
-        self_employed_annual = [
-            value * 12 * self_employed_scale for value in self_employed_base
-        ]
+        # 현재 나이의 기준소득을 구해 개인 실제소득에 맞춰 각각 보정
+        employee_current = extended_base_income(cur_age, employee_base)
+        self_employed_current = extended_base_income(
+            cur_age, self_employed_base
+        )
+
+        employee_scale = (
+            current_monthly_income / employee_current
+            if employee_current > 0 else 0
+        )
+        self_employed_scale = (
+            current_monthly_income / self_employed_current
+            if self_employed_current > 0 else 0
+        )
+
+        # 20~100세 생애소득 계산
+        ages = list(range(20, 101))
+
+        employee_annual = []
+        self_employed_annual = []
+
+        for age in ages:
+            employee_income = (
+                extended_base_income(age, employee_base)
+                * employee_scale * 12
+            )
+            self_employed_income = (
+                extended_base_income(age, self_employed_base)
+                * self_employed_scale * 12
+            )
+
+            # 은퇴 이후 근로·사업소득 중단
+            if age >= retire_age:
+                employee_income = 0
+                self_employed_income = 0
+
+            # 연금은 은퇴 이후, 65세 이후부터 반영
+            if age >= pension_start_age:
+                employee_income += annual_pension
+                self_employed_income += annual_pension
+
+            employee_annual.append(employee_income)
+            self_employed_annual.append(self_employed_income)
 
         fig_income = go.Figure()
 
         fig_income.add_trace(go.Scatter(
-            x=ages_base,
+            x=ages,
             y=employee_annual,
-            mode="lines+markers",
-            name="직장인 기준곡선",
+            mode="lines",
+            name="직장인 기준 추정곡선",
             line=dict(width=3.5),
-            hovertemplate="나이: %{x}세<br>연간 소득: %{y:,.0f}만 원<extra></extra>"
+            hovertemplate=(
+                "나이: %{x}세<br>"
+                "연간 소득: %{y:,.0f}만 원<extra></extra>"
+            )
         ))
 
         fig_income.add_trace(go.Scatter(
-            x=ages_base,
+            x=ages,
             y=self_employed_annual,
-            mode="lines+markers",
-            name="자영업자 기준곡선",
+            mode="lines",
+            name="자영업자 기준 추정곡선",
             line=dict(width=3.5, dash="dash"),
-            hovertemplate="나이: %{x}세<br>연간 소득: %{y:,.0f}만 원<extra></extra>"
+            hovertemplate=(
+                "나이: %{x}세<br>"
+                "연간 소득: %{y:,.0f}만 원<extra></extra>"
+            )
         ))
 
+        # 75세 이후는 추정 연장 구간임을 표시
+        fig_income.add_vline(
+            x=75,
+            line_dash="dot",
+            line_color="#94A3B8",
+            line_width=1.5,
+            annotation_text="75세 이후 추정 구간",
+            annotation_position="top right"
+        )
+
+        # 현재 나이 표시
         fig_income.add_vline(
             x=cur_age,
             line_dash="dot",
@@ -1551,20 +1628,34 @@ if selected_page == "우리집 가계부":
         fig_income.add_annotation(
             x=cur_age,
             y=current_annual_income,
-            text=f"현재 {cur_age}세 · 연소득 {current_annual_income:,.0f}만 원",
+            text=(
+                f"현재 {cur_age}세 · "
+                f"본인 연소득 {current_annual_income:,.0f}만 원"
+            ),
             showarrow=True,
             arrowhead=2,
             ay=-35
         )
 
+        # 은퇴 시점 표시
+        fig_income.add_vline(
+            x=retire_age,
+            line_dash="dash",
+            line_color="#F59E0B",
+            line_width=1.5,
+            annotation_text=f"은퇴 {retire_age}세",
+            annotation_position="bottom right"
+        )
+
         fig_income.update_layout(
-            height=420,
-            margin=dict(l=20, r=20, t=35, b=35),
+            height=460,
+            margin=dict(l=20, r=20, t=45, b=35),
             paper_bgcolor="rgba(0,0,0,0)",
             plot_bgcolor="rgba(0,0,0,0)",
             font=dict(color="#E2E8F0", size=13),
             xaxis=dict(
                 title="나이 (세)",
+                range=[20, 100],
                 tickmode="linear",
                 tick0=20,
                 dtick=5,
@@ -1572,6 +1663,7 @@ if selected_page == "우리집 가계부":
             ),
             yaxis=dict(
                 title="예상 연간 소득 (만원)",
+                rangemode="tozero",
                 tickformat=",",
                 gridcolor="rgba(100, 116, 139, 0.2)"
             ),
