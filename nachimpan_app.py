@@ -1845,15 +1845,15 @@ if selected_page == "우리집 가계부":
             ))
 
         else:
-            # 배우자가 없으면 내 소득만 실선으로 표시
+            # 배우자가 없으면 연금이 포함된 내 소득만 실선으로 표시
             fig_income.add_trace(go.Scatter(
                 x=ages,
                 y=self_income_curve,
                 mode="lines",
-                name="내 소득",
+                name="내 소득(연금 포함)",
                 line=dict(width=3.5),
                 hovertemplate=(
-                    "내 연간 소득: %{y:,.0f}만 원<extra></extra>"
+                    "내 연간 소득(연금 포함): %{y:,.0f}만 원<extra></extra>"
                 )
             ))
 
