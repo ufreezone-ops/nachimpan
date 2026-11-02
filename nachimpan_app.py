@@ -1344,6 +1344,17 @@ if selected_page == "우리집 가계부":
                 else job_spouse_selected
             )
 
+
+            # 배우자 직업·소득을 AI 최종 확정 전에도 공통 세션에 반영
+            # Tab3 생애 소득곡선이 최신 입력값을 읽도록 동기화
+            st.session_state["gender"] = final_gender
+            st.session_state["job_form"] = final_job
+            st.session_state["career_stage"] = final_career
+            st.session_state["job_spouse_form"] = final_spouse_job
+            st.session_state["income_self"] = income_self
+            st.session_state["income_spouse"] = income_spouse
+
+            
             draft_payload = {
                 "gender": final_gender,
                 "job_form": final_job,
@@ -2602,7 +2613,7 @@ elif selected_page == "인생의 사계절":
         # 제출된 가족정보를 세션에 저장
         if save_family_trigger:
             st.session_state["child_count"] = child_count
-            st.session_state["spouse_age"] = spouse_age
+            st.session_state["spouse_age"] = int(spouse_age or 0)
             st.session_state["child_age"] = child_age1
             st.session_state["child_age2"] = child_age2
             st.session_state["child_age3"] = child_age3
