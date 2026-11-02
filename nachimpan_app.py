@@ -14,7 +14,6 @@ import json
 import base64
 import requests
 import re
-import zlib
 from datetime import date
 import streamlit as st
 import pandas as pd
@@ -449,54 +448,19 @@ def getv(key, default=0):
     val = st.session_state.get(key, default)
     return default if val is None else val
     
-# 2.01.02 | 동기화 키 목록 및 압축 인코더 (export_diagnosis_code, advanced_mode 포함)
-SYNC_KEYS = [
+
+# 2.01.02 | 테스트 사례 저장용 데이터 키 목록
+CASE_DATA_KEYS = [
     "anonymous_id", "person_name", "person_age", "gender", "job_form", "job_spouse_form", "career_stage",
     "income_self", "income_spouse", "income_other", "income_bonus", "income_pension",
-"other_pension_self_enabled", "other_pension_self_amount", "other_pension_self_age",
-"other_pension_spouse_enabled", "other_pension_spouse_amount", "other_pension_spouse_age",
+    "other_pension_self_enabled", "other_pension_self_amount", "other_pension_self_age",
+    "other_pension_spouse_enabled", "other_pension_spouse_amount", "other_pension_spouse_age",
     "expense_living", "expense_loan", "expense_other", "retirement_monthly_expenses",
     "asset_cash", "asset_financial", "asset_home", "asset_deposit", "asset_other",
     "debt_home", "debt_other", "retirement_age", "spouse_age", "child_count",
     "child_age", "child_age2", "child_age3", "child_age4", "father_age", "mother_age",
     "marriage_plan", "child_plan", "housing_plan", "sibling_items", "advanced_mode"
 ]
-
-def export_diagnosis_code():
-    data = {}
-    for k in SYNC_KEYS:
-        if k in st.session_state:
-            data[k] = st.session_state[k]
-    json_bytes = json.dumps(data, ensure_ascii=False).encode('utf-8')
-    compressed = zlib.compress(json_bytes, level=9)
-    b64 = base64.urlsafe_b64encode(compressed).decode('utf-8')
-    return f"NC-{b64}"
-
-# 2.01.03 | NC-코드 정규식 디코더 및 세션 복원기 (import_diagnosis_code)
-def import_diagnosis_code(raw_input):
-    if not raw_input or not isinstance(raw_input, str):
-        return False, "입력된 텍스트가 없습니다."
-    
-    clean_text = raw_input.strip()
-    match = re.search(r"NC-([A-Za-z0-9_\-=]+)", clean_text)
-    if not match:
-        return False, "유효한 나침반 복원코드(NC-...)를 찾지 못했습니다."
-    
-    b64_str = match.group(1).strip()
-    try:
-        missing_padding = len(b64_str) % 4
-        if missing_padding:
-            b64_str += '=' * (4 - missing_padding)
-        compressed = base64.urlsafe_b64decode(b64_str.encode('utf-8'))
-        json_bytes = zlib.decompress(compressed)
-        data = json.loads(json_bytes.decode('utf-8'))
-        
-        for k, v in data.items():
-            st.session_state[k] = v
-        st.session_state.started = True
-        return True, f"'{data.get('person_name', '인터뷰이')}'님의 가계부·생애주기 데이터가 완벽히 동기화되었습니다."
-    except Exception as e:
-        return False, f"데이터 복원 실패: {e}"
 
 # 2.01.04 | 개발용 테스트 사례 및 Google Sheets 저장/불러오기
 from datetime import datetime
@@ -679,7 +643,7 @@ def save_test_case(case_name):
 
     payload = {
         key: st.session_state[key]
-        for key in SYNC_KEYS
+        for key in CASE_DATA_KEYS
         if key in st.session_state and key != "person_name"
     }
     payload["person_name"] = case_name
@@ -927,18 +891,6 @@ if _dev_enabled:
     with st.sidebar:
         st.divider()
         st.markdown("### 🧪 개발자 영역")
-
-        # [위치 이동] 카톡 리포트 불러오기가 개발자 영역으로 이동
-        with st.expander("📥 카톡 리포트 불러오기"):
-            st.markdown("<div style='font-size: 13px; color: #CBD5E1; margin-bottom: 6px;'>전달받은 <b>리포트 전문</b> 또는 <b>NC-코드</b>를 붙여넣으세요.</div>", unsafe_allow_html=True)
-            pasted_code_sb = st.text_area("카톡 내용 붙여넣기", placeholder="NC-코드를 붙여넣으세요", height=90, key="sb_pasted_code", label_visibility="collapsed")
-            if st.button("🔄 데이터 동기화", type="primary", use_container_width=True, key="sb_btn_sync"):
-                ok, msg = import_diagnosis_code(pasted_code_sb)
-                if ok:
-                    st.success(msg)
-                    st.rerun()
-                else:
-                    st.error(msg)
 
         st.caption("테스트 사례의 금액은 기능 검증을 위한 예시입니다.")
 
@@ -3528,33 +3480,9 @@ else:
             st.caption("※ AI의 코멘트는 참고용 거울이며, 삶의 가장 중요한 결정은 온전히 당신의 것입니다.")
 
             st.markdown("<div style='height: 20px;'></div>", unsafe_allow_html=True)
-            sync_code = export_diagnosis_code()
+
             kakao_clean_report = f"""[나침반 🧭 현실점검 & 재무 진단 리포트]
-• 진단자: {person_name} ({person_age}세, {career_st})
-• 소득 형태: {st.session_state.get('job_form','직장인')} (배우자: {st.session_state.get('job_spouse_form','해당 없음')})
-• 분석 모드: {taste_mode}
-• 재무 요약:
-  - 월 정기수입: {money(s['regular_income'])}
-  - 월 현금지출: {money(s['expenses'])}
-  - 연간 순저축: {money(s['annual_net_surplus'])} (월평균 {money(s['monthly_effective_surplus'])})
-  - 순자산: {fmt_eok(s['net_worth'])}
-  - 희망 은퇴나이: {retire_age}세 (맞이할 겨울: 약 {winter_years}년, {user_gender.split()[1]} {life_expectancy}세 수명 기준)
-
-[소득 개선 & 파이프라인]
-{formatted_income}
-
-[은퇴 안정성 성찰]
-{formatted_retire}"""
-            st.markdown("### 💬 카카오톡 전송용 리포트")
-            st.caption("※ 아래 리포트를 복사하여 카카오톡 대화방에 바로 붙여넣기(Ctrl+V)하세요.")
             st.code(kakao_clean_report, language="markdown")
-
-            st.markdown("<div style='height: 4px;'></div>", unsafe_allow_html=True)
-            copy_btn_html = f"""
-<!DOCTYPE html><html><head><meta charset="utf-8"><style>body {{ margin: 0; padding: 0; background: transparent; overflow: hidden; }} #copyBtn {{ background: #1E293B; border: 1.5px solid #38BDF8; color: #38BDF8; padding: 10px 18px; border-radius: 8px; font-weight: 800; font-size: 15px; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; transition: background 0.15s ease; }} #copyBtn:hover {{ background: #334155; color: #FFFFFF; }}</style></head>
-<body><button id="copyBtn"><span>🔑</span><span>동기화 복원코드 복사</span></button><script>document.getElementById('copyBtn').addEventListener('click', function() {{ var code = '{sync_code}'; var ta = document.createElement('textarea'); ta.value = code; ta.style.position = 'fixed'; ta.style.left = '-999999px'; ta.style.top = '-999999px'; document.body.appendChild(ta); ta.focus(); ta.select(); var success = false; try {{ success = document.execCommand('copy'); }} catch (e) {{ success = false; }} document.body.removeChild(ta); if (!success && navigator.clipboard && window.isSecureContext) {{ navigator.clipboard.writeText(code).then(function() {{ alert('동기화 복원코드가 복사되었습니다!\\n인터뷰어에게 카톡으로 붙여넣기(Ctrl+V)해 주세요.'); }}).catch(function() {{ prompt('복원코드를 직접 복사(Ctrl+C)하세요:', code); }}); }} else if (success) {{ alert('동기화 복원코드가 복사되었습니다!\\n인터뷰어에게 카톡으로 붙여넣기(Ctrl+V)해 주세요.'); }} else {{ prompt('복원코드를 직접 복사(Ctrl+C)하세요:', code); }} }});</script></body></html>
-"""
-            st.components.v1.html(copy_btn_html, height=54)
 
         else:
             st.info("‘AI 리포트 생성’ 버튼을 누르면 Gemini 초고속 엔진이 삶과 재무의 성찰 리포트를 생성합니다.")
