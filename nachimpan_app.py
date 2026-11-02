@@ -2319,8 +2319,12 @@ elif selected_page == "인생의 사계절":
     else:
         
 
-        # 6.03.01 | 가족 구성원 나이 입력 폼 + 주택가격 기준 통계
+
+        # 6.03.01 | 가족 구성원 나이 입력 폼 + 주택가격·노후생활비 기준 통계
         # ==============================================================================
+
+        # ------------------------------------------------------------------------------
+        # [1] 주택가격 기준 통계
         # 한국부동산원 R-ONE 전국주택가격동향조사
         # 기준시점: 2025년 12월 / 주택 한 채 기준 / 단위: 천원
         # 평균·중위가격은 지역 간 가격 수준 비교용이며 시계열 변동률 산출용이 아님.
@@ -2365,227 +2369,214 @@ elif selected_page == "인생의 사계절":
             "제주": (265384.89, 222651.58, 291781.39, 245000.00),
         }
 
+        # ------------------------------------------------------------------------------
+        # [2] 노후생활비 기준 통계
+        # 출처: 국민연금공단 국민연금연구원
+        # 조사명: 국민노후보장패널조사(KReIS) 제10차
+        #
+        # 2024년 부가조사: 2024년 실시 / 2025년 12월 31일 결과 발표
+        # 2023년 본조사: 2023년 실시 / 2024년 12월 31일 보고서 발간
+        #
+        # 단위: 월 만 원
+        # 기준: 개인 기준 / 부부 기준
+        # 최소생활비: 최저 생활을 유지하는 데 필요한 비용
+        # 적정생활비: 표준적인 생활을 하는 데 흡족한 비용
+        # 건강한 노년임을 전제로 한 주관적 필요 생활비이며 실제 지출액과는 다름.
+
+        RETIREMENT_EXPENSE_SOURCE = {
+            "기관": "국민연금공단 국민연금연구원",
+            "조사명": "국민노후보장패널조사(KReIS)",
+            "승인통계번호": "제322001호",
+            "기준단위": "월 만 원",
+            "산출기준": "건강한 노년을 전제로 응답자가 인식하는 주관적 노후 필요 생활비",
+            "최소생활비_정의": "최저 생활을 유지하는 데 필요한 비용",
+            "적정생활비_정의": "표준적인 생활을 하는 데 흡족한 비용",
+            "유의사항": "실제 고령가구의 소비지출액이나 보장되는 연금액이 아닌 조사 응답자의 주관적 필요 생활비임.",
+            "공식자료": {
+                "2024년 부가조사_보도자료": "https://m.nps.or.kr/pnsgdnc/nscvrgdata/getOHAE0002M1.do?hmpgBbsCd=BS20240145&hmpgCd=01&menuId=MN24000898&pageIndex=1&pstId=ZZ202500000000001624&sortSe=FR",
+                "2024년 부가조사_보고서": "https://institute.nps.or.kr/rschpblcn/whol/getOHBD0002M0.do?menuId=MN24001508&pblcnRptpSn=1670",
+                "2023년 본조사_보고서": "https://institute.nps.or.kr/rschpblcn/whol/getOHBD0002M0.do?pblcnRptpSn=1603",
+            }
+        }
+
+        # 조사별 원자료 보존
+        RETIREMENT_EXPENSE_DATA = {
+            "2023년_제10차_본조사": {
+                "조사연도": 2023,
+                "발표연도": 2024,
+                "개인기준": {
+                    "최소생활비": 136.1,
+                    "적정생활비": 192.1,
+                },
+                "부부기준": {
+                    "최소생활비": 217.1,
+                    "적정생활비": 296.9,
+                },
+                "출처": "국민연금연구원 조사보고서 2024-01",
+            },
+            "2024년_제10차_부가조사": {
+                "조사연도": 2024,
+                "발표연도": 2025,
+                "개인기준": {
+                    "최소생활비": 139.2,
+                    "적정생활비": 197.6,
+                },
+                "부부기준": {
+                    "최소생활비": 216.6,
+                    "적정생활비": 298.1,
+                },
+                "출처": "국민연금연구원 조사보고서 2025-01",
+            },
+        }
+
+        # 기본 참조 조사: 가장 최근 조사인 2024년 부가조사
+        RETIREMENT_EXPENSE_DEFAULT_SURVEY = "2024년_제10차_부가조사"
+
+        # 물가상승률은 별도 설계 예정.
+        # 현재 확정된 가정이 없으므로 임의의 수치를 적용하지 않음.
+        RETIREMENT_INFLATION_RATE = None
+
+        # ------------------------------------------------------------------------------
+        # [3] 가족 구성원 나이 및 가족 계획 입력
         st.markdown("### 1. 우리 가족과 나의 은퇴 나이")
         child_options = ["입력 안 함", "없음", "1명", "2명", "3명", "4명 이상"]
         prev_c_count = st.session_state.get("child_count", "입력 안 함")
-        if prev_c_count not in child_options: prev_c_count = "입력 안 함"
+        if prev_c_count not in child_options:
+            prev_c_count = "입력 안 함"
 
-        child_count = st.selectbox("자녀 수", child_options, index=child_options.index(prev_c_count), key="child_count_select_direct")
+        child_count = st.selectbox(
+            "자녀 수",
+            child_options,
+            index=child_options.index(prev_c_count),
+            key="child_count_select_direct"
+        )
 
         with st.form("family_form"):
-            spouse_age = st.number_input("배우자 나이 (없거나 미입력 시 0)", min_value=0, max_value=120, value=int(st.session_state.get("spouse_age", 0)), step=1)
+            spouse_age = st.number_input(
+                "배우자 나이 (없거나 미입력 시 0)",
+                min_value=0,
+                max_value=120,
+                value=int(st.session_state.get("spouse_age", 0)),
+                step=1
+            )
+
             child_age1, child_age2, child_age3, child_age4 = 0, 0, 0, 0
+
             if child_count in ["1명", "2명", "3명", "4명 이상"]:
                 c1_col, c2_col = st.columns(2)
-                with c1_col: child_age1 = st.number_input("첫째 자녀 나이", min_value=0, max_value=100, value=int(st.session_state.get("child_age", 0)), step=1)
+                with c1_col:
+                    child_age1 = st.number_input(
+                        "첫째 자녀 나이",
+                        min_value=0,
+                        max_value=100,
+                        value=int(st.session_state.get("child_age", 0)),
+                        step=1
+                    )
                 with c2_col:
-                    if child_count in ["2명", "3명", "4명 이상"]: child_age2 = st.number_input("둘째 자녀 나이", min_value=0, max_value=100, value=int(st.session_state.get("child_age2", 0)), step=1)
-                    else: st.write("")
+                    if child_count in ["2명", "3명", "4명 이상"]:
+                        child_age2 = st.number_input(
+                            "둘째 자녀 나이",
+                            min_value=0,
+                            max_value=100,
+                            value=int(st.session_state.get("child_age2", 0)),
+                            step=1
+                        )
+                    else:
+                        st.write("")
 
             if child_count in ["3명", "4명 이상"]:
                 c3_col, c4_col = st.columns(2)
-                with c3_col: child_age3 = st.number_input("셋째 자녀 나이", min_value=0, max_value=100, value=int(st.session_state.get("child_age3", 0)), step=1)
+                with c3_col:
+                    child_age3 = st.number_input(
+                        "셋째 자녀 나이",
+                        min_value=0,
+                        max_value=100,
+                        value=int(st.session_state.get("child_age3", 0)),
+                        step=1
+                    )
                 with c4_col:
-                    if child_count == "4명 이상": child_age4 = st.number_input("넷째 자녀 나이", min_value=0, max_value=100, value=int(st.session_state.get("child_age4", 0)), step=1)
-                    else: st.write("")
+                    if child_count == "4명 이상":
+                        child_age4 = st.number_input(
+                            "넷째 자녀 나이",
+                            min_value=0,
+                            max_value=100,
+                            value=int(st.session_state.get("child_age4", 0)),
+                            step=1
+                        )
+                    else:
+                        st.write("")
 
             st.markdown("<div style='height: 8px;'></div>", unsafe_allow_html=True)
             f_col, m_col = st.columns(2)
-            with f_col: father_age = st.number_input("아버지 나이 (선택, 모르면 0)", min_value=0, max_value=120, value=int(st.session_state.get("father_age", 0)), step=1)
-            with m_col: mother_age = st.number_input("어머니 나이 (선택, 모르면 0)", min_value=0, max_value=120, value=int(st.session_state.get("mother_age", 0)), step=1)
+
+            with f_col:
+                father_age = st.number_input(
+                    "아버지 나이 (선택, 모르면 0)",
+                    min_value=0,
+                    max_value=120,
+                    value=int(st.session_state.get("father_age", 0)),
+                    step=1
+                )
+
+            with m_col:
+                mother_age = st.number_input(
+                    "어머니 나이 (선택, 모르면 0)",
+                    min_value=0,
+                    max_value=120,
+                    value=int(st.session_state.get("mother_age", 0)),
+                    step=1
+                )
 
             st.markdown("<div style='height: 10px;'></div>", unsafe_allow_html=True)
             st.markdown("#### 앞으로의 가족 계획 (선택)")
+
             p_c1, p_c2, p_c3 = st.columns(3)
+
             with p_c1:
-                marriage_options = ["미정", "계획 없음", "결혼함", "1~3년 내 결혼 생각 있음", "3년 이후 결혼 생각 있음", "결혼 예정"]
-                marriage_plan = st.selectbox("결혼 계획", marriage_options, index=marriage_options.index(st.session_state.get("marriage_plan", "미정")) if st.session_state.get("marriage_plan", "미정") in marriage_options else 0)
-            with p_c2:
-                child_plan_options = ["미정", "계획 없음", "자녀 계획 있음", "출산 예정", "추가 자녀 계획 있음"]
-                child_plan = st.selectbox("출산·자녀 계획", child_plan_options, index=child_plan_options.index(st.session_state.get("child_plan", "미정")) if st.session_state.get("child_plan", "미정") in child_plan_options else 0)
-            with p_c3:
-                housing_options = ["미정", "현재 주거 유지", "전세·월세 이동 고려", "주택 구입 고려", "주거 계획 확정"]
-                housing_plan = st.selectbox("주거 계획", housing_options, index=housing_options.index(st.session_state.get("housing_plan", "미정")) if st.session_state.get("housing_plan", "미정") in housing_options else 0)
-
-            save_family_trigger = st.form_submit_button("가족 정보 반영하기", use_container_width=True, type="primary")
-
-
-        # 6.03.02 | AI 가족 생애주기 설계 및 인터뷰이 '직접 나이 수정' 레이어
-        # ----------------------------------------------------------------------
-        if save_family_trigger:
-            family_draft = {
-                "spouse_age": spouse_age, "child_count": child_count,
-                "child_age": child_age1, "child_age2": child_age2, "child_age3": child_age3, "child_age4": child_age4,
-                "father_age": father_age, "mother_age": mother_age,
-                "marriage_plan": marriage_plan, "child_plan": child_plan, "housing_plan": housing_plan
-            }
-            st.session_state["_pending_family_draft"] = family_draft
-
-            ai_fam_prompt = f"""[역할: 대한민국 인구·주거 통계 기반 생애주기 타임라인 설계 전문가]
-인터뷰이 정보:
-- 본인: {user_gender}, 만 {cur_age}세
-- 현재 배우자 나이: {spouse_age}세
-- 현재 자녀: {child_count} (첫째 {child_age1}세, 둘째 {child_age2}세)
-- 가족 계획: 결혼 '{marriage_plan}', 출산·자녀 '{child_plan}', 주거 '{housing_plan}'
-- 희망 은퇴 나이: {st.session_state.get('retirement_age', 60)}세
-
-[통계 참고 지표]
-- 여성 평균 초혼 31.6세 / 첫째아 출산 33.1세 (남성은 약 2세 높음)
-- 주택 마련 현실 통계: 국토연구원 조사 기준 무주택 신혼부부가 첫 집을 마련하기까지 평균 13.1년 소요 (주택 구입 시 평균 연령 만 42.2세). 현실적인 10년 안팎의 기간을 감안할 것.
-
-[출력 형식 가이드]
-반드시 아래 JSON 포맷으로만 응답하세요 (순수 JSON만 출력):
-{{
-  "suggested_marriage_age": 예상결혼나이(정수, 기혼이거나 계획없으면 0),
-  "suggested_birth_age": 첫째출산시본인나이(정수, 이미있거나 계획없으면 0),
-  "suggested_housing_age": 주택구입시본인나이(정수, 계획없으면 0, 통계상 결혼 후 10년 안팎 또는 40대 초반 현실 반영),
-  "suggested_retire_age": {st.session_state.get('retirement_age', 60)},
-  "summary_comment": "2~3문장으로 담백하게 이유 설명. 통계적 기준과 인터뷰이의 계획을 조화시킨 핵심 코멘트."
-}}"""
-
-            with st.spinner("AI가 입력 내용을 토대로 주요 생애사건 나이를 설계하는 중입니다..."):
-                raw_fam_res, _ = call_gemini_text(ai_fam_prompt)
-
-                def_m_age = (cur_age + 2) if "1~3년" in marriage_plan else ((cur_age + 4) if "3년 이후" in marriage_plan else 0)
-                def_b_age = (def_m_age + 2) if def_m_age > 0 else (cur_age + 2 if "자녀 계획" in child_plan else 0)
-                def_h_age = max(cur_age + 5, 42) if "고려" in housing_plan else 0
-                def_r_age = int(st.session_state.get("retirement_age", 60))
-                def_comment = "국가데이터처 및 주거 통계 지표를 바탕으로 향후 인생 주요 시점의 나이를 도출했습니다."
-
-                if raw_fam_res:
-                    try:
-                        clean_json = re.search(r"\{.*\}", raw_fam_res, re.DOTALL)
-                        if clean_json:
-                            parsed = json.loads(clean_json.group(0))
-                            def_m_age = int(parsed.get("suggested_marriage_age", def_m_age))
-                            def_b_age = int(parsed.get("suggested_birth_age", def_b_age))
-                            def_h_age = int(parsed.get("suggested_housing_age", def_h_age))
-                            def_r_age = int(parsed.get("suggested_retire_age", def_r_age))
-                            def_comment = str(parsed.get("summary_comment", def_comment))
-                    except Exception:
-                        pass
-
-                st.session_state["_ai_timeline_proposal"] = {
-                    "marriage_age": def_m_age,
-                    "birth_age": def_b_age,
-                    "housing_age": def_h_age,
-                    "retire_age": def_r_age,
-                    "comment": def_comment
-                }
-
-                st.session_state["inp_target_marriage_age"] = def_m_age
-                st.session_state["inp_target_birth_age"] = def_b_age
-                st.session_state["inp_target_housing_age"] = def_h_age
-                st.session_state["inp_target_retire_age"] = def_r_age
-                st.session_state["show_ai_family_review"] = True
-
-        # ----------------------------------------------------------------------
-        # [수정 UI] 심플하고 직관적인 나이 수정 인터페이스
-        # ----------------------------------------------------------------------
-        if st.session_state.get("show_ai_family_review", False) and "_pending_family_draft" in st.session_state:
-            f_draft = st.session_state["_pending_family_draft"]
-            prop = st.session_state.get("_ai_timeline_proposal", {})
-
-            st.markdown(f"""
-<div style="background: rgba(30, 41, 59, 0.75); border: 2px solid #38BDF8; border-radius: 14px; padding: 20px 22px; margin: 18px 0 14px 0;">
-<div style="font-size: 19px; font-weight: 850; color: #BAE6FD; margin-bottom: 8px;">🤖 AI 가족 생애설계 시나리오 제안</div>
-<div style="font-size: 14.5px; color: #E2E8F0; line-height: 1.7; word-break: keep-all; margin-bottom: 12px;">
-{prop.get('comment', '')}
-</div>
-<div style="font-size: 13.5px; color: #FDE68A; font-weight: 700;">
-✍️ AI의 제안 나이를 확인해 보세요. 나의 생각이나 계획과 다르다면 아래 숫자를 직접 수정한 뒤 확정할 수 있습니다.
-</div>
-</div>
-""", unsafe_allow_html=True)
-
-            with st.container(border=True):
-                st.markdown("#### 🎯 인생의 주요 시점 나이 확인 및 수정")
-                tc1, tc2, tc3, tc4 = st.columns(4)
-
-                with tc1:
-                    adj_m_age = st.number_input(
-                        "결혼 예상", min_value=0, max_value=100,
-                        value=int(st.session_state.get("inp_target_marriage_age", prop.get("marriage_age", 0))),
-                        step=1,
-                        help="기혼이거나 미혼 유지를 원하시면 0으로 두세요."
-                    )
-                with tc2:
-                    adj_b_age = st.number_input(
-                        "첫째 출산", min_value=0, max_value=100,
-                        value=int(st.session_state.get("inp_target_birth_age", prop.get("birth_age", 0))),
-                        step=1,
-                        help="이미 자녀가 있거나 계획이 없으시면 0으로 두세요."
-                    )
-                with tc3:
-                    adj_h_age = st.number_input(
-                        "주택 구입", min_value=0, max_value=100,
-                        value=int(st.session_state.get("inp_target_housing_age", prop.get("housing_age", 0))),
-                        step=1,
-                        help="주택 구입 계획이 없으시면 0으로 두세요."
-                    )
-                with tc4:
-                    adj_r_age = st.number_input(
-                        "은퇴", min_value=cur_age, max_value=100,
-                        value=int(st.session_state.get("inp_target_retire_age", prop.get("retire_age", 60))),
-                        step=1
-                    )
-
-                st.markdown("<div style='height: 8px;'></div>", unsafe_allow_html=True)
-                btn_confirm_timeline = st.button(
-                    "✅ 이 타임라인으로 생애주기 곡선 확정하기",
-                    type="primary", use_container_width=True,
-                    key="btn_confirm_timeline_final"
+                marriage_options = [
+                    "미정", "계획 없음", "결혼함",
+                    "1~3년 내 결혼 생각 있음",
+                    "3년 이후 결혼 생각 있음", "결혼 예정"
+                ]
+                marriage_plan = st.selectbox(
+                    "결혼 계획",
+                    marriage_options,
+                    index=marriage_options.index(
+                        st.session_state.get("marriage_plan", "미정")
+                    ) if st.session_state.get("marriage_plan", "미정") in marriage_options else 0
                 )
 
-            if btn_confirm_timeline:
-                for k, v in f_draft.items():
-                    st.session_state[k] = v
-
-                st.session_state["target_marriage_age"] = adj_m_age
-                st.session_state["target_birth_age"] = adj_b_age
-                st.session_state["target_housing_age"] = adj_h_age
-                st.session_state["retirement_age"] = adj_r_age
-
-                # 주택 구입 계획이 있는 경우에만 추가 선택 단계 표시
-                st.session_state["show_housing_price_selector"] = adj_h_age > 0
-
-                st.session_state.pop("sibling_items", None)
-                st.session_state.pop("show_ai_family_review", None)
-                st.session_state.pop("_pending_family_draft", None)
-                st.session_state.pop("_ai_timeline_proposal", None)
-                st.success("인터뷰이 맞춤 생애 타임라인이 생애주기 곡선에 반영되었습니다.")
-                st.rerun()
-
-        # ----------------------------------------------------------------------
-        # [추가 UI] 주택 구입 계획자의 주택 유형 및 지역 선택
-        # ----------------------------------------------------------------------
-        if st.session_state.get("show_housing_price_selector", False):
-            with st.container(border=True):
-                st.markdown("#### 🏠 주택 구입 기준 선택")
-                st.caption("주택 구입을 계획하는 경우, 희망하는 주택 유형과 지역을 선택해 주세요.")
-
-                housing_type_options = ["선택하세요", "주택종합", "아파트"]
-                housing_region_options = [
-                    "선택하세요", "서울", "부산", "대구", "인천", "광주", "대전",
-                    "울산", "세종", "경기", "강원", "충북", "충남", "전북",
-                    "전남", "경북", "경남", "제주"
+            with p_c2:
+                child_plan_options = [
+                    "미정", "계획 없음", "자녀 계획 있음",
+                    "출산 예정", "추가 자녀 계획 있음"
                 ]
+                child_plan = st.selectbox(
+                    "출산·자녀 계획",
+                    child_plan_options,
+                    index=child_plan_options.index(
+                        st.session_state.get("child_plan", "미정")
+                    ) if st.session_state.get("child_plan", "미정") in child_plan_options else 0
+                )
 
-                hc1, hc2 = st.columns(2)
-                with hc1:
-                    st.selectbox(
-                        "주택 유형",
-                        housing_type_options,
-                        key="housing_type"
-                    )
-                with hc2:
-                    st.selectbox(
-                        "구입 희망 지역",
-                        housing_region_options,
-                        key="housing_region"
-                    )
+            with p_c3:
+                housing_options = [
+                    "미정", "현재 주거 유지", "전세·월세 이동 고려",
+                    "주택 구입 고려", "주거 계획 확정"
+                ]
+                housing_plan = st.selectbox(
+                    "주거 계획",
+                    housing_options,
+                    index=housing_options.index(
+                        st.session_state.get("housing_plan", "미정")
+                    ) if st.session_state.get("housing_plan", "미정") in housing_options else 0
+                )
 
-                st.caption("선택한 내용은 저장되며, 주택가격 기준 통계와 계산식은 다음 단계에서 연결합니다.")
+            save_family_trigger = st.form_submit_button(
+                "가족 정보 반영하기",
+                use_container_width=True,
+                type="primary"
+            )
 
         # 6.03.03 | 은퇴 시점 가족 미래 나이 2열 슬림 카드 (직계 3대 집중)
         people = [(st.session_state.get("person_name", "나"), cur_age)]
