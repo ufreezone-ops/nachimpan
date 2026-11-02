@@ -1145,7 +1145,7 @@ if selected_page == "우리집 가계부":
         # [기본 모드] 중복 제목 없이 바로 본론으로 진입하는 3분 일상 수지 산책
         st.caption("가벼운 3분 산책: 가장 핵심적인 우리 집의 한 달 현금흐름 밸런스만 살펴봅니다.")
         
-        with st.form("basic_finance_form"):
+        with st.container():
             with st.container(border=True, key="income-panel"):
                 st.markdown("### 들어오고 나가는 돈 (월, 만원)")
                 b_in_col, b_ex_col = st.columns(2)
@@ -1161,11 +1161,17 @@ if selected_page == "우리집 가계부":
                         min_value=0, value=int(st.session_state.get("expense_living", 0) or 0), step=10,
                         placeholder="월 생활비"
                     )
-            save_basic = st.form_submit_button("입력 내용 AI 점검", use_container_width=True, type="primary")
+            save_basic = st.button(
+                "입력 내용 AI 점검",
+                use_container_width=True,
+                type="primary"
+            )
+
+        # 입력값은 버튼을 누르지 않아도 매 실행마다 공통 세션에 반영
+        st.session_state["income_self"] = basic_income
+        st.session_state["expense_living"] = basic_expense
 
         if save_basic:
-            st.session_state["income_self"] = basic_income
-            st.session_state["expense_living"] = basic_expense
             st.rerun()
 
         surplus_val = int(st.session_state.get("income_self", 0) or 0) - int(st.session_state.get("expense_living", 0) or 0)
@@ -1183,9 +1189,12 @@ if selected_page == "우리집 가계부":
                 st.rerun()
 
     else:
+        
         # [고급 모드] 실시간 AI 연금 추정 및 점검 탑재
-        with st.form("finance_form"):
-            # 6.01.01 | ⓪ 우리집 소득 성격 및 재무 입력 폼
+        with st.container():
+            
+            
+            # 6.01.01 | ⓪ 우리집 소득 성격 및 재무 입력 폼            
             with st.container(border=True, key="job-panel"):
                 st.markdown("### ⓪ 우리집 소득 성격")
                 gender_options = ["🙋‍♂️ 남성", "🙋‍♀️ 여성"]
@@ -1277,64 +1286,64 @@ if selected_page == "우리집 가계부":
                         step=10
                     )
 
-            save_finance_trigger = st.form_submit_button(
+            save_finance_trigger = st.button(
                 "입력 내용 AI 점검",
                 use_container_width=True,
                 type="primary"
             )
 
         # ----------------------------------------------------------------------
+        # 일반 재무 입력값을 매 실행마다 공통 세션에 즉시 반영
+        # ----------------------------------------------------------------------
+        final_gender = gender_selected if gender_selected else "🙋‍♂️ 남성"
+        final_job = job_selected if job_selected else "직장인"
+        final_career = career_selected if career_selected else "🌱 3년 이하 (초년생)"
+        final_spouse_job = (
+            ""
+            if (not job_spouse_selected or job_spouse_selected == "해당 없음")
+            else job_spouse_selected
+        )
+
+        st.session_state["gender"] = final_gender
+        st.session_state["job_form"] = final_job
+        st.session_state["career_stage"] = final_career
+        st.session_state["job_spouse_form"] = final_spouse_job
+
+        finance_values = {
+            "income_self": income_self,
+            "income_spouse": income_spouse,
+            "income_other": income_other,
+            "income_bonus": income_bonus,
+            "income_pension": income_pension,
+            "expense_living": expense_living,
+            "expense_loan": expense_loan,
+            "expense_other": expense_other,
+            "retirement_monthly_expenses": retirement_monthly_expenses,
+            "asset_cash": asset_cash,
+            "asset_financial": asset_financial,
+            "asset_home": asset_home,
+            "asset_deposit": asset_deposit,
+            "asset_other": asset_other,
+            "debt_home": debt_home,
+            "debt_other": debt_other,
+        }
+
+        for key, value in finance_values.items():
+            st.session_state[key] = value
+
+        # AI 검토 화면에서도 항상 최신 입력값을 참조하도록 갱신
+        st.session_state["_pending_finance_draft"] = {
+            "gender": final_gender,
+            "job_form": final_job,
+            "career_stage": final_career,
+            "job_spouse_form": final_spouse_job,
+            **finance_values,
+        }
+        
+        # ----------------------------------------------------------------------
         # [실제 Gemini AI 호출을 통한 지능형 연금 추정 및 가계부 점검]
         # ----------------------------------------------------------------------
         if save_finance_trigger:
-            final_gender = gender_selected if gender_selected else "🙋‍♂️ 남성"
-            final_job = job_selected if job_selected else "직장인"
-            final_career = career_selected if career_selected else "🌱 3년 이하 (초년생)"
-            final_spouse_job = (
-                ""
-                if (not job_spouse_selected or job_spouse_selected == "해당 없음")
-                else job_spouse_selected
-            )
-
-
-            # 배우자 직업·소득을 AI 최종 확정 전에도 공통 세션에 반영
-            # Tab3 생애 소득곡선이 최신 입력값을 읽도록 동기화
-            st.session_state["gender"] = final_gender
-            st.session_state["job_form"] = final_job
-            st.session_state["career_stage"] = final_career
-            st.session_state["job_spouse_form"] = final_spouse_job
-            st.session_state["income_self"] = income_self
-            st.session_state["income_spouse"] = income_spouse
-
-            
-            draft_payload = {
-                "gender": final_gender,
-                "job_form": final_job,
-                "career_stage": final_career,
-                "job_spouse_form": final_spouse_job,
-
-                "income_self": income_self,
-                "income_spouse": income_spouse,
-                "income_other": income_other,
-                "income_bonus": income_bonus,
-                "income_pension": income_pension,
-
-                "expense_living": expense_living,
-                "expense_loan": expense_loan,
-                "expense_other": expense_other,
-                "retirement_monthly_expenses": retirement_monthly_expenses,
-
-                "asset_cash": asset_cash,
-                "asset_financial": asset_financial,
-                "asset_home": asset_home,
-                "asset_deposit": asset_deposit,
-                "asset_other": asset_other,
-
-                "debt_home": debt_home,
-                "debt_other": debt_other,
-            }
-
-            st.session_state["_pending_finance_draft"] = draft_payload
 
             cur_p_age = int(st.session_state.get("person_age", 35))
             has_spouse = (final_spouse_job != "")
@@ -2156,7 +2165,7 @@ elif selected_page == "삶과 생계수단":
         if default_retire < cur_user_age:
             default_retire = cur_user_age
 
-        with st.form("retirement_inline_form"):
+        with st.container():
             r_col1, r_col2 = st.columns([3.2, 1.0])
             with r_col1:
                 retirement_input = st.number_input(
@@ -2168,10 +2177,15 @@ elif selected_page == "삶과 생계수단":
                     label_visibility="collapsed"
                 )
             with r_col2:
-                retirement_saved = st.form_submit_button("은퇴 나이 확인", use_container_width=True, type="primary")
+                retirement_saved = st.button(
+                    "은퇴 나이 확인",
+                    use_container_width=True,
+                    type="primary"
+                )
+        # 은퇴 예상 나이는 입력 즉시 공통 세션에 반영
+        st.session_state["retirement_age"] = int(retirement_input)
 
         if retirement_saved:
-            st.session_state["retirement_age"] = int(retirement_input)
             st.session_state["retire_age_saved_notice"] = True
 
         # 은퇴 나이 확인 버튼을 눌렀거나, 이미 은퇴 나이가 설정되어 있는 경우 노출
@@ -2429,7 +2443,7 @@ elif selected_page == "인생의 사계절":
             key="child_count_select_direct"
         )
 
-        with st.form("family_form"):
+        with st.container():
             spouse_age = st.number_input(
                 "배우자 나이 (없거나 미입력 시 0)",
                 min_value=0,
@@ -2551,27 +2565,27 @@ elif selected_page == "인생의 사계절":
                 )
 
 
-            save_family_trigger = st.form_submit_button(
+            save_family_trigger = st.button(
                 "입력 정보 AI 점검",
                 use_container_width=True,
                 type="primary"
             )
 
-        # 제출된 가족정보를 세션에 저장
-        if save_family_trigger:
-            st.session_state["child_count"] = child_count
-            st.session_state["spouse_age"] = int(spouse_age or 0)
-            st.session_state["child_age"] = child_age1
-            st.session_state["child_age2"] = child_age2
-            st.session_state["child_age3"] = child_age3
-            st.session_state["child_age4"] = child_age4
-            st.session_state["father_age"] = father_age
-            st.session_state["mother_age"] = mother_age
-            st.session_state["marriage_plan"] = marriage_plan
-            st.session_state["child_plan"] = child_plan
-            st.session_state["housing_plan"] = housing_plan
+        # 가족정보와 가족계획을 입력 즉시 공통 세션에 반영
+        st.session_state["child_count"] = child_count
+        st.session_state["spouse_age"] = int(spouse_age or 0)
+        st.session_state["child_age"] = int(child_age1 or 0)
+        st.session_state["child_age2"] = int(child_age2 or 0)
+        st.session_state["child_age3"] = int(child_age3 or 0)
+        st.session_state["child_age4"] = int(child_age4 or 0)
+        st.session_state["father_age"] = int(father_age or 0)
+        st.session_state["mother_age"] = int(mother_age or 0)
+        st.session_state["marriage_plan"] = marriage_plan
+        st.session_state["child_plan"] = child_plan
+        st.session_state["housing_plan"] = housing_plan
 
-            st.session_state["family_info_checked"] = True
+        # 가족정보 영역이 표시된 뒤 주택정보도 현재 계획에 맞춰 반응
+        st.session_state["family_info_checked"] = True
 
         # ------------------------------------------------------------------------------
         # [1-1] 주택가격 산정 기준 입력
