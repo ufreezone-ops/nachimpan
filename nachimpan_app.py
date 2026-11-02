@@ -2006,7 +2006,7 @@ elif selected_page == "삶과 생계수단":
     is_adv = st.session_state.get("advanced_mode", False)
 
 
-    # 기본모드 — 돌쇠와 똘똘이 우화 카드 호출
+    # 6.02.01 | 공통 함수 — 돌쇠와 똘똘이 우화 카드
 
     def render_dolssoe_story_card():
         """기본 모드와 고급 모드에서 공통으로 사용하는 우화 카드"""
@@ -2043,13 +2043,12 @@ elif selected_page == "삶과 생계수단":
 """, unsafe_allow_html=True)
     
     if not is_adv:
+        
         # [기본 모드] 중복 제목 없이 '돌쇠와 똘똘이' 우화 단독 노출
         st.caption("가벼운 3분 산책: 소득의 크기보다 중요한 '소득의 성격'을 한 편의 지혜로운 이야기로 마주합니다.")
-        
-        
-        # 고급모드 — 돌쇠와 똘똘이 우화 카드 호출
-        render_dolssoe_story_card()
 
+        # 기본모드 — 돌쇠와 똘똘이 우화 카드 호출
+        render_dolssoe_story_card()
 
         _, next_col = st.columns([5, 1])
         with next_col:
@@ -2058,6 +2057,7 @@ elif selected_page == "삶과 생계수단":
                 st.rerun()
 
     else:
+
         # [고급 모드] 소득 구조와 은퇴 성찰 상세 기능
         # 6.02.02 | 소득의 모습 2x2 사분면 — 물통과 파이프라인
         st.markdown("""
@@ -2128,6 +2128,7 @@ elif selected_page == "삶과 생계수단":
 </div>
 """, unsafe_allow_html=True)
 
+        # 고급모드 — 돌쇠와 똘똘이 우화 카드 호출
         render_dolssoe_story_card()
 
         # 6.02.03 | 더 생각해보기 4가지 질문 리스트 (가로 1줄 대형화)
