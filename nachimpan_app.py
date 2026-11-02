@@ -1650,13 +1650,16 @@ if selected_page == "우리집 가계부":
 
         # 6.01.07 | 우리 가정 생애 소득(예상)
         st.markdown("### 우리 가정 생애 소득(예상)")
+
         st.caption(
             "내 직업과 배우자의 직업에 따라 각각 하나의 기준곡선을 적용합니다. "
+            "배우자의 현재 소득이 입력되지 않았다면 직업군 기준곡선을 사용합니다. "
             "연금은 각자의 수령 시작 시점부터 가구 합산 소득에 반영합니다. "
             "그래프는 내 나이를 기준으로 표시합니다."
         )
+
         cur_age = int(st.session_state.get("person_age", 35) or 35)
-        spouse_age = int(st.session_state.get("spouse_age", 0) or 0)
+        spouse_age_input = int(st.session_state.get("spouse_age", 0) or 0)
 
         current_monthly_income = float(
             st.session_state.get("income_self", 0) or 0
@@ -1668,10 +1671,14 @@ if selected_page == "우리집 가계부":
         self_job = str(st.session_state.get("job_form", "직장인") or "직장인")
         spouse_job = str(st.session_state.get("job_spouse_form", "") or "")
 
-        has_spouse = (
-            spouse_job not in ("", "해당 없음")
-            and spouse_age > 0
-        )
+        # 배우자 직업을 선택하면 배우자가 있는 가구로 판단
+        has_spouse = spouse_job not in ("", "해당 없음")
+
+        # 배우자 나이가 없으면 본인과 같은 나이로 임시 가정
+        spouse_age_assumed = has_spouse and spouse_age_input <= 0
+        spouse_age = (
+            spouse_age_input if spouse_age_input > 0 else cur_age
+        ) if has_spouse else 0
 
         age_gap = spouse_age - cur_age if has_spouse else 0
 
@@ -1784,9 +1791,22 @@ if selected_page == "우리집 가계부":
             cur_age, current_monthly_income, self_base
         )
 
-        spouse_scale = get_scale(
-            spouse_age, spouse_monthly_income, spouse_base
-        ) if has_spouse else 0
+        
+        spouse_scale = (
+            get_scale(
+                spouse_age,
+                spouse_monthly_income,
+                spouse_base
+            )
+            if has_spouse and spouse_base is not None
+            and spouse_monthly_income > 0
+            else (
+                1.0
+                if has_spouse and spouse_base is not None
+                else 0
+            )
+        )
+
 
         # 그래프 X축: 인터뷰이 나이 20~100세
         ages = list(range(20, 101))
