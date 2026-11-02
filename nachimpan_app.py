@@ -2534,9 +2534,9 @@ elif selected_page == "인생의 사계절":
 
             with p_c1:
                 marriage_options = [
-                    "미정", "계획 없음", "결혼함",
+                    "미정", "계획 없음", "결혼 예정", "결혼함",
                     "1~3년 내 결혼 생각 있음",
-                    "3년 이후 결혼 생각 있음", "결혼 예정"
+                    "3년 이후 결혼 생각 있음"
                 ]
                 marriage_plan = st.selectbox(
                     "결혼 계획",
@@ -2549,7 +2549,7 @@ elif selected_page == "인생의 사계절":
             with p_c2:
                 child_plan_options = [
                     "미정", "계획 없음", "자녀 계획 있음",
-                    "출산 예정", "추가 자녀 계획 있음"
+                    "출산 예정", "추가 자녀 계획 있음", "추가 자녀 계획 없음"
                 ]
                 child_plan = st.selectbox(
                     "출산·자녀 계획",
@@ -2561,8 +2561,8 @@ elif selected_page == "인생의 사계절":
 
             with p_c3:
                 housing_options = [
-                    "미정", "현재 주거 유지", "전세·월세 이동 고려",
-                    "주택 구입 고려", "주거 계획 확정"
+                    "미정", "주택 구입 고려", "현재 주거 유지",
+                    "전세·월세 이동 고려", "주거 계획 확정"
                 ]
                 housing_plan = st.selectbox(
                     "주거 계획",
