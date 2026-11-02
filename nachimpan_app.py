@@ -462,7 +462,7 @@ CASE_DATA_KEYS = [
     "marriage_plan", "child_plan", "housing_plan", "sibling_items", "advanced_mode"
 ]
 
-# 2.01.04 | 개발용 테스트 사례 및 Google Sheets 저장/불러오기
+# 2.01.03 | 개발용 테스트 사례 및 Google Sheets 저장/불러오기
 from datetime import datetime
 
 # [인터뷰어 전용 체험 사례 2종]
@@ -2006,7 +2006,7 @@ elif selected_page == "삶과 생계수단":
     is_adv = st.session_state.get("advanced_mode", False)
 
 
-    # 6.02.01 | 공통 함수 — 지혜로운 산책: 돌쇠와 똘똘이 우화 카드
+    # 기본모드 — 돌쇠와 똘똘이 우화 카드 호출
 
     def render_dolssoe_story_card():
         """기본 모드와 고급 모드에서 공통으로 사용하는 우화 카드"""
@@ -2047,7 +2047,7 @@ elif selected_page == "삶과 생계수단":
         st.caption("가벼운 3분 산책: 소득의 크기보다 중요한 '소득의 성격'을 한 편의 지혜로운 이야기로 마주합니다.")
         
         
-        # 6.02.02 | 공통 우화 카드 호출
+        # 고급모드 — 돌쇠와 똘똘이 우화 카드 호출
         render_dolssoe_story_card()
 
 
@@ -2058,8 +2058,8 @@ elif selected_page == "삶과 생계수단":
                 st.rerun()
 
     else:
-        # [고급 모드] 모든 마이크로 모듈(6.02.01 ~ 6.02.04) 완전 탑재
-        # 6.02.01 | 소득의 모습 2x2 사분면 (헤더 심플화: '물통과 파이프라인')
+        # [고급 모드] 소득 구조와 은퇴 성찰 상세 기능
+        # 6.02.02 | 소득의 모습 2x2 사분면 — 물통과 파이프라인
         st.markdown("""
 <div style="background: rgba(30, 41, 59, 0.45); border: 1.5px solid #334155; border-radius: 14px; padding: 18px 22px; margin-bottom: 22px;">
 <div style="font-size: 20px; font-weight: 850; color: #F8FAFC; margin-bottom: 14px;">물통  &  파이프라인</div>
@@ -2128,10 +2128,7 @@ elif selected_page == "삶과 생계수단":
 </div>
 """, unsafe_allow_html=True)
 
-        
-        # 6.02.02 | 공통 우화 카드 호출
         render_dolssoe_story_card()
-
 
         # 6.02.03 | 더 생각해보기 4가지 질문 리스트 (가로 1줄 대형화)
         st.markdown("""
@@ -2213,6 +2210,7 @@ elif selected_page == "인생의 사계절":
     winter_years = max(0, life_expectancy - retire_age)
     winter_months = winter_years * 12
 
+    # 6.03.01 | 공통 함수 — 국가데이터처 공식 생애주기적자 차트
     def build_official_nta_chart():
         
         fig_official_nta = go.Figure()
@@ -2301,11 +2299,7 @@ elif selected_page == "인생의 사계절":
 
     else:
         
-
-
-        # 6.03.01 | 가족 구성원 나이 입력 폼 + 주택가격·노후생활비 기준 통계
-        # ==============================================================================
-
+        # 6.03.02 | 가족 구성원 나이 입력 폼 + 주택가격·노후생활비 기준 통계
         # ------------------------------------------------------------------------------
         # [1] 주택가격 기준 통계
         # 한국부동산원 R-ONE 전국주택가격동향조사
@@ -3246,7 +3240,8 @@ else:
     person_age = st.session_state.get("person_age", 35)
 
     if not is_adv:
-        # [기본 모드] AI 1문단 자동 성찰 & 초대장 카드 + 심플한 [고급버튼]
+    
+        # 6.04.01 | 기본모드 — AI 자동 성찰문 생성 및 표시
         st.caption("AI는 평가자가 아닌, 내가 작성한 삶의 숫자를 객관적인 거울처럼 비춰주는 성찰 파트너입니다.")
         inc_val = float(getv("income_self", 0) or 0)
         exp_val = float(getv("expense_living", 0) or 0)
@@ -3294,6 +3289,9 @@ else:
     else:
         # [고급 모드] 모든 마이크로 모듈(6.04.01 ~ 6.04.07) 완전 탑재
         st.caption("AI는 평가자가 아닌, 내가 작성한 삶의 숫자를 객관적인 거울처럼 비춰주는 성찰 파트너입니다.")
+
+
+        # 6.04.03 | 고급모드 — 인터뷰이 재무 및 가족 생애 데이터 구성
         
         sib_names = [f"{it['label']}({it.get('age',0)}세)" for it in st.session_state.get("sibling_items", []) if it.get("age", 0) > 0]
         retire_age = st.session_state.get("retirement_age", 60)
@@ -3345,6 +3343,9 @@ else:
             income_instruction = f"""[소득 개선 방향 - E/S 근로/자영업 지침]
 현재 부부의 소득은 일손을 멈추면 수입이 중단되는 노동 의존형(E/S) 성격임을 정중하게 짚으세요.
 본업을 충실히 유지하면서, 시간과 노동력에만 매이지 않고 시스템과 자산에서 흘러나오는 '파이프라인'을 장기적으로 준비해야 하는 이유를 객관적인 관점에서 정중히 제안하세요."""
+
+
+        # 6.04.04 | 고급모드 — AI 분석 원칙·톤 설정 및 프롬프트 구성
 
         current_taste_val = st.session_state.get("pills_ai_taste", "🧭 보통맛 (정직한 거울)")
         short_taste_tag = "☕ 순한맛" if "순한맛" in current_taste_val else ("🌶️ 매운맛" if "매운맛" in current_taste_val else "🧭 보통맛")
@@ -3418,6 +3419,9 @@ else:
 은퇴 후 월 희망 생활비와 예상 월연금의 차이를 설명하되, 입력된 값의 성격과 산출 근거가 불분명하면 안정성이 확보되었다고 단정하지 마세요. 두 금액의 단순 차액과 실제 은퇴 안정성은 구분하세요.
 은퇴 후 약 {winter_years}년은 국가데이터처 {user_gender.split()[1]} 기대수명({life_expectancy}세)에 기초한 계산상 가정으로 취급하세요. 현재 경력 단계와 순자산을 연결해 설명하되, 실제 현금 보유액이나 유동성 자료가 없다면 유동성 준비 상태를 평가하지 마세요. 결혼, 자녀, 주거 계획 등 확인되지 않은 미래 사건을 전제로 삼지 말고, 정중하고 담백하게 서술하세요."""
 
+
+        # 6.04.05 | 고급모드 — Gemini AI 리포트 생성
+
         if st.button("⚡ AI 리포트 생성", type="primary", use_container_width=True):
             st.session_state.ai_summary = summary
             st.session_state.ai_comment = None
@@ -3426,6 +3430,9 @@ else:
                 st.session_state.ai_comment = comment if comment else error
             st.rerun()
 
+
+        # 6.04.06 | 고급모드 — AI 리포트 표시 및 카카오톡 전송용 리포트
+        
         if st.session_state.get("ai_summary") and st.session_state.get("ai_comment"):
             s = st.session_state.ai_summary
             st.markdown("### 재무제표 요약")
@@ -3506,7 +3513,10 @@ else:
             st.info("‘AI 리포트 생성’ 버튼을 누르면 Gemini 초고속 엔진이 삶과 재무의 성찰 리포트를 생성합니다.")
 
         st.markdown("<div style='height: 20px;'></div>", unsafe_allow_html=True)
+
+        
         # 6.04.07 | 📋 AI 질의용 재무제표 expander
+        
         with st.expander("📋 AI 질의용 재무제표"):
             st.markdown("<div style='font-size: 13.5px; color: #94A3B8; margin-bottom: 8px;'>프롬프트 지시문 없이, 내가 입력한 재무제표와 가족 생애 통계만 정리된 텍스트입니다. ChatGPT 등에 복사해서 자유롭게 추가 상담을 진행할 수 있습니다.</div>", unsafe_allow_html=True)
             raw_summary_report = f"""### 나침반 재무제표 및 생애주기 요약 데이터
