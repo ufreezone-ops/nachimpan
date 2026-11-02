@@ -833,6 +833,18 @@ with st.sidebar:
     c_btn1, c_btn2 = st.columns(2)
     
     def apply_case_payload(case_dict):
+        # [신규] 사례 전환 시 위젯 키 및 숨은 타임라인 잔존값 완벽 초기화
+        KEYS_TO_RESET_ON_CASE_LOAD = [
+            "target_marriage_age", "target_birth_age", "target_housing_age",
+            "actual_marriage_age", "inp_target_marriage_age", "inp_target_birth_age",
+            "inp_target_housing_age", "inp_target_retire_age", "show_ai_family_review",
+            "_pending_family_draft", "_ai_timeline_proposal",
+            "child_count", "child_count_select_direct",
+            "child_age", "child_age2", "child_age3", "child_age4", "spouse_age"
+        ]
+        for k in KEYS_TO_RESET_ON_CASE_LOAD:
+            st.session_state.pop(k, None)
+
         for k, v in case_dict.items():
             st.session_state[k] = v
         if "gender" in case_dict: st.session_state["pills_gender"] = case_dict["gender"]
@@ -920,6 +932,18 @@ if _dev_enabled:
 
         if st.button("📂 사례 불러오기", use_container_width=True):
             _data = dict(_cases[_selected_case])
+
+            # [신규] 사례 전환 시 위젯 키 및 숨은 타임라인 잔존값 완벽 초기화
+            _KEYS_TO_RESET_ON_CASE_LOAD = [
+                "target_marriage_age", "target_birth_age", "target_housing_age",
+                "actual_marriage_age", "inp_target_marriage_age", "inp_target_birth_age",
+                "inp_target_housing_age", "inp_target_retire_age", "show_ai_family_review",
+                "_pending_family_draft", "_ai_timeline_proposal",
+                "child_count", "child_count_select_direct",
+                "child_age", "child_age2", "child_age3", "child_age4", "spouse_age"
+            ]
+            for _k in _KEYS_TO_RESET_ON_CASE_LOAD:
+                st.session_state.pop(_k, None)
 
             for k, v in _data.items():
                 st.session_state[k] = v
@@ -2721,133 +2745,74 @@ elif selected_page == "인생의 사계절":
 """, unsafe_allow_html=True)
 
 
-        # 6.03.05 | 나만의 생애주기 곡선 & 흑자/적자 2단 연동 차트
+        # ==============================================================================
+        # 6.03.05 | 우리 가정의 생애주기 곡선 & 흑자/적자 2단 연동 차트
+        # ==============================================================================
         from plotly.subplots import make_subplots
 
-        st.markdown("### 2. 나의 생애주기 곡선")
-        st.caption("※ 국가데이터처 국민이전계정(NTA) 통계 기반으로, 나의 실제 가족·소득·지출을 개략적으로 맞춘 곡선입니다. (단위: 연간 만 원)")
-        s = current_financial_summary()
-        cur_annual_income = s["annual_total_income"]
-        cur_annual_expense = s["annual_total_expenses"]
-        ret_annual_pension = float(getv("income_pension", 0) or 0) * 12.0
-        ret_annual_expense = float(getv("retirement_monthly_expenses", 200) or 0) * 12.0
+        st.markdown("### 2. 우리 가정의 생애주기 곡선")
+        st.caption("※ 국가데이터처 국민이전계정(NTA) 통계 기반으로, 우리 가정의 소득·지출 및 주요 생애사건을 시뮬레이션한 곡선입니다. (단위: 연간 만 원)")
+        st.caption("💡 이 그래프는 현재 입력한 소득과 가족 계획을 바탕으로 우리 가정의 생애주기를 살펴보기 위한 시뮬레이션입니다. 배우자의 직업과 미래 소득은 직업군별 기준곡선을 활용한 가정이며(미선택 시 본인 직업군 준용), 실제 미래 소득을 보장하거나 예측하는 값은 아닙니다.")
+
+        # --------------------------------------------------------------------------
+        # 1) 기초 입력값 수집 및 본인/배우자 소득 분리
+        # --------------------------------------------------------------------------
+        cur_age = int(st.session_state.get("person_age", 35) or 35)
+        user_gender = st.session_state.get("gender", "🙋‍♂️ 남성")
+        is_female = ("여성" in user_gender)
         career_st = st.session_state.get("career_stage", "🌱 3년 이하 (초년생)")
+        
+        self_job = str(st.session_state.get("job_form", "직장인") or "직장인")
+        spouse_job_raw = str(st.session_state.get("job_spouse_form", "") or "")
+        
+        # [소득 분리] 가구 총소득이 아닌 본인/배우자 순수 입력값 분리
+        monthly_income_self = float(getv("income_self", 0) or 0)
+        monthly_income_spouse = float(getv("income_spouse", 0) or 0)
+        annual_bonus = float(getv("income_bonus", 0) or 0)
+        annual_other_income = float(getv("income_other", 0) or 0) * 12.0
+        
+        cur_annual_expense = float(getv("expense_living", 0) or 0) * 12.0 + float(getv("expense_loan", 0) or 0) * 12.0 + float(getv("expense_other", 0) or 0)
+        ret_annual_expense = float(getv("retirement_monthly_expenses", 200) or 0) * 12.0
+
+        # 연금 관련 입력값 (국민연금은 이미 부부 합산액)
+        monthly_pension = float(getv("income_pension", 0) or 0)
+        annual_pension = monthly_pension * 12.0
+        national_pension_start_age = 65
+
+        other_self_enabled = bool(st.session_state.get("other_pension_self_enabled", False))
+        other_self_annual = float(st.session_state.get("other_pension_self_amount", 0) or 0) * 12.0 if other_self_enabled else 0.0
+        other_self_start_age = int(st.session_state.get("other_pension_self_age", 65) or 65)
+
+        other_spouse_enabled = bool(st.session_state.get("other_pension_spouse_enabled", False))
+        other_spouse_annual = float(st.session_state.get("other_pension_spouse_amount", 0) or 0) * 12.0 if other_spouse_enabled else 0.0
+        other_spouse_start_age = int(st.session_state.get("other_pension_spouse_age", 65) or 65)
+
+        # 가족 계획
         m_plan = st.session_state.get("marriage_plan", "미정")
         c_plan = st.session_state.get("child_plan", "미정")
         h_plan = st.session_state.get("housing_plan", "미정")
-        user_gender = st.session_state.get("gender", "🙋‍♂️ 남성")
-        is_female = ("여성" in user_gender)
 
-
-        # [핵심 보정] 인터뷰이가 직접 확정한 맞춤 타임라인 우선 적용
-        confirmed_m_age = int(getv("target_marriage_age", 0))
-        confirmed_b_age = int(getv("target_birth_age", 0))
-        confirmed_h_age = int(getv("target_housing_age", 0))
-
-        # 1) 기존 자녀 나이
-        existing_child_ages = [
-            int(getv(k, 0))
-            for k in ["child_age", "child_age2", "child_age3", "child_age4"]
-            if int(getv(k, 0)) > 0
-        ]
-
-        # 2) 출산·육아 기간 (종료 연령 미포함: 6년 구간)
-        childcare_windows = []
-        if existing_child_ages:
-            for ca in existing_child_ages:
-                birth_p_age = cur_age - ca
-                childcare_windows.append((birth_p_age, birth_p_age + 6))
-        elif confirmed_b_age > 0:
-            childcare_windows.append((confirmed_b_age, confirmed_b_age + 6))
-        elif c_plan in ["자녀 계획 있음", "출산 예정", "추가 자녀 계획 있음"]:
-            future_birth = max(cur_age + 1, 33 if is_female else 35)
-            childcare_windows.append((future_birth, future_birth + 6))
-
-        # 3) 주택구입 기간 (종료 연령 미포함: 4년 구간)
-        housing_start, housing_end = None, None
-        if confirmed_h_age > 0:
-            housing_start = confirmed_h_age
-            housing_end = housing_start + 4
-        elif h_plan in ["주택 구입 고려", "주거 계획 확정"]:
-            housing_start = max(cur_age + 5, 20)
-            housing_end = housing_start + 4
-
-        # 4) 자녀 대학 기간 (종료 연령 미포함: 4년 구간)
-        college_windows = []
-        if existing_child_ages:
-            for ca in existing_child_ages:
-                c_start = cur_age + (19 - ca)
-                college_windows.append((c_start, c_start + 4))
-        elif confirmed_b_age > 0:
-            college_windows.append((confirmed_b_age + 19, confirmed_b_age + 23))
-        elif c_plan in ["자녀 계획 있음", "출산 예정"]:
-            future_birth = max(cur_age + 1, 33 if is_female else 35)
-            college_windows.append((future_birth + 19, future_birth + 23))
-
-        # 5) 자녀 결혼 지원 기간 (자녀 만 30~34세, 5년 구간)
-        wedding_windows = []
-        if existing_child_ages:
-            for ca in existing_child_ages:
-                w_start = cur_age + (30 - ca)
-                wedding_windows.append((w_start, w_start + 5))
-        elif confirmed_b_age > 0:
-            wedding_windows.append((confirmed_b_age + 30, confirmed_b_age + 35))
-
-        # 6) 사건별 총비용 산출 (단위: 만 원)
-        # 주택가격 데이터는 천 원 단위 → 만 원 단위로 변환
-        selected_region = st.session_state.get("housing_region", "지역 선택")
-        selected_ltv = float(st.session_state.get("housing_ltv", 50))
-
-        if selected_region in HOUSING_PRICE_DATA:
-            apartment_price_man = HOUSING_PRICE_DATA[selected_region][3] / 10
-        else:
-            # 지역 미선택 시 전국 17개 지역 아파트 중위가격의 단순 평균 사용
-            apartment_price_man = (
-                sum(v[3] for v in HOUSING_PRICE_DATA.values())
-                / len(HOUSING_PRICE_DATA) / 10
-            )
-
-        home_equity_man = apartment_price_man * (1 - selected_ltv / 100)
-        half_home_equity_man = home_equity_man * 0.5
-
-        # 결혼: 주거자금은 부부 절반 + 비주거 결혼비용은 전체 반영
-        marriage_cost_man = half_home_equity_man + 6298.0
-
-        # 출산·육아: 6년간 누적 시뮬레이션 가정
-        childcare_cost_man = 8064.0
-
-        # 주택구입: 주택가격에서 대출 비율을 제외한 자기자금
-        housing_cost_man = home_equity_man
-
-        # 대학: 등록금 + 학기 중 생활비, 4년 기준
-        college_cost_man = 6632.0
-
-        # 자녀 결혼: 부모가 지원하는 주거자금 절반
-        child_wedding_cost_man = half_home_equity_man
-
-        # 7) 사건별 기간과 연간 비용 증가액
-        event_costs = []
-
-        # 본인 결혼: 기혼자는 과거 이벤트, 미혼자는 계획된 미래 이벤트로 표시
+        # --------------------------------------------------------------------------
+        # 2) 결혼 타임라인 엄격 결정 (계획 없음 최우선)
+        # --------------------------------------------------------------------------
         marriage_start = None
-        if m_plan == "결혼함":
-            manual_marriage_age = int(actual_marriage_age or 0)
 
-            # ① 실제 결혼 나이 직접 입력값 최우선
+        if m_plan == "계획 없음":
+            marriage_start = None
+
+        elif m_plan == "결혼함":
+            manual_marriage_age = int(st.session_state.get("actual_marriage_age", 0) or 0)
+            conf_m = int(st.session_state.get("target_marriage_age", 0) or 0)
+
             if 20 <= manual_marriage_age <= cur_age:
                 marriage_start = manual_marriage_age
-
-            # ② 기존에 확정된 결혼 나이가 있으면 다음 우선 적용
-            elif 20 <= confirmed_m_age <= cur_age:
-                marriage_start = confirmed_m_age
-
-            # ③ 첫째 자녀 나이로 결혼 시점 추정 (출산 시점보다 2년 전)
+            elif 20 <= conf_m <= cur_age:
+                marriage_start = conf_m
             elif int(getv("child_age", 0) or 0) > 0:
-                inferred_marriage_age = cur_age - int(getv("child_age", 0)) - 2
-                if 20 <= inferred_marriage_age <= cur_age:
-                    marriage_start = inferred_marriage_age
-
-            # ④ 직접 입력·가족정보가 없으면 출생 코호트별 평균 초혼 연령으로 추정
+                inferred_age = cur_age - int(getv("child_age", 0)) - 2
+                if 20 <= inferred_age <= cur_age:
+                    marriage_start = inferred_age
+            
             if marriage_start is None:
                 marriage_age_stats = {
                     "year": [1990, 1995, 2000, 2005, 2010, 2015, 2020, 2024, 2025],
@@ -2855,31 +2820,138 @@ elif selected_page == "인생의 사계절":
                     "female": [24.78, 25.32, 26.49, 27.72, 28.91, 29.96, 30.78, 31.55, 31.6],
                 }
                 years = np.array(marriage_age_stats["year"], dtype=float)
-                avg_values = np.array(
-                    marriage_age_stats["female" if is_female else "male"],
-                    dtype=float
-                )
+                avg_values = np.array(marriage_age_stats["female" if is_female else "male"], dtype=float)
                 birth_year = date.today().year - cur_age
-                estimated_age = float(avg_values[0])
-
-                # 예상 결혼 연도에 해당하는 평균 초혼 연령을 반복 보정
+                est_age = float(avg_values[0])
                 for _ in range(8):
-                    estimated_marriage_year = birth_year + estimated_age
-                    estimated_age = float(
-                        np.interp(estimated_marriage_year, years, avg_values)
-                    )
+                    est_age = float(np.interp(birth_year + est_age, years, avg_values))
+                marriage_start = int(round(min(cur_age, est_age)))
 
-                # 기혼 상태이므로 추정 나이가 현재 나이를 넘지 않도록 제한
-                marriage_start = int(round(min(cur_age, estimated_age)))
+        elif m_plan in ["결혼 예정", "1~3년 내 결혼 생각 있음"]:
+            conf_m = int(st.session_state.get("target_marriage_age", 0) or 0)
+            marriage_start = conf_m if conf_m > cur_age else cur_age + 2
 
-        elif confirmed_m_age > cur_age:
-            marriage_start = confirmed_m_age
-        elif m_plan in ["1~3년 내 결혼 생각 있음", "결혼 예정"]:
-            marriage_start = cur_age + 2
         elif m_plan == "3년 이후 결혼 생각 있음":
-            marriage_start = cur_age + 4
+            conf_m = int(st.session_state.get("target_marriage_age", 0) or 0)
+            marriage_start = conf_m if conf_m > cur_age else cur_age + 4
 
-        if marriage_start is not None and 20 <= marriage_start <= 85:
+        elif m_plan == "미정":
+            conf_m = int(st.session_state.get("target_marriage_age", 0) or 0)
+            if conf_m > cur_age:
+                marriage_start = conf_m
+            else:
+                sim_marry_age = 32 if is_female else 34
+                marriage_start = max(cur_age + 2, sim_marry_age)
+
+        # --------------------------------------------------------------------------
+        # 3) 배우자 프로필 및 직업군 기준곡선 결정
+        # --------------------------------------------------------------------------
+        has_future_or_current_spouse = (marriage_start is not None)
+
+        if spouse_job_raw and spouse_job_raw != "해당 없음":
+            spouse_job = spouse_job_raw
+        else:
+            spouse_job = "직장인" if self_job == "전업주부" else self_job
+
+        spouse_age_input = int(getv("spouse_age", 0) or 0)
+        spouse_age_diff = (spouse_age_input - cur_age) if spouse_age_input > 0 else 0
+        retire_age = int(st.session_state.get("retirement_age", 60) or 60)
+
+        # --------------------------------------------------------------------------
+        # 4) 자녀 수 엄격 검증 및 출산/대학(4년)/자녀결혼(5년) 타임라인
+        # --------------------------------------------------------------------------
+        raw_c_count = st.session_state.get("child_count", "입력 안 함")
+        existing_child_ages = []
+
+        if raw_c_count == "1명":
+            if int(getv("child_age", 0)) > 0: existing_child_ages.append(int(getv("child_age", 0)))
+        elif raw_c_count == "2명":
+            for k in ["child_age", "child_age2"]:
+                if int(getv(k, 0)) > 0: existing_child_ages.append(int(getv(k, 0)))
+        elif raw_c_count == "3명":
+            for k in ["child_age", "child_age2", "child_age3"]:
+                if int(getv(k, 0)) > 0: existing_child_ages.append(int(getv(k, 0)))
+        elif raw_c_count == "4명 이상":
+            for k in ["child_age", "child_age2", "child_age3", "child_age4"]:
+                if int(getv(k, 0)) > 0: existing_child_ages.append(int(getv(k, 0)))
+
+        childcare_windows = []
+        college_windows = []
+        wedding_windows = []
+
+        # (1) 기존 자녀 이벤트 (대학은 만 19~22세의 정확히 4년 구간)
+        for ca in existing_child_ages:
+            birth_p_age = cur_age - ca
+            childcare_windows.append((birth_p_age, birth_p_age + 6))
+            c_start = cur_age + (19 - ca)
+            college_windows.append((c_start, c_start + 4))
+            w_start = cur_age + (30 - ca)
+            wedding_windows.append((w_start, w_start + 5))
+
+        # (2) 미래 출산 이벤트
+        future_birth_age = None
+        if (
+            has_future_or_current_spouse
+            and c_plan in ["자녀 계획 있음", "출산 예정", "추가 자녀 계획 있음"]
+        ):
+            conf_b = int(st.session_state.get("target_birth_age", 0) or 0)
+            if conf_b > cur_age:
+                future_birth_age = conf_b
+            else:
+                base_m_age = cur_age if m_plan == "결혼함" else marriage_start
+                future_birth_age = base_m_age + 2
+
+        if future_birth_age is not None and future_birth_age <= 85:
+            childcare_windows.append((future_birth_age, future_birth_age + 6))
+            college_windows.append((future_birth_age + 19, future_birth_age + 19 + 4))
+            wedding_windows.append((future_birth_age + 30, future_birth_age + 30 + 5))
+
+        # --------------------------------------------------------------------------
+        # 5) 주택구입 기간 (4년 구간)
+        # --------------------------------------------------------------------------
+        housing_start, housing_end = None, None
+        conf_h = int(st.session_state.get("target_housing_age", 0) or 0)
+
+        if conf_h > 0:
+            housing_start = conf_h
+            housing_end = housing_start + 4
+        elif h_plan in ["주택 구입 고려", "주거 계획 확정"]:
+            housing_start = max(cur_age + 5, 20)
+            housing_end = housing_start + 4
+
+        # --------------------------------------------------------------------------
+        # 6) 사건별 총비용 산출 (본인 결혼 vs 주택구입 vs 자녀 결혼비용 구분)
+        # --------------------------------------------------------------------------
+        selected_region = st.session_state.get("housing_region", "지역 선택")
+        selected_ltv = float(st.session_state.get("housing_ltv", 50))
+
+        if selected_region in HOUSING_PRICE_DATA:
+            apartment_price_man = HOUSING_PRICE_DATA[selected_region][3] / 10.0
+        else:
+            apartment_price_man = sum(v[3] for v in HOUSING_PRICE_DATA.values()) / len(HOUSING_PRICE_DATA) / 10.0
+
+        home_equity_man = apartment_price_man * (1.0 - selected_ltv / 100.0)
+        half_home_equity_man = home_equity_man * 0.5
+
+        # 본인 결혼: 신혼집 주거자금 절반 + 기타 결혼비용
+        marriage_cost_man = half_home_equity_man + 6298.0
+        
+        # 출산·육아: 6년간 누적 시뮬레이션 가정
+        childcare_cost_man = 8064.0
+        
+        # 본인 주택구입: 주택 매입 자기자금
+        housing_cost_man = home_equity_man
+        
+        # 자녀 대학: 4년 등록금 및 생활비 (정확히 4년 분산)
+        college_cost_man = 6632.0
+        
+        # 자녀 결혼 지원비: [신혼집 주거 지원비] + [부모 부담 기타 결혼 지원비]
+        child_other_wedding_support_man = 2800.0
+        child_wedding_cost_man = half_home_equity_man + child_other_wedding_support_man
+
+        event_costs = []
+
+        if marriage_start is not None and 20 <= marriage_start <= 85 and m_plan != "계획 없음":
             event_costs.append({
                 "name": "본인 결혼",
                 "start": marriage_start,
@@ -2890,7 +2962,6 @@ elif selected_page == "인생의 사계절":
                 "color": "#F59E0B",
             })
 
-        # 출산·육아: 6년 구간
         for start, end in childcare_windows:
             event_costs.append({
                 "name": "출산·육아",
@@ -2901,7 +2972,6 @@ elif selected_page == "인생의 사계절":
                 "color": "#F97316",
             })
 
-        # 주택구입: 4년 구간
         if housing_start is not None and housing_end is not None:
             event_costs.append({
                 "name": "주택구입",
@@ -2912,7 +2982,6 @@ elif selected_page == "인생의 사계절":
                 "color": "#14B8A6",
             })
 
-        # 자녀 대학: 자녀 1명당 4년 구간
         for start, end in college_windows:
             event_costs.append({
                 "name": "자녀 대학",
@@ -2923,7 +2992,6 @@ elif selected_page == "인생의 사계절":
                 "color": "#A855F7",
             })
 
-        # 자녀 결혼: 자녀 만 30~34세, 5년 구간
         for start, end in wedding_windows:
             event_costs.append({
                 "name": "자녀 결혼",
@@ -2934,86 +3002,140 @@ elif selected_page == "인생의 사계절":
                 "color": "#F43F5E",
             })
 
-        # 연령별 사건 비용 합산 (종료 연령 미포함)
         event_expense_by_age = {a: 0.0 for a in range(20, 86)}
-
         for event in event_costs:
-            annual_addition = event["total"] / event["duration"]
+            annual_addition = event["total"] / float(event["duration"])
             for a in range(max(20, event["start"]), min(86, event["end"])):
                 event_expense_by_age[a] += annual_addition
 
-        # 8) 시뮬레이션 연령 구간
+        # --------------------------------------------------------------------------
+        # 7) [6.01.07] 기준곡선 엔진 계승: 보간, 연장, 스케일링 함수
+        # --------------------------------------------------------------------------
+        ages_base = [20, 25, 30, 35, 40, 45, 50, 55, 60, 65, 70, 75]
+        employee_base = [180, 270, 350, 420, 460, 469, 445, 360, 280, 210, 160, 120]
+        self_employed_base = [130, 210, 290, 350, 390, 410, 420, 400, 350, 290, 230, 170]
+
+        def get_job_base(job):
+            if job == "전업주부": return None
+            if job in ("직장인", "공무원"): return employee_base
+            return self_employed_base
+
+        def interpolate_income(age, values):
+            if age <= ages_base[0]: return values[0]
+            if age >= ages_base[-1]: return values[-1]
+            for i in range(len(ages_base) - 1):
+                if ages_base[i] <= age <= ages_base[i + 1]:
+                    ratio = (age - ages_base[i]) / float(ages_base[i + 1] - ages_base[i])
+                    return values[i] + (values[i + 1] - values[i]) * ratio
+            return 0.0
+
+        def extended_base_income(age, values):
+            if values is None: return 0.0
+            if age <= 75: return interpolate_income(age, values)
+            slope = (values[-1] - values[-2]) / 5.0
+            return max(0.0, values[-1] + slope * (age - 75))
+
+        self_base = get_job_base(self_job)
+        spouse_base = get_job_base(spouse_job) if has_future_or_current_spouse else None
+
+        self_base_at_cur = extended_base_income(cur_age, self_base)
+        self_scale = (monthly_income_self / self_base_at_cur) if (self_base_at_cur > 0 and monthly_income_self > 0) else (1.0 if self_base else 0.0)
+
+        cur_spouse_age = cur_age + spouse_age_diff
+        sp_base_at_cur = extended_base_income(cur_spouse_age, spouse_base)
+        if monthly_income_spouse > 0 and sp_base_at_cur > 0:
+            spouse_scale = monthly_income_spouse / sp_base_at_cur
+        else:
+            spouse_scale = 1.0 if (spouse_base is not None) else 0.0
+
+        # --------------------------------------------------------------------------
+        # 8) 본인 및 배우자 소득 곡선 산출 및 결혼 시점 합산
+        # --------------------------------------------------------------------------
         ages_sim = list(range(20, 86))
         my_income_curve = []
-        my_expense_curve = []
-
-        is_already_retired = (
-            (cur_age >= retire_age)
-            or (cur_annual_income < 1200 and cur_age >= 60)
-        )
-
-        if is_already_retired:
-            base_career_income = max(
-                cur_annual_income,
-                ret_annual_pension * 1.8,
-                cur_annual_expense * 1.5,
-                5200.0
-            )
-        else:
-            base_career_income = cur_annual_income
+        household_income_curve = []
+        household_expense_curve = []
 
         for a in ages_sim:
-            # --- 소득 곡선 ---
+            # --- [A. 본인 단독 근로소득] ---
             if a < retire_age:
-                growth_rate = 0.022 if "초년생" in career_st else 0.015
+                self_inc = extended_base_income(a, self_base) * self_scale * 12.0
+                self_inc += annual_bonus
 
-                if a <= 46:
-                    dist_46 = 46 - a
-                    w = 1.0 - (growth_rate * dist_46)
-                else:
-                    w = 1.0 - (0.012 * (a - 46))
-
-                w = max(0.30, w)
-
-                # 자녀별 육아 구간을 각각 반영하고, 겹치는 구간은 가장 큰 소득 감소율 적용
-                childcare_factors = []
-                for child_start, child_end in childcare_windows:
-                    if child_start <= a < child_end:
-                        mid_c = (child_start + child_end - 1) / 2.0
-                        dist = abs(a - mid_c)
-                        dip_factor = 0.70 + (0.035 * (dist ** 2))
-                        childcare_factors.append(min(0.95, dip_factor))
-
-                if childcare_factors:
-                    w *= min(childcare_factors)
-
-                inc_val = base_career_income * w
+                if is_female:
+                    childcare_factors = []
+                    for child_start, child_end in childcare_windows:
+                        if child_start <= a < child_end:
+                            mid_c = (child_start + child_end - 1) / 2.0
+                            dist = abs(a - mid_c)
+                            dip_factor = 0.70 + (0.035 * (dist ** 2))
+                            childcare_factors.append(min(0.95, dip_factor))
+                    if childcare_factors:
+                        self_inc *= min(childcare_factors)
             else:
-                inc_val = (
-                    ret_annual_pension
-                    if ret_annual_pension > 0
-                    else (cur_annual_income if is_already_retired else 0)
-                )
+                self_inc = 0.0
 
-            my_income_curve.append(inc_val)
+            my_income_curve.append(self_inc)
 
-            # --- 지출 곡선 ---
-            base_exp = (
-                cur_annual_expense
-                if a < retire_age and not is_already_retired
-                else (
-                    ret_annual_expense * 1.25
-                    if a < retire_age and is_already_retired
-                    else ret_annual_expense
-                )
-            )
-            exp_val = base_exp + event_expense_by_age.get(a, 0.0)
+            # --- [B. 배우자 근로소득: 결혼 시점부터 합산] ---
+            spouse_inc = 0.0
+            sp_a = a + spouse_age_diff
 
-            my_expense_curve.append(exp_val)
+            if has_future_or_current_spouse and (marriage_start is not None) and (a >= marriage_start):
+                if sp_a < retire_age:
+                    spouse_inc = extended_base_income(sp_a, spouse_base) * spouse_scale * 12.0
+                    
+                    if not is_female:
+                        sp_factors = []
+                        for child_start, child_end in childcare_windows:
+                            if child_start <= a < child_end:
+                                mid_c = (child_start + child_end - 1) / 2.0
+                                dist = abs(a - mid_c)
+                                sp_factors.append(min(0.95, 0.70 + 0.035 * (dist ** 2)))
+                        if sp_factors:
+                            spouse_inc *= min(sp_factors)
 
+            # --- [C. 가구 합산 소득] ---
+            total_hh_inc = self_inc + spouse_inc + annual_other_income
 
-        # 7) 연간 순수지 (소득 - 지출): 흑자(+) vs 적자(-)
-        net_flow = [i - e for i, e in zip(my_income_curve, my_expense_curve)]
+            # 국민연금 (부부 합산액을 65세부터 반영)
+            if has_future_or_current_spouse:
+                if a >= national_pension_start_age:
+                    total_hh_inc += (annual_pension / 2.0)
+                if sp_a >= national_pension_start_age:
+                    total_hh_inc += (annual_pension / 2.0)
+            else:
+                if a >= national_pension_start_age:
+                    total_hh_inc += annual_pension
+
+            # 추가 연금 반영
+            if other_self_enabled and a >= other_self_start_age:
+                total_hh_inc += other_self_annual
+            if has_future_or_current_spouse and other_spouse_enabled and sp_a >= other_spouse_start_age:
+                total_hh_inc += other_spouse_annual
+
+            household_income_curve.append(total_hh_inc)
+
+            # --- [D. 가구 지출 곡선] ---
+            if a < retire_age:
+                base_exp = cur_annual_expense
+                if (
+                    has_future_or_current_spouse
+                    and (marriage_start is not None)
+                    and (a >= marriage_start)
+                    and (m_plan != "결혼함")
+                ):
+                    base_exp *= 1.25
+            else:
+                base_exp = ret_annual_expense
+
+            total_hh_exp = base_exp + event_expense_by_age.get(a, 0.0)
+            household_expense_curve.append(total_hh_exp)
+
+        # --------------------------------------------------------------------------
+        # 9) 가구 순수지 미세 분리 및 2단 차트 생성
+        # --------------------------------------------------------------------------
+        net_flow = [i - e for i, e in zip(household_income_curve, household_expense_curve)]
 
         ages_fine = []
         flow_fine = []
@@ -3033,12 +3155,11 @@ elif selected_page == "인생의 사계절":
         surplus_fine = [max(0.0, v) for v in flow_fine]
         deficit_fine = [min(0.0, v) for v in flow_fine]
 
-        y_max = max(max(my_income_curve), max(my_expense_curve)) if my_income_curve else 6000
-        y_top = y_max * 1.16
+        y_max = max(max(household_income_curve), max(household_expense_curve)) if household_income_curve else 6000
+        y_top = y_max * 1.18
         alt_level_2 = y_top * 0.32
         alt_level_1 = y_top * 0.10
 
-        # 상하 간격을 vertical_spacing=0.26으로 넓혀 통로 대폭 확보
         fig_my_nta = make_subplots(
             rows=2, cols=1,
             shared_xaxes=True,
@@ -3046,59 +3167,27 @@ elif selected_page == "인생의 사계절":
             row_heights=[0.55, 0.45]
         )
 
-
-        # [차트 사이 사건 표시 위치]
-        y_tier_1 = 0.485
-        y_tier_2 = 0.395
-
-        # 사건별 총비용을 반투명 원으로 표시
-        # 원의 면적이 총비용 규모에 비례하도록 상대 크기 적용
-        max_event_total = max(
-            (event["total"] for event in event_costs),
-            default=1.0
-        )
+        # --------------------------------------------------------------------------
+        # 10) 이벤트 버블 마커 렌더링
+        # --------------------------------------------------------------------------
+        max_event_total = max((event["total"] for event in event_costs), default=1.0)
 
         for event in event_costs:
-            event_mid_age = event.get(
-                "center",
-                (event["start"] + event["end"] - 1) / 2.0
-            )
+            event_mid_age = event.get("center", (event["start"] + event["end"] - 1) / 2.0)
+            if not 20 <= event_mid_age <= 85: continue
 
-            if not 20 <= event_mid_age <= 85:
-                continue
+            event_age_index = min(range(len(ages_sim)), key=lambda i: abs(ages_sim[i] - event_mid_age))
+            event_y = household_expense_curve[event_age_index]
+            marker_size = max(16, 110 * (event["total"] / max_event_total))
 
-            event_age_index = min(
-                range(len(ages_sim)),
-                key=lambda i: abs(ages_sim[i] - event_mid_age)
-            )
-
-            event_y = my_expense_curve[event_age_index]
-
-            # 이벤트 총비용에 따라 원의 지름을 강하게 차등 조정
-            marker_size = max(
-                16,
-                110 * (event["total"] / max_event_total)
-            )
-            
             fig_my_nta.add_trace(go.Scatter(
                 x=[event_mid_age],
                 y=[event_y],
                 mode="markers+text",
-                marker=dict(
-                    size=marker_size,
-                    color=event["color"],
-                    opacity=0.28,
-                    line=dict(
-                        color=event["color"],
-                        width=1.5
-                    )
-                ),
+                marker=dict(size=marker_size, color=event["color"], opacity=0.28, line=dict(color=event["color"], width=1.5)),
                 text=[event["name"]],
                 textposition="top center",
-                textfont=dict(
-                    size=10,
-                    color=event["color"]
-                ),
+                textfont=dict(size=10, color=event["color"]),
                 name=event["name"],
                 showlegend=False,
                 hovertemplate=(
@@ -3109,23 +3198,32 @@ elif selected_page == "인생의 사계절":
                 )
             ), row=1, col=1)
 
-
-        # [Row 1] 소득 & 지출
+        # --------------------------------------------------------------------------
+        # [Row 1] 가구 소득, 본인 단독소득 보조 점선, 가구 지출
+        # --------------------------------------------------------------------------
         fig_my_nta.add_trace(go.Scatter(
-            x=ages_sim, y=my_income_curve, mode="lines",
-            line=dict(color="#10B981", width=3.2, shape='spline', smoothing=0.8),
-            name="소득",
-            hovertemplate="나이: %{x}세<br>연 소득: <b>%{y:,.0f}만 원</b><extra></extra>"
+            x=ages_sim, y=household_income_curve, mode="lines",
+            line=dict(color="#10B981", width=3.4, shape='spline', smoothing=0.8),
+            name="가구 소득",
+            hovertemplate="나이: %{x}세<br>연간 가구소득: <b>%{y:,.0f}만 원</b><extra></extra>"
         ), row=1, col=1)
 
+        if has_future_or_current_spouse and marriage_start is not None and marriage_start < retire_age:
+            fig_my_nta.add_trace(go.Scatter(
+                x=ages_sim, y=my_income_curve, mode="lines",
+                line=dict(color="rgba(16, 185, 129, 0.40)", width=1.8, dash="dot", shape='spline'),
+                name="본인 단독소득",
+                hovertemplate="나이: %{x}세<br>본인 단독소득: <b>%{y:,.0f}만 원</b><extra></extra>"
+            ), row=1, col=1)
+
         fig_my_nta.add_trace(go.Scatter(
-            x=ages_sim, y=my_expense_curve, mode="lines",
+            x=ages_sim, y=household_expense_curve, mode="lines",
             line=dict(color="#F97316", width=2.8, dash="dash", shape='spline', smoothing=0.8),
-            name="지출",
-            hovertemplate="나이: %{x}세<br>연 지출: <b>%{y:,.0f}만 원</b><extra></extra>"
+            name="가구 지출",
+            hovertemplate="나이: %{x}세<br>연간 가구지출: <b>%{y:,.0f}만 원</b><extra></extra>"
         ), row=1, col=1)
 
-        # [Row 1] 현재 나이 기준선
+        # 기준선 렌더링
         fig_my_nta.add_vline(x=cur_age, line_dash="solid", line_color="#38BDF8", line_width=2.0)
         fig_my_nta.add_annotation(
             x=cur_age, y=alt_level_1,
@@ -3136,7 +3234,6 @@ elif selected_page == "인생의 사계절":
             row=1, col=1
         )
 
-        # [Row 1] 은퇴 기준선 (화이트 점선)
         retire_line_color = "#F8FAFC"
         fig_my_nta.add_vline(x=retire_age, line_dash="dot", line_color=retire_line_color, line_width=2.2)
         fig_my_nta.add_annotation(
@@ -3148,10 +3245,11 @@ elif selected_page == "인생의 사계절":
             row=1, col=1
         )
 
-        # [Row 2] 0선 기준선
+        # --------------------------------------------------------------------------
+        # [Row 2] 0선 기준선 및 가구 순수지 영역
+        # --------------------------------------------------------------------------
         fig_my_nta.add_hline(y=0, line_dash="solid", line_color="#94A3B8", line_width=1.5, row=2, col=1)
 
-        # [Row 2] 흑자 영역 (녹색 음영)
         fig_my_nta.add_trace(go.Scatter(
             x=ages_fine, y=surplus_fine, mode="lines",
             line=dict(width=0, color="rgba(0,0,0,0)"),
@@ -3160,7 +3258,6 @@ elif selected_page == "인생의 사계절":
             hoverinfo="skip"
         ), row=2, col=1)
 
-        # [Row 2] 적자 영역 (붉은색 음영)
         fig_my_nta.add_trace(go.Scatter(
             x=ages_fine, y=deficit_fine, mode="lines",
             line=dict(width=0, color="rgba(0,0,0,0)"),
@@ -3169,18 +3266,16 @@ elif selected_page == "인생의 사계절":
             hoverinfo="skip"
         ), row=2, col=1)
 
-        # [Row 2] 연간 순수지 실선
         fig_my_nta.add_trace(go.Scatter(
             x=ages_sim, y=net_flow, mode="lines",
             line=dict(color="#CBD5E1", width=2.4, shape='spline', smoothing=0.8),
-            name="소득-지출",
-            hovertemplate="나이: %{x}세<br>순수지: <b>%{y:,.0f}만 원</b><extra></extra>"
+            name="가구 순수지 (소득-지출)",
+            hovertemplate="나이: %{x}세<br>가구 순수지: <b>%{y:,.0f}만 원</b><extra></extra>"
         ), row=2, col=1)
 
-        # [Row 2] 중심축(y=0) 기준 흑자/적자 뱃지
         fig_my_nta.add_annotation(
             x=45, y=0,
-            text="▲ 흑자 (소득 > 지출)", showarrow=False,
+            text="▲ 가구 흑자 (소득 > 지출)", showarrow=False,
             yshift=14,
             font=dict(size=10.5, color="#86EFAC", weight="bold"),
             bgcolor="rgba(15, 23, 42, 0.8)", bordercolor="rgba(34, 197, 94, 0.5)", borderpad=2,
@@ -3188,13 +3283,16 @@ elif selected_page == "인생의 사계절":
         )
         fig_my_nta.add_annotation(
             x=75, y=0,
-            text="▼ 적자 (지출 > 소득)", showarrow=False,
+            text="▼ 가구 적자 (지출 > 소득)", showarrow=False,
             yshift=-14,
             font=dict(size=10.5, color="#FCA5A5", weight="bold"),
             bgcolor="rgba(15, 23, 42, 0.8)", bordercolor="rgba(239, 68, 68, 0.5)", borderpad=2,
             row=2, col=1
         )
 
+        # --------------------------------------------------------------------------
+        # 레이아웃 및 축 설정
+        # --------------------------------------------------------------------------
         fig_my_nta.update_layout(
             height=630,
             margin=dict(l=10, r=10, t=25, b=25),
