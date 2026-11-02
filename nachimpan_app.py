@@ -3074,10 +3074,10 @@ elif selected_page == "인생의 사계절":
 
             event_y = my_expense_curve[event_age_index]
 
-            # 이벤트 총비용에 따라 원의 지름을 비례 조정
+            # 이벤트 총비용에 따라 원의 지름을 강하게 차등 조정
             marker_size = max(
-                8,
-                52 * (event["total"] / max_event_total)
+                16,
+                110 * (event["total"] / max_event_total)
             )
             
             fig_my_nta.add_trace(go.Scatter(
