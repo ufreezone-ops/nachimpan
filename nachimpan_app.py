@@ -2524,6 +2524,7 @@ elif selected_page == "인생의 사계절":
 
             p_c1, p_c2, p_c3 = st.columns(3)
 
+
             with p_c1:
                 marriage_options = [
                     "미정", "계획 없음", "결혼 예정", "결혼함",
@@ -2537,6 +2538,23 @@ elif selected_page == "인생의 사계절":
                         st.session_state.get("marriage_plan", "미정")
                     ) if st.session_state.get("marriage_plan", "미정") in marriage_options else 0
                 )
+
+                actual_marriage_age = int(
+                    st.session_state.get("actual_marriage_age", 0) or 0
+                )
+
+                if marriage_plan == "결혼함":
+                    actual_marriage_age = st.number_input(
+                        "실제 결혼 나이 (선택, 0이면 자동 추정)",
+                        min_value=0,
+                        max_value=max(0, int(cur_age)),
+                        value=min(
+                            max(0, actual_marriage_age),
+                            max(0, int(cur_age))
+                        ),
+                        step=1,
+                        help="실제 결혼 나이를 알고 있다면 입력하세요. 입력하지 않으면 통계와 가족 정보를 바탕으로 추정합니다."
+                    )
 
             with p_c2:
                 child_plan_options = [
