@@ -2369,6 +2369,62 @@ elif selected_page == "인생의 사계절":
             "제주": (265384.89, 222651.58, 291781.39, 245000.00),
         }
 
+
+        # ------------------------------------------------------------------------------
+        # [1-1] 주택가격 산정 기준 입력
+        # 지역별 아파트 중위가격 및 LTV를 이후 생애주기 비용 계산에서 사용
+        # ------------------------------------------------------------------------------
+
+        st.markdown("#### 주택가격 산정 기준")
+
+        housing_region_options = ["지역 선택"] + list(HOUSING_PRICE_DATA.keys())
+
+        prev_housing_region = st.session_state.get("housing_region", "지역 선택")
+        if prev_housing_region not in housing_region_options:
+            prev_housing_region = "지역 선택"
+
+        h_col1, h_col2 = st.columns(2)
+
+        with h_col1:
+            housing_region = st.selectbox(
+                "주택 구입 예정 지역",
+                housing_region_options,
+                index=housing_region_options.index(prev_housing_region),
+                key="housing_region_select"
+            )
+
+        with h_col2:
+            housing_ltv = st.slider(
+                "주택담보대출 비율 (LTV)",
+                min_value=40,
+                max_value=60,
+                value=int(st.session_state.get("housing_ltv", 50)),
+                step=5,
+                format="%d%%",
+                key="housing_ltv_select"
+            )
+
+        # 선택값을 생애주기 비용 계산에서 공통으로 사용
+        st.session_state["housing_region"] = housing_region
+        st.session_state["housing_ltv"] = housing_ltv
+
+        if housing_region != "지역 선택":
+            apartment_median_thousand = HOUSING_PRICE_DATA[housing_region][3]
+            apartment_median_won = apartment_median_thousand * 1000
+            housing_equity_won = apartment_median_won * (1 - housing_ltv / 100)
+
+            st.caption(
+                f"선택 지역: {housing_region} · "
+                f"아파트 중위가격: {apartment_median_won / 100000000:.2f}억 원 · "
+                f"자기자금 기준: {housing_equity_won / 100000000:.2f}억 원"
+            )
+
+        st.caption(
+            "자료: 한국부동산원 R-ONE · 전국주택가격동향조사 · "
+            "2025년 12월 · 아파트 중위가격"
+        )
+
+        
         # ------------------------------------------------------------------------------
         # [2] 노후생활비 기준 통계
         # 출처: 국민연금공단 국민연금연구원
