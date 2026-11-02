@@ -3481,7 +3481,25 @@ else:
 
             st.markdown("<div style='height: 20px;'></div>", unsafe_allow_html=True)
 
+
             kakao_clean_report = f"""[나침반 🧭 현실점검 & 재무 진단 리포트]
+• 진단자: {person_name} ({person_age}세, {career_st})
+• 소득 형태: {st.session_state.get('job_form','직장인')} (배우자: {st.session_state.get('job_spouse_form','해당 없음')})
+• 분석 모드: {taste_mode}
+• 재무 요약:
+  - 월 정기수입: {money(s['regular_income'])}
+  - 월 현금지출: {money(s['expenses'])}
+  - 연간 순저축: {money(s['annual_net_surplus'])} (월평균 {money(s['monthly_effective_surplus'])})
+  - 순자산: {fmt_eok(s['net_worth'])}
+  - 희망 은퇴나이: {retire_age}세 (맞이할 겨울: 약 {winter_years}년, {user_gender.split()[1]} {life_expectancy}세 수명 기준)
+
+[소득 개선 & 파이프라인]
+{formatted_income}
+
+[은퇴 안정성 성찰]
+{formatted_retire}"""
+            st.markdown("### 💬 카카오톡 전송용 리포트")
+            st.caption("※ 아래 리포트를 복사하여 카카오톡 대화방에 바로 붙여넣기(Ctrl+V)하세요.")
             st.code(kakao_clean_report, language="markdown")
 
         else:
