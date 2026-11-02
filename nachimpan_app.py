@@ -2368,62 +2368,6 @@ elif selected_page == "인생의 사계절":
             "경남": (208788.94, 154977.99, 221808.54, 175000.00),
             "제주": (265384.89, 222651.58, 291781.39, 245000.00),
         }
-
-
-        # ------------------------------------------------------------------------------
-        # [1-1] 주택가격 산정 기준 입력
-        # 지역별 아파트 중위가격 및 LTV를 이후 생애주기 비용 계산에서 사용
-        # ------------------------------------------------------------------------------
-
-        st.markdown("#### 주택가격 산정 기준")
-
-        housing_region_options = ["지역 선택"] + list(HOUSING_PRICE_DATA.keys())
-
-        prev_housing_region = st.session_state.get("housing_region", "지역 선택")
-        if prev_housing_region not in housing_region_options:
-            prev_housing_region = "지역 선택"
-
-        h_col1, h_col2 = st.columns(2)
-
-        with h_col1:
-            housing_region = st.selectbox(
-                "주택 구입 예정 지역",
-                housing_region_options,
-                index=housing_region_options.index(prev_housing_region),
-                key="housing_region_select"
-            )
-
-        with h_col2:
-            housing_ltv = st.slider(
-                "주택담보대출 비율 (LTV)",
-                min_value=40,
-                max_value=60,
-                value=int(st.session_state.get("housing_ltv", 50)),
-                step=5,
-                format="%d%%",
-                key="housing_ltv_select"
-            )
-
-        # 선택값을 생애주기 비용 계산에서 공통으로 사용
-        st.session_state["housing_region"] = housing_region
-        st.session_state["housing_ltv"] = housing_ltv
-
-        if housing_region != "지역 선택":
-            apartment_median_thousand = HOUSING_PRICE_DATA[housing_region][3]
-            apartment_median_won = apartment_median_thousand * 1000
-            housing_equity_won = apartment_median_won * (1 - housing_ltv / 100)
-
-            st.caption(
-                f"선택 지역: {housing_region} · "
-                f"아파트 중위가격: {apartment_median_won / 100000000:.2f}억 원 · "
-                f"자기자금 기준: {housing_equity_won / 100000000:.2f}억 원"
-            )
-
-        st.caption(
-            "자료: 한국부동산원 R-ONE · 전국주택가격동향조사 · "
-            "2025년 12월 · 아파트 중위가격"
-        )
-
         
         # ------------------------------------------------------------------------------
         # [2] 노후생활비 기준 통계
@@ -2628,11 +2572,91 @@ elif selected_page == "인생의 사계절":
                     ) if st.session_state.get("housing_plan", "미정") in housing_options else 0
                 )
 
+
             save_family_trigger = st.form_submit_button(
-                "가족 정보 반영하기",
+                "입력 정보 AI 점검",
                 use_container_width=True,
                 type="primary"
             )
+
+        # 제출된 가족정보를 세션에 저장
+        if save_family_trigger:
+            st.session_state["child_count"] = child_count
+            st.session_state["spouse_age"] = spouse_age
+            st.session_state["child_age"] = child_age1
+            st.session_state["child_age2"] = child_age2
+            st.session_state["child_age3"] = child_age3
+            st.session_state["child_age4"] = child_age4
+            st.session_state["father_age"] = father_age
+            st.session_state["mother_age"] = mother_age
+            st.session_state["marriage_plan"] = marriage_plan
+            st.session_state["child_plan"] = child_plan
+            st.session_state["housing_plan"] = housing_plan
+
+            st.session_state["family_info_checked"] = True
+
+        # ------------------------------------------------------------------------------
+        # [1-1] 주택가격 산정 기준 입력
+        # 주택구입 비용 산정이 필요할 가능성이 있는 인터뷰이에게만 노출
+        # ------------------------------------------------------------------------------
+
+        housing_info_needed = (
+            st.session_state.get("family_info_checked", False)
+            and st.session_state.get("housing_plan", "미정")
+            not in ["현재 주거 유지", "주거 계획 확정"]
+        )
+
+        if housing_info_needed:
+            st.markdown("#### 주택가격 산정 기준")
+
+            housing_region_options = ["지역 선택"] + list(HOUSING_PRICE_DATA.keys())
+
+            prev_housing_region = st.session_state.get("housing_region", "지역 선택")
+            if prev_housing_region not in housing_region_options:
+                prev_housing_region = "지역 선택"
+
+            h_col1, h_col2 = st.columns(2)
+
+            with h_col1:
+                housing_region = st.selectbox(
+                    "주택 구입 예정 지역",
+                    housing_region_options,
+                    index=housing_region_options.index(prev_housing_region),
+                    key="housing_region_select"
+                )
+
+            with h_col2:
+                housing_ltv = st.slider(
+                    "주택담보대출 비율 (LTV)",
+                    min_value=40,
+                    max_value=60,
+                    value=int(st.session_state.get("housing_ltv", 50)),
+                    step=5,
+                    format="%d%%",
+                    key="housing_ltv_select"
+                )
+
+            st.session_state["housing_region"] = housing_region
+            st.session_state["housing_ltv"] = housing_ltv
+
+            if housing_region != "지역 선택":
+                apartment_median_thousand = HOUSING_PRICE_DATA[housing_region][3]
+                apartment_median_won = apartment_median_thousand * 1000
+                housing_equity_won = apartment_median_won * (1 - housing_ltv / 100)
+
+                st.caption(
+                    f"선택 지역: {housing_region} · "
+                    f"아파트 중위가격: {apartment_median_won / 100000000:.2f}억 원 · "
+                    f"자기자금 기준: {housing_equity_won / 100000000:.2f}억 원"
+                )
+
+            st.caption(
+                "자료: 한국부동산원 R-ONE · 전국주택가격동향조사 · "
+                "2025년 12월 · 아파트 중위가격"
+            )
+        else:
+            # 주택가격 입력이 불필요한 경우에도 기존 선택값은 보존
+            pass
 
         # 6.03.03 | 은퇴 시점 가족 미래 나이 2열 슬림 카드 (직계 3대 집중)
         people = [(st.session_state.get("person_name", "나"), cur_age)]
