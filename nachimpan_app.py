@@ -3142,7 +3142,7 @@ elif selected_page == "인생의 사계절":
 
         # 소득 곡선이 화면의 65% 이상 시원하게 올라오도록 현실적인 Y축 상한 설정
         y_max = max(max_income_val, max_typical_exp)
-        y_top = y_max * 1.05
+        y_top = y_max * 1.08
         alt_level_2 = y_top * 0.32
         alt_level_1 = y_top * 0.10
 
