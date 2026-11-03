@@ -1840,7 +1840,7 @@ if selected_page == "우리집 가계부":
 
 
         # 그래프 X축: 인터뷰이 나이 20~100세
-        ages = list(range(20, 101))
+        ages = list(range(20, 81))
 
         self_income_curve = []
         spouse_income_curve = []
@@ -2030,17 +2030,19 @@ if selected_page == "우리집 가계부":
                 unifiedhovertitle=dict(
                     text="내 나이: %{x}세"
                 ),
-                range=[20, 100],
+                range=[20, 80],
                 tickmode="linear",
                 tick0=20,
                 dtick=5,
-                gridcolor="rgba(100, 116, 139, 0.2)"
+                gridcolor="rgba(100, 116, 139, 0.2)",
+                fixedrange=True
             ),
             yaxis=dict(
                 title="연간 소득 (만원)",
                 rangemode="tozero",
                 tickformat=",",
-                gridcolor="rgba(100, 116, 139, 0.2)"
+                gridcolor="rgba(100, 116, 139, 0.2)",
+                fixedrange=True
             ),
             legend=dict(
                 orientation="h",
@@ -2055,7 +2057,12 @@ if selected_page == "우리집 가계부":
         st.plotly_chart(
             fig_income,
             use_container_width=True,
-            config={"displayModeBar": False}
+            config={
+                "displayModeBar": False,
+                "scrollZoom": False,
+                "doubleClick": False,
+                "showAxisDragHandles": False
+            }
         )
 
         # 기존 다음 버튼 유지
