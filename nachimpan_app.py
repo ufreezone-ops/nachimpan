@@ -465,7 +465,7 @@ CASE_DATA_KEYS = [
 # 2.01.03 | 개발용 테스트 사례 및 Google Sheets 저장/불러오기
 from datetime import datetime
 
-# [인터뷰어 전용 체험 사례 2종] - 기준 지역 '부산'으로 통일
+# [인터뷰어 전용 체험 사례 2종] - 위젯 키 완벽 바인딩
 INTERVIEWER_CASES = {
     "case_32_female": {
         "person_name": "32세 여성 (미혼, 4년차)",
@@ -481,12 +481,15 @@ INTERVIEWER_CASES = {
         "asset_cash": 800, "asset_financial": 700, "asset_home": 0, "asset_deposit": 0, "asset_other": 0,
         "debt_home": 0, "debt_other": 0,
         "retirement_age": 60, "spouse_age": 0,
-        "child_count": "없음", "child_age": 0, "child_age2": 0, "child_age3": 0, "child_age4": 0,
+        "child_count": "없음",
+        "child_count_select_direct": "없음",  # 위젯에 직격 주입
+        "child_age": 0, "child_age2": 0, "child_age3": 0, "child_age4": 0,
         "father_age": 63, "mother_age": 60,
         "marriage_plan": "1~3년 내 결혼 생각 있음",
         "child_plan": "자녀 계획 있음",
         "housing_plan": "주택 구입 고려",
         "housing_region": "부산",
+        "housing_region_select": "부산",    # 위젯에 직격 주입
         "housing_ltv": 50,
         "income_pension_self": 60,
         "income_pension_spouse": 60,
@@ -507,19 +510,21 @@ INTERVIEWER_CASES = {
         "asset_cash": 1500, "asset_financial": 2500, "asset_home": 40000, "asset_deposit": 0, "asset_other": 0,
         "debt_home": 15000, "debt_other": 0,
         "retirement_age": 60, "spouse_age": 47,
-        "child_count": "1명", "child_age": 15, "child_age2": 0, "child_age3": 0, "child_age4": 0,
+        "child_count": "1명",
+        "child_count_select_direct": "1명",   # 위젯에 직격 주입
+        "child_age": 15, "child_age2": 0, "child_age3": 0, "child_age4": 0,
         "father_age": 75, "mother_age": 72,
         "marriage_plan": "결혼함",
         "child_plan": "계획 없음",
         "housing_plan": "현재 주거 유지",
         "housing_region": "부산",
+        "housing_region_select": "부산",    # 위젯에 직격 주입
         "housing_ltv": 50,
         "income_pension_self": 60,
         "income_pension_spouse": 60,
         "pension_start_age": 65
     }
 }
-
 DEV_CASES = {
     "A. 30대 1인 가구 (여성, 초년생 M자 검증)": {
         "person_name": "테스트 A (여성)",
@@ -837,26 +842,26 @@ with st.sidebar:
     c_btn1, c_btn2 = st.columns(2)
     
     def apply_case_payload(case_dict):
-        # [신규] 사례 전환 시 위젯 키 및 숨은 타임라인 잔존값 완벽 초기화
-        KEYS_TO_RESET_ON_CASE_LOAD = [
-            "target_marriage_age", "target_birth_age", "target_housing_age",
-            "actual_marriage_age", "inp_target_marriage_age", "inp_target_birth_age",
-            "inp_target_housing_age", "inp_target_retire_age", "show_ai_family_review",
-            "_pending_family_draft", "_ai_timeline_proposal",
-            "child_count", "child_count_select_direct",
-            "child_age", "child_age2", "child_age3", "child_age4", "spouse_age",
-            "housing_region_select", "housing_ltv_select"
-        ]
-        for k in KEYS_TO_RESET_ON_CASE_LOAD:
+        # 1. 보존해야 할 시스템 핵심 키 목록
+        SYSTEM_KEEP_KEYS = {"anonymous_id", "started", "advanced_mode"}
+
+        # 2. 시스템 키를 제외한 세션 내 모든 잔여 위젯/데이터 완벽 초기화 (Flush)
+        keys_to_clear = [k for k in list(st.session_state.keys()) if k not in SYSTEM_KEEP_KEYS]
+        for k in keys_to_clear:
             st.session_state.pop(k, None)
 
+        # 3. 새로운 대표 사례 데이터 주입
         for k, v in case_dict.items():
             st.session_state[k] = v
+
+        # 4. Streamlit Pills 및 Selectbox 위젯 키 명시적 강제 바인딩
         if "gender" in case_dict: st.session_state["pills_gender"] = case_dict["gender"]
         if "job_form" in case_dict: st.session_state["pills_job_self"] = case_dict["job_form"]
         if "career_stage" in case_dict: st.session_state["pills_career_stage"] = case_dict["career_stage"]
         if "job_spouse_form" in case_dict: st.session_state["pills_job_spouse"] = case_dict["job_spouse_form"]
+        if "child_count" in case_dict: st.session_state["child_count_select_direct"] = case_dict["child_count"]
         if "housing_region" in case_dict: st.session_state["housing_region_select"] = case_dict["housing_region"]
+
         st.session_state["started"] = True
         st.session_state["answers"] = {}
         st.session_state["advanced_mode"] = True
