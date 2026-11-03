@@ -606,27 +606,6 @@ DEV_CASES = {
         "marriage_plan": "미정", "child_plan": "미정",
         "housing_plan": "현재 주거 유지",
     },
-    "D. 70~90대 노년기 부부": {
-        "person_name": "테스트 D",
-        "person_age": 78,
-        "gender": "🙋‍♂️ 남성",
-        "job_form": "그외",
-        "job_spouse_form": "해당 없음",
-        "career_stage": "🌳 10년 이상 (베테랑)",
-        "income_self": 0, "income_spouse": 0,
-        "income_other": 40, "income_bonus": 0, "income_pension": 220,
-        "expense_living": 200, "expense_loan": 0, "expense_other": 480,
-        "retirement_monthly_expenses": 220,
-        "asset_cash": 4000, "asset_financial": 12000,
-        "asset_home": 45000, "asset_deposit": 0, "asset_other": 0,
-        "debt_home": 0, "debt_other": 0,
-        "retirement_age": 78, "spouse_age": 75,
-        "child_count": "2명", "child_age": 50, "child_age2": 47,
-        "child_age3": 0, "child_age4": 0,
-        "father_age": 0, "mother_age": 0,
-        "marriage_plan": "미정", "child_plan": "미정",
-        "housing_plan": "현재 주거 유지",
-    },
 }
 
 def get_test_cases():
@@ -873,6 +852,7 @@ with st.sidebar:
         SYSTEM_KEEP_KEYS = {"anonymous_id", "started", "advanced_mode"}
 
         # 2. 시스템 키를 제외한 세션 내 모든 잔여 위젯/데이터 완벽 초기화 (Flush)
+        #    pills_* 전체, 주거 선택 위젯, 가족 확인 상태, AI 연금/가족 검토 임시 상태도 함께 제거
         keys_to_clear = [k for k in list(st.session_state.keys()) if k not in SYSTEM_KEEP_KEYS]
         for k in keys_to_clear:
             st.session_state.pop(k, None)
@@ -887,7 +867,13 @@ with st.sidebar:
         if "career_stage" in case_dict: st.session_state["pills_career_stage"] = case_dict["career_stage"]
         if "job_spouse_form" in case_dict: st.session_state["pills_job_spouse"] = case_dict["job_spouse_form"]
         if "child_count" in case_dict: st.session_state["child_count_select_direct"] = case_dict["child_count"]
-        if "housing_region" in case_dict: st.session_state["housing_region_select"] = case_dict["housing_region"]
+        if "housing_region" in case_dict:
+            st.session_state["housing_region_select"] = case_dict["housing_region"]
+        if "housing_ltv" in case_dict:
+            st.session_state["housing_ltv_select"] = int(case_dict["housing_ltv"])
+
+        # 사례에 포함된 가족 계획은 입력 완료 상태로 시작
+        st.session_state["family_info_checked"] = True
 
         st.session_state["started"] = True
         st.session_state["answers"] = {}
@@ -973,29 +959,8 @@ if _dev_enabled:
         if st.button("📂 사례 불러오기", use_container_width=True):
             _data = dict(_cases[_selected_case])
 
-            # [신규] 사례 전환 시 위젯 키 및 숨은 타임라인 잔존값 완벽 초기화
-            _KEYS_TO_RESET_ON_CASE_LOAD = [
-                "target_marriage_age", "target_birth_age", "target_housing_age",
-                "actual_marriage_age", "inp_target_marriage_age", "inp_target_birth_age",
-                "inp_target_housing_age", "inp_target_retire_age", "show_ai_family_review",
-                "_pending_family_draft", "_ai_timeline_proposal",
-                "child_count", "child_count_select_direct",
-                "child_age", "child_age2", "child_age3", "child_age4", "spouse_age"
-            ]
-            for _k in _KEYS_TO_RESET_ON_CASE_LOAD:
-                st.session_state.pop(_k, None)
-
-            for k, v in _data.items():
-                st.session_state[k] = v
-
-            if "gender" in _data:
-                st.session_state["pills_gender"] = _data["gender"]
-            if "job_form" in _data:
-                st.session_state["pills_job_self"] = _data["job_form"]
-            if "career_stage" in _data:
-                st.session_state["pills_career_stage"] = _data["career_stage"]
-            if "job_spouse_form" in _data:
-                st.session_state["pills_job_spouse"] = _data["job_spouse_form"]
+            # 인터뷰어 대표 사례와 동일한 전체 초기화·위젯 재주입 경로 사용
+            apply_case_payload(_data)
 
             st.session_state["started"] = True
             st.session_state["answers"] = {}
@@ -2400,7 +2365,7 @@ elif selected_page == "인생의 사계절":
 #--------------------------------------------------------
     if not is_adv:
         # [기본 모드] 중복 제목 없이 3대 지표 + 내 계절 배지만 노출
-        st.caption("가벼운 3분 산책: 대한민국 국가데이터처 공식 지표를 통해 내 인생의 사계절 중 어디쯤 와 있는지 확인합니다.")
+        st.caption("가벼운 3분 산책: 국가데이터처 「2024년 국민이전계정」의 공식 지표를 통해 내 인생의 사계절 중 어디쯤 와 있는지 확인합니다.")
 
         if cur_age <= 27: cur_season, s_icon, s_color, s_desc = "봄 (준비기)", "🌱", "#4ADE80", "부모님의 부양으로 배우고 성장하는 계절"
         elif 28 <= cur_age <= 45: cur_season, s_icon, s_color, s_desc = "여름 (성장기)", "☀️", "#F59E0B", "성실하게 일하여 가정을 일구고 최대 흑자를 만드는 계절"
@@ -2415,7 +2380,7 @@ elif selected_page == "인생의 사계절":
 </div>
 """, unsafe_allow_html=True)
 
-        st.markdown("### 국가데이터처 공식 생애 통계 지표 (대한민국 평균 기준)")
+        st.markdown("### 국가데이터처 공식 생애 통계 지표 (2024년 국민이전계정 · 대한민국 1인당 평균 기준)")
         c_m1, c_m2, c_m3 = st.columns(3)
         c_m1.metric("한국인 평균 흑자 진입", "28세", help="노동소득이 소비를 추월하는 연령")
         c_m2.metric("최대 흑자 정점", "45세", "연 1,932만 원")
@@ -2423,6 +2388,8 @@ elif selected_page == "인생의 사계절":
 
         fig_official_nta = build_official_nta_chart()
         st.plotly_chart(fig_official_nta, use_container_width=True, config={"displayModeBar": False, "scrollZoom": False, "doubleClick": False, "showAxisDragHandles": False})
+        st.caption("출처: 국가데이터처 「2024년 국민이전계정」(2026. 9. 17. 발표). 28세 흑자 진입, 45세 최대 흑자(연 1,932만 원), 61세 적자 재진입 지표를 기준으로 표시합니다.")
+        st.markdown(f"[📄 국가데이터처 2024년 국민이전계정 보도자료]({OFFICIAL_RELEASE_URL}) · [PDF 원문]({OFFICIAL_PDF_URL})")
 
         _, next_col = st.columns([5, 1])
         with next_col:
@@ -2798,8 +2765,16 @@ elif selected_page == "인생의 사계절":
 </div>
 """, unsafe_allow_html=True)
 
-        st.caption("※ 국가데이터처 국민이전계정(NTA) 통계 기반으로, 우리 가정의 소득·지출 및 주요 생애사건을 시뮬레이션한 곡선입니다. (단위: 연간 만 원)")
-        st.caption("💡 이 그래프는 현재 입력한 소득과 가족 계획을 바탕으로 우리 가정의 생애주기를 살펴보기 위한 시뮬레이션입니다. 배우자의 직업과 미래 소득은 직업군별 기준곡선을 활용한 가정이며(미선택 시 본인 직업군 준용), 실제 미래 소득을 보장하거나 예측하는 값은 아닙니다.")
+        st.caption("단위: 연간 만 원 · 현재 입력한 소득·가족 계획을 반영한 가구 단위 시뮬레이션")
+        st.markdown("""
+<div style="background: rgba(30, 41, 59, 0.45); border: 1px solid #475569; border-radius: 8px; padding: 12px 15px; margin: 8px 0 12px 0; font-size: 13.5px; line-height: 1.7; color: #CBD5E1;">
+<b style="color:#F8FAFC;">소득 기준곡선의 출처와 산정 방식</b><br>
+• <b>직장인 기준곡선:</b> 국가데이터처 「2023년 국민이전계정」의 연령별 1인당 임금소득 흐름을 참고해 나침반에서 월소득 기준으로 재구성한 자체 기준곡선입니다. NTA의 1인당 금액은 해당 연령의 전체 인구를 기준으로 계산한 값이므로, 취업자 개인의 실제 평균임금과 같지 않으며 원자료 수치를 그대로 옮긴 곡선도 아닙니다.<br>
+• <b>자영업자 기준곡선:</b> NTA의 자영자 노동소득은 자영업자 개인의 사업소득 전체가 아니라 노동소득으로 분류된 일부이며, 전체 인구 기준 1인당 값입니다. 따라서 개인 사업소득 곡선으로 직접 사용하지 않았습니다. 국가데이터처 「2024년 가계금융복지조사」의 가구주 종사상지위별 소득 자료 등을 참고하고, 코로나 시기 왜곡을 정상화한다는 나침반의 가정을 반영해 별도로 구성한 시뮬레이션 기준곡선입니다.<br>
+• 각 기준곡선은 현재 입력한 소득을 기준으로 조정되며, 연령 사이 값은 보간합니다. 75세 이후는 추정 연장값입니다. 배우자의 미래 소득도 직업군 기준곡선을 적용한 가정이며 실제 미래 소득을 보장하거나 예측하지 않습니다.<br>
+자료: <a href="https://mods.go.kr/board.es?act=view&amp;bid=11898&amp;list_no=438783&amp;mid=a10301130100" target="_blank" style="color:#38BDF8;">국가데이터처, 2023년 국민이전계정</a> · <a href="https://mods.go.kr/boardDownload.es?bid=215&amp;list_no=434107&amp;seq=4" target="_blank" style="color:#38BDF8;">국가데이터처·한국은행·금융감독원, 2024년 가계금융복지조사</a>
+</div>
+""", unsafe_allow_html=True)
 
 #############    6.03.05.02 | 기본 재무·연금 파라미터 수집 및 정제
         cur_age = int(st.session_state.get("person_age", 35) or 35)
@@ -2938,7 +2913,9 @@ elif selected_page == "인생의 사계절":
         childcare_cost_man = 8064.0
         housing_cost_man = home_equity_man
         college_cost_man = 6632.0
-        child_other_wedding_support_man = 2800.0
+        # 가연 「2024 결혼비용 리포트」: 총 30,474만 원 중 신혼집 24,176만 원,
+        # 신혼집 외 비용 6,298만 원. 자녀 결혼은 양가가 절반씩 부담하는 합의에 따라 3,149만 원 반영.
+        child_other_wedding_support_man = (30474.0 - 24176.0) * 0.5
         child_wedding_cost_man = half_home_equity_man + child_other_wedding_support_man
 
         event_costs = []
@@ -3340,7 +3317,7 @@ elif selected_page == "인생의 사계절":
 # 6.03.06 | 고급 모드 — 3. 세대 계승 생애주기 재정곡선
 #--------------------------------------------------------
         st.markdown("### 3. 세대 계승 생애주기 재정곡선")
-        st.caption("※ 국가데이터처 국민이전계정(NTA) 공식 발표 자료 기준 (전 국민 1인당 평균 지표)")
+        st.caption("※ 국가데이터처 「2024년 국민이전계정」(2026. 9. 17. 발표) 기준 · 전 국민 1인당 평균 지표")
         col_m1, col_m2, col_m3 = st.columns(3)
         col_m1.metric("한국인 평균 흑자 진입", "28세", help="노동소득이 소비를 추월하는 연령")
         col_m2.metric("최대 흑자 정점", "45세", "연 1,932만 원")
@@ -3362,7 +3339,7 @@ elif selected_page == "인생의 사계절":
 <div style="display: flex; justify-content: center; margin-top: 14px;">
   <a href="{OFFICIAL_PDF_URL}" target="_blank" style="background:#1E293B; border:1px solid #475569; border-radius:8px; padding:12px 20px; text-decoration:none; color:#38BDF8 !important; font-size:15px; font-weight:700; display:inline-flex; align-items:center; justify-content:center; gap:8px; white-space: nowrap;">
     <span style="font-size:18px;">📄</span>
-    <span style="color:#38BDF8 !important; white-space: nowrap;">2024년 국가데이터처 통계 보도자료</span>
+    <span style="color:#38BDF8 !important; white-space: nowrap;">2024년 국민이전계정 보도자료</span>
   </a>
 </div>
 """, unsafe_allow_html=True)
