@@ -2691,12 +2691,12 @@ elif selected_page == "인생의 사계절":
 </div></div>
 """, unsafe_allow_html=True)
 
-        # ==============================================================================
-        # 6.03.05 | 우리 가정의 생애주기 곡선 & 흑자/적자 2단 연동 차트
-        # ==============================================================================
+        # ----------------------------------------------------------------------
+        # 6.03.05.01 | 헤더 타이틀 및 기준 지역 안내 카드
+        # ----------------------------------------------------------------------
         from plotly.subplots import make_subplots
 
-        st.markdown("### 2. 우리 가정의 생애주기 곡선")
+        st.markdown("### 2. 우리 가정 생애주기 재정곡선")
 
         # 기본 기준 지역을 '부산'으로 지정하고 현재 선택된 지역 정보 추출
         selected_region = st.session_state.get("housing_region")
@@ -2979,20 +2979,16 @@ elif selected_page == "인생의 사계절":
         else:
             spouse_scale = self_scale if (spouse_base is not None) else 0.0
 
-        # 8) 본인 및 배우자 소득 곡선 산출 (0세~85세 전체 축 정렬)
-        ages_sim = list(range(0, 86))
+        # ----------------------------------------------------------------------
+        # 6.03.05.07 | 연령별 소득·지출 흐름 시뮬레이션 루프 (20세 ~ 80세)
+        # ----------------------------------------------------------------------
+        ages_sim = list(range(20, 81))
         my_income_curve = []
         household_income_curve = []
         household_expense_curve = []
 
         for a in ages_sim:
-            if a < 20:
-                my_income_curve.append(0.0)
-                household_income_curve.append(0.0)
-                household_expense_curve.append(0.0)
-                continue
-
-            # --- [A. 본인 단독 근로소득 (20세 이상)] ---
+            # --- [A. 본인 단독 근로소득] ---
             if a < retire_age:
                 self_inc = extended_base_income(a, self_base) * self_scale * 12.0
                 self_inc += annual_bonus
@@ -3014,7 +3010,6 @@ elif selected_page == "인생의 사계절":
 
                     if not is_in_childcare and has_completed_childcare:
                         self_inc *= 0.80
-
             else:
                 self_inc = 0.0
 
@@ -3235,6 +3230,9 @@ elif selected_page == "인생의 사계절":
             row=2, col=1
         )
 
+        # ----------------------------------------------------------------------
+        # 6.03.05.10 | 2단 서브플롯 조립 및 Plotly 렌더링 (20세 ~ 80세)
+        # ----------------------------------------------------------------------
         fig_my_nta.update_layout(
             height=630,
             margin=dict(l=10, r=10, t=25, b=25),
@@ -3252,9 +3250,10 @@ elif selected_page == "인생의 사계절":
             hovermode="x unified"
         )
 
+        # X축: 20세부터 80세까지 10년 단위 정렬
         fig_my_nta.update_xaxes(
-            tickmode="linear", tick0=0, dtick=10,
-            range=[0, 85],
+            tickmode="linear", tick0=20, dtick=10,
+            range=[20, 80],
             tickangle=0,
             tickfont=dict(size=12, color="#94A3B8"),
             gridcolor="rgba(100, 116, 139, 0.18)",
@@ -3263,7 +3262,7 @@ elif selected_page == "인생의 사계절":
         )
         fig_my_nta.update_xaxes(title=dict(text="연령 (세)", font=dict(size=12, color="#94A3B8")), row=2, col=1)
 
-        # 두 케이스 모두 0 ~ 10,000~11,000(1억 원) 수준으로 통일
+        # Y축 상한선 일괄 적용
         fig_my_nta.update_yaxes(
             title=None,
             tickfont=dict(size=11, color="#94A3B8"),
@@ -3279,9 +3278,9 @@ elif selected_page == "인생의 사계절":
         st.markdown("<div style='height: 14px;'></div>", unsafe_allow_html=True)
 
         # ==============================================================================
-        # 6.03.06 | 국가데이터처 통계 (생애주기 소득과 소비)
+        # 6.03.06 | 3. 세대 계승 생애주기 재정곡선
         # ==============================================================================
-        st.markdown("### 3. 전 세대 생애주기 곡선(계승)")
+        st.markdown("### 3. 세대 계승 생애주기 재정곡선")
         st.caption("※ 국가데이터처 국민이전계정(NTA) 공식 발표 자료 기준 (전 국민 1인당 평균 지표)")
         col_m1, col_m2, col_m3 = st.columns(3)
         col_m1.metric("한국인 평균 흑자 진입", "28세", help="노동소득이 소비를 추월하는 연령")
