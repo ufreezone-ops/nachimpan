@@ -872,8 +872,10 @@ with st.sidebar:
         if "housing_ltv" in case_dict:
             st.session_state["housing_ltv_select"] = int(case_dict["housing_ltv"])
 
-        # 사례에 포함된 가족 계획은 입력 완료 상태로 시작
-        st.session_state["family_info_checked"] = True
+        # 가족 계획 데이터가 모두 포함된 사례만 입력 완료 상태로 시작
+        st.session_state["family_info_checked"] = all(
+            key in case_dict for key in ("marriage_plan", "child_plan", "housing_plan")
+        )
 
         st.session_state["started"] = True
         st.session_state["answers"] = {}
