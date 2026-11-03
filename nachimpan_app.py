@@ -2698,7 +2698,7 @@ elif selected_page == "인생의 사계절":
 
         st.markdown("### 2. 우리 가정의 생애주기 곡선")
 
-        # [신규] 기본 기준 지역을 '부산'으로 지정하고 현재 선택된 지역 정보 추출
+        # 기본 기준 지역을 '부산'으로 지정하고 현재 선택된 지역 정보 추출
         selected_region = st.session_state.get("housing_region")
         if not selected_region or selected_region == "지역 선택":
             selected_region = "부산"
@@ -2708,7 +2708,7 @@ elif selected_page == "인생의 사계절":
         region_apt_price = HOUSING_PRICE_DATA.get(selected_region, HOUSING_PRICE_DATA["부산"])[3] / 10.0
         home_equity_display = region_apt_price * (1.0 - selected_ltv / 100.0)
 
-        # [신규] 인터뷰이의 오해를 방지하는 명확한 기준 지역 안내 카드
+        # 기준 지역 안내 카드
         st.markdown(f"""
 <div style="background: rgba(30, 41, 59, 0.5); border: 1px solid #0284C7; border-radius: 8px; padding: 10px 14px; margin: 6px 0 12px 0; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px;">
     <div style="font-size: 14.5px; color: #F8FAFC;">
@@ -2757,7 +2757,7 @@ elif selected_page == "인생의 사계절":
         c_plan = st.session_state.get("child_plan", "미정")
         h_plan = st.session_state.get("housing_plan", "미정")
 
-        # 2) 결혼 타임라인 엄격 결정
+        # 2) 결혼 타임라인 결정
         marriage_start = None
         if m_plan == "계획 없음":
             marriage_start = None
@@ -2798,7 +2798,7 @@ elif selected_page == "인생의 사계절":
         spouse_age_diff = (spouse_age_input - cur_age) if spouse_age_input > 0 else 0
         retire_age = int(st.session_state.get("retirement_age", 60) or 60)
 
-        # 4) 자녀 수 엄격 검증 및 출산/대학(4년)/자녀결혼(5년) 타임라인
+        # 4) 자녀 수 검증 및 출산/대학/결혼 타임라인
         raw_c_count = st.session_state.get("child_count", "입력 안 함")
         existing_child_ages = []
         if raw_c_count == "1명":
@@ -2916,7 +2916,6 @@ elif selected_page == "인생의 사계절":
                 "color": "#F43F5E",
             })
 
-        # 0세부터 85세까지 이벤트 비용 매핑 (0~19세는 0)
         event_expense_by_age = {a: 0.0 for a in range(0, 86)}
         for event in event_costs:
             annual_addition = event["total"] / float(event["duration"])
@@ -2956,10 +2955,14 @@ elif selected_page == "인생의 사계절":
 
         cur_spouse_age = cur_age + spouse_age_diff
         sp_base_at_cur = extended_base_income(cur_spouse_age, spouse_base)
+        
+        # [핵심 수정 1: 동질혼 현실 반영]
+        # 배우자 소득이 입력되어 있으면 해당 비율을 쓰고, 
+        # 미입력(미혼 가상 배우자)인 경우 본인의 소득 스케일(self_scale)을 연동 적용!
         if monthly_income_spouse > 0 and sp_base_at_cur > 0:
             spouse_scale = monthly_income_spouse / sp_base_at_cur
         else:
-            spouse_scale = 1.0 if (spouse_base is not None) else 0.0
+            spouse_scale = self_scale if (spouse_base is not None) else 0.0
 
         # 8) 본인 및 배우자 소득 곡선 산출 (0세~85세 전체 축 정렬)
         ages_sim = list(range(0, 86))
@@ -2979,16 +2982,26 @@ elif selected_page == "인생의 사계절":
                 self_inc = extended_base_income(a, self_base) * self_scale * 12.0
                 self_inc += annual_bonus
 
-                if is_female:
-                    childcare_factors = []
-                    for child_start, child_end in childcare_windows:
-                        if child_start <= a < child_end:
-                            mid_c = (child_start + child_end - 1) / 2.0
-                            dist = abs(a - mid_c)
-                            dip_factor = 0.70 + (0.035 * (dist ** 2))
-                            childcare_factors.append(min(0.95, dip_factor))
-                    if childcare_factors:
-                        self_inc *= min(childcare_factors)
+                # [핵심 수정 2: 여성 출산·육아기 진짜 경력단절 및 복귀 페널티 모델링]
+                if is_female and childcare_windows:
+                    is_in_childcare = False
+                    has_completed_childcare = False
+
+                    for c_start, c_end in childcare_windows:
+                        if c_start <= a < c_end:
+                            is_in_childcare = True
+                            # 영아기(초기 2년): 급여 급감(휴직·돌봄, 35% 수준), 유아기(이후): 파트타임 등 50% 수준
+                            years_in = a - c_start
+                            drop_ratio = 0.35 if years_in <= 1 else 0.50
+                            self_inc *= drop_ratio
+                            break
+                        elif a >= c_end:
+                            has_completed_childcare = True
+
+                    # 육아기 종료 후 복귀: 통계청/여가부 팩트 기준 (단절 전 궤적의 80% 수준으로 영구 하향 정착)
+                    if not is_in_childcare and has_completed_childcare:
+                        self_inc *= 0.80
+
             else:
                 self_inc = 0.0
 
@@ -3001,16 +3014,6 @@ elif selected_page == "인생의 사계절":
             if has_future_or_current_spouse and (marriage_start is not None) and (a >= marriage_start):
                 if sp_a < retire_age:
                     spouse_inc = extended_base_income(sp_a, spouse_base) * spouse_scale * 12.0
-                    
-                    if not is_female:
-                        sp_factors = []
-                        for child_start, child_end in childcare_windows:
-                            if child_start <= a < child_end:
-                                mid_c = (child_start + child_end - 1) / 2.0
-                                dist = abs(a - mid_c)
-                                sp_factors.append(min(0.95, 0.70 + 0.035 * (dist ** 2)))
-                        if sp_factors:
-                            spouse_inc *= min(sp_factors)
 
             # --- [C. 가구 합산 소득] ---
             total_hh_inc = self_inc + spouse_inc + annual_other_income
@@ -3079,7 +3082,7 @@ elif selected_page == "인생의 사계절":
         max_income_val = max(household_income_curve) if household_income_curve else 6000.0
 
         y_max = max(max_income_val, max_typical_exp)
-        y_top = y_max * 1.15
+        y_top = y_max * 1.10
         alt_level_2 = y_top * 0.32
         alt_level_1 = y_top * 0.10
 
