@@ -1188,6 +1188,28 @@ selected_page = {
 }.get(selected, selected)
 
 
+#--------------------------------------------------------
+# 5.01.02 | 출처 자료실 이동 및 복귀 상태 관리
+#--------------------------------------------------------
+def _open_source_reference(source_id, origin_page, origin_anchor):
+    st.session_state["_active_source_id"] = source_id
+    st.session_state["_source_return_context"] = {
+        "page": origin_page,
+        "anchor": origin_anchor,
+    }
+    st.session_state["_pending_nav"] = "통계"
+    st.rerun()
+
+
+# 통계 자료실에서 다른 메뉴로 이동한 경우 이전 복귀 경로 폐기
+# 단, 복귀 버튼으로 원래 화면을 복원하는 중에는 유지한다.
+if (
+    selected_page != "통계"
+    and not st.session_state.get("_source_restore_anchor")
+):
+    st.session_state.pop("_active_source_id", None)
+    st.session_state.pop("_source_return_context", None)
+
 
 #########################################################
 # -------------------------------------------------------
@@ -2397,7 +2419,31 @@ elif selected_page == "인생의 사계절":
 #--------------------------------------------------------
     if not is_adv:
         # [기본 모드] 중복 제목 없이 3대 지표 + 내 계절 배지만 노출
-        st.caption("가벼운 3분 산책: 국가데이터처 「2024년 국민이전계정」의 공식 지표를 통해 내 인생의 사계절 중 어디쯤 와 있는지 확인합니다.")
+        # [출처 ID: 6030200-01]
+        st.markdown(
+            '<div id="source-anchor-nta-basic"></div>',
+            unsafe_allow_html=True
+        )
+
+        source_caption_col, source_button_col = st.columns([20, 1])
+
+        with source_caption_col:
+            st.caption(
+                "가벼운 3분 산책: 국가데이터처 「2024년 국민이전계정」의 "
+                "공식 지표를 통해 내 인생의 사계절 중 어디쯤 와 있는지 확인합니다."
+            )
+
+        with source_button_col:
+            if st.button(
+                "🧭",
+                key="source_nta_basic",
+                help="국가데이터처 2024년 국민이전계정 출처 보기"
+            ):
+                _open_source_reference(
+                    "6030200-01",
+                    "인생의 사계절",
+                    "source-anchor-nta-basic",
+                )
 
         if cur_age <= 27: cur_season, s_icon, s_color, s_desc = "봄 (준비기)", "🌱", "#4ADE80", "부모님의 부양으로 배우고 성장하는 계절"
         elif 28 <= cur_age <= 45: cur_season, s_icon, s_color, s_desc = "여름 (성장기)", "☀️", "#F59E0B", "성실하게 일하여 가정을 일구고 최대 흑자를 만드는 계절"
@@ -3354,7 +3400,32 @@ elif selected_page == "인생의 사계절":
 # 6.03.06 | 고급 모드 — 3. 세대 계승 생애주기 재정곡선
 #--------------------------------------------------------
         st.markdown("### 3. 세대 계승 생애주기 재정곡선")
-        st.caption("※ 국가데이터처 「2024년 국민이전계정」(2026. 9. 17. 발표) 기준 · 전 국민 1인당 평균 지표")
+
+        # [출처 ID 재사용: 6030200-01]
+        st.markdown(
+            '<div id="source-anchor-nta-generational"></div>',
+            unsafe_allow_html=True
+        )
+
+        source_caption_col, source_button_col = st.columns([20, 1])
+
+        with source_caption_col:
+            st.caption(
+                "※ 국가데이터처 「2024년 국민이전계정」"
+                "(2026. 9. 17. 발표) 기준 · 전 국민 1인당 평균 지표"
+            )
+
+        with source_button_col:
+            if st.button(
+                "🧭",
+                key="source_nta_generational",
+                help="국가데이터처 2024년 국민이전계정 출처 보기"
+            ):
+                _open_source_reference(
+                    "6030200-01",
+                    "인생의 사계절",
+                    "source-anchor-nta-generational",
+                )
         col_m1, col_m2, col_m3 = st.columns(3)
         col_m1.metric("한국인 평균 흑자 진입", "28세", help="노동소득이 소비를 추월하는 연령")
         col_m2.metric("최대 흑자 정점", "45세", "연 1,932만 원")
@@ -3424,9 +3495,55 @@ elif selected_page == "인생의 사계절":
 
 
 #########################################################
-# 6.04 | Tab 4 — 통계 자료실
+# 6.05 | Tab 5 — 통계 자료실
 #########################################################
 elif selected_page == "통계":
+    #--------------------------------------------------------
+    # 6.05.01.00 | 출처 자료 표시 및 원위치 복귀
+    #--------------------------------------------------------
+    st.markdown("""
+    <style>
+    div.st-key-source-return-bar {
+        position: sticky;
+        top: 0.5rem;
+        z-index: 999;
+        background: rgba(15, 23, 42, 0.97);
+        padding: 8px 12px;
+        border: 1px solid #475569;
+        border-radius: 10px;
+        margin-bottom: 12px;
+    }
+    div.st-key-source-return-bar button {
+        width: 100%;
+    }
+    </style>
+    """, unsafe_allow_html=True)
+
+    _active_source_id = st.session_state.get("_active_source_id")
+
+    if _active_source_id == "6030200-01":
+        with st.container(key="source-return-bar"):
+            if st.button(
+                "← 이전 위치로 돌아가기",
+                key="source_return_button",
+                use_container_width=True,
+            ):
+                _return_context = st.session_state.get(
+                    "_source_return_context"
+                )
+                if _return_context:
+                    st.session_state["_source_restore_anchor"] = (
+                        _return_context["anchor"]
+                    )
+                    st.session_state["_pending_nav"] = (
+                        _return_context["page"]
+                    )
+                    st.rerun()
+
+        st.caption(
+            "선택한 출처: 국가데이터처 「2024년 국민이전계정」"
+        )
+
     st.markdown("## 통계로 읽는 인생")
     st.caption("내 삶의 숫자를 사회 전체의 흐름과 나란히 놓고 살펴보는 자료실입니다. 통계는 정답이 아니라, 내 생각의 경계를 넓히는 참고선입니다.")
 
@@ -3805,3 +3922,35 @@ else:
                 st.session_state["advanced_mode"] = False
                 st.session_state["_pending_nav"] = "우리집 가계부"
                 st.rerun()
+
+
+
+#--------------------------------------------------------
+# 5.01.03 | 출처 복귀 — 원래 화면 위치 복원
+#--------------------------------------------------------
+_restore_anchor = st.session_state.get("_source_restore_anchor")
+
+if _restore_anchor:
+    st.components.v1.html(
+        f"""
+        <script>
+        try {{
+            const target = window.parent.document.getElementById(
+                "{_restore_anchor}"
+            );
+
+            if (target) {{
+                target.scrollIntoView({{
+                    behavior: "instant",
+                    block: "center"
+                }});
+            }}
+        }} catch(e) {{}}
+        </script>
+        """,
+        height=0
+    )
+
+    st.session_state.pop("_source_restore_anchor", None)
+    st.session_state.pop("_source_return_context", None)
+    st.session_state.pop("_active_source_id", None)
