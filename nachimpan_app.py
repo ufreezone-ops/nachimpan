@@ -3079,7 +3079,7 @@ elif selected_page == "인생의 사계절":
         max_income_val = max(household_income_curve) if household_income_curve else 6000.0
 
         y_max = max(max_income_val, max_typical_exp)
-        y_top = y_max * 1.10
+        y_top = y_max * 1.15
         alt_level_2 = y_top * 0.32
         alt_level_1 = y_top * 0.10
 
