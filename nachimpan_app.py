@@ -3216,7 +3216,7 @@ elif selected_page == "인생의 사계절":
         current_line_color = "#38BDF8"
         fig_my_nta.add_vline(x=cur_age, line_dash="solid", line_color=current_line_color, line_width=2.0)
         fig_my_nta.add_annotation(
-            x=cur_age, y=0.563,
+            x=cur_age, y=0.533,
             xref="x", yref="paper",
             text=f"현재 ({cur_age}세)",
             showarrow=False,
@@ -3228,7 +3228,7 @@ elif selected_page == "인생의 사계절":
         retire_line_color = "#F8FAFC"
         fig_my_nta.add_vline(x=retire_age, line_dash="dot", line_color=retire_line_color, line_width=2.2)
         fig_my_nta.add_annotation(
-            x=retire_age, y=0.563,
+            x=retire_age, y=0.533,
             xref="x", yref="paper",
             text=f"은퇴 ({retire_age}세)",
             showarrow=False,
