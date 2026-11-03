@@ -3154,12 +3154,12 @@ elif selected_page == "인생의 사계절":
         surplus_fine = [max(0.0, v) for v in flow_fine]
         deficit_fine = [min(0.0, v) for v in flow_fine]
 
-        # [수정 2] Y축 상한선을 소득과 지출 중 최대치를 품어내도록 일관되게 산출
-        max_exp_val = max(household_expense_curve[20:]) if household_expense_curve[20:] else 5000.0
-        max_income_val = max(household_income_curve[20:]) if household_income_curve[20:] else 6000.0
+        # [버그 수정] [20:] 슬라이싱을 제거하고 20~80세 전체 구간에서 정상적으로 최대치 산출
+        max_exp_val = max(household_expense_curve) if household_expense_curve else 5000.0
+        max_income_val = max(household_income_curve) if household_income_curve else 6000.0
 
         y_max = max(max_income_val, max_exp_val)
-        y_top = max(10000.0, y_max * 1.15)  # 최소 10,000(1억) 확보하여 두 사례 축을 통일
+        y_top = max(10000.0, y_max * 1.15)  # 최소 10,000(1억) 확보
         alt_level_2 = y_top * 0.35
         alt_level_1 = y_top * 0.12
 
@@ -3175,7 +3175,7 @@ elif selected_page == "인생의 사계절":
 
         for event in event_costs:
             event_mid_age = event.get("center", (event["start"] + event["end"] - 1) / 2.0)
-            if not 20 <= event_mid_age <= 85: continue
+            if not 20 <= event_mid_age <= 80: continue
 
             event_age_index = min(range(len(ages_sim)), key=lambda i: abs(ages_sim[i] - event_mid_age))
             event_y = household_expense_curve[event_age_index]
@@ -3203,7 +3203,7 @@ elif selected_page == "인생의 사계절":
                 )
             ), row=1, col=1)
 
-        # [Row 1] 가구 소득, 본인 단독소득 보조 점선, 가구 지출 (0~85세)
+        # [Row 1] 가구 소득, 본인 단독소득 보조 점선, 가구 지출 (20~80세)
         fig_my_nta.add_trace(go.Scatter(
             x=ages_sim, y=household_income_curve, mode="lines",
             line=dict(color="#10B981", width=3.4, shape='spline', smoothing=0.8),
@@ -3225,20 +3225,6 @@ elif selected_page == "인생의 사계절":
             name="가구 지출",
             hovertemplate="나이: %{x}세<br>연간 가구지출: <b>%{y:,.0f}만 원</b><extra></extra>"
         ), row=1, col=1)
-
-        # 0~19세 가구 형성 전 안내 음영
-        fig_my_nta.add_vrect(
-            x0=0, x1=20,
-            fillcolor="#334155", opacity=0.15,
-            layer="below", line_width=0,
-            row=1, col=1
-        )
-        fig_my_nta.add_annotation(
-            x=10, y=alt_level_1 * 0.7,
-            text="독립 전 성장기", showarrow=False,
-            font=dict(size=11, color="#64748B", weight="bold"),
-            row=1, col=1
-        )
 
         # 기준선 렌더링
         fig_my_nta.add_vline(x=cur_age, line_dash="solid", line_color="#38BDF8", line_width=2.0)
@@ -3262,7 +3248,7 @@ elif selected_page == "인생의 사계절":
             row=1, col=1
         )
 
-        # [Row 2] 0선 기준선 및 가구 순수지 영역 (0~85세)
+        # [Row 2] 0선 기준선 및 가구 순수지 영역 (20~80세)
         fig_my_nta.add_hline(y=0, line_dash="solid", line_color="#94A3B8", line_width=1.5, row=2, col=1)
 
         fig_my_nta.add_trace(go.Scatter(
