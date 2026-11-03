@@ -3271,7 +3271,7 @@ elif selected_page == "인생의 사계절":
             bgcolor="rgba(15, 23, 42, 0.8)", bordercolor="rgba(34, 197, 94, 0.5)", borderpad=2
         )
         fig_my_nta.add_annotation(
-            x=68, y=0.5,
+            x=68, y=0.55,
             xref="x", yref="y2 domain",
             yanchor="top",
             text="▼ 가구 적자 (지출 > 소득)", showarrow=False,
