@@ -3212,26 +3212,29 @@ elif selected_page == "인생의 사계절":
             hovertemplate="나이: %{x}세<br>연간 가구지출: <b>%{y:,.0f}만 원</b><extra></extra>"
         ), row=1, col=1)
 
-        # 기준선 렌더링
-        fig_my_nta.add_vline(x=cur_age, line_dash="solid", line_color="#38BDF8", line_width=2.0)
+        # 기준선 렌더링: 두 차트 사이 여백에 화살표 없는 라벨 표시
+        current_line_color = "#38BDF8"
+        fig_my_nta.add_vline(x=cur_age, line_dash="solid", line_color=current_line_color, line_width=2.0)
         fig_my_nta.add_annotation(
-            x=cur_age, y=alt_level_1,
+            x=cur_age, y=0.463,
+            xref="x", yref="paper",
             text=f"현재 ({cur_age}세)",
-            showarrow=True, arrowhead=2, arrowcolor="#38BDF8",
-            font=dict(size=11, color="#BAE6FD", weight="bold"), ay=-20,
-            bgcolor="rgba(15, 23, 42, 0.9)", bordercolor="#38BDF8", borderpad=3,
-            row=1, col=1
+            showarrow=False,
+            font=dict(size=11, color="#BAE6FD", weight="bold"),
+            bgcolor="rgba(15, 23, 42, 0.9)",
+            bordercolor=current_line_color, borderwidth=1.2, borderpad=3
         )
 
         retire_line_color = "#F8FAFC"
         fig_my_nta.add_vline(x=retire_age, line_dash="dot", line_color=retire_line_color, line_width=2.2)
         fig_my_nta.add_annotation(
-            x=retire_age, y=alt_level_2,
+            x=retire_age, y=0.463,
+            xref="x", yref="paper",
             text=f"은퇴 ({retire_age}세)",
-            showarrow=True, arrowhead=2, arrowcolor=retire_line_color,
-            font=dict(size=11, color="#F8FAFC", weight="bold"), ay=-20,
-            bgcolor="rgba(15, 23, 42, 0.9)", bordercolor=retire_line_color, borderpad=3,
-            row=1, col=1
+            showarrow=False,
+            font=dict(size=11, color=retire_line_color, weight="bold"),
+            bgcolor="rgba(15, 23, 42, 0.9)",
+            bordercolor=retire_line_color, borderwidth=1.2, borderpad=3
         )
 
         # [Row 2] 0선 기준선 및 가구 순수지 영역 (20~80세)
