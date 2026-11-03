@@ -3240,7 +3240,7 @@ elif selected_page == "인생의 사계절":
         ), row=2, col=1)
 
         fig_my_nta.add_annotation(
-            x=42, y=0,
+            x=45, y=-0.1,
             text="▲ 가구 흑자 (소득 > 지출)", showarrow=False,
             yshift=14,
             font=dict(size=10.5, color="#86EFAC", weight="bold"),
@@ -3248,7 +3248,7 @@ elif selected_page == "인생의 사계절":
             row=2, col=1
         )
         fig_my_nta.add_annotation(
-            x=68, y=0,
+            x=68, y=0.1,
             text="▼ 가구 적자 (지출 > 소득)", showarrow=False,
             yshift=-14,
             font=dict(size=10.5, color="#FCA5A5", weight="bold"),
