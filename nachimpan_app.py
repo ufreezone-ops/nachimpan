@@ -465,7 +465,7 @@ CASE_DATA_KEYS = [
 # 2.01.03 | 개발용 테스트 사례 및 Google Sheets 저장/불러오기
 from datetime import datetime
 
-# [인터뷰어 전용 체험 사례 2종]
+# [인터뷰어 전용 체험 사례 2종] - 기준 지역 '부산'으로 통일
 INTERVIEWER_CASES = {
     "case_32_female": {
         "person_name": "32세 여성 (미혼, 4년차)",
@@ -475,8 +475,8 @@ INTERVIEWER_CASES = {
         "job_spouse_form": "해당 없음",
         "career_stage": "🌿 4~9년 (성장기)",
         "income_self": 290, "income_spouse": 0, "income_other": 0,
-        "income_bonus": 200, "income_pension": 120, # 부부 합산 예상 국민연금
-        "expense_living": 130, "expense_loan": 0, "expense_other": 300, # 연간 비정기 지출 300만 원 (연간 입력)
+        "income_bonus": 200, "income_pension": 120,
+        "expense_living": 130, "expense_loan": 0, "expense_other": 300,
         "retirement_monthly_expenses": 180,
         "asset_cash": 800, "asset_financial": 700, "asset_home": 0, "asset_deposit": 0, "asset_other": 0,
         "debt_home": 0, "debt_other": 0,
@@ -486,6 +486,8 @@ INTERVIEWER_CASES = {
         "marriage_plan": "1~3년 내 결혼 생각 있음",
         "child_plan": "자녀 계획 있음",
         "housing_plan": "주택 구입 고려",
+        "housing_region": "부산",
+        "housing_ltv": 50,
         "income_pension_self": 60,
         "income_pension_spouse": 60,
         "pension_start_age": 65
@@ -498,9 +500,9 @@ INTERVIEWER_CASES = {
         "job_spouse_form": "직장인",
         "career_stage": "🌿 4~9년 (성장기)",
         "income_self": 260, "income_spouse": 360, "income_other": 0,
-        "income_bonus": 300, # 본인 100 + 배우자 200
-        "income_pension": 120, # 부부 합산 예상 국민연금
-        "expense_living": 330, "expense_loan": 100, "expense_other": 500, # 연간 비정기 지출 500만 원 (연간 입력)
+        "income_bonus": 300,
+        "income_pension": 120,
+        "expense_living": 330, "expense_loan": 100, "expense_other": 500,
         "retirement_monthly_expenses": 280,
         "asset_cash": 1500, "asset_financial": 2500, "asset_home": 40000, "asset_deposit": 0, "asset_other": 0,
         "debt_home": 15000, "debt_other": 0,
@@ -510,6 +512,8 @@ INTERVIEWER_CASES = {
         "marriage_plan": "결혼함",
         "child_plan": "계획 없음",
         "housing_plan": "현재 주거 유지",
+        "housing_region": "부산",
+        "housing_ltv": 50,
         "income_pension_self": 60,
         "income_pension_spouse": 60,
         "pension_start_age": 65
