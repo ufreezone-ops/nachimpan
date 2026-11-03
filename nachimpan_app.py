@@ -844,7 +844,8 @@ with st.sidebar:
             "inp_target_housing_age", "inp_target_retire_age", "show_ai_family_review",
             "_pending_family_draft", "_ai_timeline_proposal",
             "child_count", "child_count_select_direct",
-            "child_age", "child_age2", "child_age3", "child_age4", "spouse_age"
+            "child_age", "child_age2", "child_age3", "child_age4", "spouse_age",
+            "housing_region_select", "housing_ltv_select"
         ]
         for k in KEYS_TO_RESET_ON_CASE_LOAD:
             st.session_state.pop(k, None)
@@ -855,6 +856,7 @@ with st.sidebar:
         if "job_form" in case_dict: st.session_state["pills_job_self"] = case_dict["job_form"]
         if "career_stage" in case_dict: st.session_state["pills_career_stage"] = case_dict["career_stage"]
         if "job_spouse_form" in case_dict: st.session_state["pills_job_spouse"] = case_dict["job_spouse_form"]
+        if "housing_region" in case_dict: st.session_state["housing_region_select"] = case_dict["housing_region"]
         st.session_state["started"] = True
         st.session_state["answers"] = {}
         st.session_state["advanced_mode"] = True
@@ -2690,11 +2692,35 @@ elif selected_page == "인생의 사계절":
 """, unsafe_allow_html=True)
 
         # ==============================================================================
-        # 6.03.05 | 우리 가정의 생애주기 곡선 & 흑자/적자 2단 연동 차트 (0세~85세 완벽 동기화)
+        # 6.03.05 | 우리 가정의 생애주기 곡선 & 흑자/적자 2단 연동 차트
         # ==============================================================================
         from plotly.subplots import make_subplots
 
         st.markdown("### 2. 우리 가정의 생애주기 곡선")
+
+        # [신규] 기본 기준 지역을 '부산'으로 지정하고 현재 선택된 지역 정보 추출
+        selected_region = st.session_state.get("housing_region")
+        if not selected_region or selected_region == "지역 선택":
+            selected_region = "부산"
+            st.session_state["housing_region"] = "부산"
+
+        selected_ltv = float(st.session_state.get("housing_ltv", 50))
+        region_apt_price = HOUSING_PRICE_DATA.get(selected_region, HOUSING_PRICE_DATA["부산"])[3] / 10.0
+        home_equity_display = region_apt_price * (1.0 - selected_ltv / 100.0)
+
+        # [신규] 인터뷰이의 오해를 방지하는 명확한 기준 지역 안내 카드
+        st.markdown(f"""
+<div style="background: rgba(30, 41, 59, 0.5); border: 1px solid #0284C7; border-radius: 8px; padding: 10px 14px; margin: 6px 0 12px 0; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px;">
+    <div style="font-size: 14.5px; color: #F8FAFC;">
+        🏠 <b>부동산 산정 기준 지역: <span style="color: #38BDF8; font-size: 16px;">{selected_region}</span></b>
+        <span style="font-size: 13px; color: #94A3B8; margin-left: 8px;">(아파트 중위가격: <b>{region_apt_price/10000:.2f}억 원</b> · 대출 LTV {selected_ltv:.0f}% 적용 자기자금: <b>{home_equity_display/10000:.2f}억 원</b>)</span>
+    </div>
+    <div style="font-size: 12px; color: #CBD5E1; background: rgba(15, 23, 42, 0.6); padding: 3px 8px; border-radius: 4px;">
+        ※ 지역에 따라 결혼 주거지원비와 내 집 마련 규모가 크게 변동됩니다.
+    </div>
+</div>
+""", unsafe_allow_html=True)
+
         st.caption("※ 국가데이터처 국민이전계정(NTA) 통계 기반으로, 우리 가정의 소득·지출 및 주요 생애사건을 시뮬레이션한 곡선입니다. (단위: 연간 만 원)")
         st.caption("💡 이 그래프는 현재 입력한 소득과 가족 계획을 바탕으로 우리 가정의 생애주기를 살펴보기 위한 시뮬레이션입니다. 배우자의 직업과 미래 소득은 직업군별 기준곡선을 활용한 가정이며(미선택 시 본인 직업군 준용), 실제 미래 소득을 보장하거나 예측하는 값은 아닙니다.")
 
@@ -2826,16 +2852,9 @@ elif selected_page == "인생의 사계절":
             housing_start = max(cur_age + 5, 20)
             housing_end = housing_start + 4
 
-        # 6) 사건별 총비용 산출
-        selected_region = st.session_state.get("housing_region", "지역 선택")
-        selected_ltv = float(st.session_state.get("housing_ltv", 50))
-
-        if selected_region in HOUSING_PRICE_DATA:
-            apartment_price_man = HOUSING_PRICE_DATA[selected_region][3] / 10.0
-        else:
-            apartment_price_man = sum(v[3] for v in HOUSING_PRICE_DATA.values()) / len(HOUSING_PRICE_DATA) / 10.0
-
-        home_equity_man = apartment_price_man * (1.0 - selected_ltv / 100.0)
+        # 6) 사건별 총비용 산출 (기본 부산 기준)
+        apartment_price_man = region_apt_price
+        home_equity_man = home_equity_display
         half_home_equity_man = home_equity_man * 0.5
 
         marriage_cost_man = half_home_equity_man + 6298.0
@@ -2942,9 +2961,7 @@ elif selected_page == "인생의 사계절":
         else:
             spouse_scale = 1.0 if (spouse_base is not None) else 0.0
 
-        # ----------------------------------------------------------------------
         # 8) 본인 및 배우자 소득 곡선 산출 (0세~85세 전체 축 정렬)
-        # ----------------------------------------------------------------------
         ages_sim = list(range(0, 86))
         my_income_curve = []
         household_income_curve = []
@@ -2952,7 +2969,6 @@ elif selected_page == "인생의 사계절":
 
         for a in ages_sim:
             if a < 20:
-                # 0~19세: 가구 형성 이전 (성장기)
                 my_income_curve.append(0.0)
                 household_income_curve.append(0.0)
                 household_expense_curve.append(0.0)
@@ -3132,7 +3148,7 @@ elif selected_page == "인생의 사계절":
             hovertemplate="나이: %{x}세<br>연간 가구지출: <b>%{y:,.0f}만 원</b><extra></extra>"
         ), row=1, col=1)
 
-        # 0~19세 가구 형성 전 안내 음영 (통계청 비교 일치용)
+        # 0~19세 가구 형성 전 안내 음영
         fig_my_nta.add_vrect(
             x0=0, x1=20,
             fillcolor="#334155", opacity=0.15,
@@ -3228,7 +3244,6 @@ elif selected_page == "인생의 사계절":
             hovermode="x unified"
         )
 
-        # 가로축 범위를 0세 ~ 85세로 통일
         fig_my_nta.update_xaxes(
             tickmode="linear", tick0=0, dtick=10,
             range=[0, 85],
