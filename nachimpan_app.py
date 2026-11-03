@@ -2761,30 +2761,6 @@ elif selected_page == "인생의 사계절":
         region_apt_price = HOUSING_PRICE_DATA.get(selected_region, HOUSING_PRICE_DATA["부산"])[3] / 10.0
         home_equity_display = region_apt_price * (1.0 - selected_ltv / 100.0)
 
-        # 기준 지역 안내 카드
-        st.markdown(f"""
-<div style="background: rgba(30, 41, 59, 0.5); border: 1px solid #0284C7; border-radius: 8px; padding: 10px 14px; margin: 6px 0 12px 0; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px;">
-    <div style="font-size: 14.5px; color: #F8FAFC;">
-        🏠 <b>부동산 산정 기준 지역: <span style="color: #38BDF8; font-size: 16px;">{selected_region}</span></b>
-        <span style="font-size: 13px; color: #94A3B8; margin-left: 8px;">(아파트 중위가격: <b>{region_apt_price/10000:.2f}억 원</b> · 대출 LTV {selected_ltv:.0f}% 적용 자기자금: <b>{home_equity_display/10000:.2f}억 원</b>)</span>
-    </div>
-    <div style="font-size: 12px; color: #CBD5E1; background: rgba(15, 23, 42, 0.6); padding: 3px 8px; border-radius: 4px;">
-        ※ 지역에 따라 결혼 주거지원비와 내 집 마련 규모가 크게 변동됩니다.
-    </div>
-</div>
-""", unsafe_allow_html=True)
-
-        st.caption("단위: 연간 만 원 · 현재 입력한 소득·가족 계획을 반영한 가구 단위 시뮬레이션")
-        st.markdown("""
-<div style="background: rgba(30, 41, 59, 0.45); border: 1px solid #475569; border-radius: 8px; padding: 12px 15px; margin: 8px 0 12px 0; font-size: 13.5px; line-height: 1.7; color: #CBD5E1;">
-<b style="color:#F8FAFC;">소득 기준곡선의 출처와 산정 방식</b><br>
-• <b>직장인 기준곡선:</b> 국가데이터처 「2023년 국민이전계정」의 연령별 1인당 임금소득 흐름을 참고해 나침반에서 월소득 기준으로 재구성한 자체 기준곡선입니다. NTA의 1인당 금액은 해당 연령의 전체 인구를 기준으로 계산한 값이므로, 취업자 개인의 실제 평균임금과 같지 않으며 원자료 수치를 그대로 옮긴 곡선도 아닙니다.<br>
-• <b>자영업자 기준곡선:</b> NTA의 자영자 노동소득은 사업소득 전체가 아니라 노동소득으로 분류된 일부이며, 전체 인구 기준 1인당 값이므로 자영업자 개인의 실제 사업소득 곡선으로 직접 사용하지 않았습니다. 대신 국가데이터처 「2024년 가계금융복지조사」(2023년 소득 자료)의 가구주 종사상지위별 통계를 참고했습니다. 자영업자 가구의 평균 가구소득은 7,769만 원, 그중 사업소득은 4,680만 원, 재산소득은 634만 원입니다. 이 수치는 가구 단위 평균이며 연령별 개인 소득곡선이 아니므로, 나침반의 자영업자 연령별 기준곡선은 이 자료를 참고하되 코로나 시기 왜곡을 정상화한다는 별도 가정을 반영해 구성한 자체 시뮬레이션입니다.<br>
-• 각 기준곡선은 현재 입력한 소득을 기준으로 조정되며, 연령 사이 값은 보간합니다. 75세 이후는 추정 연장값입니다. 배우자의 미래 소득도 직업군 기준곡선을 적용한 가정이며 실제 미래 소득을 보장하거나 예측하지 않습니다.<br>
-자료: <a href="https://mods.go.kr/board.es?act=view&amp;bid=11898&amp;list_no=438783&amp;mid=a10301130100" target="_blank" style="color:#38BDF8;">국가데이터처, 2023년 국민이전계정</a> · <a href="https://mods.go.kr/boardDownload.es?bid=215&amp;list_no=434107&amp;seq=4" target="_blank" style="color:#38BDF8;">국가데이터처·한국은행·금융감독원, 2024년 가계금융복지조사</a>
-</div>
-""", unsafe_allow_html=True)
-
 #############    6.03.05.02 | 기본 재무·연금 파라미터 수집 및 정제
         cur_age = int(st.session_state.get("person_age", 35) or 35)
         user_gender = st.session_state.get("gender", "🙋‍♂️ 남성")
@@ -3322,6 +3298,32 @@ elif selected_page == "인생의 사계절":
         fig_my_nta.update_yaxes(range=[0, y_top], row=1, col=1)
 
         st.plotly_chart(fig_my_nta, use_container_width=True, config={"displayModeBar": False, "scrollZoom": False, "doubleClick": False, "showAxisDragHandles": False})
+
+        st.caption("단위: 연간 만 원 · 현재 입력한 소득·가족 계획을 반영한 가구 단위 시뮬레이션")
+
+        # 기준 지역 안내 카드
+        st.markdown(f"""
+<div style="background: rgba(30, 41, 59, 0.5); border: 1px solid #0284C7; border-radius: 8px; padding: 10px 14px; margin: 6px 0 12px 0; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px;">
+    <div style="font-size: 14.5px; color: #F8FAFC;">
+        🏠 <b>부동산 산정 기준 지역: <span style="color: #38BDF8; font-size: 16px;">{selected_region}</span></b>
+        <span style="font-size: 13px; color: #94A3B8; margin-left: 8px;">(아파트 중위가격: <b>{region_apt_price/10000:.2f}억 원</b> · 대출 LTV {selected_ltv:.0f}% 적용 자기자금: <b>{home_equity_display/10000:.2f}억 원</b>)</span>
+    </div>
+    <div style="font-size: 12px; color: #CBD5E1; background: rgba(15, 23, 42, 0.6); padding: 3px 8px; border-radius: 4px;">
+        ※ 지역에 따라 결혼 주거지원비와 내 집 마련 규모가 크게 변동됩니다.
+    </div>
+</div>
+""", unsafe_allow_html=True)
+
+        st.markdown("""
+<div style="background: rgba(30, 41, 59, 0.45); border: 1px solid #475569; border-radius: 8px; padding: 12px 15px; margin: 8px 0 12px 0; font-size: 13.5px; line-height: 1.7; color: #CBD5E1;">
+<b style="color:#F8FAFC;">소득 기준곡선의 출처와 산정 방식</b><br>
+• <b>직장인 기준곡선:</b> 국가데이터처 「2023년 국민이전계정」의 연령별 1인당 임금소득 흐름을 참고해 나침반에서 월소득 기준으로 재구성한 자체 기준곡선입니다. NTA의 1인당 금액은 해당 연령의 전체 인구를 기준으로 계산한 값이므로, 취업자 개인의 실제 평균임금과 같지 않으며 원자료 수치를 그대로 옮긴 곡선도 아닙니다.<br>
+• <b>자영업자 기준곡선:</b> NTA의 자영자 노동소득은 사업소득 전체가 아니라 노동소득으로 분류된 일부이며, 전체 인구 기준 1인당 값이므로 자영업자 개인의 실제 사업소득 곡선으로 직접 사용하지 않았습니다. 대신 국가데이터처 「2024년 가계금융복지조사」(2023년 소득 자료)의 가구주 종사상지위별 통계를 참고했습니다. 자영업자 가구의 평균 가구소득은 7,769만 원, 그중 사업소득은 4,680만 원, 재산소득은 634만 원입니다. 이 수치는 가구 단위 평균이며 연령별 개인 소득곡선이 아니므로, 나침반의 자영업자 연령별 기준곡선은 이 자료를 참고하되 코로나 시기 왜곡을 정상화한다는 별도 가정을 반영해 구성한 자체 시뮬레이션입니다.<br>
+• 각 기준곡선은 현재 입력한 소득을 기준으로 조정되며, 연령 사이 값은 보간합니다. 75세 이후는 추정 연장값입니다. 배우자의 미래 소득도 직업군 기준곡선을 적용한 가정이며 실제 미래 소득을 보장하거나 예측하지 않습니다.<br>
+자료: <a href="https://mods.go.kr/board.es?act=view&amp;bid=11898&amp;list_no=438783&amp;mid=a10301130100" target="_blank" style="color:#38BDF8;">국가데이터처, 2023년 국민이전계정</a> · <a href="https://mods.go.kr/boardDownload.es?bid=215&amp;list_no=434107&amp;seq=4" target="_blank" style="color:#38BDF8;">국가데이터처·한국은행·금융감독원, 2024년 가계금융복지조사</a>
+</div>
+""", unsafe_allow_html=True)
+
 
         st.markdown("<div style='height: 14px;'></div>", unsafe_allow_html=True)
 
