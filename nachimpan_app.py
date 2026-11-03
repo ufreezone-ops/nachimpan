@@ -1087,14 +1087,16 @@ nav_options = [
     "우리집\n가계부",
     "삶과\n생계수단",
     "인생의\n사계절",
-    "AI\n시선"
+    "AI\n시선",
+    "통계"
 ]
 
 _nav_targets = {
     "우리집 가계부": nav_options[0],
     "삶과 생계수단": nav_options[1],
     "인생의 사계절": nav_options[2],
-    "AI 시선": nav_options[3]
+    "AI 시선": nav_options[3],
+    "통계": nav_options[4]
 }
 
 if "active_navigation_key" not in st.session_state:
@@ -1118,10 +1120,30 @@ _nav_index = (
     else 0
 )
 
+st.markdown("""
+<style>
+.nav.nav-pills {
+    display: flex !important;
+    flex-wrap: nowrap !important;
+    overflow-x: auto !important;
+    overflow-y: hidden !important;
+    -webkit-overflow-scrolling: touch !important;
+    scrollbar-width: thin;
+}
+.nav.nav-pills .nav-item {
+    flex: 1 0 132px !important;
+    min-width: 132px !important;
+}
+.nav.nav-pills .nav-link {
+    white-space: pre-line !important;
+}
+</style>
+""", unsafe_allow_html=True)
+
 selected = option_menu(
     menu_title=None,
     options=nav_options,
-    icons=["", "", "", ""],
+    icons=["", "", "", "", ""],
     default_index=_nav_index,
     orientation="horizontal",
     key=_nav_widget_key,
@@ -1146,7 +1168,7 @@ selected = option_menu(
             "--hover-color": "#1E293B",
             "border-radius": "8px",
             "min-height": "48px",
-            "flex": "1"
+            "flex": "1 0 132px"
         },
         "nav-link-selected": {
             "background-color": "#EA580C",
@@ -1161,7 +1183,8 @@ selected_page = {
     "우리집\n가계부": "우리집 가계부",
     "삶과\n생계수단": "삶과 생계수단",
     "인생의\n사계절": "인생의 사계절",
-    "AI\n시선": "AI 시선"
+    "AI\n시선": "AI 시선",
+    "통계": "통계"
 }.get(selected, selected)
 
 
@@ -3240,20 +3263,20 @@ elif selected_page == "인생의 사계절":
         ), row=2, col=1)
 
         fig_my_nta.add_annotation(
-            x=45, y=-0.5,
+            x=45, y=0.04,
+            xref="x", yref="y2 domain",
+            yanchor="bottom",
             text="▲ 가구 흑자 (소득 > 지출)", showarrow=False,
-            yshift=14,
             font=dict(size=10.5, color="#86EFAC", weight="bold"),
-            bgcolor="rgba(15, 23, 42, 0.8)", bordercolor="rgba(34, 197, 94, 0.5)", borderpad=2,
-            row=2, col=1
+            bgcolor="rgba(15, 23, 42, 0.8)", bordercolor="rgba(34, 197, 94, 0.5)", borderpad=2
         )
         fig_my_nta.add_annotation(
-            x=68, y=0.5,
+            x=68, y=0.96,
+            xref="x", yref="y2 domain",
+            yanchor="top",
             text="▼ 가구 적자 (지출 > 소득)", showarrow=False,
-            yshift=-14,
             font=dict(size=10.5, color="#FCA5A5", weight="bold"),
-            bgcolor="rgba(15, 23, 42, 0.8)", bordercolor="rgba(239, 68, 68, 0.5)", borderpad=2,
-            row=2, col=1
+            bgcolor="rgba(15, 23, 42, 0.8)", bordercolor="rgba(239, 68, 68, 0.5)", borderpad=2
         )
 
 #############    6.03.05.10 | 2단 서브플롯 조립 및 Plotly 렌더링
@@ -3398,6 +3421,69 @@ elif selected_page == "인생의 사계절":
             if st.button("다음 →", key="seasons_next", use_container_width=True, type="primary"):
                 st.session_state["_pending_nav"] = "AI 시선"
                 st.rerun()
+
+
+#########################################################
+# 6.04 | Tab 4 — 통계 자료실
+#########################################################
+elif selected_page == "통계":
+    st.markdown("## 통계로 읽는 인생")
+    st.caption("내 삶의 숫자를 사회 전체의 흐름과 나란히 놓고 살펴보는 자료실입니다. 통계는 정답이 아니라, 내 생각의 경계를 넓히는 참고선입니다.")
+
+    with st.expander("1. 소득과 소비의 생애주기", expanded=True):
+        st.markdown("""
+**국민이전계정(NTA)이 보여주는 생애주기**
+
+- 평균적으로 노동소득이 소비를 넘어서는 흑자 진입 연령: **28세**
+- 평균 흑자 정점: **45세** (연간 1,932만 원)
+- 노동소득보다 소비가 다시 커지는 적자 재전환 연령: **61세**
+
+이 지표는 대한민국 전체 인구의 1인당 평균 흐름입니다. 개인이나 특정 가구의 실제 소득·지출과 같다는 뜻은 아닙니다. 내 가구의 생애주기 곡선과 사회 전체의 평균 곡선을 비교해 보는 기준선으로 활용합니다.
+
+자료: [국가데이터처 「2024년 국민이전계정」 보도자료](https://mods.go.kr/board.es?act=view&bid=11898&list_no=447028&mid=a10301130100)
+""")
+    with st.expander("2. 취업과 소득의 변화"):
+        st.markdown("""
+연령에 따라 임금소득과 노동소득이 어떻게 달라지는지 살펴보는 영역입니다.
+
+- 연령대별 임금·노동소득의 흐름
+- 직장인과 자영업자의 소득 구조 차이
+- 경력의 축적, 소득 정점, 노동시간과 소득의 관계
+
+평균값은 개인의 실제 경력이나 소득을 그대로 설명하지 않으므로, 자료의 조사 대상과 단위를 함께 확인합니다.
+""")
+    with st.expander("3. 결혼과 주거"):
+        st.markdown("""
+삶의 큰 전환기에 필요한 주거비와 자금 흐름을 살펴보는 영역입니다.
+
+- 결혼과 독립에 필요한 초기 자금
+- 전세·월세·주택 구입 비용과 가계 부담
+- 지역별 주택가격 차이와 내 집 마련 기간
+
+지역, 가구 형태, 대출 조건에 따라 결과가 달라지므로 전국 평균과 내가 선택한 지역의 수치를 구분해 읽습니다.
+""")
+    with st.expander("4. 출산과 양육"):
+        st.markdown("""
+자녀의 성장 단계에 따라 달라지는 가계 지출과 부모의 경제활동을 살펴보는 영역입니다.
+
+- 출산·양육 과정의 지출 변화
+- 자녀 교육비와 대학 진학 시기의 비용
+- 출산·육아에 따른 경력 공백과 재취업
+
+통계의 평균 비용이 모든 가정의 지출 기준은 아닙니다. 우리 집의 가족 계획과 실제 지출을 비교하는 참고자료로 봅니다.
+""")
+    with st.expander("5. 노후와 은퇴"):
+        st.markdown("""
+은퇴 이후의 생활 기간과 소득원을 살펴보는 영역입니다.
+
+- 기대수명과 은퇴 후 생활 기간
+- 공적연금 등 노후 소득원의 구조
+- 고령층의 소득·소비와 경제활동
+- 생계를 위해 반드시 일해야 하는 삶에서 벗어나는 시점
+
+은퇴 여부를 특정 나이 하나로 정하기보다, 생활비를 감당하는 소득 구조가 어떻게 이어지는지 살펴봅니다.
+""")
+    st.caption("※ 이 자료실은 주제별 통계와 출처를 차근차근 확장하기 위한 첫 구성입니다. 출처와 기준이 확인되지 않은 수치는 제시하지 않습니다.")
 
 
 #########################################################
