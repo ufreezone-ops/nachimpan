@@ -3266,7 +3266,16 @@ elif selected_page == "인생의 사계절":
 
             # --- [D. 가구 지출 곡선] ---
             if a < retire_age:
-                base_exp = cur_annual_expense
+                # 과거 결혼 사례: 결혼 전 20대는 독립 청년 기본생활비(월 120만 원)를 적용
+                if (
+                    m_plan == "결혼함"
+                    and marriage_start is not None
+                    and a < marriage_start
+                ):
+                    base_exp = 120.0 * 12.0
+                else:
+                    base_exp = cur_annual_expense
+
                 if (
                     has_future_or_current_spouse
                     and (marriage_start is not None)
