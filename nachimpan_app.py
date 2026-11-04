@@ -23,7 +23,6 @@ import streamlit as st
 import pandas as pd
 import numpy as np
 import plotly.graph_objects as go
-from streamlit_option_menu import option_menu
 
 #--------------------------------------------------------
 # 1.01.02 | Streamlit 기본 페이지 및 레이아웃 설정
