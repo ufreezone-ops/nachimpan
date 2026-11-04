@@ -1130,41 +1130,68 @@ st.markdown("""
     border-radius: 14px !important;
     box-shadow: 0 2px 8px rgba(15, 23, 42, 0.12) !important;
 }
-/* 모바일에서 오른쪽 끝에 겹쳐 표시하는 스크롤 안내 화살표 */
+/* 좌우 스크롤 상태에 따라 양쪽 화살표를 표시 */
+.st-key-main_navigation {
+    position: relative !important;
+}
 @media (max-width: 768px) {
+    .st-key-main_navigation::before,
     .st-key-main_navigation::after {
-        content: "›";
-        position: sticky;
-        right: -8px;
+        position: absolute;
+        top: 0;
+        bottom: 0;
         z-index: 10;
-        display: flex;
-        flex: 0 0 28px;
-        align-self: stretch;
+        display: none;
         align-items: center;
         justify-content: center;
-        margin-left: -28px;
+        width: 27px;
         color: #FFFFFF;
         font-size: 27px;
         font-weight: 800;
         line-height: 1;
-        background: linear-gradient(90deg, rgba(85, 107, 47, 0), #556B2F 58%);
         pointer-events: none;
     }
+    .st-key-main_navigation.nav-has-left::before {
+        content: "‹";
+        display: flex;
+        left: 0;
+        background: linear-gradient(90deg, #556B2F 42%, rgba(85, 107, 47, 0));
+    }
+    .st-key-main_navigation.nav-has-right::after {
+        content: "›";
+        display: flex;
+        right: 0;
+        background: linear-gradient(270deg, #556B2F 42%, rgba(85, 107, 47, 0));
+    }
 }
-/* PC에서는 스크롤 기능은 유지하고 스크롤 바만 숨겨 상하 정렬을 안정화 */
+/* PC에서는 스크롤 바를 얇게 복원 */
 @media (min-width: 769px) {
     .st-key-main_navigation {
-        scrollbar-width: none !important;
+        scrollbar-width: thin !important;
+        scrollbar-color: #A3B18A rgba(255, 255, 255, 0.12) !important;
     }
     .st-key-main_navigation::-webkit-scrollbar {
-        display: none !important;
-        height: 0 !important;
+        height: 4px !important;
+    }
+    .st-key-main_navigation::-webkit-scrollbar-track {
+        background: rgba(255, 255, 255, 0.12) !important;
+        border-radius: 4px !important;
+    }
+    .st-key-main_navigation::-webkit-scrollbar-thumb {
+        background: #A3B18A !important;
+        border-radius: 4px !important;
     }
 }
 /* 내부 가로 레이아웃의 기본 간격도 축소 */
 .st-key-main_navigation [data-testid="stHorizontalBlock"] {
+    width: max-content !important;
+    min-width: 100% !important;
     gap: 4px !important;
     column-gap: 4px !important;
+    justify-content: center !important;
+}
+.st-key-main_navigation.nav-is-overflowing [data-testid="stHorizontalBlock"] {
+    justify-content: flex-start !important;
 }
 /* 비선택 메뉴 */
 .st-key-main_navigation button {
@@ -1217,6 +1244,40 @@ with st.container(key="main_navigation", horizontal=True, wrap=False, gap=None):
         )
 
 selected_page = st.session_state["active_navigation_default"]
+
+# 메뉴의 실제 스크롤 위치에 따라 화살표와 PC 정렬 상태 갱신
+st.components.v1.html(
+    """
+    <script>
+    (() => {
+        try {
+            const doc = window.parent.document;
+            const nav = doc.querySelector(".st-key-main_navigation");
+            if (!nav) return;
+
+            const updateNavState = () => {
+                const maxScroll = Math.max(0, nav.scrollWidth - nav.clientWidth);
+                nav.classList.toggle("nav-has-left", nav.scrollLeft > 2);
+                nav.classList.toggle("nav-has-right", nav.scrollLeft < maxScroll - 2);
+                nav.classList.toggle("nav-is-overflowing", maxScroll > 2);
+            };
+
+            if (!nav.dataset.navScrollStateBound) {
+                nav.addEventListener("scroll", updateNavState, { passive: true });
+                if (window.parent.ResizeObserver) {
+                    const observer = new window.parent.ResizeObserver(updateNavState);
+                    observer.observe(nav);
+                    nav.dataset.navScrollObserver = "attached";
+                }
+                nav.dataset.navScrollStateBound = "true";
+            }
+            updateNavState();
+        } catch (e) {}
+    })();
+    </script>
+    """,
+    height=0,
+)
 
 
 #--------------------------------------------------------
