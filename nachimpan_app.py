@@ -1083,20 +1083,26 @@ if not st.session_state.started:
 _pending_nav = st.session_state.pop("_pending_nav", None)
 
 nav_options = [
-    "우리집\n가계부",
-    "삶과\n생계수단",
-    "인생의\n사계절",
-    "AI\n시선",
+    "우리집 가계부",
+    "삶과 생계수단",
+    "인생의 사계절",
+    "AI 시선",
     "통계"
 ]
 
-_nav_targets = {
-    "우리집 가계부": nav_options[0],
-    "삶과 생계수단": nav_options[1],
-    "인생의 사계절": nav_options[2],
-    "AI 시선": nav_options[3],
-    "통계": nav_options[4]
+_nav_targets = {name: name for name in nav_options}
+
+# 이전 두 줄 메뉴 상태가 남아 있는 세션도 새 한 줄 메뉴로 변환
+_legacy_nav_labels = {
+    "우리집\\n가계부": "우리집 가계부",
+    "삶과\\n생계수단": "삶과 생계수단",
+    "인생의\\n사계절": "인생의 사계절",
+    "AI\\n시선": "AI 시선",
 }
+st.session_state["active_navigation_default"] = _legacy_nav_labels.get(
+    st.session_state.get("active_navigation_default"),
+    st.session_state.get("active_navigation_default", nav_options[0]),
+)
 
 if "active_navigation_key" not in st.session_state:
     st.session_state.active_navigation_key = "main_navigation"
@@ -1113,54 +1119,52 @@ _nav_default = st.session_state.get(
     "active_navigation_default",
     nav_options[0]
 )
+if _nav_widget_key in st.session_state:
+    st.session_state[_nav_widget_key] = _legacy_nav_labels.get(
+        st.session_state[_nav_widget_key],
+        st.session_state[_nav_widget_key],
+    )
 
-# Streamlit 네이티브 메뉴: 기존 나침반의 남색·주황색 디자인 유지
+# 본문과 구분되는 독립형 네비게이션 바: 남색 바탕 + 회색 비선택 + 주황 선택
 st.markdown("""
 <style>
 [class*="st-key-main_navigation"] [data-baseweb="button-group"] {
     display: flex !important;
     flex-wrap: nowrap !important;
     align-items: stretch !important;
-    gap: 6px !important;
+    gap: 8px !important;
     width: 100% !important;
-    min-height: 136px !important;
-    padding: 10px 6px 8px 6px !important;
+    padding: 8px !important;
     background: #0F172A !important;
-    border: none !important;
-    border-radius: 0 !important;
+    border: 1px solid #334155 !important;
+    border-radius: 12px !important;
+    overflow-x: auto !important;
 }
-/* segmented_control의 실제 버튼 요소에 직접 높이를 적용 */
 [class*="st-key-main_navigation"] [data-baseweb="button-group"] button,
 [class*="st-key-main_navigation"] [data-testid="stBaseButton-segmented_control"] {
     box-sizing: border-box !important;
-    flex: 1 0 132px !important;
-    min-width: 132px !important;
-    height: 136px !important;
-    min-height: 136px !important;
+    flex: 1 0 148px !important;
+    min-width: 148px !important;
+    height: 52px !important;
+    min-height: 52px !important;
     margin: 0 !important;
-    padding: 18px 6px !important;
-    border: none !important;
+    padding: 10px 12px !important;
+    border: 1px solid #475569 !important;
     border-radius: 8px !important;
-    background: #1E293B !important;
-    color: #CBD5E1 !important;
-    font-size: 16px !important;
-    font-weight: 500 !important;
-    line-height: 1.5 !important;
-    white-space: pre-line !important;
-}
-[class*="st-key-main_navigation"] [data-baseweb="button-group"] button > div,
-[class*="st-key-main_navigation"] [data-testid="stBaseButton-segmented_control"] > div {
-    display: flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-    min-height: 100% !important;
+    background: #334155 !important;
+    color: #F1F5F9 !important;
+    font-size: 14px !important;
+    font-weight: 650 !important;
+    line-height: 1.2 !important;
+    white-space: nowrap !important;
 }
 [class*="st-key-main_navigation"] [data-testid="stBaseButton-segmented_controlActive"],
 [class*="st-key-main_navigation"] [data-baseweb="button-group"] button[aria-checked="true"] {
     background: #EA580C !important;
+    border-color: #FDBA74 !important;
     color: #FFFFFF !important;
     font-weight: 800 !important;
-    box-shadow: none !important;
+    box-shadow: 0 0 0 1px #FDBA74 !important;
 }
 </style>
 """, unsafe_allow_html=True)
@@ -1171,7 +1175,6 @@ selected = st.segmented_control(
     selection_mode="single",
     default=_nav_default,
     required=True,
-    format_func=lambda value: value.replace("\n", "  \n"),
     key=_nav_widget_key,
     label_visibility="collapsed",
     width="stretch",
@@ -1179,10 +1182,10 @@ selected = st.segmented_control(
 )
 
 selected_page = {
-    "우리집\n가계부": "우리집 가계부",
-    "삶과\n생계수단": "삶과 생계수단",
-    "인생의\n사계절": "인생의 사계절",
-    "AI\n시선": "AI 시선",
+    "우리집 가계부": "우리집 가계부",
+    "삶과 생계수단": "삶과 생계수단",
+    "인생의 사계절": "인생의 사계절",
+    "AI 시선": "AI 시선",
     "통계": "통계"
 }.get(selected, selected)
 
