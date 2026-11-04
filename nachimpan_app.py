@@ -1125,8 +1125,8 @@ st.markdown("""
     -webkit-overflow-scrolling: touch !important;
     padding: 8px !important;
     margin-bottom: 14px !important;
-    background: #1E293B !important;
-    border: 1px solid #475569 !important;
+    background: #556B2F !important;
+    border: 1px solid #788B4A !important;
     border-radius: 14px !important;
     box-shadow: 0 2px 8px rgba(15, 23, 42, 0.12) !important;
 }
