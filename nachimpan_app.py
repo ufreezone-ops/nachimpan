@@ -1130,12 +1130,12 @@ st.markdown("""
     border-radius: 14px !important;
     box-shadow: 0 2px 8px rgba(15, 23, 42, 0.12) !important;
 }
-/* 모바일에서 오른쪽에 메뉴가 더 있음을 알려주는 고정형 화살표 */
+/* 모바일에서 오른쪽 끝에 겹쳐 표시하는 스크롤 안내 화살표 */
 @media (max-width: 768px) {
     .st-key-main_navigation::after {
         content: "›";
         position: sticky;
-        right: 0;
+        right: -8px;
         z-index: 10;
         display: flex;
         flex: 0 0 28px;
@@ -1149,6 +1149,16 @@ st.markdown("""
         line-height: 1;
         background: linear-gradient(90deg, rgba(85, 107, 47, 0), #556B2F 58%);
         pointer-events: none;
+    }
+}
+/* PC에서는 스크롤 기능은 유지하고 스크롤 바만 숨겨 상하 정렬을 안정화 */
+@media (min-width: 769px) {
+    .st-key-main_navigation {
+        scrollbar-width: none !important;
+    }
+    .st-key-main_navigation::-webkit-scrollbar {
+        display: none !important;
+        height: 0 !important;
     }
 }
 /* 내부 가로 레이아웃의 기본 간격도 축소 */
