@@ -1192,20 +1192,14 @@ st.markdown("""
     }
 }
 
-/* PC에서는 각 탭 열을 내용 너비로 줄이고 전체 메뉴를 중앙 정렬 */
+/* PC에서는 실제 메뉴 컨테이너 자체에서 탭 묶음을 중앙 정렬 */
 @media (min-width: 769px) {
-    .st-key-main_navigation [data-testid="stHorizontalBlock"] {
-        display: flex !important;
-        width: 100% !important;
-        min-width: 100% !important;
+    .st-key-main_navigation {
         justify-content: center !important;
         align-items: center !important;
-        flex-wrap: nowrap !important;
     }
-    .st-key-main_navigation [data-testid="column"] {
+    .st-key-main_navigation > .stElementContainer {
         flex: 0 0 auto !important;
-        width: auto !important;
-        min-width: max-content !important;
     }
 }
 
