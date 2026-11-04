@@ -1111,15 +1111,29 @@ def _set_active_navigation(page):
 # segmented_control 대신 실제 선택 상태를 파이썬에서 직접 관리하는 버튼 메뉴
 st.markdown("""
 <style>
-/* 가로 컨테이너 자체에 스크롤 영역과 외곽 스타일 적용 */
+/* 메뉴 전체를 감싸는 외부 박스: 본문과 구분되는 네이비 패널 */
 .st-key-main_navigation {
+    box-sizing: border-box !important;
+    display: flex !important;
+    flex-direction: row !important;
+    flex-wrap: nowrap !important;
+    align-items: center !important;
+    gap: 4px !important;
+    column-gap: 4px !important;
     overflow-x: auto !important;
     overflow-y: hidden !important;
     -webkit-overflow-scrolling: touch !important;
-    padding: 5px !important;
-    background: #0F172A !important;
-    border: 1px solid #334155 !important;
-    border-radius: 12px !important;
+    padding: 8px !important;
+    margin-bottom: 14px !important;
+    background: #1E293B !important;
+    border: 1px solid #475569 !important;
+    border-radius: 14px !important;
+    box-shadow: 0 2px 8px rgba(15, 23, 42, 0.12) !important;
+}
+/* 내부 가로 레이아웃의 기본 간격도 축소 */
+.st-key-main_navigation [data-testid="stHorizontalBlock"] {
+    gap: 4px !important;
+    column-gap: 4px !important;
 }
 /* 비선택 메뉴 */
 .st-key-main_navigation button {
@@ -1161,7 +1175,7 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
-with st.container(key="main_navigation", horizontal=True, wrap=False, gap="small"):
+with st.container(key="main_navigation", horizontal=True, wrap=False, gap=None):
     for _i, _page in enumerate(nav_options):
         st.button(
             _page,
