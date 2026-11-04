@@ -3099,7 +3099,7 @@ elif selected_page == "인생의 사계절":
         if marriage_start is not None and 20 <= marriage_start <= 85 and m_plan != "계획 없음":
             is_past_marriage = (m_plan == "결혼함")
             event_costs.append({
-                "name": "본인 결혼" if not is_past_marriage else "결혼 완료",
+                "name": "나의 결혼",
                 "start": marriage_start,
                 "end": marriage_start + (1 if is_past_marriage else 2),
                 "center": marriage_start,
