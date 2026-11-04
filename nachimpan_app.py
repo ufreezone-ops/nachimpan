@@ -997,8 +997,7 @@ if _dev_enabled:
                 )
 
 
-#########################################################
-# 4.02 | 첫 진입 표지 및 인라인 시작 바
+########################################################## 4.02 | 첫 진입 표지 및 인라인 시작 바
 #########################################################
 #--------------------------------------------------------
 # 4.02.01 | 커버 이미지 렌더링 및 인라인 시작 폼
@@ -1078,7 +1077,7 @@ if not st.session_state.started:
 #########################################################
 
 #--------------------------------------------------------
-# 5.01.01 | 네이티브 segmented_control 네비게이션 렌더링
+# 5.01.01 | 기본 버튼 기반 메인 네비게이션 렌더링
 #--------------------------------------------------------
 _pending_nav = st.session_state.pop("_pending_nav", None)
 
@@ -1090,64 +1089,53 @@ nav_options = [
     "통계"
 ]
 
-_nav_targets = {name: name for name in nav_options}
-
 # 이전 두 줄 메뉴 상태가 남아 있는 세션도 새 한 줄 메뉴로 변환
 _legacy_nav_labels = {
-    "우리집\n가계부": "우리집 가계부",
-    "삶과\n생계수단": "삶과 생계수단",
-    "인생의\n사계절": "인생의 사계절",
-    "AI\n시선": "AI 시선",
+    "우리집\\n가계부": "우리집 가계부",
+    "삶과\\n생계수단": "삶과 생계수단",
+    "인생의\\n사계절": "인생의 사계절",
+    "AI\\n시선": "AI 시선",
 }
-st.session_state["active_navigation_default"] = _legacy_nav_labels.get(
+
+_active_nav = _legacy_nav_labels.get(
     st.session_state.get("active_navigation_default"),
     st.session_state.get("active_navigation_default", nav_options[0]),
 )
+if _active_nav not in nav_options:
+    _active_nav = nav_options[0]
+if _pending_nav in nav_options:
+    _active_nav = _pending_nav
+st.session_state["active_navigation_default"] = _active_nav
 
-if "active_navigation_key" not in st.session_state:
-    st.session_state.active_navigation_key = "main_navigation"
+def _set_active_navigation(page):
+    st.session_state["active_navigation_default"] = page
 
-if _pending_nav in _nav_targets:
-    st.session_state.active_navigation_key = (
-        "main_navigation_"
-        + str(list(_nav_targets.keys()).index(_pending_nav))
-    )
-    st.session_state.active_navigation_default = _nav_targets[_pending_nav]
-
-_nav_widget_key = st.session_state.active_navigation_key
-_nav_default = st.session_state.get(
-    "active_navigation_default",
-    nav_options[0]
-)
-if _nav_widget_key in st.session_state:
-    st.session_state[_nav_widget_key] = _legacy_nav_labels.get(
-        st.session_state[_nav_widget_key],
-        st.session_state[_nav_widget_key],
-    )
-
-# 본문과 구분되는 독립형 네비게이션 바: 남색 바탕 + 회색 비선택 + 청록 선택
+# segmented_control 대신 실제 선택 상태를 파이썬에서 직접 관리하는 버튼 메뉴
 st.markdown("""
 <style>
-[class*="st-key-main_navigation"] [data-baseweb="button-group"] {
+/* 메뉴는 한 줄로 유지하고, 모바일에서는 가로 스크롤 */
+.st-key-main_navigation [data-testid="stHorizontalBlock"] {
     display: flex !important;
     flex-wrap: nowrap !important;
-    align-items: stretch !important;
     gap: 8px !important;
-    width: 100% !important;
+    overflow-x: auto !important;
     padding: 8px !important;
     background: #0F172A !important;
     border: 1px solid #334155 !important;
     border-radius: 12px !important;
-    overflow-x: auto !important;
 }
-[class*="st-key-main_navigation"] [data-baseweb="button-group"] button,
-[class*="st-key-main_navigation"] [data-testid="stBaseButton-segmented_control"] {
+.st-key-main_navigation [data-testid="column"] {
+    flex: 0 0 148px !important;
+    min-width: 148px !important;
+    width: 148px !important;
+}
+/* 비선택 메뉴 */
+.st-key-main_navigation button {
     box-sizing: border-box !important;
-    flex: 1 0 148px !important;
+    width: 100% !important;
     min-width: 148px !important;
     height: 52px !important;
     min-height: 52px !important;
-    margin: 0 !important;
     padding: 10px 12px !important;
     border: 1px solid #475569 !important;
     border-radius: 8px !important;
@@ -1155,22 +1143,23 @@ st.markdown("""
     color: #F1F5F9 !important;
     font-size: 14px !important;
     font-weight: 650 !important;
-    line-height: 1.2 !important;
     white-space: nowrap !important;
+    box-shadow: none !important;
 }
-/* 선택되지 않은 메뉴는 터치 후 포커스가 남아도 선택색으로 바뀌지 않게 고정 */
-[class*="st-key-main_navigation"] [data-baseweb="button-group"] button:not([aria-checked="true"]):focus,
-[class*="st-key-main_navigation"] [data-baseweb="button-group"] button:not([aria-checked="true"]):active,
-[class*="st-key-main_navigation"] [data-testid="stBaseButton-segmented_control"]:not([aria-checked="true"]):focus,
-[class*="st-key-main_navigation"] [data-testid="stBaseButton-segmented_control"]:not([aria-checked="true"]):active {
+/* 터치 후 포커스가 남은 비선택 메뉴도 회색 유지 */
+.st-key-main_navigation button[kind="secondary"]:focus,
+.st-key-main_navigation button[kind="secondary"]:active,
+.st-key-main_navigation button[kind="secondary"]:hover {
     background: #334155 !important;
     border-color: #475569 !important;
     color: #F1F5F9 !important;
     box-shadow: none !important;
 }
-/* 실제 선택된 메뉴에만 청록색 적용 */
-[class*="st-key-main_navigation"] [data-testid="stBaseButton-segmented_controlActive"],
-[class*="st-key-main_navigation"] [data-baseweb="button-group"] button[aria-checked="true"] {
+/* 선택된 메뉴는 파이썬 상태에 따라 primary로 지정된 버튼 하나뿐 */
+.st-key-main_navigation button[kind="primary"],
+.st-key-main_navigation button[kind="primary"]:focus,
+.st-key-main_navigation button[kind="primary"]:active,
+.st-key-main_navigation button[kind="primary"]:hover {
     background: #0F766E !important;
     border-color: #5EEAD4 !important;
     color: #FFFFFF !important;
@@ -1180,25 +1169,20 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
-selected = st.segmented_control(
-    label="메인 메뉴",
-    options=nav_options,
-    selection_mode="single",
-    default=_nav_default,
-    required=True,
-    key=_nav_widget_key,
-    label_visibility="collapsed",
-    width="stretch",
-    wrap=False,
-)
+with st.container(key="main_navigation"):
+    _nav_cols = st.columns(len(nav_options), gap="small")
+    for _i, _page in enumerate(nav_options):
+        with _nav_cols[_i]:
+            st.button(
+                _page,
+                key=f"main_nav_button_{_i}",
+                type="primary" if _page == _active_nav else "secondary",
+                use_container_width=True,
+                on_click=_set_active_navigation,
+                args=(_page,),
+            )
 
-selected_page = {
-    "우리집 가계부": "우리집 가계부",
-    "삶과 생계수단": "삶과 생계수단",
-    "인생의 사계절": "인생의 사계절",
-    "AI 시선": "AI 시선",
-    "통계": "통계"
-}.get(selected, selected)
+selected_page = st.session_state["active_navigation_default"]
 
 
 #--------------------------------------------------------
@@ -1997,8 +1981,7 @@ if selected_page == "우리집 가계부":
                 mode="lines",
                 name="배우자 소득",
                 line=dict(width=2.8, dash="dash"),
-                hovertemplate=(
-                    "배우자 연간 소득: %{y:,.0f}만 원<extra></extra>"
+                hovertemplate=(                    "배우자 연간 소득: %{y:,.0f}만 원<extra></extra>"
                 )
             ))
 
@@ -2997,8 +2980,7 @@ elif selected_page == "인생의 사계절":
                 "start": marriage_start,
                 "end": marriage_start + (1 if is_past_marriage else 2),
                 "center": marriage_start,
-                "total": 0.0 if is_past_marriage else marriage_cost_man,
-                "display_total": marriage_cost_man,
+                "total": 0.0 if is_past_marriage else marriage_cost_man,                "display_total": marriage_cost_man,
                 "duration": 1 if is_past_marriage else 2,
                 "color": "#F59E0B",
                 "is_past": is_past_marriage
