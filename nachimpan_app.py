@@ -1111,59 +1111,87 @@ def _set_active_navigation(page):
 # segmented_control 대신 실제 선택 상태를 파이썬에서 직접 관리하는 버튼 메뉴
 st.markdown("""
 <style>
-/* 메뉴 전체를 감싸는 외부 박스: 본문과 구분되는 네이비 패널 */
-.st-key-main_navigation {
+/* 바깥 shell: 녹색 프레임과 화살표를 고정 */
+.st-key-main_navigation_shell {
+    position: relative !important;
     box-sizing: border-box !important;
-    display: flex !important;
-    flex-direction: row !important;
-    flex-wrap: nowrap !important;
-    align-items: center !important;
-    gap: 4px !important;
-    column-gap: 4px !important;
-    overflow-x: auto !important;
-    overflow-y: hidden !important;
-    -webkit-overflow-scrolling: touch !important;
-    padding: 8px !important;
+    width: 100% !important;
+    overflow: hidden !important;
     margin-bottom: 14px !important;
     background: #556B2F !important;
     border: 1px solid #788B4A !important;
     border-radius: 14px !important;
     box-shadow: 0 2px 8px rgba(15, 23, 42, 0.12) !important;
 }
-/* 좌우 스크롤 상태에 따라 양쪽 화살표를 표시 */
+
+/* 실제 탭만 스크롤되는 안쪽 영역 */
 .st-key-main_navigation {
-    position: relative !important;
+    box-sizing: border-box !important;
+    display: flex !important;
+    flex-direction: row !important;
+    flex-wrap: nowrap !important;
+    align-items: center !important;
+    width: 100% !important;
+    min-width: 0 !important;
+    gap: 4px !important;
+    column-gap: 4px !important;
+    overflow-x: auto !important;
+    overflow-y: hidden !important;
+    -webkit-overflow-scrolling: touch !important;
+    padding: 8px 32px !important;
+    margin: 0 !important;
+    background: transparent !important;
+    border: 0 !important;
+    border-radius: 0 !important;
 }
+
+/* 내부 버튼 줄: PC는 가운데, 모바일은 왼쪽부터 스크롤 */
+.st-key-main_navigation [data-testid="stHorizontalBlock"] {
+    box-sizing: border-box !important;
+    width: 100% !important;
+    min-width: 100% !important;
+    gap: 4px !important;
+    column-gap: 4px !important;
+    justify-content: center !important;
+    flex-wrap: nowrap !important;
+}
+
 @media (max-width: 768px) {
-    .st-key-main_navigation::before,
-    .st-key-main_navigation::after {
+    .st-key-main_navigation_shell::before,
+    .st-key-main_navigation_shell::after {
         position: absolute;
         top: 0;
         bottom: 0;
-        z-index: 10;
+        z-index: 20;
         display: none;
         align-items: center;
         justify-content: center;
-        width: 27px;
+        width: 32px;
         color: #FFFFFF;
         font-size: 27px;
         font-weight: 800;
         line-height: 1;
         pointer-events: none;
     }
-    .st-key-main_navigation.nav-has-left::before {
+    .st-key-main_navigation_shell.nav-has-left::before {
         content: "‹";
         display: flex;
         left: 0;
         background: linear-gradient(90deg, #556B2F 42%, rgba(85, 107, 47, 0));
     }
-    .st-key-main_navigation.nav-has-right::after {
+    .st-key-main_navigation_shell.nav-has-right::after {
         content: "›";
         display: flex;
         right: 0;
         background: linear-gradient(270deg, #556B2F 42%, rgba(85, 107, 47, 0));
     }
+    .st-key-main_navigation [data-testid="stHorizontalBlock"] {
+        width: max-content !important;
+        min-width: 100% !important;
+        justify-content: flex-start !important;
+    }
 }
+
 /* PC에서는 스크롤 바를 얇게 복원 */
 @media (min-width: 769px) {
     .st-key-main_navigation {
@@ -1181,17 +1209,6 @@ st.markdown("""
         background: #A3B18A !important;
         border-radius: 4px !important;
     }
-}
-/* 내부 가로 레이아웃의 기본 간격도 축소 */
-.st-key-main_navigation [data-testid="stHorizontalBlock"] {
-    width: max-content !important;
-    min-width: 100% !important;
-    gap: 4px !important;
-    column-gap: 4px !important;
-    justify-content: center !important;
-}
-.st-key-main_navigation.nav-is-overflowing [data-testid="stHorizontalBlock"] {
-    justify-content: flex-start !important;
 }
 /* 비선택 메뉴 */
 .st-key-main_navigation button {
@@ -1233,33 +1250,34 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
-with st.container(key="main_navigation", horizontal=True, wrap=False, gap=None):
-    for _i, _page in enumerate(nav_options):
-        st.button(
-            _page,
-            key=f"main_nav_button_{_i}",
-            type="primary" if _page == _active_nav else "secondary",
-            on_click=_set_active_navigation,
-            args=(_page,),
-        )
+with st.container(key="main_navigation_shell"):
+    with st.container(key="main_navigation", horizontal=True, wrap=False, gap=None):
+        for _i, _page in enumerate(nav_options):
+            st.button(
+                _page,
+                key=f"main_nav_button_{_i}",
+                type="primary" if _page == _active_nav else "secondary",
+                on_click=_set_active_navigation,
+                args=(_page,),
+            )
 
 selected_page = st.session_state["active_navigation_default"]
 
-# 메뉴의 실제 스크롤 위치에 따라 화살표와 PC 정렬 상태 갱신
+# 메뉴의 실제 스크롤 위치를 읽고, 고정 shell에 좌우 화살표 상태 반영
 st.components.v1.html(
     """
     <script>
     (() => {
         try {
             const doc = window.parent.document;
+            const shell = doc.querySelector(".st-key-main_navigation_shell");
             const nav = doc.querySelector(".st-key-main_navigation");
-            if (!nav) return;
+            if (!shell || !nav) return;
 
             const updateNavState = () => {
                 const maxScroll = Math.max(0, nav.scrollWidth - nav.clientWidth);
-                nav.classList.toggle("nav-has-left", nav.scrollLeft > 2);
-                nav.classList.toggle("nav-has-right", nav.scrollLeft < maxScroll - 2);
-                nav.classList.toggle("nav-is-overflowing", maxScroll > 2);
+                shell.classList.toggle("nav-has-left", nav.scrollLeft > 2);
+                shell.classList.toggle("nav-has-right", nav.scrollLeft < maxScroll - 2);
             };
 
             if (!nav.dataset.navScrollStateBound) {
@@ -1267,8 +1285,9 @@ st.components.v1.html(
                 if (window.parent.ResizeObserver) {
                     const observer = new window.parent.ResizeObserver(updateNavState);
                     observer.observe(nav);
-                    nav.dataset.navScrollObserver = "attached";
+                    observer.observe(shell);
                 }
+                window.parent.addEventListener("resize", updateNavState, { passive: true });
                 nav.dataset.navScrollStateBound = "true";
             }
             updateNavState();
