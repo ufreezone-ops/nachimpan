@@ -3208,6 +3208,7 @@ elif selected_page == "인생의 사계절":
         my_income_curve = []
         household_income_curve = []
         household_expense_curve = []
+        expense_debug_rows = []  # 임시 진단: 연령별 기본 지출·생애사건 지출 분리 확인
 
         for a in ages_sim:
             # --- [A. 본인 단독 근로소득] ---
@@ -3288,6 +3289,25 @@ elif selected_page == "인생의 사계절":
 
             total_hh_exp = base_exp + event_expense_by_age.get(a, 0.0)
             household_expense_curve.append(total_hh_exp)
+            if 20 <= a <= 27:
+                expense_debug_rows.append({
+                    "나이": a,
+                    "기본 지출(만원/년)": base_exp,
+                    "생애사건 추가 지출(만원/년)": event_expense_by_age.get(a, 0.0),
+                    "최종 가구 지출(만원/년)": total_hh_exp,
+                })
+
+        # 임시 진단 패널: 계산식과 그래프에는 영향을 주지 않음
+        with st.expander("🔎 임시 진단 — 20대 가구 지출 계산", expanded=True):
+            st.write({
+                "현재 나이": cur_age,
+                "결혼 상태(m_plan)": m_plan,
+                "결혼 시작 나이(marriage_start)": marriage_start,
+                "현재 가구 연간 기본 지출(만원)": cur_annual_expense,
+                "실제 결혼 나이 입력값": st.session_state.get("actual_marriage_age", 0),
+                "목표 결혼 나이 입력값": st.session_state.get("target_marriage_age", 0),
+            })
+            st.dataframe(pd.DataFrame(expense_debug_rows), use_container_width=True, hide_index=True)
 
 #############    6.03.05.08 | 가구 순수지 분리 및 Y축 자동 스케일링
         net_flow = [i - e for i, e in zip(household_income_curve, household_expense_curve)]
