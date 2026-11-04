@@ -1094,10 +1094,10 @@ _nav_targets = {name: name for name in nav_options}
 
 # 이전 두 줄 메뉴 상태가 남아 있는 세션도 새 한 줄 메뉴로 변환
 _legacy_nav_labels = {
-    "우리집\\n가계부": "우리집 가계부",
-    "삶과\\n생계수단": "삶과 생계수단",
-    "인생의\\n사계절": "인생의 사계절",
-    "AI\\n시선": "AI 시선",
+    "우리집\n가계부": "우리집 가계부",
+    "삶과\n생계수단": "삶과 생계수단",
+    "인생의\n사계절": "인생의 사계절",
+    "AI\n시선": "AI 시선",
 }
 st.session_state["active_navigation_default"] = _legacy_nav_labels.get(
     st.session_state.get("active_navigation_default"),
