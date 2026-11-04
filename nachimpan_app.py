@@ -1111,13 +1111,8 @@ def _set_active_navigation(page):
 # segmented_control 대신 실제 선택 상태를 파이썬에서 직접 관리하는 버튼 메뉴
 st.markdown("""
 <style>
-/* 메뉴는 한 줄로 유지하고, 모바일에서는 가로 스크롤 */
-.st-key-main_navigation [data-testid="stHorizontalBlock"] {
-    display: flex !important;
-    flex-direction: row !important;
-    flex-wrap: nowrap !important;
-    align-items: stretch !important;
-    gap: 6px !important;
+/* 가로 컨테이너 자체에 스크롤 영역과 외곽 스타일 적용 */
+.st-key-main_navigation {
     overflow-x: auto !important;
     overflow-y: hidden !important;
     -webkit-overflow-scrolling: touch !important;
@@ -1126,36 +1121,14 @@ st.markdown("""
     border: 1px solid #334155 !important;
     border-radius: 12px !important;
 }
-.st-key-main_navigation [data-testid="column"] {
-    flex: 0 0 112px !important;
-    flex-shrink: 0 !important;
-    min-width: 112px !important;
-    max-width: 112px !important;
-    width: 112px !important;
-}
-/* Streamlit 모바일 반응형 열 재배치 규칙보다 메뉴의 가로 고정 배치를 우선 */
-@media (max-width: 768px) {
-    .st-key-main_navigation [data-testid="stHorizontalBlock"] {
-        flex-direction: row !important;
-        flex-wrap: nowrap !important;
-        overflow-x: auto !important;
-    }
-    .st-key-main_navigation [data-testid="column"] {
-        flex: 0 0 112px !important;
-        flex-shrink: 0 !important;
-        min-width: 112px !important;
-        max-width: 112px !important;
-        width: 112px !important;
-    }
-}
 /* 비선택 메뉴 */
 .st-key-main_navigation button {
     box-sizing: border-box !important;
-    width: 100% !important;
-    min-width: 112px !important;
+    width: auto !important;
+    min-width: max-content !important;
     height: 46px !important;
     min-height: 46px !important;
-    padding: 7px 5px !important;
+    padding: 7px 10px !important;
     border: 1px solid #475569 !important;
     border-radius: 8px !important;
     background: #334155 !important;
@@ -1188,18 +1161,15 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
-with st.container(key="main_navigation"):
-    _nav_cols = st.columns(len(nav_options), gap="small")
+with st.container(key="main_navigation", horizontal=True, wrap=False, gap="small"):
     for _i, _page in enumerate(nav_options):
-        with _nav_cols[_i]:
-            st.button(
-                _page,
-                key=f"main_nav_button_{_i}",
-                type="primary" if _page == _active_nav else "secondary",
-                use_container_width=True,
-                on_click=_set_active_navigation,
-                args=(_page,),
-            )
+        st.button(
+            _page,
+            key=f"main_nav_button_{_i}",
+            type="primary" if _page == _active_nav else "secondary",
+            on_click=_set_active_navigation,
+            args=(_page,),
+        )
 
 selected_page = st.session_state["active_navigation_default"]
 
