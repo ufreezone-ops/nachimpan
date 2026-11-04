@@ -966,7 +966,7 @@ if _dev_enabled:
             st.session_state["started"] = True
             st.session_state["answers"] = {}
             st.session_state["anonymous_id"] = f"#DEV-{random.randint(100, 999)}"
-            st.session_state["active_navigation_default"] = "우리집\n가계부"
+            st.session_state["active_navigation_default"] = "우리집 가계부"
             st.session_state["active_navigation_key"] = "main_navigation"
             st.session_state["_pending_nav"] = "우리집 가계부"
             st.session_state["_dev_loaded_notice"] = _selected_case
