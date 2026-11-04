@@ -1114,9 +1114,13 @@ st.markdown("""
 /* 메뉴는 한 줄로 유지하고, 모바일에서는 가로 스크롤 */
 .st-key-main_navigation [data-testid="stHorizontalBlock"] {
     display: flex !important;
+    flex-direction: row !important;
     flex-wrap: nowrap !important;
+    align-items: stretch !important;
     gap: 6px !important;
     overflow-x: auto !important;
+    overflow-y: hidden !important;
+    -webkit-overflow-scrolling: touch !important;
     padding: 5px !important;
     background: #0F172A !important;
     border: 1px solid #334155 !important;
@@ -1124,8 +1128,25 @@ st.markdown("""
 }
 .st-key-main_navigation [data-testid="column"] {
     flex: 0 0 112px !important;
+    flex-shrink: 0 !important;
     min-width: 112px !important;
+    max-width: 112px !important;
     width: 112px !important;
+}
+/* Streamlit 모바일 반응형 열 재배치 규칙보다 메뉴의 가로 고정 배치를 우선 */
+@media (max-width: 768px) {
+    .st-key-main_navigation [data-testid="stHorizontalBlock"] {
+        flex-direction: row !important;
+        flex-wrap: nowrap !important;
+        overflow-x: auto !important;
+    }
+    .st-key-main_navigation [data-testid="column"] {
+        flex: 0 0 112px !important;
+        flex-shrink: 0 !important;
+        min-width: 112px !important;
+        max-width: 112px !important;
+        width: 112px !important;
+    }
 }
 /* 비선택 메뉴 */
 .st-key-main_navigation button {
