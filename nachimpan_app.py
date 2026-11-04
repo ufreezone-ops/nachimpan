@@ -1130,17 +1130,24 @@ st.markdown("""
 [class*="st-key-main_navigation"] [data-testid="stBaseButton-segmented_control"] {
     flex: 1 0 132px !important;
     min-width: 132px !important;
-    min-height: 48px !important;
+    height: 68px !important;
+    min-height: 68px !important;
     margin: 0 !important;
-    padding: 8px 4px !important;
+    padding: 10px 4px !important;
     border: none !important;
     border-radius: 8px !important;
     background: #1E293B !important;
     color: #CBD5E1 !important;
     font-size: 15px !important;
     font-weight: 500 !important;
-    line-height: 1.25 !important;
+    line-height: 1.3 !important;
     white-space: pre-line !important;
+}
+[class*="st-key-main_navigation"] [data-testid="stBaseButton-segmented_control"] > div {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    min-height: 100% !important;
 }
 [class*="st-key-main_navigation"] [data-testid="stBaseButton-segmented_controlActive"] {
     background: #EA580C !important;
