@@ -1125,7 +1125,7 @@ if _nav_widget_key in st.session_state:
         st.session_state[_nav_widget_key],
     )
 
-# 본문과 구분되는 독립형 네비게이션 바: 남색 바탕 + 회색 비선택 + 주황 선택
+# 본문과 구분되는 독립형 네비게이션 바: 남색 바탕 + 회색 비선택 + 청록 선택
 st.markdown("""
 <style>
 [class*="st-key-main_navigation"] [data-baseweb="button-group"] {
@@ -1158,13 +1158,24 @@ st.markdown("""
     line-height: 1.2 !important;
     white-space: nowrap !important;
 }
+/* 선택되지 않은 메뉴는 터치 후 포커스가 남아도 선택색으로 바뀌지 않게 고정 */
+[class*="st-key-main_navigation"] [data-baseweb="button-group"] button:not([aria-checked="true"]):focus,
+[class*="st-key-main_navigation"] [data-baseweb="button-group"] button:not([aria-checked="true"]):active,
+[class*="st-key-main_navigation"] [data-testid="stBaseButton-segmented_control"]:not([aria-checked="true"]):focus,
+[class*="st-key-main_navigation"] [data-testid="stBaseButton-segmented_control"]:not([aria-checked="true"]):active {
+    background: #334155 !important;
+    border-color: #475569 !important;
+    color: #F1F5F9 !important;
+    box-shadow: none !important;
+}
+/* 실제 선택된 메뉴에만 청록색 적용 */
 [class*="st-key-main_navigation"] [data-testid="stBaseButton-segmented_controlActive"],
 [class*="st-key-main_navigation"] [data-baseweb="button-group"] button[aria-checked="true"] {
-    background: #EA580C !important;
-    border-color: #FDBA74 !important;
+    background: #0F766E !important;
+    border-color: #5EEAD4 !important;
     color: #FFFFFF !important;
     font-weight: 800 !important;
-    box-shadow: 0 0 0 1px #FDBA74 !important;
+    box-shadow: 0 0 0 1px #5EEAD4 !important;
 }
 </style>
 """, unsafe_allow_html=True)
