@@ -1192,6 +1192,23 @@ st.markdown("""
     }
 }
 
+/* PC에서는 각 탭 열을 내용 너비로 줄이고 전체 메뉴를 중앙 정렬 */
+@media (min-width: 769px) {
+    .st-key-main_navigation [data-testid="stHorizontalBlock"] {
+        display: flex !important;
+        width: 100% !important;
+        min-width: 100% !important;
+        justify-content: center !important;
+        align-items: center !important;
+        flex-wrap: nowrap !important;
+    }
+    .st-key-main_navigation [data-testid="column"] {
+        flex: 0 0 auto !important;
+        width: auto !important;
+        min-width: max-content !important;
+    }
+}
+
 /* PC에서는 스크롤 바를 얇게 복원 */
 @media (min-width: 769px) {
     .st-key-main_navigation {
