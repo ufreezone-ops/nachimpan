@@ -1111,13 +1111,14 @@ def _set_active_navigation(page):
 # segmented_control 대신 실제 선택 상태를 파이썬에서 직접 관리하는 버튼 메뉴
 st.markdown("""
 <style>
-/* 메뉴는 한 줄로 유지하고, 모바일에서는 가로 스크롤 */
-.st-key-main_navigation [data-testid="stHorizontalBlock"] {
+/* columns를 사용하지 않고, 컨테이너의 직접 자식 버튼을 가로로 배치 */
+.st-key-main_navigation [data-testid="stVerticalBlock"] {
     display: flex !important;
     flex-direction: row !important;
     flex-wrap: nowrap !important;
     align-items: stretch !important;
     gap: 6px !important;
+    width: 100% !important;
     overflow-x: auto !important;
     overflow-y: hidden !important;
     -webkit-overflow-scrolling: touch !important;
@@ -1126,27 +1127,12 @@ st.markdown("""
     border: 1px solid #334155 !important;
     border-radius: 12px !important;
 }
-.st-key-main_navigation [data-testid="column"] {
+.st-key-main_navigation [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"],
+.st-key-main_navigation [data-testid="stVerticalBlock"] > [data-testid="element-container"] {
     flex: 0 0 112px !important;
-    flex-shrink: 0 !important;
+    width: 112px !important;
     min-width: 112px !important;
     max-width: 112px !important;
-    width: 112px !important;
-}
-/* Streamlit 모바일 반응형 열 재배치 규칙보다 메뉴의 가로 고정 배치를 우선 */
-@media (max-width: 768px) {
-    .st-key-main_navigation [data-testid="stHorizontalBlock"] {
-        flex-direction: row !important;
-        flex-wrap: nowrap !important;
-        overflow-x: auto !important;
-    }
-    .st-key-main_navigation [data-testid="column"] {
-        flex: 0 0 112px !important;
-        flex-shrink: 0 !important;
-        min-width: 112px !important;
-        max-width: 112px !important;
-        width: 112px !important;
-    }
 }
 /* 비선택 메뉴 */
 .st-key-main_navigation button {
@@ -1189,17 +1175,15 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 with st.container(key="main_navigation"):
-    _nav_cols = st.columns(len(nav_options), gap="small")
     for _i, _page in enumerate(nav_options):
-        with _nav_cols[_i]:
-            st.button(
-                _page,
-                key=f"main_nav_button_{_i}",
-                type="primary" if _page == _active_nav else "secondary",
-                use_container_width=True,
-                on_click=_set_active_navigation,
-                args=(_page,),
-            )
+        st.button(
+            _page,
+            key=f"main_nav_button_{_i}",
+            type="primary" if _page == _active_nav else "secondary",
+            use_container_width=True,
+            on_click=_set_active_navigation,
+            args=(_page,),
+        )
 
 selected_page = st.session_state["active_navigation_default"]
 
