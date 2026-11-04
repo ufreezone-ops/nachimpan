@@ -997,8 +997,7 @@ if _dev_enabled:
                 )
 
 
-########################################################## 4.02 | 첫 진입 표지 및 인라인 시작 바#########################################################
-#--------------------------------------------------------
+########################################################## 4.02 | 첫 진입 표지 및 인라인 시작 바##########################################################--------------------------------------------------------
 # 4.02.01 | 커버 이미지 렌더링 및 인라인 시작 폼
 #--------------------------------------------------------
 cover_file_path = None
@@ -1116,31 +1115,31 @@ st.markdown("""
 .st-key-main_navigation [data-testid="stHorizontalBlock"] {
     display: flex !important;
     flex-wrap: nowrap !important;
-    gap: 8px !important;
+    gap: 6px !important;
     overflow-x: auto !important;
-    padding: 8px !important;
+    padding: 5px !important;
     background: #0F172A !important;
     border: 1px solid #334155 !important;
     border-radius: 12px !important;
 }
 .st-key-main_navigation [data-testid="column"] {
-    flex: 0 0 148px !important;
-    min-width: 148px !important;
-    width: 148px !important;
+    flex: 0 0 112px !important;
+    min-width: 112px !important;
+    width: 112px !important;
 }
 /* 비선택 메뉴 */
 .st-key-main_navigation button {
     box-sizing: border-box !important;
     width: 100% !important;
-    min-width: 148px !important;
-    height: 52px !important;
-    min-height: 52px !important;
-    padding: 10px 12px !important;
+    min-width: 112px !important;
+    height: 46px !important;
+    min-height: 46px !important;
+    padding: 7px 5px !important;
     border: 1px solid #475569 !important;
     border-radius: 8px !important;
     background: #334155 !important;
     color: #F1F5F9 !important;
-    font-size: 14px !important;
+    font-size: 13px !important;
     font-weight: 650 !important;
     white-space: nowrap !important;
     box-shadow: none !important;
@@ -1997,8 +1996,7 @@ if selected_page == "우리집 가계부":
                 )
             ))
         # 75세 이후 추정 연장 구간
-        fig_income.add_vline(
-            x=75,
+        fig_income.add_vline(            x=75,
             line_dash="dot",
             line_color="#94A3B8",
             line_width=1.5,
@@ -2997,8 +2995,7 @@ elif selected_page == "인생의 사계절":
             })
         if housing_start is not None and housing_end is not None:
             event_costs.append({
-                "name": "주택구입",
-                "start": housing_start,
+                "name": "주택구입",                "start": housing_start,
                 "end": housing_end,
                 "total": housing_cost_man,
                 "display_total": housing_cost_man,
