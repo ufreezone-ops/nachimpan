@@ -1075,11 +1075,11 @@ if not st.session_state.started:
 #########################################################
 
 #########################################################
-# 5.01 | 상단 4대 탭 네비게이터 바
+# 5.01 | 상단 5개 메뉴 네비게이션 바
 #########################################################
 
 #--------------------------------------------------------
-# 5.01.01 | 네비게이션 옵션 및 option_menu 렌더링
+# 5.01.01 | 네이티브 segmented_control 네비게이션 렌더링
 #--------------------------------------------------------
 _pending_nav = st.session_state.pop("_pending_nav", None)
 
@@ -1114,69 +1114,55 @@ _nav_default = st.session_state.get(
     "active_navigation_default",
     nav_options[0]
 )
-_nav_index = (
-    nav_options.index(_nav_default)
-    if _nav_default in nav_options
-    else 0
-)
 
+# Streamlit 네이티브 메뉴: 기존 나침반의 남색·주황색 디자인 유지
 st.markdown("""
 <style>
-.nav.nav-pills {
+[class*="st-key-main_navigation"] [data-baseweb="button-group"] {
     display: flex !important;
     flex-wrap: nowrap !important;
-    overflow-x: auto !important;
-    overflow-y: hidden !important;
-    -webkit-overflow-scrolling: touch !important;
-    scrollbar-width: thin;
+    gap: 6px !important;
+    width: 100% !important;
+    padding: 10px 6px 8px 6px !important;
+    background: #0F172A !important;
+    border: none !important;
+    border-radius: 0 !important;
 }
-.nav.nav-pills .nav-item {
+[class*="st-key-main_navigation"] [data-testid="stBaseButton-segmented_control"] {
     flex: 1 0 132px !important;
     min-width: 132px !important;
-}
-.nav.nav-pills .nav-link {
+    min-height: 48px !important;
+    margin: 0 !important;
+    padding: 8px 4px !important;
+    border: none !important;
+    border-radius: 8px !important;
+    background: #1E293B !important;
+    color: #CBD5E1 !important;
+    font-size: 15px !important;
+    font-weight: 500 !important;
+    line-height: 1.25 !important;
     white-space: pre-line !important;
+}
+[class*="st-key-main_navigation"] [data-testid="stBaseButton-segmented_controlActive"] {
+    background: #EA580C !important;
+    color: #FFFFFF !important;
+    font-weight: 800 !important;
+    box-shadow: none !important;
 }
 </style>
 """, unsafe_allow_html=True)
 
-selected = option_menu(
-    menu_title=None,
+selected = st.segmented_control(
+    label="메인 메뉴",
     options=nav_options,
-    icons=["", "", "", "", ""],
-    default_index=_nav_index,
-    orientation="horizontal",
+    selection_mode="single",
+    default=_nav_default,
+    required=True,
+    format_func=lambda value: value.replace("\n", "  \n"),
     key=_nav_widget_key,
-    styles={
-        "container": {
-            "padding": "16px 6px 8px 6px",
-            "background-color": "#0F172A",
-            "border": "none",
-            "border-radius": "0px",
-            "margin": "0px",
-            "width": "100%"
-        },
-        "icon": {"display": "none"},
-        "nav-link": {
-            "font-size": "15px",
-            "white-space": "pre-line",
-            "line-height": "1.25",
-            "text-align": "center",
-            "margin": "0px 3px",
-            "padding": "8px 4px",
-            "color": "#CBD5E1",
-            "--hover-color": "#1E293B",
-            "border-radius": "8px",
-            "min-height": "48px",
-            "flex": "1 0 132px"
-        },
-        "nav-link-selected": {
-            "background-color": "#EA580C",
-            "color": "#FFFFFF",
-            "font-weight": "800",
-            "box-shadow": "none"
-        }
-    }
+    label_visibility="collapsed",
+    width="stretch",
+    wrap=False,
 )
 
 selected_page = {
