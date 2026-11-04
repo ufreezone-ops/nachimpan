@@ -1120,36 +1120,43 @@ st.markdown("""
 [class*="st-key-main_navigation"] [data-baseweb="button-group"] {
     display: flex !important;
     flex-wrap: nowrap !important;
+    align-items: stretch !important;
     gap: 6px !important;
     width: 100% !important;
+    min-height: 136px !important;
     padding: 10px 6px 8px 6px !important;
     background: #0F172A !important;
     border: none !important;
     border-radius: 0 !important;
 }
+/* segmented_control의 실제 버튼 요소에 직접 높이를 적용 */
+[class*="st-key-main_navigation"] [data-baseweb="button-group"] button,
 [class*="st-key-main_navigation"] [data-testid="stBaseButton-segmented_control"] {
+    box-sizing: border-box !important;
     flex: 1 0 132px !important;
     min-width: 132px !important;
-    height: 68px !important;
-    min-height: 68px !important;
+    height: 136px !important;
+    min-height: 136px !important;
     margin: 0 !important;
-    padding: 10px 4px !important;
+    padding: 18px 6px !important;
     border: none !important;
     border-radius: 8px !important;
     background: #1E293B !important;
     color: #CBD5E1 !important;
-    font-size: 15px !important;
+    font-size: 16px !important;
     font-weight: 500 !important;
-    line-height: 1.3 !important;
+    line-height: 1.5 !important;
     white-space: pre-line !important;
 }
+[class*="st-key-main_navigation"] [data-baseweb="button-group"] button > div,
 [class*="st-key-main_navigation"] [data-testid="stBaseButton-segmented_control"] > div {
     display: flex !important;
     align-items: center !important;
     justify-content: center !important;
     min-height: 100% !important;
 }
-[class*="st-key-main_navigation"] [data-testid="stBaseButton-segmented_controlActive"] {
+[class*="st-key-main_navigation"] [data-testid="stBaseButton-segmented_controlActive"],
+[class*="st-key-main_navigation"] [data-baseweb="button-group"] button[aria-checked="true"] {
     background: #EA580C !important;
     color: #FFFFFF !important;
     font-weight: 800 !important;
