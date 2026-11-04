@@ -3093,17 +3093,21 @@ elif selected_page == "인생의 사계절":
 
         event_costs = []
 
-        # [수정 1] 본인 결혼: 
-        # - 미혼(미래 결혼): 신혼집+결혼비용을 2년에 걸쳐 분산 반영 (duration=2)하여 지출선 천장 뚫림 방지
-        # - 기혼(과거 결혼): 이미 완료된 사건이므로 지출선에는 미반영(0원), 마커로만 단정하게 표시
+        # [수정 1] 본인 결혼:
+        # - 미래 결혼: 신혼집 부담분 + 신혼집 외 비용을 2년에 걸쳐 분산 반영
+        # - 과거 결혼: 신혼집 외 비용 6,298만 원 전액을 결혼 연령에 반영
+        #   (신혼집 부담분은 과거 실제 부담액을 확인할 수 없어 이번 계산에서는 제외)
         if marriage_start is not None and 20 <= marriage_start <= 85 and m_plan != "계획 없음":
             is_past_marriage = (m_plan == "결혼함")
+            past_marriage_cost_man = 6298.0
+            applied_marriage_cost_man = past_marriage_cost_man if is_past_marriage else marriage_cost_man
             event_costs.append({
                 "name": "나의 결혼",
                 "start": marriage_start,
                 "end": marriage_start + (1 if is_past_marriage else 2),
                 "center": marriage_start,
-                "total": 0.0 if is_past_marriage else marriage_cost_man,                "display_total": marriage_cost_man,
+                "total": applied_marriage_cost_man,
+                "display_total": applied_marriage_cost_man,
                 "duration": 1 if is_past_marriage else 2,
                 "color": "#F59E0B",
                 "is_past": is_past_marriage
@@ -3359,7 +3363,10 @@ elif selected_page == "인생의 사계절":
             disp_tot = event.get("display_total", event["total"])
             marker_size = max(16, 65 * (disp_tot / max_event_total))
 
-            hover_cost_str = f"비용: {disp_tot:,.0f}만 원" if not event.get("is_past") else "과거 완료된 생애 사건"
+            if event.get("name") == "나의 결혼" and event.get("is_past"):
+                hover_cost_str = f"지출곡선 반영 비용: {disp_tot:,.0f}만 원"
+            else:
+                hover_cost_str = f"비용: {disp_tot:,.0f}만 원" if not event.get("is_past") else "과거 완료된 생애 사건"
 
             fig_my_nta.add_trace(go.Scatter(
                 x=[event_mid_age],
