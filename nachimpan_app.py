@@ -3393,7 +3393,11 @@ elif selected_page == "인생의 사계절":
                 "현재 나이": cur_age,
                 "결혼 상태(m_plan)": m_plan,
                 "결혼 시작 나이(marriage_start)": marriage_start,
+                "현재 가구원 수": current_household_size,
+                "현재 연령·가구원 수 통계 월지출(만원)": current_expense_reference["monthly"] if current_expense_reference else None,
+                "현재 통계 표본 수": current_expense_reference["sample_n"] if current_expense_reference else None,
                 "현재 가구 연간 기본 지출(만원)": cur_annual_expense,
+                "현재 지출 보정계수": round(expense_scale_ratio, 4),
                 "실제 결혼 나이 입력값": st.session_state.get("actual_marriage_age", 0),
                 "목표 결혼 나이 입력값": st.session_state.get("target_marriage_age", 0),
             })
@@ -3606,10 +3610,14 @@ elif selected_page == "인생의 사계절":
 
         st.plotly_chart(fig_my_nta, use_container_width=True, config={"displayModeBar": False, "scrollZoom": False, "doubleClick": False, "showAxisDragHandles": False})
 
-        st.caption(
-            f"단위: 연간 만 원 · MDIS 2024 연령대·가구원 수별 가계지출 평균에 현재 가구 지출 수준({expense_scale_ratio:.1%})을 보정 적용했습니다. "
-            "표본 수 30 미만인 구간(특히 일부 3·4인 가구)은 변동 가능성이 커 참고값으로 해석해 주세요."
-        )
+        if current_expense_reference:
+            st.caption(
+                f"단위: 연간 만 원 · 현재 {cur_age}세·{current_household_size}인 가구의 통계 월평균 "
+                f"{current_expense_reference['monthly']:,.1f}만 원을 현재 입력 지출에 맞춰 {expense_scale_ratio:.1%}로 보정했습니다."
+            )
+        else:
+            st.caption("MDIS 지출 통계표를 읽지 못해 현재 입력한 연간 지출을 기준으로 표시하고 있습니다.")
+        st.caption("표본 수 30 미만인 구간(특히 일부 3·4인 가구)은 변동 가능성이 커 참고값으로 해석해 주세요.")
         st.markdown(
             '[지출 통계 출처 및 산출방법](https://github.com/ufreezone-ops/nachimpan/blob/dev/data/README_household_expenditure_2024.md) · '
             '[MDIS 자료 이용 안내](https://mdis.mods.go.kr/mobile/pageLink.do?link=mdisService)',
