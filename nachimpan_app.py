@@ -2964,7 +2964,15 @@ elif selected_page == "인생의 사계절":
         annual_other_income = float(getv("income_other", 0) or 0) * 12.0
         
         cur_annual_expense = float(getv("expense_living", 0) or 0) * 12.0 + float(getv("expense_loan", 0) or 0) * 12.0 + float(getv("expense_other", 0) or 0)
-        ret_annual_expense = float(getv("retirement_monthly_expenses", 200) or 0) * 12.0
+        ret_annual_expense = float(getv("retirement_monthly_expenses", 200) or 0)
+
+        # 2024 MDIS 가구주 연령대·가구원 수별 지출 통계표
+        household_expense_stats = pd.DataFrame()
+        try:
+            stats_path = Path(__file__).resolve().parent / "data" / "household_expenditure_2024_age_household_size.csv"
+            household_expense_stats = pd.read_csv(stats_path, dtype={"가구원수": str})
+        except Exception as e:
+            st.warning(f"가구 지출 통계표를 불러오지 못했습니다. 기존 입력 지출을 사용합니다. ({e})")
 
         monthly_pension = float(getv("income_pension", 0) or 0)
         annual_pension = monthly_pension * 12.0
@@ -3207,7 +3215,91 @@ elif selected_page == "인생의 사계절":
         else:
             spouse_scale = self_scale if (spouse_base is not None) else 0.0
 
-#############    6.03.05.07 | 연령별 소득·지출 흐름 시뮬레이션 루프
+#############    6.03.05.06.01 | MDIS 가구 지출 통계 매핑 및 현재 지출 보정
+        def household_age_band(age):
+            if age >= 80:
+                return "80세 이상"
+            lower = (int(age) // 5) * 5
+            return f"{lower}~{lower + 4}세"
+
+        def household_size_at_age(age):
+            size = 1
+            if marriage_start is not None and age >= marriage_start:
+                size += 1
+            for child_age_value in existing_child_ages:
+                birth_age = cur_age - child_age_value
+                if age >= birth_age:
+                    size += 1
+            if future_birth_age is not None and age >= future_birth_age:
+                size += 1
+            return min(size, 5)
+
+        def lookup_household_expense(age, household_size):
+            if household_expense_stats.empty:
+                return None
+
+            age_band = household_age_band(age)
+            size_label = str(household_size) if household_size <= 4 else "5인 이상"
+            amount_col = "월평균_가계지출_만원"
+
+            rows = household_expense_stats[
+                (household_expense_stats["가구주_연령대"] == age_band)
+                & (household_expense_stats["가구원수"] == size_label)
+            ]
+            rows = rows[rows[amount_col].notna()]
+
+            fallback = False
+            if rows.empty:
+                # 해당 연령대·가구원 수 셀이 비어 있으면 같은 연령대의 가장 가까운 가구원 수를 참고
+                same_age = household_expense_stats[
+                    (household_expense_stats["가구주_연령대"] == age_band)
+                    & (household_expense_stats[amount_col].notna())
+                ].copy()
+                if not same_age.empty:
+                    def size_rank(value):
+                        return 5 if value == "5인 이상" else int(value)
+                    same_age["_size_distance"] = same_age["가구원수"].map(
+                        lambda value: abs(size_rank(value) - household_size)
+                    )
+                    rows = same_age.sort_values("_size_distance").head(1)
+                else:
+                    # 연령대 셀 자체가 없을 때는 같은 가구원 수의 가장 가까운 연령대를 참고
+                    same_size = household_expense_stats[
+                        (household_expense_stats["가구원수"] == size_label)
+                        & (household_expense_stats[amount_col].notna())
+                    ].copy()
+                    if same_size.empty:
+                        return None
+                    same_size["_age_distance"] = same_size["가구주_연령대"].map(
+                        lambda value: abs(
+                            (80 if value == "80세 이상" else int(value.split("~")[0]) + 2)
+                            - age
+                        )
+                    )
+                    rows = same_size.sort_values("_age_distance").head(1)
+                fallback = True
+
+            row = rows.iloc[0]
+            used_size = row["가구원수"]
+            used_age_band = row["가구주_연령대"]
+            sample_n = int(row["표본수"])
+            return {
+                "monthly": float(row[amount_col]),
+                "sample_n": sample_n,
+                "age_band": used_age_band,
+                "household_size": used_size,
+                "fallback": fallback or used_size != size_label or used_age_band != age_band,
+                "small_sample": sample_n < 30,
+            }
+
+        current_household_size = household_size_at_age(cur_age)
+        current_expense_reference = lookup_household_expense(cur_age, current_household_size)
+        if current_expense_reference and current_expense_reference["monthly"] > 0 and cur_annual_expense > 0:
+            expense_scale_ratio = cur_annual_expense / (current_expense_reference["monthly"] * 12.0)
+        else:
+            expense_scale_ratio = 1.0
+
+        #############    6.03.05.07 | 연령별 소득·지출 흐름 시뮬레이션 루프
         ages_sim = list(range(20, 81))
         my_income_curve = []
         household_income_curve = []
@@ -3271,31 +3363,25 @@ elif selected_page == "인생의 사계절":
 
             # --- [D. 가구 지출 곡선] ---
             if a < retire_age:
-                # 과거 결혼 사례: 결혼 전 20대는 독립 청년 기본생활비(월 120만 원)를 적용
-                if (
-                    m_plan == "결혼함"
-                    and marriage_start is not None
-                    and a < marriage_start
-                ):
-                    base_exp = 120.0 * 12.0
+                # 연령대·가구원 수별 MDIS 평균에 현재 가구의 지출 수준 보정계수를 적용
+                household_size = household_size_at_age(a)
+                expense_reference = lookup_household_expense(a, household_size)
+                if expense_reference:
+                    base_exp = expense_reference["monthly"] * 12.0 * expense_scale_ratio
                 else:
                     base_exp = cur_annual_expense
-
-                if (
-                    has_future_or_current_spouse
-                    and (marriage_start is not None)
-                    and (a >= marriage_start)
-                    and (m_plan != "결혼함")
-                ):
-                    base_exp *= 1.25
             else:
                 base_exp = ret_annual_expense
 
             total_hh_exp = base_exp + event_expense_by_age.get(a, 0.0)
             household_expense_curve.append(total_hh_exp)
-            if 20 <= a <= 27:
+            if 20 <= a <= 29:
                 expense_debug_rows.append({
                     "나이": a,
+                    "가구원 수": household_size_at_age(a),
+                    "통계 기준 월지출(만원)": expense_reference["monthly"] if a < retire_age and expense_reference else None,
+                    "표본 수": expense_reference["sample_n"] if a < retire_age and expense_reference else None,
+                    "표본 주의": "30 미만" if a < retire_age and expense_reference and expense_reference["small_sample"] else "",
                     "기본 지출(만원/년)": base_exp,
                     "생애사건 추가 지출(만원/년)": event_expense_by_age.get(a, 0.0),
                     "최종 가구 지출(만원/년)": total_hh_exp,
@@ -3520,7 +3606,15 @@ elif selected_page == "인생의 사계절":
 
         st.plotly_chart(fig_my_nta, use_container_width=True, config={"displayModeBar": False, "scrollZoom": False, "doubleClick": False, "showAxisDragHandles": False})
 
-        st.caption("단위: 연간 만 원 · 현재 입력한 소득·가족 계획을 반영한 가구 단위 시뮬레이션")
+        st.caption(
+            f"단위: 연간 만 원 · MDIS 2024 연령대·가구원 수별 가계지출 평균에 현재 가구 지출 수준({expense_scale_ratio:.1%})을 보정 적용했습니다. "
+            "표본 수 30 미만인 구간(특히 일부 3·4인 가구)은 변동 가능성이 커 참고값으로 해석해 주세요."
+        )
+        st.markdown(
+            '[지출 통계 출처 및 산출방법](https://github.com/ufreezone-ops/nachimpan/blob/dev/data/README_household_expenditure_2024.md) · '
+            '[MDIS 자료 이용 안내](https://mdis.mods.go.kr/mobile/pageLink.do?link=mdisService)',
+            unsafe_allow_html=True
+        )
 
         # 기준 지역 안내 카드
         st.markdown(f"""
