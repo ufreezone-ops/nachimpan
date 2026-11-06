@@ -3464,7 +3464,7 @@ elif selected_page == "인생의 사계절":
                 mode="markers+text",
                 marker=dict(size=marker_size, color=event["color"], opacity=0.35, line=dict(color=event["color"], width=1.5)),
                 text=[event["name"]],
-                textposition="top center",
+                textposition="middle left" if event.get("name") == "나의 결혼" else "top center",
                 textfont=dict(size=11, color=event["color"], weight="bold"),
                 name=event["name"],
                 showlegend=False,
