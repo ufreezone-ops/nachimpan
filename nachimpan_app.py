@@ -3451,7 +3451,7 @@ elif selected_page == "인생의 사계절":
             event_y = household_expense_curve[event_age_index]
 
             disp_tot = event.get("display_total", event["total"])
-            marker_size = max(16, 65 * (disp_tot / max_event_total))
+            marker_size = 65 * ((disp_tot / max_event_total) ** 0.5)
 
             if event.get("name") == "나의 결혼" and event.get("is_past"):
                 hover_cost_str = f"지출곡선 반영 비용: {disp_tot:,.0f}만 원"
