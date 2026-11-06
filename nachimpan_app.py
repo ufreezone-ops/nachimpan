@@ -3377,7 +3377,7 @@ elif selected_page == "인생의 사계절":
 
             total_hh_exp = base_exp + event_expense_by_age.get(a, 0.0)
             household_expense_curve.append(total_hh_exp)
-            if 20 <= a <= 29:
+            if 30 <= a <= 45:
                 expense_debug_rows.append({
                     "나이": a,
                     "가구원 수": household_size_at_age(a),
@@ -3390,7 +3390,7 @@ elif selected_page == "인생의 사계절":
                 })
 
         # 임시 진단 패널: 계산식과 그래프에는 영향을 주지 않음
-        with st.expander("🔎 임시 진단 — 20대 가구 지출 계산", expanded=True):
+        with st.expander("🔎 임시 진단 — 30~45세 가구 지출 계산", expanded=True):
             st.write({
                 "현재 나이": cur_age,
                 "결혼 상태(m_plan)": m_plan,
