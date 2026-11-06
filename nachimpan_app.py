@@ -3463,11 +3463,8 @@ elif selected_page == "인생의 사계절":
             fig_my_nta.add_trace(go.Scatter(
                 x=[event_mid_age],
                 y=[event_y],
-                mode="markers+text",
+                mode="markers",
                 marker=dict(size=marker_size, color=event["color"], opacity=0.35, line=dict(color=event["color"], width=1.5)),
-                text=[event["name"]],
-                textposition="middle right" if event_mid_age < (min(ages_sim) + max(ages_sim)) / 2 else "middle left",
-                textfont=dict(size=11, color=event["color"], weight="bold"),
                 name=event["name"],
                 showlegend=False,
                 hovertemplate=(
@@ -3477,6 +3474,21 @@ elif selected_page == "인생의 사계절":
                     "<extra></extra>"
                 )
             ), row=1, col=1)
+
+            # 이벤트 타이틀: 버블 중심에서 반지름의 절반만큼 안쪽으로 배치
+            title_shift = marker_size * 0.25
+            title_on_right = event_mid_age < (min(ages_sim) + max(ages_sim)) / 2
+            fig_my_nta.add_annotation(
+                x=event_mid_age,
+                y=event_y,
+                xref="x",
+                yref="y",
+                xshift=title_shift if title_on_right else -title_shift,
+                text=event["name"],
+                showarrow=False,
+                xanchor="left" if title_on_right else "right",
+                font=dict(size=11, color=event["color"], weight="bold")
+            )
 
         # [Row 1] 가구 소득, 본인 단독소득 보조 점선, 가구 지출 (20~80세)
         fig_my_nta.add_trace(go.Scatter(
@@ -3572,14 +3584,15 @@ elif selected_page == "인생의 사계절":
 #############    6.03.05.10 | 2단 서브플롯 조립 및 Plotly 렌더링
         fig_my_nta.update_layout(
             height=630,
-            margin=dict(l=10, r=10, t=25, b=25),
+            # 가로보기에서 범례가 플롯 영역과 겹치지 않도록 상단 여백 확보
+            margin=dict(l=10, r=10, t=70, b=25),
             paper_bgcolor="rgba(0,0,0,0)",
             plot_bgcolor="rgba(0,0,0,0)",
             font=dict(color="#E2E8F0", size=12),
             legend=dict(
                 orientation="h",
                 yanchor="bottom",
-                y=1.03,
+                y=1.10,
                 xanchor="center",
                 x=0.5,
                 font=dict(size=11, color="#F1F5F9")
