@@ -503,6 +503,7 @@ INTERVIEWER_CASES = {
         "marriage_plan": "1~3년 내 결혼 생각 있음",
         "child_plan": "자녀 계획 있음",
         "housing_plan": "주택 구입 고려",
+        "target_housing_age": 39,  # 2024 주거실태조사 가중 중앙값
         "housing_region": "부산",
         "housing_region_select": "부산",    # 위젯에 직격 주입
         "housing_ltv": 50,
@@ -532,6 +533,7 @@ INTERVIEWER_CASES = {
         "marriage_plan": "결혼함",
         "child_plan": "계획 없음",
         "housing_plan": "현재 주거 유지",
+        "target_housing_age": 39,  # 2024 주거실태조사 가중 중앙값
         "housing_region": "부산",
         "housing_region_select": "부산",    # 위젯에 직격 주입
         "housing_ltv": 50,
