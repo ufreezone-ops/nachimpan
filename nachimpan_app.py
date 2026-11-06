@@ -3117,7 +3117,7 @@ elif selected_page == "인생의 사계절":
                 "total": applied_marriage_cost_man,
                 "display_total": applied_marriage_cost_man,
                 "duration": 1 if is_past_marriage else 2,
-                "color": "#F59E0B",
+                "color": "#3B82F6",
                 "is_past": is_past_marriage
             })
 
@@ -3464,7 +3464,7 @@ elif selected_page == "인생의 사계절":
                 mode="markers+text",
                 marker=dict(size=marker_size, color=event["color"], opacity=0.35, line=dict(color=event["color"], width=1.5)),
                 text=[event["name"]],
-                textposition="middle left" if event.get("name") == "나의 결혼" else "top center",
+                textposition="middle right" if event_mid_age < (min(ages_sim) + max(ages_sim)) / 2 else "middle left",
                 textfont=dict(size=11, color=event["color"], weight="bold"),
                 name=event["name"],
                 showlegend=False,
