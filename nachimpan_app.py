@@ -3508,7 +3508,7 @@ elif selected_page == "인생의 사계절":
 
         fig_my_nta.add_trace(go.Scatter(
             x=ages_sim, y=household_expense_curve, mode="lines",
-            line=dict(color="#F97316", width=2.8, dash="dash", shape='spline', smoothing=0.8),
+            line=dict(color="#F97316", width=3.2, dash="dot", shape='spline', smoothing=0.8),
             name="가구 지출",
             hovertemplate="나이: %{x}세<br>연간 가구지출: <b>%{y:,.0f}만 원</b><extra></extra>"
         ), row=1, col=1)
