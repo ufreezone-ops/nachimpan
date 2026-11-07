@@ -3206,7 +3206,28 @@ elif selected_page == "인생의 사계절":
         spouse_base = get_job_base(spouse_job) if has_future_or_current_spouse else None
 
         self_base_at_cur = extended_base_income(cur_age, self_base)
-        self_scale = (monthly_income_self / self_base_at_cur) if (self_base_at_cur > 0 and monthly_income_self > 0) else (1.0 if self_base else 0.0)
+
+        # 현재 입력소득은 경력단절 후 실제소득일 수 있으므로,
+        # 현재 연령에 적용되는 경력복귀 80% 감액을 기준곡선 배율 산정 전에 복원한다.
+        current_is_in_childcare = any(
+            c_start <= cur_age < c_end for c_start, c_end in childcare_windows
+        )
+        current_has_completed_childcare = any(
+            cur_age >= c_end for c_start, c_end in childcare_windows
+        )
+        current_career_recovery_ratio = (
+            0.80
+            if is_female and current_has_completed_childcare and not current_is_in_childcare
+            else 1.0
+        )
+        normalized_monthly_income_self = monthly_income_self / current_career_recovery_ratio
+        normalized_annual_bonus = annual_bonus / current_career_recovery_ratio
+
+        self_scale = (
+            normalized_monthly_income_self / self_base_at_cur
+            if (self_base_at_cur > 0 and monthly_income_self > 0)
+            else (1.0 if self_base else 0.0)
+        )
 
         cur_spouse_age = cur_age + spouse_age_diff
         sp_base_at_cur = extended_base_income(cur_spouse_age, spouse_base)
@@ -3312,7 +3333,7 @@ elif selected_page == "인생의 사계절":
             # --- [A. 본인 단독 근로소득] ---
             if a < retire_age:
                 self_inc = extended_base_income(a, self_base) * self_scale * 12.0
-                self_inc += annual_bonus
+                self_inc += normalized_annual_bonus
 
                 # 여성 출산·육아기 경력단절 및 80% 하향 복귀 모델링
                 if is_female and childcare_windows:
