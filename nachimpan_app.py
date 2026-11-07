@@ -3646,6 +3646,53 @@ elif selected_page == "인생의 사계절":
 
         st.plotly_chart(fig_my_nta, use_container_width=True, config={"displayModeBar": False, "scrollZoom": False, "doubleClick": False, "showAxisDragHandles": False})
 
+#############    6.03.05.10.01 | 과거 소득의 현재 가치 환산 안내
+        # 과거 연령의 소득수준을 현재 가치와 당시 명목가치로 나란히 보여준다.
+        # 기존 생애주기 곡선은 변경하지 않으며, 경력·육아 감액 전 기준과
+        # 실제 모델 곡선(감액 반영)을 구분해 해석하도록 한다.
+        if cur_age > 20 and self_base is not None:
+            historical_compare_age = max(20, cur_age - 13)
+            years_back = cur_age - historical_compare_age
+            annual_wage_growth_rate = 0.03
+            historical_year = date.today().year - years_back
+
+            historical_base_annual = (
+                extended_base_income(historical_compare_age, self_base)
+                * self_scale * 12.0
+                + normalized_annual_bonus
+            )
+            historical_current_value_monthly = historical_base_annual / 12.0
+            historical_nominal_monthly = (
+                historical_current_value_monthly
+                / ((1.0 + annual_wage_growth_rate) ** years_back)
+            )
+            historical_model_monthly = (
+                my_income_curve[historical_compare_age - 20] / 12.0
+            )
+
+            st.markdown("#### 시간을 맞춰 소득 비교하기")
+            st.caption(
+                f"{historical_year}년 당시의 소득 추정치를 연평균 임금상승률 "
+                f"{annual_wage_growth_rate:.0%}로 환산해 {date.today().year}년 가치와 비교합니다."
+            )
+            time_value_col1, time_value_col2 = st.columns(2)
+            time_value_col1.metric(
+                f"{historical_year}년 당시 가치",
+                f"{historical_nominal_monthly:,.0f}만 원/월",
+                help="현재 가치 환산액을 가정한 임금상승률로 역산한 금액입니다."
+            )
+            time_value_col2.metric(
+                f"{date.today().year}년 현재 가치",
+                f"{historical_current_value_monthly:,.0f}만 원/월",
+                help="과거 연령의 기준 소득을 현재 소득수준과 같은 시간 기준으로 환산한 값입니다."
+            )
+            st.caption(
+                f"{historical_compare_age}세 시점의 기준 소득을 비교한 값입니다. "
+                f"육아·경력 영향까지 반영한 기존 소득곡선은 월 "
+                f"{historical_model_monthly:,.0f}만 원이며, 위의 기준 소득과 구분해 봅니다. "
+                "임금상승률 3%는 비교를 위한 가정이며 물가상승률과 동일한 지표가 아닙니다."
+            )
+
         if current_expense_reference:
             st.caption(
                 f"단위: 연간 만 원 · 현재 {cur_age}세·{current_household_size}인 가구의 통계 월평균 "
