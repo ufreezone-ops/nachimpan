@@ -2971,7 +2971,7 @@ elif selected_page == "인생의 사계절":
         # 2024 MDIS 가구주 연령대·가구원 수별 지출 통계표
         household_expense_stats = pd.DataFrame()
         try:
-            stats_path = Path(__file__).resolve().parent / "data" / "household_expenditure_2024_age_household_size.csv"
+            stats_path = Path(__file__).resolve().parent / "data" / "국가데이터처_2024_가계동향조사_가구주연령대별가구원수별가계지출.csv"
             household_expense_stats = pd.read_csv(stats_path, dtype={"가구원수": str})
         except Exception as e:
             st.warning(f"가구 지출 통계표를 불러오지 못했습니다. 기존 입력 지출을 사용합니다. ({e})")
