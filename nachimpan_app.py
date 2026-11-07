@@ -3096,10 +3096,15 @@ elif selected_page == "인생의 사계절":
         childcare_cost_man = 8064.0
         housing_cost_man = home_equity_man
         college_cost_man = 6632.0
-        # 가연 「2024 결혼비용 리포트」: 총 30,474만 원 중 신혼집 24,176만 원,
-        # 신혼집 외 비용 6,298만 원. 자녀 결혼은 양가가 절반씩 부담하는 합의에 따라 3,149만 원 반영.
-        child_other_wedding_support_man = (30474.0 - 24176.0) * 0.5
-        child_wedding_cost_man = half_home_equity_man + child_other_wedding_support_man
+        # 자녀 결혼 지원 추정액 — 성별 입력 없이 양측 부모 지원 통계의 평균 적용
+        # 가연 2024: 신혼집 24,176만 원, 신혼집 외 6,298만 원
+        # 한국보건사회연구원 2020 표 3-2: 주거자금 중 부모 지원 7,616 / 전체 19,292
+        # 양가 부모 지원을 절반씩 나눈 한쪽 부모의 평균 지원 비율을 적용
+        child_housing_support_man = 24176.0 * (7616.0 / 19292.0) / 2.0
+        # 한국보건사회연구원 2020 표 3-10: 평균 부모 지원 1,745 / 평균 측별 비용 3,611
+        # 가연의 신혼집 외 비용은 양측 합산 총액이므로 절반을 한쪽 비용으로 보고 부모 지원 비율 적용
+        child_other_wedding_support_man = 6298.0 * (1745.0 / 3611.0) / 2.0
+        child_wedding_cost_man = child_housing_support_man + child_other_wedding_support_man
 
         event_costs = []
 
