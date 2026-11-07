@@ -4243,41 +4243,6 @@ elif selected_page == "통계":
 
 네 주체의 비대출 자금 합계는 1억 4,332만 원입니다. 이 금액 안에서 신랑 본인과 신랑 부모의 몫은 **77.1%**, 신부 본인과 신부 부모의 몫은 **22.9%**입니다. 전체 주거자금에는 대출 4,960만 원(25.7%)도 별도로 포함됩니다.
 
-            col_house, col_nonhouse = st.columns(2)
-            with col_house:
-                fig_house_share = go.Figure(data=[go.Pie(
-                    labels=["신랑 측", "신부 측"],
-                    values=[11048, 3284],
-                    hole=0.38,
-                    textinfo="label+percent",
-                    hovertemplate="%{label}<br>%{value:,.0f}만 원<extra></extra>",
-                    sort=False
-                )])
-                fig_house_share.update_layout(
-                    title="신혼집 비대출 자금 분담",
-                    showlegend=False,
-                    margin=dict(t=48, b=8, l=8, r=8),
-                    height=300
-                )
-                st.plotly_chart(fig_house_share, use_container_width=True, config={"displayModeBar": False})
-            with col_nonhouse:
-                fig_nonhouse_share = go.Figure(data=[go.Pie(
-                    labels=["남편측", "부인측"],
-                    values=[3732, 3489],
-                    hole=0.38,
-                    textinfo="label+percent",
-                    hovertemplate="%{label}<br>%{value:,.0f}만 원<extra></extra>",
-                    sort=False
-                )])
-                fig_nonhouse_share.update_layout(
-                    title="신혼집 외 비용의 양측 비중",
-                    showlegend=False,
-                    margin=dict(t=48, b=8, l=8, r=8),
-                    height=300
-                )
-                st.plotly_chart(fig_nonhouse_share, use_container_width=True, config={"displayModeBar": False})
-            st.caption("※ 신혼집은 대출을 제외한 네 주체의 자금(1억 4,332만 원) 중 양측 비중입니다. 신혼집 외는 표 3-10의 남편측 평균액 3,732만 원과 부인측 평균액 3,489만 원을 비교한 상대 비중이며, 두 금액을 공식 평균 총액으로 합산한 값은 아닙니다.")
-
 **자금 원천별 남편측·부인측 구성비**
 
 | 자금 원천 | 남편측 | 부인측 |
@@ -4318,6 +4283,32 @@ elif selected_page == "통계":
 
 원문: [한국보건사회연구원 연구보고서 PDF](https://repository.kihasa.re.kr/bitstream/201002/37080/2/%EC%97%B0%EA%B5%AC%EB%B3%B4%EA%B3%A0%EC%84%9C%28%EC%88%98%EC%8B%9C%29%202020-08.pdf)
 """)
+""")
+
+        col_house, col_nonhouse = st.columns(2)
+        with col_house:
+            fig_house_share = go.Figure(data=[go.Pie(
+                labels=["신랑 측", "신부 측"],
+                values=[11048, 3284],
+                hole=0.38,
+                textinfo="label+percent",
+                hovertemplate="%{label}<br>%{value:,.0f}만 원<extra></extra>",
+                sort=False
+            )])
+            fig_house_share.update_layout(title="신혼집 비대출 자금 분담", showlegend=False, margin=dict(t=48, b=8, l=8, r=8), height=300)
+            st.plotly_chart(fig_house_share, use_container_width=True, config={"displayModeBar": False})
+        with col_nonhouse:
+            fig_nonhouse_share = go.Figure(data=[go.Pie(
+                labels=["남편측", "부인측"],
+                values=[3732, 3489],
+                hole=0.38,
+                textinfo="label+percent",
+                hovertemplate="%{label}<br>%{value:,.0f}만 원<extra></extra>",
+                sort=False
+            )])
+            fig_nonhouse_share.update_layout(title="신혼집 외 비용의 양측 비중", showlegend=False, margin=dict(t=48, b=8, l=8, r=8), height=300)
+            st.plotly_chart(fig_nonhouse_share, use_container_width=True, config={"displayModeBar": False})
+        st.caption("※ 신혼집은 대출을 제외한 네 주체의 자금(1억 4,332만 원) 중 양측 비중입니다. 신혼집 외는 표 3-10의 남편측 평균액 3,732만 원과 부인측 평균액 3,489만 원을 비교한 상대 비중이며, 두 금액을 공식 평균 총액으로 합산한 값은 아닙니다.")
 
     st.caption("※ 이 자료실은 주제별 통계와 출처를 차근차근 확장하기 위한 첫 구성입니다. 출처와 기준이 확인되지 않은 수치는 제시하지 않습니다.")
 
