@@ -4284,6 +4284,24 @@ elif selected_page == "통계":
 원문: [한국보건사회연구원 연구보고서 PDF](https://repository.kihasa.re.kr/bitstream/201002/37080/2/%EC%97%B0%EA%B5%AC%EB%B3%B4%EA%B3%A0%EC%84%9C%28%EC%88%98%EC%8B%9C%29%202020-08.pdf)
 """)
 
+        # 가연 「2024 결혼비용 리포트」의 전체 평균: 신혼집과 신혼집 외 비용 비교
+        fig_total_wedding = go.Figure(data=[go.Pie(
+            labels=["신혼집", "신혼집 외 비용(혼수·예식·여행 등)"],
+            values=[24176, 6298],
+            hole=0.38,
+            textinfo="label+percent",
+            hovertemplate="%{label}<br>%{value:,.0f}만 원<extra></extra>",
+            sort=False
+        )])
+        fig_total_wedding.update_layout(
+            title="신혼집과 신혼집 외 결혼비용 — 가연 2024",
+            showlegend=False,
+            margin=dict(t=52, b=8, l=8, r=8),
+            height=340
+        )
+        st.plotly_chart(fig_total_wedding, use_container_width=True, config={"displayModeBar": False})
+        st.caption("※ 가연 「2024 결혼비용 리포트」 기준: 총 3억 474만 원 중 신혼집 2억 4,176만 원, 신혼집 외 비용 6,298만 원입니다. ‘신혼집 외 비용’에는 혼수뿐 아니라 예식·신혼여행 등도 포함되므로 혼수만의 금액을 뜻하지 않습니다.")
+
         col_house, col_nonhouse = st.columns(2)
         with col_house:
             fig_house_share = go.Figure(data=[go.Pie(
