@@ -4215,7 +4215,7 @@ elif selected_page == "통계":
 *상태: 분석 원칙과 자료 구축 방향을 정리한 연구 메모. 장기 임금 시계열의 출처·정의 검증과 연도별 지수 테이블 구축은 후속 작업입니다.*
 """)
 
-    with st.expander("7. 결혼비용의 두 얼굴: 신혼집과 그 밖의 결혼비용", expanded=True):
+    with st.expander("7. 결혼비용 통계: 신혼집은 신랑 측 77%, 그 외 비용은 비슷하게 나눠서", expanded=True):
         st.markdown("""
 **결혼비용은 어디에서, 누구의 자금으로 마련될까?**
 
@@ -4242,6 +4242,41 @@ elif selected_page == "통계":
 | 신부 부모 | 1,418만 원 | 7.3% | 9.9% |
 
 네 주체의 비대출 자금 합계는 1억 4,332만 원입니다. 이 금액 안에서 신랑 본인과 신랑 부모의 몫은 **77.1%**, 신부 본인과 신부 부모의 몫은 **22.9%**입니다. 전체 주거자금에는 대출 4,960만 원(25.7%)도 별도로 포함됩니다.
+
+            col_house, col_nonhouse = st.columns(2)
+            with col_house:
+                fig_house_share = go.Figure(data=[go.Pie(
+                    labels=["신랑 측", "신부 측"],
+                    values=[11048, 3284],
+                    hole=0.38,
+                    textinfo="label+percent",
+                    hovertemplate="%{label}<br>%{value:,.0f}만 원<extra></extra>",
+                    sort=False
+                )])
+                fig_house_share.update_layout(
+                    title="신혼집 비대출 자금 분담",
+                    showlegend=False,
+                    margin=dict(t=48, b=8, l=8, r=8),
+                    height=300
+                )
+                st.plotly_chart(fig_house_share, use_container_width=True, config={"displayModeBar": False})
+            with col_nonhouse:
+                fig_nonhouse_share = go.Figure(data=[go.Pie(
+                    labels=["남편측", "부인측"],
+                    values=[3732, 3489],
+                    hole=0.38,
+                    textinfo="label+percent",
+                    hovertemplate="%{label}<br>%{value:,.0f}만 원<extra></extra>",
+                    sort=False
+                )])
+                fig_nonhouse_share.update_layout(
+                    title="신혼집 외 비용의 양측 비중",
+                    showlegend=False,
+                    margin=dict(t=48, b=8, l=8, r=8),
+                    height=300
+                )
+                st.plotly_chart(fig_nonhouse_share, use_container_width=True, config={"displayModeBar": False})
+            st.caption("※ 신혼집은 대출을 제외한 네 주체의 자금(1억 4,332만 원) 중 양측 비중입니다. 신혼집 외는 표 3-10의 남편측 평균액 3,732만 원과 부인측 평균액 3,489만 원을 비교한 상대 비중이며, 두 금액을 공식 평균 총액으로 합산한 값은 아닙니다.")
 
 **자금 원천별 남편측·부인측 구성비**
 
