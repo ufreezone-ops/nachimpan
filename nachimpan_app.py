@@ -4309,7 +4309,7 @@ elif selected_page == "통계":
                 font=dict(size=17, color="#FFFFFF"),
                 bgcolor="#334155",
                 bordercolor="#334155",
-                borderpad=5
+                borderpad=4.25
             )]
         )
         st.plotly_chart(fig_total_wedding, use_container_width=True, config={"displayModeBar": False})
