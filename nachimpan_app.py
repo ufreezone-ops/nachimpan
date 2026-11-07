@@ -3651,7 +3651,7 @@ elif selected_page == "인생의 사계절":
         if cur_age > 20 and self_base is not None:
             historical_compare_age = max(20, cur_age - 13)
             years_back = cur_age - historical_compare_age
-            historical_year = 2024 - years_back
+            historical_year = date.today().year - years_back
             macro_index_stats = pd.DataFrame()
             try:
                 macro_path = Path(__file__).resolve().parent / "data" / "국가데이터처_소비자물가지수_및_고용노동부_임금지수_1965-2025.csv"
@@ -3667,7 +3667,7 @@ elif selected_page == "인생의 사계절":
                     return None
                 return float(matched.iloc[0][column])
 
-            wage_base_index = get_macro_value(2024, "moel_wage_index_2024_100")
+            wage_base_index = get_macro_value(2025, "moel_wage_index_2024_100")
             historical_wage_index = get_macro_value(historical_year, "moel_wage_index_2024_100")
             cpi_base_index = get_macro_value(2024, "cpi_index_2020_100")
             historical_cpi_index = get_macro_value(historical_year, "cpi_index_2020_100")
@@ -3736,20 +3736,20 @@ elif selected_page == "인생의 사계절":
 
             st.markdown("#### 시간을 맞춰 소득과 지출 비교하기")
             st.caption(
-                f"{historical_year}년과 2024년을 비교합니다. "
-                "소득은 고용노동부 임금지수, 지출은 국가데이터처 소비자물가지수를 각각 적용합니다."
+                f"{historical_year}년 소득은 2025년 임금통계 기준으로, 지출은 2024년 MDIS 기준으로 환산합니다. "
+                "소득은 임금지수, 지출은 소비자물가지수를 각각 적용합니다."
             )
             time_value_col1, time_value_col2 = st.columns(2)
             if historical_nominal_monthly is not None:
                 time_value_col1.metric(
                     f"{historical_year}년 소득 추정",
                     f"{historical_nominal_monthly:,.0f}만 원/월",
-                    help="2024년 기준 소득을 실제 임금지수의 연도 간 비율로 역산한 추정치입니다."
+                    help="2025년 임금지수 기준 소득을 실제 임금지수의 연도 간 비율로 역산한 추정치입니다."
                 )
                 time_value_col2.metric(
-                    "2024년 기준 소득",
+                    "2025년 임금통계 기준 소득",
                     f"{historical_current_value_monthly:,.0f}만 원/월",
-                    help="2024년 임금지수와 같은 시간 기준으로 본 기준 소득입니다."
+                    help="가장 최근 연간 임금통계인 2025년을 기준으로 본 소득 추정치입니다."
                 )
                 st.caption(
                     f"임금지수 환산 배율: {historical_wage_factor:.3f}배. "
