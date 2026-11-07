@@ -3646,71 +3646,25 @@ elif selected_page == "인생의 사계절":
 
         st.plotly_chart(fig_my_nta, use_container_width=True, config={"displayModeBar": False, "scrollZoom": False, "doubleClick": False, "showAxisDragHandles": False})
 
-#############    6.03.05.10.01 | 과거 소득의 현재 가치 환산 안내
-        # 과거 연령의 소득수준을 현재 가치와 당시 명목가치로 나란히 보여준다.
-        # 기존 생애주기 곡선은 변경하지 않으며, 경력·육아 감액 전 기준과
-        # 실제 모델 곡선(감액 반영)을 구분해 해석하도록 한다.
-        if cur_age > 20 and self_base is not None:
-            historical_compare_age = max(20, cur_age - 13)
-            years_back = cur_age - historical_compare_age
-            annual_wage_growth_rate = 0.03
-            historical_year = date.today().year - years_back
-
-            historical_current_value_monthly = (
-                extended_base_income(historical_compare_age, self_base) * self_scale
-            )
-            historical_nominal_monthly = (
-                historical_current_value_monthly
-                / ((1.0 + annual_wage_growth_rate) ** years_back)
-            )
-
-            # 월 기본급끼리 비교하도록 연간 상여금은 제외하고,
-            # 해당 연령의 육아·경력 회복 계수만 기존 시뮬레이션과 동일하게 적용한다.
-            historical_career_factor = 1.0
-            historical_is_in_childcare = False
-            historical_has_completed_childcare = False
-            for c_start, c_end in childcare_windows:
-                if c_start <= historical_compare_age < c_end:
-                    years_in = historical_compare_age - c_start
-                    historical_career_factor = 0.35 if years_in <= 1 else 0.50
-                    historical_is_in_childcare = True
-                    break
-                elif historical_compare_age >= c_end:
-                    historical_has_completed_childcare = True
-
-            if (
-                not historical_is_in_childcare
-                and historical_has_completed_childcare
-            ):
-                historical_career_factor = 0.80
-
-            historical_model_monthly = (
-                historical_current_value_monthly * historical_career_factor
-            )
-
-            st.markdown("#### 시간을 맞춰 소득 비교하기")
-            st.caption(
-                f"{historical_year}년 당시의 소득 추정치를 연평균 임금상승률 "
-                f"{annual_wage_growth_rate:.0%}로 환산해 {date.today().year}년 가치와 비교합니다."
-            )
-            time_value_col1, time_value_col2 = st.columns(2)
-            time_value_col1.metric(
-                f"{historical_year}년 당시 가치",
-                f"{historical_nominal_monthly:,.0f}만 원/월",
-                help="현재 가치 환산액을 가정한 임금상승률로 역산한 금액입니다."
-            )
-            time_value_col2.metric(
-                f"{date.today().year}년 현재 가치",
-                f"{historical_current_value_monthly:,.0f}만 원/월",
-                help="과거 연령의 기준 소득을 현재 소득수준과 같은 시간 기준으로 환산한 값입니다."
-            )
-            st.caption(
-                f"{historical_compare_age}세 시점의 기준 소득을 비교한 값입니다. "
-                f"육아·경력 영향까지 반영한 기존 소득곡선은 월 "
-                f"{historical_model_monthly:,.0f}만 원이며, 위의 기준 소득과 구분해 봅니다. "
-                "임금상승률 3%는 비교를 위한 가정이며 물가상승률과 동일한 지표가 아닙니다."
-            )
-
+#############    6.03.05.10.01 | [개발 메모] 시간축 보정 원칙 — 과거와 미래
+        # >>> 개발 중 계속 눈에 띄게 확인할 것: 돈의 액수만 비교하지 말고, 시간의 기준을 맞춘다. <<<
+        #
+        # [과거의 시간] 과거 소득을 현재 소득과 비교할 때는 당시 명목금액만 나란히 놓지 않는다.
+        # 임금상승률을 적용해 현재 가치로 환산한 값도 함께 살펴본다.
+        # 예: 2013년 추정 월급 211만 원 → 2026년 임금가치 환산 약 310만 원(연 3% 가정).
+        # 이 환산은 당시 실제 급여를 확인한 값이 아니라, 시대 간 소득수준 비교를 위한 추정이다.
+        #
+        # [현재의 시간] 현재 입력소득과 통계 기준소득을 비교할 때도 기준 시점을 분명히 한다.
+        # 경력단절·육아 등에 따른 실제 소득 감소와, 시간 경과에 따른 임금수준 변화는 섞지 않는다.
+        #
+        # [미래의 시간] 시간축 보정은 과거 비교만으로 완성되지 않는다. 이것은 절반이다.
+        # 앞으로 받을 연금과 은퇴 후 생활비도 수령·지출 시점의 가치로 함께 바라봐야 한다.
+        # 미래 연금의 증가·물가 반영, 은퇴 후 생활비의 구매력 변화는 별도의 시간축 문제로 이어서 검토한다.
+        #
+        # 임금상승률과 물가상승률은 장기적으로 비슷하게 움직일 수 있어도 같은 지표로 취급하지 않는다.
+        # 이 메모는 일반 사용자 화면에 노출하기 위한 설명문이 아니라, 개발·검토 과정에서
+        # 이 시간의 문제를 잊지 않도록 코드 안에 붙여 두는 작업 메모다.
+        
         if current_expense_reference:
             st.caption(
                 f"단위: 연간 만 원 · 현재 {cur_age}세·{current_household_size}인 가구의 통계 월평균 "
