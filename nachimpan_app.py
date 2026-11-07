@@ -3656,18 +3656,36 @@ elif selected_page == "인생의 사계절":
             annual_wage_growth_rate = 0.03
             historical_year = date.today().year - years_back
 
-            historical_base_annual = (
-                extended_base_income(historical_compare_age, self_base)
-                * self_scale * 12.0
-                + normalized_annual_bonus
+            historical_current_value_monthly = (
+                extended_base_income(historical_compare_age, self_base) * self_scale
             )
-            historical_current_value_monthly = historical_base_annual / 12.0
             historical_nominal_monthly = (
                 historical_current_value_monthly
                 / ((1.0 + annual_wage_growth_rate) ** years_back)
             )
+
+            # 월 기본급끼리 비교하도록 연간 상여금은 제외하고,
+            # 해당 연령의 육아·경력 회복 계수만 기존 시뮬레이션과 동일하게 적용한다.
+            historical_career_factor = 1.0
+            historical_is_in_childcare = False
+            historical_has_completed_childcare = False
+            for c_start, c_end in childcare_windows:
+                if c_start <= historical_compare_age < c_end:
+                    years_in = historical_compare_age - c_start
+                    historical_career_factor = 0.35 if years_in <= 1 else 0.50
+                    historical_is_in_childcare = True
+                    break
+                elif historical_compare_age >= c_end:
+                    historical_has_completed_childcare = True
+
+            if (
+                not historical_is_in_childcare
+                and historical_has_completed_childcare
+            ):
+                historical_career_factor = 0.80
+
             historical_model_monthly = (
-                my_income_curve[historical_compare_age - 20] / 12.0
+                historical_current_value_monthly * historical_career_factor
             )
 
             st.markdown("#### 시간을 맞춰 소득 비교하기")
