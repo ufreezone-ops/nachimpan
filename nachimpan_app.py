@@ -3315,10 +3315,47 @@ elif selected_page == "인생의 사계절":
                 "small_sample": sample_n < 30,
             }
 
+        # 2024년 MDIS 기준곡선을 연령별 해당 연도의 명목가치로 옮기기 위한 거시지수
+        macro_index_stats = pd.DataFrame()
+        try:
+            macro_path = Path(__file__).resolve().parent / "data" / "국가데이터처_소비자물가지수_및_고용노동부_임금지수_1965-2025.csv"
+            macro_index_stats = pd.read_csv(macro_path)
+        except Exception as e:
+            st.warning(f"통시성 보정 지수표를 불러오지 못했습니다. ({e})")
+
+        current_calendar_year = date.today().year
+        cpi_reference_year = 2024
+        cpi_reference_index = None
+        if not macro_index_stats.empty:
+            cpi_reference_rows = macro_index_stats[macro_index_stats["year"] == cpi_reference_year]
+            if not cpi_reference_rows.empty and pd.notna(cpi_reference_rows.iloc[0]["cpi_index_2020_100"]):
+                cpi_reference_index = float(cpi_reference_rows.iloc[0]["cpi_index_2020_100"])
+
+        def macro_index_at_or_before(year, column):
+            if macro_index_stats.empty:
+                return None
+            valid = macro_index_stats[
+                (macro_index_stats["year"] <= year) & macro_index_stats[column].notna()
+            ].sort_values("year")
+            if valid.empty:
+                return None
+            return float(valid.iloc[-1][column])
+
+        latest_cpi_index = macro_index_at_or_before(current_calendar_year, "cpi_index_2020_100")
+        latest_wage_index = macro_index_at_or_before(current_calendar_year, "moel_wage_index_2024_100")
+        cpi_current_factor = (
+            latest_cpi_index / cpi_reference_index
+            if latest_cpi_index is not None and cpi_reference_index
+            else 1.0
+        )
+
         current_household_size = household_size_at_age(cur_age)
         current_expense_reference = lookup_household_expense(cur_age, current_household_size)
         if current_expense_reference and current_expense_reference["monthly"] > 0 and cur_annual_expense > 0:
-            expense_scale_ratio = cur_annual_expense / (current_expense_reference["monthly"] * 12.0)
+            # 현재 입력 지출은 그대로 유지되도록 2024 MDIS 기준을 최신 관측 물가수준에 맞춰 보정
+            expense_scale_ratio = cur_annual_expense / (
+                current_expense_reference["monthly"] * 12.0 * cpi_current_factor
+            )
         else:
             expense_scale_ratio = 1.0
 
@@ -3330,6 +3367,27 @@ elif selected_page == "인생의 사계절":
         expense_debug_rows = []  # 임시 진단: 연령별 기본 지출·생애사건 지출 분리 확인
 
         for a in ages_sim:
+            # 연령 a가 실제로 해당하는 달력연도. 2026년 현재 나이를 기준으로 과거·미래를 연결한다.
+            calendar_year = current_calendar_year + (a - cur_age)
+            year_cpi_index = macro_index_at_or_before(calendar_year, "cpi_index_2020_100")
+            year_wage_index = macro_index_at_or_before(calendar_year, "moel_wage_index_2024_100")
+            cpi_year_factor = (
+                year_cpi_index / cpi_reference_index
+                if year_cpi_index is not None and cpi_reference_index
+                else 1.0
+            )
+            cpi_relative_to_current = (
+                year_cpi_index / latest_cpi_index
+                if year_cpi_index is not None and latest_cpi_index
+                else 1.0
+            )
+            # 임금지수는 2011년부터 제공된다. 그 이전은 임의 보간하지 않고 원래 기준값을 유지한다.
+            wage_year_factor = (
+                year_wage_index / latest_wage_index
+                if year_wage_index is not None and latest_wage_index
+                else 1.0
+            )
+
             # --- [A. 본인 단독 근로소득] ---
             if a < retire_age:
                 self_inc = extended_base_income(a, self_base) * self_scale * 12.0
@@ -3355,6 +3413,8 @@ elif selected_page == "인생의 사계절":
             else:
                 self_inc = 0.0
 
+            # 근로소득·상여금에 해당 연도의 임금지수 적용
+            self_inc *= wage_year_factor
             my_income_curve.append(self_inc)
 
             # --- [B. 배우자 근로소득] ---
@@ -3364,6 +3424,7 @@ elif selected_page == "인생의 사계절":
             if has_future_or_current_spouse and (marriage_start is not None) and (a >= marriage_start):
                 if sp_a < retire_age:
                     spouse_inc = extended_base_income(sp_a, spouse_base) * spouse_scale * 12.0
+                    spouse_inc *= wage_year_factor
 
             # --- [C. 가구 합산 소득] ---
             total_hh_inc = self_inc + spouse_inc + annual_other_income
@@ -3390,13 +3451,20 @@ elif selected_page == "인생의 사계절":
                 household_size = household_size_at_age(a)
                 expense_reference = lookup_household_expense(a, household_size)
                 if expense_reference:
-                    base_exp = expense_reference["monthly"] * 12.0 * expense_scale_ratio
+                    # 2024년 MDIS 지출 기준을 해당 달력연도의 CPI 수준으로 환산
+                    base_exp = (
+                        expense_reference["monthly"] * 12.0
+                        * expense_scale_ratio * cpi_year_factor
+                    )
                 else:
-                    base_exp = cur_annual_expense
+                    base_exp = cur_annual_expense * cpi_relative_to_current
             else:
-                base_exp = ret_annual_expense
+                # 은퇴 후 생활비도 현재 입력가치를 기준으로 해당 연도의 물가수준 반영
+                base_exp = ret_annual_expense * cpi_relative_to_current
 
-            total_hh_exp = base_exp + event_expense_by_age.get(a, 0.0)
+            # 결혼·출산·교육 등 생애사건 비용도 발생 연도의 물가 기준으로 환산
+            event_expense = event_expense_by_age.get(a, 0.0) * cpi_relative_to_current
+            total_hh_exp = base_exp + event_expense
             household_expense_curve.append(total_hh_exp)
             if 30 <= a <= 45:
                 expense_debug_rows.append({
@@ -3409,6 +3477,12 @@ elif selected_page == "인생의 사계절":
                     "생애사건 추가 지출(만원/년)": event_expense_by_age.get(a, 0.0),
                     "최종 가구 지출(만원/년)": total_hh_exp,
                 })
+
+        st.caption(
+            "통시성 보정 적용: 근로소득은 연도별 임금지수, 기본·은퇴·생애사건 지출은 소비자물가지수를 반영합니다. "
+            "임금지수는 2011년 이후만 적용하며, 그 이전은 임의 추정하지 않습니다. "
+            "2025년 이후 미래 지수는 아직 관측값이 없어 최신 관측 수준을 유지하므로 미래 상승률 예측은 아닙니다."
+        )
 
         # 임시 진단 패널: 계산식과 그래프에는 영향을 주지 않음
         with st.expander("🔎 임시 진단 — 30~45세 가구 지출 계산", expanded=True):
