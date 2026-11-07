@@ -3646,24 +3646,51 @@ elif selected_page == "인생의 사계절":
 
         st.plotly_chart(fig_my_nta, use_container_width=True, config={"displayModeBar": False, "scrollZoom": False, "doubleClick": False, "showAxisDragHandles": False})
 
-#############    6.03.05.10.01 | 과거 소득의 현재 가치 환산 안내
-        # [개발 중 임시 비교] 계산이 아직 거칠더라도, 서로 다른 시대의 소득을 같은 시간 기준으로 보는 예시를 유지한다.
+#############    6.03.05.10.01 | 과거 소득·지출의 시간 기준 환산 안내
+        # 2024년 MDIS 기준곡선을 공식 임금·물가지수로 과거 연도와 비교한다.
         if cur_age > 20 and self_base is not None:
             historical_compare_age = max(20, cur_age - 13)
             years_back = cur_age - historical_compare_age
-            annual_wage_growth_rate = 0.03
-            historical_year = date.today().year - years_back
+            historical_year = 2024 - years_back
+            macro_index_stats = pd.DataFrame()
+            try:
+                macro_path = Path(__file__).resolve().parent / "data" / "국가데이터처_소비자물가지수_및_고용노동부_임금지수_1965-2025.csv"
+                macro_index_stats = pd.read_csv(macro_path)
+            except Exception as e:
+                st.warning(f"시간축 보정 지수표를 불러오지 못했습니다. ({e})")
+
+            def get_macro_value(year, column):
+                if macro_index_stats.empty:
+                    return None
+                matched = macro_index_stats[macro_index_stats["year"] == year]
+                if matched.empty or pd.isna(matched.iloc[0][column]):
+                    return None
+                return float(matched.iloc[0][column])
+
+            wage_base_index = get_macro_value(2024, "moel_wage_index_2024_100")
+            historical_wage_index = get_macro_value(historical_year, "moel_wage_index_2024_100")
+            cpi_base_index = get_macro_value(2024, "cpi_index_2020_100")
+            historical_cpi_index = get_macro_value(historical_year, "cpi_index_2020_100")
 
             historical_current_value_monthly = (
                 extended_base_income(historical_compare_age, self_base) * self_scale
             )
-            historical_nominal_monthly = (
-                historical_current_value_monthly
-                / ((1.0 + annual_wage_growth_rate) ** years_back)
-            )
+
+            if (
+                wage_base_index is not None
+                and historical_wage_index is not None
+                and historical_wage_index > 0
+            ):
+                historical_wage_factor = wage_base_index / historical_wage_index
+                historical_nominal_monthly = (
+                    historical_current_value_monthly / historical_wage_factor
+                )
+            else:
+                historical_wage_factor = None
+                historical_nominal_monthly = None
 
             # 월 기본급끼리 비교하도록 연간 상여금은 제외하고,
-            # 해당 연령의 육아·경력 회복 계수만 기존 시뮬레이션과 동일하게 적용한다.
+            # 해당 연령의 육아·경력 회복 계수만 기존 소득곡선과 동일하게 적용한다.
             historical_career_factor = 1.0
             historical_is_in_childcare = False
             historical_has_completed_childcare = False
@@ -3683,31 +3710,75 @@ elif selected_page == "인생의 사계절":
                 historical_career_factor = 0.80
 
             historical_model_monthly = (
-                historical_current_value_monthly * historical_career_factor
+                historical_nominal_monthly * historical_career_factor
+                if historical_nominal_monthly is not None else None
             )
 
-            st.markdown("#### 시간을 맞춰 소득 비교하기")
+            historical_expense_reference = lookup_household_expense(
+                historical_compare_age,
+                household_size_at_age(historical_compare_age)
+            )
+            if (
+                historical_expense_reference
+                and cpi_base_index is not None
+                and historical_cpi_index is not None
+                and historical_cpi_index > 0
+            ):
+                historical_cpi_factor = cpi_base_index / historical_cpi_index
+                historical_expense_2024 = (
+                    historical_expense_reference["monthly"] * 12.0 * expense_scale_ratio
+                )
+                historical_expense_nominal = historical_expense_2024 / historical_cpi_factor
+            else:
+                historical_cpi_factor = None
+                historical_expense_2024 = None
+                historical_expense_nominal = None
+
+            st.markdown("#### 시간을 맞춰 소득과 지출 비교하기")
             st.caption(
-                f"{historical_year}년 당시의 소득 추정치를 연평균 임금상승률 "
-                f"{annual_wage_growth_rate:.0%}로 환산해 {date.today().year}년 가치와 비교합니다."
+                f"{historical_year}년과 2024년을 비교합니다. "
+                "소득은 고용노동부 임금지수, 지출은 국가데이터처 소비자물가지수를 각각 적용합니다."
             )
             time_value_col1, time_value_col2 = st.columns(2)
-            time_value_col1.metric(
-                f"{historical_year}년 당시 가치",
-                f"{historical_nominal_monthly:,.0f}만 원/월",
-                help="현재 가치 환산액을 가정한 임금상승률로 역산한 금액입니다."
-            )
-            time_value_col2.metric(
-                f"{date.today().year}년 현재 가치",
-                f"{historical_current_value_monthly:,.0f}만 원/월",
-                help="과거 연령의 기준 소득을 현재 소득수준과 같은 시간 기준으로 환산한 값입니다."
-            )
+            if historical_nominal_monthly is not None:
+                time_value_col1.metric(
+                    f"{historical_year}년 소득 추정",
+                    f"{historical_nominal_monthly:,.0f}만 원/월",
+                    help="2024년 기준 소득을 실제 임금지수의 연도 간 비율로 역산한 추정치입니다."
+                )
+                time_value_col2.metric(
+                    "2024년 기준 소득",
+                    f"{historical_current_value_monthly:,.0f}만 원/월",
+                    help="2024년 임금지수와 같은 시간 기준으로 본 기준 소득입니다."
+                )
+                st.caption(
+                    f"임금지수 환산 배율: {historical_wage_factor:.3f}배. "
+                    f"육아·경력 영향을 반영한 {historical_compare_age}세 당시의 모델 소득은 "
+                    f"월 {historical_model_monthly:,.0f}만 원입니다."
+                )
+            else:
+                st.info(
+                    f"{historical_year}년 임금지수는 현재 자료표에서 확인되지 않아 "
+                    "소득의 시간 환산을 생략했습니다."
+                )
+
+            if historical_expense_nominal is not None:
+                st.caption(
+                    f"같은 연령·가구원 수의 2024년 MDIS 지출 기준은 연 "
+                    f"{historical_expense_2024:,.0f}만 원이며, "
+                    f"{historical_year}년 물가로 환산한 추정치는 연 "
+                    f"{historical_expense_nominal:,.0f}만 원입니다. "
+                    f"물가 환산 배율은 {historical_cpi_factor:.3f}배입니다."
+                )
+            else:
+                st.caption(
+                    f"{historical_year}년 소비자물가지수 또는 해당 연령·가구원 수 지출 기준을 "
+                    "확인할 수 없어 지출의 시간 환산을 생략했습니다."
+                )
             st.caption(
-                f"{historical_compare_age}세 시점의 기준 소득을 비교한 값입니다. "
-                f"육아·경력 영향을 반영한 기존 소득곡선은 월 "
-                f"{historical_model_monthly:,.0f}만 원이며, 위의 기준 소득과 구분해 봅니다. "
-                "임금상승률 3%는 비교를 위한 가정이며 물가상승률과 동일한 지표가 아닙니다. "
-                "현재 계산은 탐색용 임시 추정치로, 아직 검증·확정된 산식이 아닙니다."
+                "주의: 2024년 MDIS 연령별 지출은 횡단면 평균이며, 과거 지출값은 실제 관측치가 아닌 "
+                "2024년 기준곡선에 물가지수를 적용한 비교용 추정치입니다. "
+                "임금 통계는 2011년 이전과 시계열이 단절되어 있습니다."
             )
 
 #############    6.03.05.10.02 | [개발 메모] 시간축 보정 원칙 — 과거와 미래
