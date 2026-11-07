@@ -4286,7 +4286,7 @@ elif selected_page == "통계":
 
         # 가연 「2024 결혼비용 리포트」의 전체 평균: 신혼집과 신혼집 외 비용 비교
         fig_total_wedding = go.Figure(data=[go.Pie(
-            labels=["신혼집", "신혼집 외 비용(혼수·예식·여행 등)"],
+            labels=["신혼집", "신혼집 외"],
             values=[24176, 6298],
             hole=0.38,
             textinfo="label+percent",
@@ -4306,7 +4306,10 @@ elif selected_page == "통계":
                 x=0.5, y=0.5,
                 xref="paper", yref="paper",
                 showarrow=False,
-                font=dict(size=17, color="#334155")
+                font=dict(size=17, color="#FFFFFF"),
+                bgcolor="#334155",
+                bordercolor="#334155",
+                borderpad=5
             )]
         )
         st.plotly_chart(fig_total_wedding, use_container_width=True, config={"displayModeBar": False})
