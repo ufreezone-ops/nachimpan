@@ -4283,7 +4283,6 @@ elif selected_page == "통계":
 
 원문: [한국보건사회연구원 연구보고서 PDF](https://repository.kihasa.re.kr/bitstream/201002/37080/2/%EC%97%B0%EA%B5%AC%EB%B3%B4%EA%B3%A0%EC%84%9C%28%EC%88%98%EC%8B%9C%29%202020-08.pdf)
 """)
-""")
 
         col_house, col_nonhouse = st.columns(2)
         with col_house:
