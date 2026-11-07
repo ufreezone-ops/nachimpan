@@ -4332,6 +4332,8 @@ elif selected_page == "통계":
                 values=[3732, 3489],
                 hole=0.38,
                 textinfo="label+percent",
+                textposition="inside",
+                insidetextorientation="horizontal",
                 hovertemplate="%{label}<br>%{value:,.0f}만 원<extra></extra>",
                 sort=False
             )])
