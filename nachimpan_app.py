@@ -3367,7 +3367,7 @@ elif selected_page == "인생의 사계절":
         expense_debug_rows = []  # 임시 진단: 연령별 기본 지출·생애사건 지출 분리 확인
 
         for a in ages_sim:
-            # 연령 a가 실제로 해당하는 달력연도. 2026년 현재 나이를 기준으로 과거·미래를 연결한다.
+            # 연령 a가 실제로 해당하는 달력연도. 실행 시점의 현재 나이를 기준으로 과거·미래를 연결한다.
             calendar_year = current_calendar_year + (a - cur_age)
             year_cpi_index = macro_index_at_or_before(calendar_year, "cpi_index_2020_100")
             year_wage_index = macro_index_at_or_before(calendar_year, "moel_wage_index_2024_100")
@@ -3474,7 +3474,7 @@ elif selected_page == "인생의 사계절":
                     "표본 수": expense_reference["sample_n"] if a < retire_age and expense_reference else None,
                     "표본 주의": "30 미만" if a < retire_age and expense_reference and expense_reference["small_sample"] else "",
                     "기본 지출(만원/년)": base_exp,
-                    "생애사건 추가 지출(만원/년)": event_expense_by_age.get(a, 0.0),
+                    "생애사건 추가 지출(만원/년)": event_expense,
                     "최종 가구 지출(만원/년)": total_hh_exp,
                 })
 
