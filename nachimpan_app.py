@@ -3646,7 +3646,71 @@ elif selected_page == "인생의 사계절":
 
         st.plotly_chart(fig_my_nta, use_container_width=True, config={"displayModeBar": False, "scrollZoom": False, "doubleClick": False, "showAxisDragHandles": False})
 
-#############    6.03.05.10.01 | [개발 메모] 시간축 보정 원칙 — 과거와 미래
+#############    6.03.05.10.01 | 과거 소득의 현재 가치 환산 안내
+        # [개발 중 임시 비교] 계산이 아직 거칠더라도, 서로 다른 시대의 소득을 같은 시간 기준으로 보는 예시를 유지한다.
+        if cur_age > 20 and self_base is not None:
+            historical_compare_age = max(20, cur_age - 13)
+            years_back = cur_age - historical_compare_age
+            annual_wage_growth_rate = 0.03
+            historical_year = date.today().year - years_back
+
+            historical_current_value_monthly = (
+                extended_base_income(historical_compare_age, self_base) * self_scale
+            )
+            historical_nominal_monthly = (
+                historical_current_value_monthly
+                / ((1.0 + annual_wage_growth_rate) ** years_back)
+            )
+
+            # 월 기본급끼리 비교하도록 연간 상여금은 제외하고,
+            # 해당 연령의 육아·경력 회복 계수만 기존 시뮬레이션과 동일하게 적용한다.
+            historical_career_factor = 1.0
+            historical_is_in_childcare = False
+            historical_has_completed_childcare = False
+            for c_start, c_end in childcare_windows:
+                if c_start <= historical_compare_age < c_end:
+                    years_in = historical_compare_age - c_start
+                    historical_career_factor = 0.35 if years_in <= 1 else 0.50
+                    historical_is_in_childcare = True
+                    break
+                elif historical_compare_age >= c_end:
+                    historical_has_completed_childcare = True
+
+            if (
+                not historical_is_in_childcare
+                and historical_has_completed_childcare
+            ):
+                historical_career_factor = 0.80
+
+            historical_model_monthly = (
+                historical_current_value_monthly * historical_career_factor
+            )
+
+            st.markdown("#### 시간을 맞춰 소득 비교하기")
+            st.caption(
+                f"{historical_year}년 당시의 소득 추정치를 연평균 임금상승률 "
+                f"{annual_wage_growth_rate:.0%}로 환산해 {date.today().year}년 가치와 비교합니다."
+            )
+            time_value_col1, time_value_col2 = st.columns(2)
+            time_value_col1.metric(
+                f"{historical_year}년 당시 가치",
+                f"{historical_nominal_monthly:,.0f}만 원/월",
+                help="현재 가치 환산액을 가정한 임금상승률로 역산한 금액입니다."
+            )
+            time_value_col2.metric(
+                f"{date.today().year}년 현재 가치",
+                f"{historical_current_value_monthly:,.0f}만 원/월",
+                help="과거 연령의 기준 소득을 현재 소득수준과 같은 시간 기준으로 환산한 값입니다."
+            )
+            st.caption(
+                f"{historical_compare_age}세 시점의 기준 소득을 비교한 값입니다. "
+                f"육아·경력 영향을 반영한 기존 소득곡선은 월 "
+                f"{historical_model_monthly:,.0f}만 원이며, 위의 기준 소득과 구분해 봅니다. "
+                "임금상승률 3%는 비교를 위한 가정이며 물가상승률과 동일한 지표가 아닙니다. "
+                "현재 계산은 탐색용 임시 추정치로, 아직 검증·확정된 산식이 아닙니다."
+            )
+
+#############    6.03.05.10.02 | [개발 메모] 시간축 보정 원칙 — 과거와 미래
         # >>> 개발 중 계속 눈에 띄게 확인할 것: 돈의 액수만 비교하지 말고, 시간의 기준을 맞춘다. <<<
         #
         # [과거의 시간] 과거 소득을 현재 소득과 비교할 때는 당시 명목금액만 나란히 놓지 않는다.
