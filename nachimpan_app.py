@@ -468,7 +468,7 @@ CASE_DATA_KEYS = [
     "income_self", "income_spouse", "income_other", "income_bonus", "income_pension",
     "other_pension_self_enabled", "other_pension_self_amount", "other_pension_self_age",
     "other_pension_spouse_enabled", "other_pension_spouse_amount", "other_pension_spouse_age",
-    "expense_living", "expense_loan", "expense_other", "retirement_monthly_expenses",
+    "expense_living", "expense_loan", "expense_other", "expense_scale_reference_annual", "retirement_monthly_expenses",
     "asset_cash", "asset_financial", "asset_home", "asset_deposit", "asset_other",
     "debt_home", "debt_other", "retirement_age", "spouse_age", "child_count",
     "child_age", "child_age2", "child_age3", "child_age4", "father_age", "mother_age",
@@ -492,6 +492,7 @@ INTERVIEWER_CASES = {
         "income_self": 290, "income_spouse": 0, "income_other": 0,
         "income_bonus": 200, "income_pension": 120,
         "expense_living": 130, "expense_loan": 0, "expense_other": 300,
+        "expense_scale_reference_annual": 1860,  # 이전 대표사례 지출 기준(연간, 만 원)
         "retirement_monthly_expenses": 270,
         "asset_cash": 800, "asset_financial": 700, "asset_home": 0, "asset_deposit": 0, "asset_other": 0,
         "debt_home": 0, "debt_other": 0,
@@ -522,6 +523,7 @@ INTERVIEWER_CASES = {
         "income_bonus": 300,
         "income_pension": 120,
         "expense_living": 330, "expense_loan": 67, "expense_other": 500,
+        "expense_scale_reference_annual": 5660,  # 이전 대표사례 지출 기준(연간, 만 원)
         "retirement_monthly_expenses": 270,
         "asset_cash": 1500, "asset_financial": 2500, "asset_home": 40000, "asset_deposit": 0, "asset_other": 0,
         "debt_home": 12362, "debt_other": 0,
@@ -3517,10 +3519,14 @@ elif selected_page == "인생의 사계절":
 
         current_household_size = household_size_at_age(cur_age)
         current_expense_reference = lookup_household_expense(cur_age, current_household_size)
-        # 대표사례도 현재 입력 지출을 MDIS 평균과 비교해 지출 수준 보정계수를 산출한다.
-        # 2024년 MDIS 기준을 최신 관측 CPI(현재 2025년)로 환산한 뒤 비율을 계산한다.
-        if current_expense_reference and current_expense_reference["monthly"] > 0 and cur_annual_expense > 0:
-            expense_scale_ratio = cur_annual_expense / (
+        # 대표사례는 이전에 확정해 사용하던 연간 지출 기준(32세 1,860만 원, 45세 5,660만 원)을 복원한다.
+        # 이 기준을 2024 MDIS 평균의 최신 관측 CPI 환산값과 비교해 사례별 보정률을 계산한다.
+        expense_scale_reference = (
+            float(getv("expense_scale_reference_annual", cur_annual_expense) or cur_annual_expense)
+            if is_representative_case else cur_annual_expense
+        )
+        if current_expense_reference and current_expense_reference["monthly"] > 0 and expense_scale_reference > 0:
+            expense_scale_ratio = expense_scale_reference / (
                 current_expense_reference["monthly"] * 12.0 * cpi_current_factor
             )
         else:
