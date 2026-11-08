@@ -506,8 +506,515 @@ INTERVIEWER_CASES = {
         "target_housing_age": 39,  # 2024 주거실태조사 가중 중앙값
         "housing_region": "부산",
         "housing_region_select": "부산",    # 위젯에 직격 주입
-        "housing_ltv": 35.0,
-        "income_pension_self": 60,
+#########################################################
+# -------------------------------------------------------
+# 1.00 | 시스템 환경 및 전역 테마 엔진
+# -------------------------------------------------------
+#########################################################
+
+#########################################################
+# 1.01 | 라이브러리 로드 및 기본 페이지 설정
+#########################################################
+
+#--------------------------------------------------------
+# 1.01.01 | 필수 및 서드파티 라이브러리 임포트
+#--------------------------------------------------------
+import os
+from pathlib import Path
+import random
+import json
+import base64
+import requests
+import re
+from datetime import date
+import streamlit as st
+import pandas as pd
+import numpy as np
+import plotly.graph_objects as go
+
+#--------------------------------------------------------
+# 1.01.02 | Streamlit 기본 페이지 및 레이아웃 설정
+#--------------------------------------------------------
+st.set_page_config(
+    page_title="나침반 — 나의 삶을 바라보는 산책로",
+    page_icon="🧭",
+    layout="wide",
+    initial_sidebar_state="collapsed",
+)
+
+#########################################################
+# 1.02 | 전역 통합 테마 디자인 시스템 CSS
+#########################################################
+
+#--------------------------------------------------------
+# 1.02.01 | 전역 스크롤 안정화 및 상단 헤더 다크 일체화
+#--------------------------------------------------------
+st.markdown("""
+<style>
+/* Streamlit 실제 스크롤 컨테이너의 스크롤 안정화 */
+[data-testid="stAppViewContainer"],
+[data-testid="stMain"],
+.stMain {
+    overflow-y: scroll !important;
+    scrollbar-gutter: stable;
+}
+
+/* Streamlit 상단 헤더: 불투명한 딥 네이비 배경 */
+header[data-testid="stHeader"] {
+    display: flex !important;
+    background: #0b1120 !important;
+    background-color: #0b1120 !important;
+    opacity: 1 !important;
+    -webkit-backdrop-filter: none !important;
+    backdrop-filter: none !important;
+    height: 2.8rem !important;
+    border-bottom: 1px solid #334155 !important;
+}
+
+/* 헤더 내부 도구 영역에도 배경 효과가 남지 않도록 처리 */
+header[data-testid="stHeader"] [data-testid="stToolbar"] {
+    background: #0b1120 !important;
+    background-color: #0b1120 !important;
+    opacity: 1 !important;
+    -webkit-backdrop-filter: none !important;
+    backdrop-filter: none !important;
+}
+
+/* 헤더 내부 아이콘과 버튼 색상 유지 */
+header[data-testid="stHeader"] * {
+    color: #94a3b8 !important;
+}
+
+header[data-testid="stHeader"] button:hover {
+    color: #f8fafc !important;
+}
+
+/* 메인 콘텐츠 상단 여백 */
+div[data-testid="stMainBlockContainer"] {
+    padding-top: 0.8rem !important;
+}
+
+/* 하단 Streamlit 푸터 숨기기 */
+footer {
+    visibility: hidden !important;
+}
+</style>
+""", unsafe_allow_html=True)
+
+#--------------------------------------------------------
+# 1.02.02 | 전역 색상 디자인 토큰 및 가독성 폰트 설정
+#--------------------------------------------------------
+st.markdown("""
+<style>
+:root {
+    color-scheme: light dark;
+    --nc-bg: #0b1120;
+    --nc-sidebar-bg: #0f172a;
+    --nc-text: #f8fafc;
+    --nc-subtext: #94a3b8;
+    --nc-border: #334155;
+    --nc-card-bg: #151e2f;
+    --nc-hero-bg: radial-gradient(circle at top, #1e293b 0%, #0f172a 75%);
+    --nc-primary: #ea580c;
+    --nc-primary-hover: #c2410c;
+    --nc-accent-gold: #f59e0b;
+    --nc-quad-bg: #172033;
+    
+    --nc-panel-income: #163b35;
+    --nc-panel-income-border: #2f806d;
+    --nc-panel-expense: #442a2d;
+    --nc-panel-expense-border: #a34c56;
+    --nc-panel-asset: #183653;
+    --nc-panel-asset-border: #3b82b5;
+    --nc-panel-debt: #44351d;
+    --nc-panel-debt-border: #a8792d;
+    --nc-panel-retire: #34264a;
+    --nc-panel-retire-border: #8761b3;
+}
+
+.stApp {
+    background-color: var(--nc-bg) !important;
+    color: var(--nc-text) !important;
+}
+
+.block-container {
+    padding-top: 2.8rem !important;
+    padding-bottom: 2rem;
+    max-width: 1180px;
+}
+.stApp, .stApp p, .stApp label, .stApp [data-testid="stMarkdownContainer"] {
+    font-size: 17px !important;
+    color: var(--nc-text);
+}
+/* 간편 새로고침 버튼: 내용 크기만 사용하고 오른쪽 정렬 */
+.st-key-compass_refresh_area {
+    display: flex !important;
+    justify-content: flex-end !important;
+    align-items: center !important;
+    margin: 0 0 4px 0 !important;
+}
+
+.st-key-compass_quick_refresh {
+    width: auto !important;
+    flex: 0 0 auto !important;
+}
+
+.st-key-compass_quick_refresh button {
+    width: 42px !important;
+    min-width: 42px !important;
+    max-width: 42px !important;
+    height: 36px !important;
+    min-height: 36px !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    border-radius: 8px !important;
+    font-size: 21px !important;
+    line-height: 1 !important;
+}
+
+/* 앱 내부 헤더와 도구 영역의 반투명·블러 효과 제거 시도 */
+header[data-testid="stHeader"],
+header[data-testid="stHeader"] [data-testid="stToolbar"] {
+    background: #0b1120 !important;
+    background-color: #0b1120 !important;
+    opacity: 1 !important;
+    -webkit-backdrop-filter: none !important;
+    backdrop-filter: none !important;
+    box-shadow: none !important;
+}
+</style>
+""", unsafe_allow_html=True)
+
+#--------------------------------------------------------
+# 1.02.03 | 패널 및 위젯 스타일링
+#--------------------------------------------------------
+st.markdown("""
+<style>
+.soft-card {
+    background: var(--nc-card-bg);
+    border: 1px solid var(--nc-border);
+    border-radius: 14px;
+    padding: 18px 20px;
+    margin: 10px 0;
+    color: var(--nc-text);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+}
+
+.st-key-job-panel { 
+    background: rgba(30, 41, 59, 0.45) !important; 
+    border: 1.5px solid #475569 !important; 
+    border-radius: 12px; 
+    padding: 20px 22px !important;
+}
+.st-key-job-panel * { color: var(--nc-text) !important; }
+
+.st-key-income-panel { background: var(--nc-panel-income) !important; border: 1px solid var(--nc-panel-income-border) !important; border-radius: 12px; }
+.st-key-expense-panel { background: var(--nc-panel-expense) !important; border: 1px solid var(--nc-panel-expense-border) !important; border-radius: 12px; }
+.st-key-asset-panel { background: var(--nc-panel-asset) !important; border: 1px solid var(--nc-panel-asset-border) !important; border-radius: 12px; }
+.st-key-debt-panel { background: var(--nc-panel-debt) !important; border: 1px solid var(--nc-panel-debt-border) !important; border-radius: 12px; }
+.st-key-retirement-panel { background: var(--nc-panel-retire) !important; border: 1px solid var(--nc-panel-retire-border) !important; border-radius: 12px; }
+
+.st-key-income-panel *, .st-key-expense-panel *, .st-key-asset-panel *,
+.st-key-debt-panel *, .st-key-retirement-panel * {
+    color: var(--nc-text) !important;
+}
+
+[data-testid="stMetricLabel"] *, [data-testid="stMetricLabel"] { color: var(--nc-subtext) !important; font-size: 15px !important; font-weight: 600 !important; }
+[data-testid="stMetricValue"] *, [data-testid="stMetricValue"] { color: var(--nc-text) !important; font-weight: 800 !important; font-size: 26px !important; }
+
+button[kind="primary"], .stApp [data-testid="stFormSubmitButton"] button[kind="primary"] {
+    background-color: var(--nc-primary) !important;
+    border-color: var(--nc-primary) !important;
+    color: #ffffff !important;
+    font-weight: 700 !important;
+    font-size: 17px !important;
+    border-radius: 8px !important;
+    padding: 10px !important;
+}
+
+[data-testid="stSidebar"] { background-color: var(--nc-sidebar-bg) !important; border-right: 1px solid var(--nc-border) !important; }
+[data-testid="stSidebar"] * { color: var(--nc-text) !important; }
+
+.stApp input, .stApp textarea {
+    background-color: var(--nc-card-bg) !important;
+    color: var(--nc-text) !important;
+    border-color: var(--nc-border) !important;
+    font-size: 17px !important;
+    padding: 10px 12px !important;
+}
+
+input::placeholder, textarea::placeholder,
+.stApp input::placeholder, .stApp textarea::placeholder {
+    color: #94a3b8 !important;
+    -webkit-text-fill-color: #94a3b8 !important;
+    opacity: 1 !important;
+    font-size: 15px !important;
+}
+
+div[data-testid="stButtonGroup"],
+div[data-testid="stPills"],
+div[data-testid="stSegmentedControl"] {
+    display: flex !important;
+    flex-wrap: wrap !important;
+    gap: 8px !important;
+    overflow-x: visible !important;
+}
+
+div[data-testid="stButtonGroup"] button,
+div[data-testid="stPills"] button,
+div[data-testid="stSegmentedControl"] button {
+    background-color: #1E293B !important;
+    background: #1E293B !important;
+    color: #CBD5E1 !important;
+    border: 1px solid #334155 !important;
+    font-size: 15.5px !important;
+    font-weight: 600 !important;
+    border-radius: 8px !important;
+    padding: 9px 15px !important;
+    margin: 0 !important;
+    box-shadow: none !important;
+}
+
+div[data-testid="stButtonGroup"] button:hover,
+div[data-testid="stPills"] button:hover {
+    background-color: #334155 !important;
+    color: #F8FAFC !important;
+}
+
+div[data-testid="stButtonGroup"] button[aria-checked="true"],
+div[data-testid="stButtonGroup"] button[aria-selected="true"],
+div[data-testid="stPills"] button[aria-checked="true"],
+div[data-testid="stPills"] button[aria-selected="true"] {
+    background-color: #EA580C !important;
+    background: linear-gradient(135deg, #EA580C 0%, #C2410C 100%) !important;
+    color: #FFFFFF !important;
+    border-color: #EA580C !important;
+    font-weight: 800 !important;
+    box-shadow: 0 2px 8px rgba(234, 88, 12, 0.35) !important;
+}
+
+div[data-testid="stNumberInput"] button { display: none !important; }
+div[data-testid="stNumberInput"] input { padding-right: 12px !important; }
+
+div[data-testid="stForm"]:has(input[id*="start_person"]) {
+    border: none !important;
+    padding: 0 !important;
+    background: transparent !important;
+}
+
+input[id*="start_person"] {
+    background-color: #FFFFFF !important;
+    color: #0F172A !important;
+    border: 1.5px solid #94A3B8 !important;
+    border-radius: 8px !important;
+    text-align: center !important;
+    font-size: 16px !important;
+    height: 44px !important;
+}
+
+div[data-testid="stForm"]:has(input[id*="start_person"]) button {
+    height: 44px !important;
+    font-size: 17px !important;
+    font-weight: 800 !important;
+    border-radius: 8px !important;
+    padding: 0 10px !important;
+}
+
+.stApp button:not([kind="primary"]) {
+    background-color: #1E293B !important;
+    color: #F8FAFC !important;
+    border: 1.5px solid #475569 !important;
+    font-weight: 700 !important;
+}
+
+.stApp button:not([kind="primary"]):hover {
+    background-color: #EA580C !important;
+    border-color: #EA580C !important;
+    color: #FFFFFF !important;
+}
+</style>
+""", unsafe_allow_html=True)
+
+#--------------------------------------------------------
+# 1.02.04 | 특수 컴포넌트(카카오 옐로우 & expander) 스타일링
+#--------------------------------------------------------
+st.markdown("""
+<style>
+/* st.code 코드블록: 카카오톡 전용 톤다운 웜 옐로우 배색 */
+[data-testid="stCodeBlock"] {
+    background-color: #e9d362 !important;
+    background: #e9d362 !important;
+    border: 1.5px solid #bda738 !important;
+    border-radius: 12px !important;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25) !important;
+}
+
+[data-testid="stCodeBlock"] pre,
+[data-testid="stCodeBlock"] code,
+.stCode pre,
+.stCode code {
+    background-color: #e9d362 !important;
+    background: #e9d362 !important;
+    color: #1a1a1a !important;
+    font-family: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Malgun Gothic", sans-serif !important;
+    font-weight: 600 !important;
+    font-size: 14.5px !important;
+    line-height: 1.65 !important;
+    white-space: pre-wrap !important;
+    word-break: break-word !important;
+    overflow-x: hidden !important;
+}
+
+[data-testid="stCodeBlock"] button {
+    background-color: rgba(26, 26, 26, 0.12) !important;
+    border: 1px solid rgba(26, 26, 26, 0.25) !important;
+    color: #1a1a1a !important;
+    border-radius: 6px !important;
+}
+[data-testid="stCodeBlock"] button:hover {
+    background-color: rgba(26, 26, 26, 0.25) !important;
+}
+[data-testid="stCodeBlock"] button svg {
+    fill: #1a1a1a !important;
+}
+
+/* st.expander 헤더 다크 고대비 스타일 (화이트/화이트 박멸) */
+[data-testid="stExpander"] {
+    background-color: transparent !important;
+    border: 1px solid #334155 !important;
+    border-radius: 10px !important;
+}
+
+[data-testid="stExpander"] details {
+    border: none !important;
+    background-color: transparent !important;
+}
+
+[data-testid="stExpander"] summary {
+    background-color: #1E293B !important;
+    color: #F8FAFC !important;
+    font-weight: 700 !important;
+    border-radius: 8px !important;
+    padding: 12px 16px !important;
+}
+
+[data-testid="stExpander"] summary:hover {
+    background-color: #334155 !important;
+    color: #FFFFFF !important;
+}
+
+[data-testid="stExpander"] summary svg {
+    fill: #F8FAFC !important;
+}
+
+[data-testid="stExpander"] [data-testid="stExpanderDetails"] {
+    background-color: rgba(15, 23, 42, 0.6) !important;
+    border-top: 1px solid #334155 !important;
+    border-radius: 0 0 10px 10px !important;
+    padding: 16px !important;
+}
+</style>
+""", unsafe_allow_html=True)
+
+
+#########################################################
+# 1.03 | 공식 통계 벤치마크 및 전역 상수
+#########################################################
+#--------------------------------------------------------
+# 1.03.01 | 국민이전계정(NTA) 데이터셋 및 공식 URL
+#--------------------------------------------------------
+LIFECYCLE_BENCHMARK = pd.DataFrame([
+    {"age": 20, "labor_income": 45,  "consumption": 130}, 
+    {"age": 25, "labor_income": 180, "consumption": 150},
+    {"age": 28, "labor_income": 260, "consumption": 170},
+    {"age": 35, "labor_income": 360, "consumption": 220},
+    {"age": 43, "labor_income": 435, "consumption": 265},
+    {"age": 50, "labor_income": 410, "consumption": 280},
+    {"age": 55, "labor_income": 330, "consumption": 280},
+    {"age": 60, "labor_income": 220, "consumption": 250},
+    {"age": 61, "labor_income": 190, "consumption": 240},
+    {"age": 65, "labor_income": 120, "consumption": 230}, 
+    {"age": 70, "labor_income": 60,  "consumption": 210},
+    {"age": 75, "labor_income": 25,  "consumption": 195},
+    {"age": 80, "labor_income": 10,  "consumption": 185},
+])
+
+OFFICIAL_PDF_URL = "https://mods.go.kr/boardDownload.es?bid=11898&list_no=447028&seq=3#page=7"
+OFFICIAL_RELEASE_URL = "https://mods.go.kr/board.es?act=view&bid=11898&list_no=447028&mid=a10301130100"
+
+
+
+#########################################################
+# -------------------------------------------------------
+# 2.00 | 상태 관리 및 재무 유틸리티 엔진
+# -------------------------------------------------------
+#########################################################
+#########################################################
+# 2.01 | 세션 상태 및 진단 데이터 관리 엔진
+#########################################################
+#--------------------------------------------------------
+# 2.01.01 | 세션 키 초기화 및 안전 조회 헬퍼
+#--------------------------------------------------------
+if "anonymous_id" not in st.session_state:
+    st.session_state.anonymous_id = f"#{random.choice('ABCDE')}-{random.randint(101,999)}"
+if "started" not in st.session_state:
+    st.session_state.started = False
+if "answers" not in st.session_state:
+    st.session_state.answers = {}
+if "advanced_mode" not in st.session_state:
+    st.session_state.advanced_mode = False  # 기본값: 누구나 부담 없는 기본 모드로 시작
+
+def getv(key, default=0):
+    val = st.session_state.get(key, default)
+    return default if val is None else val
+    
+#--------------------------------------------------------
+# 2.01.02 | 테스트 사례 저장용 데이터 키 목록
+#--------------------------------------------------------
+CASE_DATA_KEYS = [
+    "anonymous_id", "person_name", "person_age", "gender", "job_form", "job_spouse_form", "career_stage",
+    "income_self", "income_spouse", "income_other", "income_bonus", "income_pension",
+    "other_pension_self_enabled", "other_pension_self_amount", "other_pension_self_age",
+    "other_pension_spouse_enabled", "other_pension_spouse_amount", "other_pension_spouse_age",
+    "expense_living", "expense_loan", "expense_other", "retirement_monthly_expenses",
+    "asset_cash", "asset_financial", "asset_home", "asset_deposit", "asset_other",
+    "debt_home", "debt_other", "retirement_age", "spouse_age", "child_count",
+    "child_age", "child_age2", "child_age3", "child_age4", "father_age", "mother_age",
+    "marriage_plan", "child_plan", "housing_plan", "sibling_items", "advanced_mode"
+]
+
+#--------------------------------------------------------
+# 2.01.03 | 대표 체험 사례 및 저장/불러오기
+#--------------------------------------------------------
+from datetime import datetime
+
+# [인터뷰어 전용 체험 사례 2종] - 위젯 키 완벽 바인딩
+INTERVIEWER_CASES = {
+    "case_32_female": {
+        "person_name": "32세 여성 (미혼, 4년차)",
+        "person_age": 32,
+        "gender": "🙋‍♀️ 여성",
+        "job_form": "직장인",
+        "job_spouse_form": "해당 없음",
+        "career_stage": "🌿 4~9년 (성장기)",
+        "income_self": 290, "income_spouse": 0, "income_other": 0,
+        "income_bonus": 200, "income_pension": 120,
+        "expense_living": 130, "expense_loan": 0, "expense_other": 300,
+        "retirement_monthly_expenses": 270,
+        "asset_cash": 800, "asset_financial": 700, "asset_home": 0, "asset_deposit": 0, "asset_other": 0,
+        "debt_home": 0, "debt_other": 0,
+        "retirement_age": 60, "spouse_age": 0,
+        "child_count": "없음",
+        "child_count_select_direct": "없음",  # 위젯에 직격 주입
+        "child_age": 0, "child_age2": 0, "child_age3": 0, "child_age4": 0,
+        "father_age": 63, "mother_age": 60,
+        "marriage_plan": "1~3년 내 결혼 생각 있음",
+        "child_plan": "자녀 계획 있음",
+        "housing_plan": "주택 구입 고려",
+        "target_housing_age": 39,  # 2024 주거실태조사 가중 중앙값
+        "housing_region": "부산",
+        "housing_region_select": "부산",    # 위젯에 직격 주입
+
         "income_pension_spouse": 60,
         "pension_start_age": 65
     },
@@ -536,8 +1043,1052 @@ INTERVIEWER_CASES = {
         "target_housing_age": 39,  # 2024 주거실태조사 가중 중앙값
         "housing_region": "부산",
         "housing_region_select": "부산",    # 위젯에 직격 주입
-        "housing_ltv": 35.0,
-        "income_pension_self": 60,
+#########################################################
+# -------------------------------------------------------
+# 1.00 | 시스템 환경 및 전역 테마 엔진
+# -------------------------------------------------------
+#########################################################
+
+#########################################################
+# 1.01 | 라이브러리 로드 및 기본 페이지 설정
+#########################################################
+
+#--------------------------------------------------------
+# 1.01.01 | 필수 및 서드파티 라이브러리 임포트
+#--------------------------------------------------------
+import os
+from pathlib import Path
+import random
+import json
+import base64
+import requests
+import re
+from datetime import date
+import streamlit as st
+import pandas as pd
+import numpy as np
+import plotly.graph_objects as go
+
+#--------------------------------------------------------
+# 1.01.02 | Streamlit 기본 페이지 및 레이아웃 설정
+#--------------------------------------------------------
+st.set_page_config(
+    page_title="나침반 — 나의 삶을 바라보는 산책로",
+    page_icon="🧭",
+    layout="wide",
+    initial_sidebar_state="collapsed",
+)
+
+#########################################################
+# 1.02 | 전역 통합 테마 디자인 시스템 CSS
+#########################################################
+
+#--------------------------------------------------------
+# 1.02.01 | 전역 스크롤 안정화 및 상단 헤더 다크 일체화
+#--------------------------------------------------------
+st.markdown("""
+<style>
+/* Streamlit 실제 스크롤 컨테이너의 스크롤 안정화 */
+[data-testid="stAppViewContainer"],
+[data-testid="stMain"],
+.stMain {
+    overflow-y: scroll !important;
+    scrollbar-gutter: stable;
+}
+
+/* Streamlit 상단 헤더: 불투명한 딥 네이비 배경 */
+header[data-testid="stHeader"] {
+    display: flex !important;
+    background: #0b1120 !important;
+    background-color: #0b1120 !important;
+    opacity: 1 !important;
+    -webkit-backdrop-filter: none !important;
+    backdrop-filter: none !important;
+    height: 2.8rem !important;
+    border-bottom: 1px solid #334155 !important;
+}
+
+/* 헤더 내부 도구 영역에도 배경 효과가 남지 않도록 처리 */
+header[data-testid="stHeader"] [data-testid="stToolbar"] {
+    background: #0b1120 !important;
+    background-color: #0b1120 !important;
+    opacity: 1 !important;
+    -webkit-backdrop-filter: none !important;
+    backdrop-filter: none !important;
+}
+
+/* 헤더 내부 아이콘과 버튼 색상 유지 */
+header[data-testid="stHeader"] * {
+    color: #94a3b8 !important;
+}
+
+header[data-testid="stHeader"] button:hover {
+    color: #f8fafc !important;
+}
+
+/* 메인 콘텐츠 상단 여백 */
+div[data-testid="stMainBlockContainer"] {
+    padding-top: 0.8rem !important;
+}
+
+/* 하단 Streamlit 푸터 숨기기 */
+footer {
+    visibility: hidden !important;
+}
+</style>
+""", unsafe_allow_html=True)
+
+#--------------------------------------------------------
+# 1.02.02 | 전역 색상 디자인 토큰 및 가독성 폰트 설정
+#--------------------------------------------------------
+st.markdown("""
+<style>
+:root {
+    color-scheme: light dark;
+    --nc-bg: #0b1120;
+    --nc-sidebar-bg: #0f172a;
+    --nc-text: #f8fafc;
+    --nc-subtext: #94a3b8;
+    --nc-border: #334155;
+    --nc-card-bg: #151e2f;
+    --nc-hero-bg: radial-gradient(circle at top, #1e293b 0%, #0f172a 75%);
+    --nc-primary: #ea580c;
+    --nc-primary-hover: #c2410c;
+    --nc-accent-gold: #f59e0b;
+    --nc-quad-bg: #172033;
+    
+    --nc-panel-income: #163b35;
+    --nc-panel-income-border: #2f806d;
+    --nc-panel-expense: #442a2d;
+    --nc-panel-expense-border: #a34c56;
+    --nc-panel-asset: #183653;
+    --nc-panel-asset-border: #3b82b5;
+    --nc-panel-debt: #44351d;
+    --nc-panel-debt-border: #a8792d;
+    --nc-panel-retire: #34264a;
+    --nc-panel-retire-border: #8761b3;
+}
+
+.stApp {
+    background-color: var(--nc-bg) !important;
+    color: var(--nc-text) !important;
+}
+
+.block-container {
+    padding-top: 2.8rem !important;
+    padding-bottom: 2rem;
+    max-width: 1180px;
+}
+.stApp, .stApp p, .stApp label, .stApp [data-testid="stMarkdownContainer"] {
+    font-size: 17px !important;
+    color: var(--nc-text);
+}
+/* 간편 새로고침 버튼: 내용 크기만 사용하고 오른쪽 정렬 */
+.st-key-compass_refresh_area {
+    display: flex !important;
+    justify-content: flex-end !important;
+    align-items: center !important;
+    margin: 0 0 4px 0 !important;
+}
+
+.st-key-compass_quick_refresh {
+    width: auto !important;
+    flex: 0 0 auto !important;
+}
+
+.st-key-compass_quick_refresh button {
+    width: 42px !important;
+    min-width: 42px !important;
+    max-width: 42px !important;
+    height: 36px !important;
+    min-height: 36px !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    border-radius: 8px !important;
+    font-size: 21px !important;
+    line-height: 1 !important;
+}
+
+/* 앱 내부 헤더와 도구 영역의 반투명·블러 효과 제거 시도 */
+header[data-testid="stHeader"],
+header[data-testid="stHeader"] [data-testid="stToolbar"] {
+    background: #0b1120 !important;
+    background-color: #0b1120 !important;
+    opacity: 1 !important;
+    -webkit-backdrop-filter: none !important;
+    backdrop-filter: none !important;
+    box-shadow: none !important;
+}
+</style>
+""", unsafe_allow_html=True)
+
+#--------------------------------------------------------
+# 1.02.03 | 패널 및 위젯 스타일링
+#--------------------------------------------------------
+st.markdown("""
+<style>
+.soft-card {
+    background: var(--nc-card-bg);
+    border: 1px solid var(--nc-border);
+    border-radius: 14px;
+    padding: 18px 20px;
+    margin: 10px 0;
+    color: var(--nc-text);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+}
+
+.st-key-job-panel { 
+    background: rgba(30, 41, 59, 0.45) !important; 
+    border: 1.5px solid #475569 !important; 
+    border-radius: 12px; 
+    padding: 20px 22px !important;
+}
+.st-key-job-panel * { color: var(--nc-text) !important; }
+
+.st-key-income-panel { background: var(--nc-panel-income) !important; border: 1px solid var(--nc-panel-income-border) !important; border-radius: 12px; }
+.st-key-expense-panel { background: var(--nc-panel-expense) !important; border: 1px solid var(--nc-panel-expense-border) !important; border-radius: 12px; }
+.st-key-asset-panel { background: var(--nc-panel-asset) !important; border: 1px solid var(--nc-panel-asset-border) !important; border-radius: 12px; }
+.st-key-debt-panel { background: var(--nc-panel-debt) !important; border: 1px solid var(--nc-panel-debt-border) !important; border-radius: 12px; }
+.st-key-retirement-panel { background: var(--nc-panel-retire) !important; border: 1px solid var(--nc-panel-retire-border) !important; border-radius: 12px; }
+
+.st-key-income-panel *, .st-key-expense-panel *, .st-key-asset-panel *,
+.st-key-debt-panel *, .st-key-retirement-panel * {
+    color: var(--nc-text) !important;
+}
+
+[data-testid="stMetricLabel"] *, [data-testid="stMetricLabel"] { color: var(--nc-subtext) !important; font-size: 15px !important; font-weight: 600 !important; }
+[data-testid="stMetricValue"] *, [data-testid="stMetricValue"] { color: var(--nc-text) !important; font-weight: 800 !important; font-size: 26px !important; }
+
+button[kind="primary"], .stApp [data-testid="stFormSubmitButton"] button[kind="primary"] {
+    background-color: var(--nc-primary) !important;
+    border-color: var(--nc-primary) !important;
+    color: #ffffff !important;
+    font-weight: 700 !important;
+    font-size: 17px !important;
+    border-radius: 8px !important;
+    padding: 10px !important;
+}
+
+[data-testid="stSidebar"] { background-color: var(--nc-sidebar-bg) !important; border-right: 1px solid var(--nc-border) !important; }
+[data-testid="stSidebar"] * { color: var(--nc-text) !important; }
+
+.stApp input, .stApp textarea {
+    background-color: var(--nc-card-bg) !important;
+    color: var(--nc-text) !important;
+    border-color: var(--nc-border) !important;
+    font-size: 17px !important;
+    padding: 10px 12px !important;
+}
+
+input::placeholder, textarea::placeholder,
+.stApp input::placeholder, .stApp textarea::placeholder {
+    color: #94a3b8 !important;
+    -webkit-text-fill-color: #94a3b8 !important;
+    opacity: 1 !important;
+    font-size: 15px !important;
+}
+
+div[data-testid="stButtonGroup"],
+div[data-testid="stPills"],
+div[data-testid="stSegmentedControl"] {
+    display: flex !important;
+    flex-wrap: wrap !important;
+    gap: 8px !important;
+    overflow-x: visible !important;
+}
+
+div[data-testid="stButtonGroup"] button,
+div[data-testid="stPills"] button,
+div[data-testid="stSegmentedControl"] button {
+    background-color: #1E293B !important;
+    background: #1E293B !important;
+    color: #CBD5E1 !important;
+    border: 1px solid #334155 !important;
+    font-size: 15.5px !important;
+    font-weight: 600 !important;
+    border-radius: 8px !important;
+    padding: 9px 15px !important;
+    margin: 0 !important;
+    box-shadow: none !important;
+}
+
+div[data-testid="stButtonGroup"] button:hover,
+div[data-testid="stPills"] button:hover {
+    background-color: #334155 !important;
+    color: #F8FAFC !important;
+}
+
+div[data-testid="stButtonGroup"] button[aria-checked="true"],
+div[data-testid="stButtonGroup"] button[aria-selected="true"],
+div[data-testid="stPills"] button[aria-checked="true"],
+div[data-testid="stPills"] button[aria-selected="true"] {
+    background-color: #EA580C !important;
+    background: linear-gradient(135deg, #EA580C 0%, #C2410C 100%) !important;
+    color: #FFFFFF !important;
+    border-color: #EA580C !important;
+    font-weight: 800 !important;
+    box-shadow: 0 2px 8px rgba(234, 88, 12, 0.35) !important;
+}
+
+div[data-testid="stNumberInput"] button { display: none !important; }
+div[data-testid="stNumberInput"] input { padding-right: 12px !important; }
+
+div[data-testid="stForm"]:has(input[id*="start_person"]) {
+    border: none !important;
+    padding: 0 !important;
+    background: transparent !important;
+}
+
+input[id*="start_person"] {
+    background-color: #FFFFFF !important;
+    color: #0F172A !important;
+    border: 1.5px solid #94A3B8 !important;
+    border-radius: 8px !important;
+    text-align: center !important;
+    font-size: 16px !important;
+    height: 44px !important;
+}
+
+div[data-testid="stForm"]:has(input[id*="start_person"]) button {
+    height: 44px !important;
+    font-size: 17px !important;
+    font-weight: 800 !important;
+    border-radius: 8px !important;
+    padding: 0 10px !important;
+}
+
+.stApp button:not([kind="primary"]) {
+    background-color: #1E293B !important;
+    color: #F8FAFC !important;
+    border: 1.5px solid #475569 !important;
+    font-weight: 700 !important;
+}
+
+.stApp button:not([kind="primary"]):hover {
+    background-color: #EA580C !important;
+    border-color: #EA580C !important;
+    color: #FFFFFF !important;
+}
+</style>
+""", unsafe_allow_html=True)
+
+#--------------------------------------------------------
+# 1.02.04 | 특수 컴포넌트(카카오 옐로우 & expander) 스타일링
+#--------------------------------------------------------
+st.markdown("""
+<style>
+/* st.code 코드블록: 카카오톡 전용 톤다운 웜 옐로우 배색 */
+[data-testid="stCodeBlock"] {
+    background-color: #e9d362 !important;
+    background: #e9d362 !important;
+    border: 1.5px solid #bda738 !important;
+    border-radius: 12px !important;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25) !important;
+}
+
+[data-testid="stCodeBlock"] pre,
+[data-testid="stCodeBlock"] code,
+.stCode pre,
+.stCode code {
+    background-color: #e9d362 !important;
+    background: #e9d362 !important;
+    color: #1a1a1a !important;
+    font-family: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Malgun Gothic", sans-serif !important;
+    font-weight: 600 !important;
+    font-size: 14.5px !important;
+    line-height: 1.65 !important;
+    white-space: pre-wrap !important;
+    word-break: break-word !important;
+    overflow-x: hidden !important;
+}
+
+[data-testid="stCodeBlock"] button {
+    background-color: rgba(26, 26, 26, 0.12) !important;
+    border: 1px solid rgba(26, 26, 26, 0.25) !important;
+    color: #1a1a1a !important;
+    border-radius: 6px !important;
+}
+[data-testid="stCodeBlock"] button:hover {
+    background-color: rgba(26, 26, 26, 0.25) !important;
+}
+[data-testid="stCodeBlock"] button svg {
+    fill: #1a1a1a !important;
+}
+
+/* st.expander 헤더 다크 고대비 스타일 (화이트/화이트 박멸) */
+[data-testid="stExpander"] {
+    background-color: transparent !important;
+    border: 1px solid #334155 !important;
+    border-radius: 10px !important;
+}
+
+[data-testid="stExpander"] details {
+    border: none !important;
+    background-color: transparent !important;
+}
+
+[data-testid="stExpander"] summary {
+    background-color: #1E293B !important;
+    color: #F8FAFC !important;
+    font-weight: 700 !important;
+    border-radius: 8px !important;
+    padding: 12px 16px !important;
+}
+
+[data-testid="stExpander"] summary:hover {
+    background-color: #334155 !important;
+    color: #FFFFFF !important;
+}
+
+[data-testid="stExpander"] summary svg {
+    fill: #F8FAFC !important;
+}
+
+[data-testid="stExpander"] [data-testid="stExpanderDetails"] {
+    background-color: rgba(15, 23, 42, 0.6) !important;
+    border-top: 1px solid #334155 !important;
+    border-radius: 0 0 10px 10px !important;
+    padding: 16px !important;
+}
+</style>
+""", unsafe_allow_html=True)
+
+
+#########################################################
+# 1.03 | 공식 통계 벤치마크 및 전역 상수
+#########################################################
+#--------------------------------------------------------
+# 1.03.01 | 국민이전계정(NTA) 데이터셋 및 공식 URL
+#--------------------------------------------------------
+LIFECYCLE_BENCHMARK = pd.DataFrame([
+    {"age": 20, "labor_income": 45,  "consumption": 130}, 
+    {"age": 25, "labor_income": 180, "consumption": 150},
+    {"age": 28, "labor_income": 260, "consumption": 170},
+    {"age": 35, "labor_income": 360, "consumption": 220},
+    {"age": 43, "labor_income": 435, "consumption": 265},
+    {"age": 50, "labor_income": 410, "consumption": 280},
+    {"age": 55, "labor_income": 330, "consumption": 280},
+    {"age": 60, "labor_income": 220, "consumption": 250},
+    {"age": 61, "labor_income": 190, "consumption": 240},
+    {"age": 65, "labor_income": 120, "consumption": 230}, 
+    {"age": 70, "labor_income": 60,  "consumption": 210},
+    {"age": 75, "labor_income": 25,  "consumption": 195},
+    {"age": 80, "labor_income": 10,  "consumption": 185},
+])
+
+OFFICIAL_PDF_URL = "https://mods.go.kr/boardDownload.es?bid=11898&list_no=447028&seq=3#page=7"
+OFFICIAL_RELEASE_URL = "https://mods.go.kr/board.es?act=view&bid=11898&list_no=447028&mid=a10301130100"
+
+
+
+#########################################################
+# -------------------------------------------------------
+# 2.00 | 상태 관리 및 재무 유틸리티 엔진
+# -------------------------------------------------------
+#########################################################
+#########################################################
+# 2.01 | 세션 상태 및 진단 데이터 관리 엔진
+#########################################################
+#--------------------------------------------------------
+# 2.01.01 | 세션 키 초기화 및 안전 조회 헬퍼
+#--------------------------------------------------------
+if "anonymous_id" not in st.session_state:
+    st.session_state.anonymous_id = f"#{random.choice('ABCDE')}-{random.randint(101,999)}"
+if "started" not in st.session_state:
+    st.session_state.started = False
+if "answers" not in st.session_state:
+    st.session_state.answers = {}
+if "advanced_mode" not in st.session_state:
+    st.session_state.advanced_mode = False  # 기본값: 누구나 부담 없는 기본 모드로 시작
+
+def getv(key, default=0):
+    val = st.session_state.get(key, default)
+    return default if val is None else val
+    
+#--------------------------------------------------------
+# 2.01.02 | 테스트 사례 저장용 데이터 키 목록
+#--------------------------------------------------------
+CASE_DATA_KEYS = [
+    "anonymous_id", "person_name", "person_age", "gender", "job_form", "job_spouse_form", "career_stage",
+    "income_self", "income_spouse", "income_other", "income_bonus", "income_pension",
+    "other_pension_self_enabled", "other_pension_self_amount", "other_pension_self_age",
+    "other_pension_spouse_enabled", "other_pension_spouse_amount", "other_pension_spouse_age",
+    "expense_living", "expense_loan", "expense_other", "retirement_monthly_expenses",
+    "asset_cash", "asset_financial", "asset_home", "asset_deposit", "asset_other",
+    "debt_home", "debt_other", "retirement_age", "spouse_age", "child_count",
+    "child_age", "child_age2", "child_age3", "child_age4", "father_age", "mother_age",
+    "marriage_plan", "child_plan", "housing_plan", "sibling_items", "advanced_mode"
+]
+
+#--------------------------------------------------------
+# 2.01.03 | 대표 체험 사례 및 저장/불러오기
+#--------------------------------------------------------
+from datetime import datetime
+
+# [인터뷰어 전용 체험 사례 2종] - 위젯 키 완벽 바인딩
+INTERVIEWER_CASES = {
+    "case_32_female": {
+        "person_name": "32세 여성 (미혼, 4년차)",
+        "person_age": 32,
+        "gender": "🙋‍♀️ 여성",
+        "job_form": "직장인",
+        "job_spouse_form": "해당 없음",
+        "career_stage": "🌿 4~9년 (성장기)",
+        "income_self": 290, "income_spouse": 0, "income_other": 0,
+        "income_bonus": 200, "income_pension": 120,
+        "expense_living": 130, "expense_loan": 0, "expense_other": 300,
+        "retirement_monthly_expenses": 270,
+        "asset_cash": 800, "asset_financial": 700, "asset_home": 0, "asset_deposit": 0, "asset_other": 0,
+        "debt_home": 0, "debt_other": 0,
+        "retirement_age": 60, "spouse_age": 0,
+        "child_count": "없음",
+        "child_count_select_direct": "없음",  # 위젯에 직격 주입
+        "child_age": 0, "child_age2": 0, "child_age3": 0, "child_age4": 0,
+        "father_age": 63, "mother_age": 60,
+        "marriage_plan": "1~3년 내 결혼 생각 있음",
+        "child_plan": "자녀 계획 있음",
+        "housing_plan": "주택 구입 고려",
+        "target_housing_age": 39,  # 2024 주거실태조사 가중 중앙값
+        "housing_region": "부산",
+        "housing_region_select": "부산",    # 위젯에 직격 주입
+#########################################################
+# -------------------------------------------------------
+# 1.00 | 시스템 환경 및 전역 테마 엔진
+# -------------------------------------------------------
+#########################################################
+
+#########################################################
+# 1.01 | 라이브러리 로드 및 기본 페이지 설정
+#########################################################
+
+#--------------------------------------------------------
+# 1.01.01 | 필수 및 서드파티 라이브러리 임포트
+#--------------------------------------------------------
+import os
+from pathlib import Path
+import random
+import json
+import base64
+import requests
+import re
+from datetime import date
+import streamlit as st
+import pandas as pd
+import numpy as np
+import plotly.graph_objects as go
+
+#--------------------------------------------------------
+# 1.01.02 | Streamlit 기본 페이지 및 레이아웃 설정
+#--------------------------------------------------------
+st.set_page_config(
+    page_title="나침반 — 나의 삶을 바라보는 산책로",
+    page_icon="🧭",
+    layout="wide",
+    initial_sidebar_state="collapsed",
+)
+
+#########################################################
+# 1.02 | 전역 통합 테마 디자인 시스템 CSS
+#########################################################
+
+#--------------------------------------------------------
+# 1.02.01 | 전역 스크롤 안정화 및 상단 헤더 다크 일체화
+#--------------------------------------------------------
+st.markdown("""
+<style>
+/* Streamlit 실제 스크롤 컨테이너의 스크롤 안정화 */
+[data-testid="stAppViewContainer"],
+[data-testid="stMain"],
+.stMain {
+    overflow-y: scroll !important;
+    scrollbar-gutter: stable;
+}
+
+/* Streamlit 상단 헤더: 불투명한 딥 네이비 배경 */
+header[data-testid="stHeader"] {
+    display: flex !important;
+    background: #0b1120 !important;
+    background-color: #0b1120 !important;
+    opacity: 1 !important;
+    -webkit-backdrop-filter: none !important;
+    backdrop-filter: none !important;
+    height: 2.8rem !important;
+    border-bottom: 1px solid #334155 !important;
+}
+
+/* 헤더 내부 도구 영역에도 배경 효과가 남지 않도록 처리 */
+header[data-testid="stHeader"] [data-testid="stToolbar"] {
+    background: #0b1120 !important;
+    background-color: #0b1120 !important;
+    opacity: 1 !important;
+    -webkit-backdrop-filter: none !important;
+    backdrop-filter: none !important;
+}
+
+/* 헤더 내부 아이콘과 버튼 색상 유지 */
+header[data-testid="stHeader"] * {
+    color: #94a3b8 !important;
+}
+
+header[data-testid="stHeader"] button:hover {
+    color: #f8fafc !important;
+}
+
+/* 메인 콘텐츠 상단 여백 */
+div[data-testid="stMainBlockContainer"] {
+    padding-top: 0.8rem !important;
+}
+
+/* 하단 Streamlit 푸터 숨기기 */
+footer {
+    visibility: hidden !important;
+}
+</style>
+""", unsafe_allow_html=True)
+
+#--------------------------------------------------------
+# 1.02.02 | 전역 색상 디자인 토큰 및 가독성 폰트 설정
+#--------------------------------------------------------
+st.markdown("""
+<style>
+:root {
+    color-scheme: light dark;
+    --nc-bg: #0b1120;
+    --nc-sidebar-bg: #0f172a;
+    --nc-text: #f8fafc;
+    --nc-subtext: #94a3b8;
+    --nc-border: #334155;
+    --nc-card-bg: #151e2f;
+    --nc-hero-bg: radial-gradient(circle at top, #1e293b 0%, #0f172a 75%);
+    --nc-primary: #ea580c;
+    --nc-primary-hover: #c2410c;
+    --nc-accent-gold: #f59e0b;
+    --nc-quad-bg: #172033;
+    
+    --nc-panel-income: #163b35;
+    --nc-panel-income-border: #2f806d;
+    --nc-panel-expense: #442a2d;
+    --nc-panel-expense-border: #a34c56;
+    --nc-panel-asset: #183653;
+    --nc-panel-asset-border: #3b82b5;
+    --nc-panel-debt: #44351d;
+    --nc-panel-debt-border: #a8792d;
+    --nc-panel-retire: #34264a;
+    --nc-panel-retire-border: #8761b3;
+}
+
+.stApp {
+    background-color: var(--nc-bg) !important;
+    color: var(--nc-text) !important;
+}
+
+.block-container {
+    padding-top: 2.8rem !important;
+    padding-bottom: 2rem;
+    max-width: 1180px;
+}
+.stApp, .stApp p, .stApp label, .stApp [data-testid="stMarkdownContainer"] {
+    font-size: 17px !important;
+    color: var(--nc-text);
+}
+/* 간편 새로고침 버튼: 내용 크기만 사용하고 오른쪽 정렬 */
+.st-key-compass_refresh_area {
+    display: flex !important;
+    justify-content: flex-end !important;
+    align-items: center !important;
+    margin: 0 0 4px 0 !important;
+}
+
+.st-key-compass_quick_refresh {
+    width: auto !important;
+    flex: 0 0 auto !important;
+}
+
+.st-key-compass_quick_refresh button {
+    width: 42px !important;
+    min-width: 42px !important;
+    max-width: 42px !important;
+    height: 36px !important;
+    min-height: 36px !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    border-radius: 8px !important;
+    font-size: 21px !important;
+    line-height: 1 !important;
+}
+
+/* 앱 내부 헤더와 도구 영역의 반투명·블러 효과 제거 시도 */
+header[data-testid="stHeader"],
+header[data-testid="stHeader"] [data-testid="stToolbar"] {
+    background: #0b1120 !important;
+    background-color: #0b1120 !important;
+    opacity: 1 !important;
+    -webkit-backdrop-filter: none !important;
+    backdrop-filter: none !important;
+    box-shadow: none !important;
+}
+</style>
+""", unsafe_allow_html=True)
+
+#--------------------------------------------------------
+# 1.02.03 | 패널 및 위젯 스타일링
+#--------------------------------------------------------
+st.markdown("""
+<style>
+.soft-card {
+    background: var(--nc-card-bg);
+    border: 1px solid var(--nc-border);
+    border-radius: 14px;
+    padding: 18px 20px;
+    margin: 10px 0;
+    color: var(--nc-text);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+}
+
+.st-key-job-panel { 
+    background: rgba(30, 41, 59, 0.45) !important; 
+    border: 1.5px solid #475569 !important; 
+    border-radius: 12px; 
+    padding: 20px 22px !important;
+}
+.st-key-job-panel * { color: var(--nc-text) !important; }
+
+.st-key-income-panel { background: var(--nc-panel-income) !important; border: 1px solid var(--nc-panel-income-border) !important; border-radius: 12px; }
+.st-key-expense-panel { background: var(--nc-panel-expense) !important; border: 1px solid var(--nc-panel-expense-border) !important; border-radius: 12px; }
+.st-key-asset-panel { background: var(--nc-panel-asset) !important; border: 1px solid var(--nc-panel-asset-border) !important; border-radius: 12px; }
+.st-key-debt-panel { background: var(--nc-panel-debt) !important; border: 1px solid var(--nc-panel-debt-border) !important; border-radius: 12px; }
+.st-key-retirement-panel { background: var(--nc-panel-retire) !important; border: 1px solid var(--nc-panel-retire-border) !important; border-radius: 12px; }
+
+.st-key-income-panel *, .st-key-expense-panel *, .st-key-asset-panel *,
+.st-key-debt-panel *, .st-key-retirement-panel * {
+    color: var(--nc-text) !important;
+}
+
+[data-testid="stMetricLabel"] *, [data-testid="stMetricLabel"] { color: var(--nc-subtext) !important; font-size: 15px !important; font-weight: 600 !important; }
+[data-testid="stMetricValue"] *, [data-testid="stMetricValue"] { color: var(--nc-text) !important; font-weight: 800 !important; font-size: 26px !important; }
+
+button[kind="primary"], .stApp [data-testid="stFormSubmitButton"] button[kind="primary"] {
+    background-color: var(--nc-primary) !important;
+    border-color: var(--nc-primary) !important;
+    color: #ffffff !important;
+    font-weight: 700 !important;
+    font-size: 17px !important;
+    border-radius: 8px !important;
+    padding: 10px !important;
+}
+
+[data-testid="stSidebar"] { background-color: var(--nc-sidebar-bg) !important; border-right: 1px solid var(--nc-border) !important; }
+[data-testid="stSidebar"] * { color: var(--nc-text) !important; }
+
+.stApp input, .stApp textarea {
+    background-color: var(--nc-card-bg) !important;
+    color: var(--nc-text) !important;
+    border-color: var(--nc-border) !important;
+    font-size: 17px !important;
+    padding: 10px 12px !important;
+}
+
+input::placeholder, textarea::placeholder,
+.stApp input::placeholder, .stApp textarea::placeholder {
+    color: #94a3b8 !important;
+    -webkit-text-fill-color: #94a3b8 !important;
+    opacity: 1 !important;
+    font-size: 15px !important;
+}
+
+div[data-testid="stButtonGroup"],
+div[data-testid="stPills"],
+div[data-testid="stSegmentedControl"] {
+    display: flex !important;
+    flex-wrap: wrap !important;
+    gap: 8px !important;
+    overflow-x: visible !important;
+}
+
+div[data-testid="stButtonGroup"] button,
+div[data-testid="stPills"] button,
+div[data-testid="stSegmentedControl"] button {
+    background-color: #1E293B !important;
+    background: #1E293B !important;
+    color: #CBD5E1 !important;
+    border: 1px solid #334155 !important;
+    font-size: 15.5px !important;
+    font-weight: 600 !important;
+    border-radius: 8px !important;
+    padding: 9px 15px !important;
+    margin: 0 !important;
+    box-shadow: none !important;
+}
+
+div[data-testid="stButtonGroup"] button:hover,
+div[data-testid="stPills"] button:hover {
+    background-color: #334155 !important;
+    color: #F8FAFC !important;
+}
+
+div[data-testid="stButtonGroup"] button[aria-checked="true"],
+div[data-testid="stButtonGroup"] button[aria-selected="true"],
+div[data-testid="stPills"] button[aria-checked="true"],
+div[data-testid="stPills"] button[aria-selected="true"] {
+    background-color: #EA580C !important;
+    background: linear-gradient(135deg, #EA580C 0%, #C2410C 100%) !important;
+    color: #FFFFFF !important;
+    border-color: #EA580C !important;
+    font-weight: 800 !important;
+    box-shadow: 0 2px 8px rgba(234, 88, 12, 0.35) !important;
+}
+
+div[data-testid="stNumberInput"] button { display: none !important; }
+div[data-testid="stNumberInput"] input { padding-right: 12px !important; }
+
+div[data-testid="stForm"]:has(input[id*="start_person"]) {
+    border: none !important;
+    padding: 0 !important;
+    background: transparent !important;
+}
+
+input[id*="start_person"] {
+    background-color: #FFFFFF !important;
+    color: #0F172A !important;
+    border: 1.5px solid #94A3B8 !important;
+    border-radius: 8px !important;
+    text-align: center !important;
+    font-size: 16px !important;
+    height: 44px !important;
+}
+
+div[data-testid="stForm"]:has(input[id*="start_person"]) button {
+    height: 44px !important;
+    font-size: 17px !important;
+    font-weight: 800 !important;
+    border-radius: 8px !important;
+    padding: 0 10px !important;
+}
+
+.stApp button:not([kind="primary"]) {
+    background-color: #1E293B !important;
+    color: #F8FAFC !important;
+    border: 1.5px solid #475569 !important;
+    font-weight: 700 !important;
+}
+
+.stApp button:not([kind="primary"]):hover {
+    background-color: #EA580C !important;
+    border-color: #EA580C !important;
+    color: #FFFFFF !important;
+}
+</style>
+""", unsafe_allow_html=True)
+
+#--------------------------------------------------------
+# 1.02.04 | 특수 컴포넌트(카카오 옐로우 & expander) 스타일링
+#--------------------------------------------------------
+st.markdown("""
+<style>
+/* st.code 코드블록: 카카오톡 전용 톤다운 웜 옐로우 배색 */
+[data-testid="stCodeBlock"] {
+    background-color: #e9d362 !important;
+    background: #e9d362 !important;
+    border: 1.5px solid #bda738 !important;
+    border-radius: 12px !important;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25) !important;
+}
+
+[data-testid="stCodeBlock"] pre,
+[data-testid="stCodeBlock"] code,
+.stCode pre,
+.stCode code {
+    background-color: #e9d362 !important;
+    background: #e9d362 !important;
+    color: #1a1a1a !important;
+    font-family: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Malgun Gothic", sans-serif !important;
+    font-weight: 600 !important;
+    font-size: 14.5px !important;
+    line-height: 1.65 !important;
+    white-space: pre-wrap !important;
+    word-break: break-word !important;
+    overflow-x: hidden !important;
+}
+
+[data-testid="stCodeBlock"] button {
+    background-color: rgba(26, 26, 26, 0.12) !important;
+    border: 1px solid rgba(26, 26, 26, 0.25) !important;
+    color: #1a1a1a !important;
+    border-radius: 6px !important;
+}
+[data-testid="stCodeBlock"] button:hover {
+    background-color: rgba(26, 26, 26, 0.25) !important;
+}
+[data-testid="stCodeBlock"] button svg {
+    fill: #1a1a1a !important;
+}
+
+/* st.expander 헤더 다크 고대비 스타일 (화이트/화이트 박멸) */
+[data-testid="stExpander"] {
+    background-color: transparent !important;
+    border: 1px solid #334155 !important;
+    border-radius: 10px !important;
+}
+
+[data-testid="stExpander"] details {
+    border: none !important;
+    background-color: transparent !important;
+}
+
+[data-testid="stExpander"] summary {
+    background-color: #1E293B !important;
+    color: #F8FAFC !important;
+    font-weight: 700 !important;
+    border-radius: 8px !important;
+    padding: 12px 16px !important;
+}
+
+[data-testid="stExpander"] summary:hover {
+    background-color: #334155 !important;
+    color: #FFFFFF !important;
+}
+
+[data-testid="stExpander"] summary svg {
+    fill: #F8FAFC !important;
+}
+
+[data-testid="stExpander"] [data-testid="stExpanderDetails"] {
+    background-color: rgba(15, 23, 42, 0.6) !important;
+    border-top: 1px solid #334155 !important;
+    border-radius: 0 0 10px 10px !important;
+    padding: 16px !important;
+}
+</style>
+""", unsafe_allow_html=True)
+
+
+#########################################################
+# 1.03 | 공식 통계 벤치마크 및 전역 상수
+#########################################################
+#--------------------------------------------------------
+# 1.03.01 | 국민이전계정(NTA) 데이터셋 및 공식 URL
+#--------------------------------------------------------
+LIFECYCLE_BENCHMARK = pd.DataFrame([
+    {"age": 20, "labor_income": 45,  "consumption": 130}, 
+    {"age": 25, "labor_income": 180, "consumption": 150},
+    {"age": 28, "labor_income": 260, "consumption": 170},
+    {"age": 35, "labor_income": 360, "consumption": 220},
+    {"age": 43, "labor_income": 435, "consumption": 265},
+    {"age": 50, "labor_income": 410, "consumption": 280},
+    {"age": 55, "labor_income": 330, "consumption": 280},
+    {"age": 60, "labor_income": 220, "consumption": 250},
+    {"age": 61, "labor_income": 190, "consumption": 240},
+    {"age": 65, "labor_income": 120, "consumption": 230}, 
+    {"age": 70, "labor_income": 60,  "consumption": 210},
+    {"age": 75, "labor_income": 25,  "consumption": 195},
+    {"age": 80, "labor_income": 10,  "consumption": 185},
+])
+
+OFFICIAL_PDF_URL = "https://mods.go.kr/boardDownload.es?bid=11898&list_no=447028&seq=3#page=7"
+OFFICIAL_RELEASE_URL = "https://mods.go.kr/board.es?act=view&bid=11898&list_no=447028&mid=a10301130100"
+
+
+
+#########################################################
+# -------------------------------------------------------
+# 2.00 | 상태 관리 및 재무 유틸리티 엔진
+# -------------------------------------------------------
+#########################################################
+#########################################################
+# 2.01 | 세션 상태 및 진단 데이터 관리 엔진
+#########################################################
+#--------------------------------------------------------
+# 2.01.01 | 세션 키 초기화 및 안전 조회 헬퍼
+#--------------------------------------------------------
+if "anonymous_id" not in st.session_state:
+    st.session_state.anonymous_id = f"#{random.choice('ABCDE')}-{random.randint(101,999)}"
+if "started" not in st.session_state:
+    st.session_state.started = False
+if "answers" not in st.session_state:
+    st.session_state.answers = {}
+if "advanced_mode" not in st.session_state:
+    st.session_state.advanced_mode = False  # 기본값: 누구나 부담 없는 기본 모드로 시작
+
+def getv(key, default=0):
+    val = st.session_state.get(key, default)
+    return default if val is None else val
+    
+#--------------------------------------------------------
+# 2.01.02 | 테스트 사례 저장용 데이터 키 목록
+#--------------------------------------------------------
+CASE_DATA_KEYS = [
+    "anonymous_id", "person_name", "person_age", "gender", "job_form", "job_spouse_form", "career_stage",
+    "income_self", "income_spouse", "income_other", "income_bonus", "income_pension",
+    "other_pension_self_enabled", "other_pension_self_amount", "other_pension_self_age",
+    "other_pension_spouse_enabled", "other_pension_spouse_amount", "other_pension_spouse_age",
+    "expense_living", "expense_loan", "expense_other", "retirement_monthly_expenses",
+    "asset_cash", "asset_financial", "asset_home", "asset_deposit", "asset_other",
+    "debt_home", "debt_other", "retirement_age", "spouse_age", "child_count",
+    "child_age", "child_age2", "child_age3", "child_age4", "father_age", "mother_age",
+    "marriage_plan", "child_plan", "housing_plan", "sibling_items", "advanced_mode"
+]
+
+#--------------------------------------------------------
+# 2.01.03 | 대표 체험 사례 및 저장/불러오기
+#--------------------------------------------------------
+from datetime import datetime
+
+# [인터뷰어 전용 체험 사례 2종] - 위젯 키 완벽 바인딩
+INTERVIEWER_CASES = {
+    "case_32_female": {
+        "person_name": "32세 여성 (미혼, 4년차)",
+        "person_age": 32,
+        "gender": "🙋‍♀️ 여성",
+        "job_form": "직장인",
+        "job_spouse_form": "해당 없음",
+        "career_stage": "🌿 4~9년 (성장기)",
+        "income_self": 290, "income_spouse": 0, "income_other": 0,
+        "income_bonus": 200, "income_pension": 120,
+        "expense_living": 130, "expense_loan": 0, "expense_other": 300,
+        "retirement_monthly_expenses": 270,
+        "asset_cash": 800, "asset_financial": 700, "asset_home": 0, "asset_deposit": 0, "asset_other": 0,
+        "debt_home": 0, "debt_other": 0,
+        "retirement_age": 60, "spouse_age": 0,
+        "child_count": "없음",
+        "child_count_select_direct": "없음",  # 위젯에 직격 주입
+        "child_age": 0, "child_age2": 0, "child_age3": 0, "child_age4": 0,
+        "father_age": 63, "mother_age": 60,
+        "marriage_plan": "1~3년 내 결혼 생각 있음",
+        "child_plan": "자녀 계획 있음",
+        "housing_plan": "주택 구입 고려",
+        "target_housing_age": 39,  # 2024 주거실태조사 가중 중앙값
+        "housing_region": "부산",
+        "housing_region_select": "부산",    # 위젯에 직격 주입
+
+        "income_pension_spouse": 60,
+        "pension_start_age": 65
+    },
+    "case_45_female": {
+        "person_name": "45세 여성 (기혼, 재취업)",
+        "person_age": 45,
+        "gender": "🙋‍♀️ 여성",
+        "job_form": "직장인",
+        "job_spouse_form": "직장인",
+        "career_stage": "🌿 4~9년 (성장기)",
+        "income_self": 260, "income_spouse": 360, "income_other": 0,
+        "income_bonus": 300,
+        "income_pension": 120,
+        "expense_living": 330, "expense_loan": 67, "expense_other": 500,
+        "retirement_monthly_expenses": 270,
+        "asset_cash": 1500, "asset_financial": 2500, "asset_home": 40000, "asset_deposit": 0, "asset_other": 0,
+        "debt_home": 12362, "debt_other": 0,
+        "retirement_age": 60, "spouse_age": 47,
+        "child_count": "1명",
+        "child_count_select_direct": "1명",   # 위젯에 직격 주입
+        "child_age": 15, "child_age2": 0, "child_age3": 0, "child_age4": 0,
+        "father_age": 75, "mother_age": 72,
+        "marriage_plan": "결혼함",
+        "child_plan": "계획 없음",
+        "housing_plan": "현재 주거 유지",
+        "target_housing_age": 39,  # 2024 주거실태조사 가중 중앙값
+        "housing_region": "부산",
+        "housing_region_select": "부산",    # 위젯에 직격 주입
+
         "income_pension_spouse": 60,
         "pension_start_age": 65
     }
@@ -3056,12 +4607,14 @@ elif selected_page == "인생의 사계절":
         representative_case_id = st.session_state.get("_representative_case_id")
         is_representative_case = representative_case_id in {"case_32_female", "case_45_female"}
         selected_ltv = 35.0 if is_representative_case else float(REGIONAL_LTV1.get(selected_region, 34.3))
+        representative_home_price_man = float(getv("representative_home_price_man", REPRESENTATIVE_HOME_PRICE_MAN))
+        representative_mortgage_principal_man = float(getv("representative_mortgage_principal_man", REPRESENTATIVE_MORTGAGE_PRINCIPAL_MAN))
         region_apt_price = (
-            REPRESENTATIVE_HOME_PRICE_MAN if is_representative_case
+            representative_home_price_man if is_representative_case
             else HOUSING_PRICE_DATA.get(selected_region, HOUSING_PRICE_DATA["부산"])[3] / 10.0
         )
         home_equity_display = (
-            region_apt_price - REPRESENTATIVE_MORTGAGE_PRINCIPAL_MAN
+            region_apt_price - representative_mortgage_principal_man
             if is_representative_case
             else region_apt_price * (1.0 - selected_ltv / 100.0)
         )
@@ -3082,11 +4635,13 @@ elif selected_page == "인생의 사계절":
         
         current_loan_payment = float(getv("expense_loan", 0) or 0)
         representative_case_id = st.session_state.get("_representative_case_id")
+        representative_mortgage_principal_man = float(getv("representative_mortgage_principal_man", REPRESENTATIVE_MORTGAGE_PRINCIPAL_MAN))
+        representative_mortgage_purchase_age = int(getv("representative_mortgage_purchase_age", REPRESENTATIVE_MORTGAGE_PURCHASE_AGE))
         current_loan_interest_monthly = current_loan_payment
         if representative_case_id == "case_45_female":
-            current_payment_number = (cur_age - REPRESENTATIVE_MORTGAGE_PURCHASE_AGE) * 12 + 1
+            current_payment_number = (cur_age - representative_mortgage_purchase_age) * 12 + 1
             _, _, current_loan_interest_monthly = mortgage_monthly_split(
-                REPRESENTATIVE_MORTGAGE_PRINCIPAL_MAN,
+                representative_mortgage_principal_man,
                 REPRESENTATIVE_MORTGAGE_ANNUAL_RATE,
                 REPRESENTATIVE_MORTGAGE_TERM_YEARS,
                 current_payment_number,
@@ -3620,10 +5175,10 @@ elif selected_page == "인생의 사계절":
             annual_mortgage_principal = 0.0
             annual_mortgage_interest = 0.0
             if is_representative_case:
-                first_payment = (a - REPRESENTATIVE_MORTGAGE_PURCHASE_AGE) * 12 + 1
+                first_payment = (a - representative_mortgage_purchase_age) * 12 + 1
                 for payment_number in range(first_payment, first_payment + 12):
                     _, principal_part, interest_part = mortgage_monthly_split(
-                        REPRESENTATIVE_MORTGAGE_PRINCIPAL_MAN,
+                        representative_mortgage_principal_man,
                         REPRESENTATIVE_MORTGAGE_ANNUAL_RATE,
                         REPRESENTATIVE_MORTGAGE_TERM_YEARS,
                         payment_number,
@@ -3634,10 +5189,10 @@ elif selected_page == "인생의 사계절":
             mortgage_interest_curve.append(annual_mortgage_interest)
             mortgage_balance_at_age_start = (
                 mortgage_balance_after_payments(
-                    REPRESENTATIVE_MORTGAGE_PRINCIPAL_MAN,
+                    representative_mortgage_principal_man,
                     REPRESENTATIVE_MORTGAGE_ANNUAL_RATE,
                     REPRESENTATIVE_MORTGAGE_TERM_YEARS,
-                    (a - REPRESENTATIVE_MORTGAGE_PURCHASE_AGE) * 12,
+                    (a - representative_mortgage_purchase_age) * 12,
                 )
                 if is_representative_case and a >= REPRESENTATIVE_MORTGAGE_PURCHASE_AGE
                 else 0.0
