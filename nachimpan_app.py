@@ -3517,10 +3517,9 @@ elif selected_page == "인생의 사계절":
 
         current_household_size = household_size_at_age(cur_age)
         current_expense_reference = lookup_household_expense(cur_age, current_household_size)
-        if is_representative_case:
-            # 대표사례는 개인 지출성향을 임의로 낮추지 않고 MDIS 통계 평균 100%를 기준으로 한다.
-            expense_scale_ratio = 1.0
-        elif current_expense_reference and current_expense_reference["monthly"] > 0 and cur_annual_expense > 0:
+        # 대표사례도 현재 입력 지출을 MDIS 평균과 비교해 지출 수준 보정계수를 산출한다.
+        # 2024년 MDIS 기준을 최신 관측 CPI(현재 2025년)로 환산한 뒤 비율을 계산한다.
+        if current_expense_reference and current_expense_reference["monthly"] > 0 and cur_annual_expense > 0:
             expense_scale_ratio = cur_annual_expense / (
                 current_expense_reference["monthly"] * 12.0 * cpi_current_factor
             )
