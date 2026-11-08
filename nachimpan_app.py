@@ -492,7 +492,7 @@ INTERVIEWER_CASES = {
         "income_self": 290, "income_spouse": 0, "income_other": 0,
         "income_bonus": 200, "income_pension": 120,
         "expense_living": 130, "expense_loan": 0, "expense_other": 300,
-        "retirement_monthly_expenses": 265,
+        "retirement_monthly_expenses": 270,
         "asset_cash": 800, "asset_financial": 700, "asset_home": 0, "asset_deposit": 0, "asset_other": 0,
         "debt_home": 0, "debt_other": 0,
         "retirement_age": 60, "spouse_age": 0,
@@ -1499,12 +1499,12 @@ if selected_page == "우리집 가계부":
                         "은퇴 후 월 생활비 (통계상 대표값)",
                         min_value=0,
                         value=int(st.session_state.get(
-                            "retirement_monthly_expenses", 265
+                            "retirement_monthly_expenses", 270
                         ) or 0),
                         step=10,
-                        help="2024년 MDIS 2인 가구 연령별 지출을 60~86세 기간에 평균한 값입니다. 실제 생애주기 계산에는 연령대별 통계값이 각각 적용됩니다."
+                        help="2024년 MDIS 2인 가구 연령별 지출의 60~86세 평균(약 265만 원)을 최신 관측 소비자물가지수(2025년)로 환산한 대표값입니다. 실제 계산에는 연령대별 통계값을 각각 적용합니다."
                     )
-                    st.caption("대표사례 기준: 월 약 265만 원 · 계산은 60~64세부터 80세 이상까지 연령대별 지출 통계를 적용")
+                    st.caption("대표사례 기준: 월 약 270만 원(2025년 물가 환산) · 계산은 60~64세부터 80세 이상까지 연령대별 지출 통계를 적용")
 
             save_finance_trigger = st.button(
                 "입력 내용 AI 점검",
