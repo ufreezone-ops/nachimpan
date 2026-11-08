@@ -3196,11 +3196,11 @@ elif selected_page == "인생의 사계절":
         # 이벤트의 total은 중복 차감 후 가구 지출곡선에 추가할 금액.
         # display_total은 예보원 면적을 결정하는 차감 전 총비용.
         # 총비용과 차감액은 아래 시뮬레이션에서 동일한 연령별 CPI 상대계수를 적용받음.
-        event_expense_by_age = {a: 0.0 for a in range(0, life_expectancy + 1)}
+        event_expense_by_age = {a: 0.0 for a in range(0, life_expectancy)}
         for event in event_costs:
             if event["total"] > 0:
                 annual_addition = event["total"] / float(event["duration"])
-                for a in range(max(20, event["start"]), min(life_expectancy + 1, event["end"])):
+                for a in range(max(20, event["start"]), min(life_expectancy, event["end"])):
                     event_expense_by_age[a] += annual_addition
 
 #############    6.03.05.06 | 기준곡선 보간(Interpolation) 및 감쇄 엔진
@@ -3386,7 +3386,7 @@ elif selected_page == "인생의 사계절":
             expense_scale_ratio = 1.0
 
         #############    6.03.05.07 | 연령별 소득·지출 흐름 시뮬레이션 루프
-        ages_sim = list(range(20, life_expectancy + 1))
+        ages_sim = list(range(20, life_expectancy))
         my_income_curve = []
         household_income_curve = []
         household_expense_curve = []
@@ -3767,7 +3767,7 @@ elif selected_page == "인생의 사계절":
             "누적 흑자" if lifetime_net_total > 0 else ("누적 적자" if lifetime_net_total < 0 else "균형")
         )
         st.caption(
-            f"20세부터 {life_expectancy}세까지 매년의 가구소득·가구지출을 합산한 모델값입니다. "
+            f"20세부터 기대수명 연령({life_expectancy}세)에 도달하기 전까지의 연간 가구소득·가구지출을 합산한 모델값입니다. "
             "은퇴 후 생활비는 입력한 월 금액을 연간 금액으로 환산한 뒤 물가를 반영합니다. "
             "현재 자산·부채의 잔액이나 자산 매각·상속 등은 이 누적 현금흐름 합계에 포함하지 않습니다."
         )
