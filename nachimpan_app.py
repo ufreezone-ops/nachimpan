@@ -1520,6 +1520,13 @@ INTERVIEWER_CASES = {
         "target_housing_age": 39,  # 2024 주거실태조사 가중 중앙값
         "housing_region": "부산",
         "housing_region_select": "부산",    # 위젯에 직격 주입
+        "housing_ltv": 35.0,
+        # 미래 주택 구입 가정: 부산 4억 원, 대출 1억 4천만 원
+        "representative_home_price_man": 40000,
+        "representative_mortgage_principal_man": 14000,
+        "representative_mortgage_purchase_age": 39,
+        "representative_mortgage_monthly_payment_man": 67,
+        "representative_mortgage_current_balance_man": 0,
 
         "income_pension_spouse": 60,
         "pension_start_age": 65
@@ -3070,6 +3077,13 @@ INTERVIEWER_CASES = {
         "target_housing_age": 39,  # 2024 주거실태조사 가중 중앙값
         "housing_region": "부산",
         "housing_region_select": "부산",    # 위젯에 직격 주입
+        "housing_ltv": 35.0,
+        # 현재 주택·대출: 부산 4억 원, 최초 대출 1억 4천만 원, 현재 잔액 약 1억 2,362만 원
+        "representative_home_price_man": 40000,
+        "representative_mortgage_principal_man": 14000,
+        "representative_mortgage_purchase_age": 39,
+        "representative_mortgage_monthly_payment_man": 67,
+        "representative_mortgage_current_balance_man": 12362,
         "housing_ltv": 35.0,
         # 현재 주택·대출: 부산 4억 원, 최초 대출 1억 4천만 원, 현재 잔액 약 1억 2,362만 원
         "representative_home_price_man": 40000,
