@@ -4351,7 +4351,7 @@ elif selected_page == "통계":
 은퇴 여부를 특정 나이 하나로 정하기보다, 생활비를 감당하는 소득 구조가 어떻게 이어지는지 살펴봅니다.
 """)
 
-    with st.expander("7. 주택대출과 원리금 분리"):
+    with st.expander("6. 주택대출과 원리금 분리"):
         st.markdown("""
 **주택 구입자금과 대출 상환의 기준**
 
@@ -4375,7 +4375,7 @@ elif selected_page == "통계":
 
 주의: 실제 대출계약의 금리·만기·상환방식과 다를 수 있는 교육용 표준 가정입니다. LTV1 또한 조사 평균이므로 개별 가구의 실제 대출을 뜻하지 않습니다.
 """)
-    with st.expander("6. 동시성과 통시성", expanded=True):
+    with st.expander("7. 동시성과 통시성", expanded=True):
         st.markdown("""
 **왜 시간의 기준을 맞춰야 하는가**
 
