@@ -4097,11 +4097,12 @@ elif selected_page == "인생의 사계절":
         )
 
         # 기준 지역 안내 카드
+        housing_price_label = "대표사례 적용 주택가격" if is_representative_case else "아파트 중위가격"
         st.markdown(f"""
 <div style="background: rgba(30, 41, 59, 0.5); border: 1px solid #0284C7; border-radius: 8px; padding: 10px 14px; margin: 6px 0 12px 0; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px;">
     <div style="font-size: 14.5px; color: #F8FAFC;">
         🏠 <b>부동산 산정 기준 지역: <span style="color: #38BDF8; font-size: 16px;">{selected_region}</span></b>
-        <span style="font-size: 13px; color: #94A3B8; margin-left: 8px;">(아파트 중위가격: <b>{region_apt_price/10000:.2f}억 원</b> · 대출 LTV {selected_ltv:.0f}% 적용 자기자금: <b>{home_equity_display/10000:.2f}억 원</b>)</span>
+        <span style="font-size: 13px; color: #94A3B8; margin-left: 8px;">({housing_price_label}: <b>{region_apt_price/10000:.2f}억 원</b> · 대출 LTV {selected_ltv:.0f}% 적용 자기자금: <b>{home_equity_display/10000:.2f}억 원</b>)</span>
     </div>
     <div style="font-size: 12px; color: #CBD5E1; background: rgba(15, 23, 42, 0.6); padding: 3px 8px; border-radius: 4px;">
         ※ 지역에 따라 결혼 주거지원비와 내 집 마련 규모가 크게 변동됩니다.
