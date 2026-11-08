@@ -1858,6 +1858,12 @@ if selected_page == "우리집 가계부":
             "그래프는 내 나이를 기준으로 표시합니다."
         )
 
+        st.caption(
+            "보라색 점선은 2024년 임금근로일자리의 연령·성별 월평균 보수를 1인 기준으로 표시한 통계 비교선입니다. "
+            "개인의 은퇴 희망 연령과 무관하며, 연령대별 평균 보수(세전)를 연환산해 참고 표시합니다. "
+            "70세 이상 값은 해당 연령집단의 평균으로, 실제 노동 종료 연령을 뜻하지 않습니다."
+        )
+
         cur_age = int(st.session_state.get("person_age", 35) or 35)
         # 기대수명은 생애주기 탭보다 먼저 사용하는 소득 그래프에서 선행 정의
         user_gender = st.session_state.get("gender", "🙋‍♂️ 남성")
@@ -2127,7 +2133,44 @@ if selected_page == "우리집 가계부":
                     "내 연간 소득(연금 포함): %{y:,.0f}만 원<extra></extra>"
                 )
             ))
-        # 75세 이후 추정 연장 구간
+        # 2024년 국가데이터처 연령·성별 임금근로일자리 평균보수 비교선
+        # 개인의 은퇴 희망 연령과 무관하게 표시하는 1인 기준 통계 참고선
+        try:
+            wage_stats_path = (
+                Path(__file__).resolve().parent
+                / "data"
+                / "국가데이터처_2024_연령별_임금근로일자리_평균보수.csv"
+            )
+            wage_stats = pd.read_csv(wage_stats_path)
+            wage_value_col = (
+                "여성_월평균보수_만원"
+                if "여성" in user_gender
+                else "남성_월평균보수_만원"
+            )
+            wage_ages = wage_stats["대표연령"].astype(int).tolist()
+            wage_age_groups = wage_stats["연령구간"].astype(str).tolist()
+            wage_monthly = wage_stats[wage_value_col].astype(float).tolist()
+            wage_annualized = [value * 12 for value in wage_monthly]
+
+            fig_income.add_trace(go.Scatter(
+                x=wage_ages,
+                y=wage_annualized,
+                customdata=list(zip(wage_age_groups, wage_monthly)),
+                mode="lines+markers",
+                name="동연령 임금근로자 평균보수(1인 통계)",
+                line=dict(width=2.5, dash="dot", color="#A78BFA"),
+                marker=dict(size=7, symbol="diamond"),
+                hovertemplate=(
+                    "통계 연령구간: %{customdata[0]}<br>"
+                    "월평균 보수: %{customdata[1]:,.0f}만 원<br>"
+                    "연환산 참고값: %{y:,.0f}만 원"
+                    "<extra></extra>"
+                )
+            ))
+        except Exception as e:
+            st.warning(f"연령별 임금근로소득 통계 비교선을 불러오지 못했습니다. ({e})")
+
+        # 75세 이후 개인 기준곡선의 추정 연장 구간
         fig_income.add_vline(            x=75,
             line_dash="dot",
             line_color="#94A3B8",
