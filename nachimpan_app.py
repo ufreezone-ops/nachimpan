@@ -522,7 +522,7 @@ INTERVIEWER_CASES = {
         "income_bonus": 300,
         "income_pension": 120,
         "expense_living": 330, "expense_loan": 100, "expense_other": 500,
-        "retirement_monthly_expenses": 265,
+        "retirement_monthly_expenses": 270,
         "asset_cash": 1500, "asset_financial": 2500, "asset_home": 40000, "asset_deposit": 0, "asset_other": 0,
         "debt_home": 15000, "debt_other": 0,
         "retirement_age": 60, "spouse_age": 47,
@@ -3019,7 +3019,7 @@ elif selected_page == "인생의 사계절":
         cur_annual_expense = float(getv("expense_living", 0) or 0) * 12.0 + float(getv("expense_loan", 0) or 0) * 12.0 + float(getv("expense_other", 0) or 0)
         # 화면의 월 생활비는 대표값·통계 미탑재 시 대체값이며,
         # 은퇴 후 기본 지출 계산에는 아래 MDIS 연령대별 통계값을 직접 적용한다.
-        ret_annual_expense = float(getv("retirement_monthly_expenses", 265) or 0) * 12.0
+        ret_annual_expense = float(getv("retirement_monthly_expenses", 270) or 0) * 12.0
 
         # 2024 MDIS 가구주 연령대·가구원 수별 지출 통계표
         household_expense_stats = pd.DataFrame()
