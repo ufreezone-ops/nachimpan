@@ -3575,7 +3575,7 @@ elif selected_page == "인생의 사계절":
         )
 
         # 임시 진단 패널: 계산식과 그래프에는 영향을 주지 않음
-        with st.expander("🔎 임시 진단 — 30~45세 가구 지출 계산", expanded=True):
+        with st.expander("🔎 임시 진단 — 연령별 가구 지출 계산", expanded=True):
             st.write({
                 "현재 나이": cur_age,
                 "결혼 상태(m_plan)": m_plan,
