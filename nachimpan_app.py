@@ -719,6 +719,23 @@ def mortgage_monthly_split(principal_man, annual_rate, term_years, payment_numbe
     principal_payment = min(balance, payment - interest)
     return payment, principal_payment, interest
 
+def mortgage_balance_after_payments(principal_man, annual_rate, term_years, payments_made):
+    """일정 회차 납부 후 남은 원금(금액 단위: 만 원)."""
+    monthly_rate = annual_rate / 12.0
+    total_months = int(term_years * 12)
+    payments_made = max(0, min(int(payments_made), total_months))
+    if payments_made == 0:
+        return float(principal_man)
+    if payments_made >= total_months:
+        return 0.0
+    if monthly_rate == 0:
+        return principal_man * (1.0 - payments_made / total_months)
+    payment = principal_man * monthly_rate / (1.0 - (1.0 + monthly_rate) ** (-total_months))
+    return (
+        principal_man * (1.0 + monthly_rate) ** payments_made
+        - payment * (((1.0 + monthly_rate) ** payments_made - 1.0) / monthly_rate)
+    )
+
 def current_financial_summary():
     # 1) 들어오는 돈 집계
     regular_income = sum(float(getv(k, 0)) for k in ["income_self", "income_spouse", "income_other"])
@@ -3517,6 +3534,7 @@ elif selected_page == "인생의 사계절":
         household_expense_curve = []
         mortgage_principal_curve = []
         mortgage_interest_curve = []
+        mortgage_balance_curve = []
         expense_debug_rows = []  # 임시 진단: 연령별 기본 지출·생애사건 지출 분리 확인
 
         for a in ages_sim:
@@ -3614,6 +3632,17 @@ elif selected_page == "인생의 사계절":
                     annual_mortgage_interest += interest_part
             mortgage_principal_curve.append(annual_mortgage_principal)
             mortgage_interest_curve.append(annual_mortgage_interest)
+            mortgage_balance_at_age_start = (
+                mortgage_balance_after_payments(
+                    REPRESENTATIVE_MORTGAGE_PRINCIPAL_MAN,
+                    REPRESENTATIVE_MORTGAGE_ANNUAL_RATE,
+                    REPRESENTATIVE_MORTGAGE_TERM_YEARS,
+                    (a - REPRESENTATIVE_MORTGAGE_PURCHASE_AGE) * 12,
+                )
+                if is_representative_case and a >= REPRESENTATIVE_MORTGAGE_PURCHASE_AGE
+                else 0.0
+            )
+            mortgage_balance_curve.append(mortgage_balance_at_age_start)
 
             # --- [E. 가구 지출 곡선] ---
             household_size = household_size_at_age(a)
@@ -3651,6 +3680,7 @@ elif selected_page == "인생의 사계절":
                     "표본 주의": "30 미만" if expense_reference and expense_reference["small_sample"] else "",
                     "통계 대체 적용": bool(expense_reference and expense_reference["fallback"]),
                     "기본 지출(만원/년)": base_exp,
+                    "주택대출 연초 잔액(만원)": mortgage_balance_at_age_start,
                     "주택대출 원금상환(만원/년)": annual_mortgage_principal,
                     "주택대출 이자(만원/년)": annual_mortgage_interest,
                     "생애사건 추가 지출(만원/년)": event_expense,
