@@ -3547,7 +3547,7 @@ elif selected_page == "인생의 사계절":
         surplus_fine = [max(0.0, v) for v in flow_fine]
         deficit_fine = [min(0.0, v) for v in flow_fine]
 
-        # [버그 수정] [20:] 슬라이싱을 제거하고 20~80세 전체 구간에서 정상적으로 최대치 산출
+        # [버그 수정] [20:] 슬라이싱을 제거하고 20세~기대수명 전체 구간에서 최대치 산출
         max_exp_val = max(household_expense_curve) if household_expense_curve else 5000.0
         max_income_val = max(household_income_curve) if household_income_curve else 6000.0
 
@@ -3730,7 +3730,7 @@ elif selected_page == "인생의 사계절":
         # X축: 20세부터 성별 기대수명까지 10년 단위 정렬
         fig_my_nta.update_xaxes(
             tickmode="linear", tick0=20, dtick=10,
-            range=[20, 80],
+            range=[20, life_expectancy],
             tickangle=0,
             tickfont=dict(size=12, color="#94A3B8"),
             gridcolor="rgba(100, 116, 139, 0.18)",
