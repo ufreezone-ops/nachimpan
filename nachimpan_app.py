@@ -506,7 +506,7 @@ INTERVIEWER_CASES = {
         "target_housing_age": 39,  # 2024 주거실태조사 가중 중앙값
         "housing_region": "부산",
         "housing_region_select": "부산",    # 위젯에 직격 주입
-        "housing_ltv": 50,
+        "housing_ltv": 35.0,
         "income_pension_self": 60,
         "income_pension_spouse": 60,
         "pension_start_age": 65
@@ -521,10 +521,10 @@ INTERVIEWER_CASES = {
         "income_self": 260, "income_spouse": 360, "income_other": 0,
         "income_bonus": 300,
         "income_pension": 120,
-        "expense_living": 330, "expense_loan": 100, "expense_other": 500,
+        "expense_living": 330, "expense_loan": 67, "expense_other": 500,
         "retirement_monthly_expenses": 270,
         "asset_cash": 1500, "asset_financial": 2500, "asset_home": 40000, "asset_deposit": 0, "asset_other": 0,
-        "debt_home": 15000, "debt_other": 0,
+        "debt_home": 12362, "debt_other": 0,
         "retirement_age": 60, "spouse_age": 47,
         "child_count": "1명",
         "child_count_select_direct": "1명",   # 위젯에 직격 주입
@@ -536,7 +536,7 @@ INTERVIEWER_CASES = {
         "target_housing_age": 39,  # 2024 주거실태조사 가중 중앙값
         "housing_region": "부산",
         "housing_region_select": "부산",    # 위젯에 직격 주입
-        "housing_ltv": 50,
+        "housing_ltv": 35.0,
         "income_pension_self": 60,
         "income_pension_spouse": 60,
         "pension_start_age": 65
@@ -695,6 +695,30 @@ def active_quadrant(job):
 #--------------------------------------------------------
 # 2.02.03 | 가계 종합 재무 집계 엔진
 #--------------------------------------------------------
+# [주택대출 표준 가정] 대표사례 내부 상환모형 (금액 단위: 만 원)
+REPRESENTATIVE_HOME_PRICE_MAN = 40000.0
+REPRESENTATIVE_MORTGAGE_PRINCIPAL_MAN = 14000.0
+REPRESENTATIVE_MORTGAGE_PURCHASE_AGE = 39
+REPRESENTATIVE_MORTGAGE_TERM_YEARS = 30
+REPRESENTATIVE_MORTGAGE_ANNUAL_RATE = 0.04
+
+def mortgage_monthly_split(principal_man, annual_rate, term_years, payment_number):
+    """원리금 균등상환의 특정 회차 원금·이자 분리."""
+    monthly_rate = annual_rate / 12.0
+    total_months = int(term_years * 12)
+    if principal_man <= 0 or total_months <= 0 or not 1 <= payment_number <= total_months:
+        return 0.0, 0.0, 0.0
+    payment = (
+        principal_man / total_months if monthly_rate == 0
+        else principal_man * monthly_rate / (1.0 - (1.0 + monthly_rate) ** (-total_months))
+    )
+    balance = principal_man
+    for _ in range(1, payment_number):
+        balance -= payment - balance * monthly_rate
+    interest = balance * monthly_rate
+    principal_payment = min(balance, payment - interest)
+    return payment, principal_payment, interest
+
 def current_financial_summary():
     # 1) 들어오는 돈 집계
     regular_income = sum(float(getv(k, 0)) for k in ["income_self", "income_spouse", "income_other"])
@@ -848,7 +872,7 @@ with st.sidebar:
     st.markdown("<div style='font-size: 13.5px; font-weight: 700; color: #94A3B8; margin-bottom: 6px;'>체험용 대표 사례</div>", unsafe_allow_html=True)
     c_btn1, c_btn2 = st.columns(2)
     
-    def apply_case_payload(case_dict):
+    def apply_case_payload(case_dict, case_id=None):
         # 1. 보존해야 할 시스템 핵심 키 목록
         SYSTEM_KEEP_KEYS = {"anonymous_id", "started", "advanced_mode"}
 
@@ -861,6 +885,7 @@ with st.sidebar:
         # 3. 새로운 대표 사례 데이터 주입
         for k, v in case_dict.items():
             st.session_state[k] = v
+        st.session_state["_representative_case_id"] = case_id
 
         # 4. Streamlit Pills 및 Selectbox 위젯 키 명시적 강제 바인딩
         if "gender" in case_dict: st.session_state["pills_gender"] = case_dict["gender"]
@@ -870,8 +895,6 @@ with st.sidebar:
         if "child_count" in case_dict: st.session_state["child_count_select_direct"] = case_dict["child_count"]
         if "housing_region" in case_dict:
             st.session_state["housing_region_select"] = case_dict["housing_region"]
-        if "housing_ltv" in case_dict:
-            st.session_state["housing_ltv_select"] = int(case_dict["housing_ltv"])
 
         # 가족 계획 데이터가 모두 포함된 사례만 입력 완료 상태로 시작
         st.session_state["family_info_checked"] = all(
@@ -885,11 +908,11 @@ with st.sidebar:
 
     with c_btn1:
         if st.button("32세 여성", key="btn_case_32", use_container_width=True, help="미혼 / 직장 4년차 / 결혼·출산 준비"):
-            apply_case_payload(INTERVIEWER_CASES["case_32_female"])
+            apply_case_payload(INTERVIEWER_CASES["case_32_female"], "case_32_female")
             st.rerun()
     with c_btn2:
         if st.button("45세 여성", key="btn_case_45", use_container_width=True, help="기혼 / 경단 후 재취업 / 자녀 15세"):
-            apply_case_payload(INTERVIEWER_CASES["case_45_female"])
+            apply_case_payload(INTERVIEWER_CASES["case_45_female"], "case_45_female")
             st.rerun()
 
     st.markdown("<div style='height: 10px;'></div>", unsafe_allow_html=True)
@@ -2687,6 +2710,17 @@ elif selected_page == "인생의 사계절":
             "제주": (265384.89, 222651.58, 291781.39, 245000.00),
         }
 
+        # 2024 주거실태조사 LTV1: 금융기관 대출 이용 가구의 구입가격 대비 대출 비율
+        # 수도권·광역시 등 34.3%, 도지역 41.8%. 부산은 광역시 등에 포함.
+        REGIONAL_LTV1 = {
+            "서울": 34.3, "경기": 34.3, "인천": 34.3,
+            "부산": 34.3, "대구": 34.3, "광주": 34.3,
+            "대전": 34.3, "울산": 34.3, "세종": 34.3,
+            "강원": 41.8, "충북": 41.8, "충남": 41.8,
+            "전북": 41.8, "전남": 41.8, "경북": 41.8,
+            "경남": 41.8, "제주": 41.8,
+        }
+
         RETIREMENT_EXPENSE_SOURCE = {
             "기관": "국민연금공단 국민연금연구원",
             "조사명": "국민노후보장패널조사(KReIS)",
@@ -2897,38 +2931,39 @@ elif selected_page == "인생의 사계절":
             if prev_housing_region not in housing_region_options:
                 prev_housing_region = "지역 선택"
 
-            h_col1, h_col2 = st.columns(2)
-            with h_col1:
-                housing_region = st.selectbox(
-                    "주택 구입 예정 지역",
-                    housing_region_options,
-                    index=housing_region_options.index(prev_housing_region),
-                    key="housing_region_select"
-                )
+            housing_region = st.selectbox(
+                "주택 구입 예정 지역",
+                housing_region_options,
+                index=housing_region_options.index(prev_housing_region),
+                key="housing_region_select"
+            )
 
-            with h_col2:
-                housing_ltv = st.slider(
-                    "주택담보대출 비율 (LTV)",
-                    min_value=40, max_value=60,
-                    value=int(st.session_state.get("housing_ltv", 50)),
-                    step=5, format="%d%%",
-                    key="housing_ltv_select"
-                )
-
+            is_representative_case = st.session_state.get("_representative_case_id") in {
+                "case_32_female", "case_45_female"
+            }
+            statistical_ltv = REGIONAL_LTV1.get(housing_region, 34.3)
+            housing_ltv = 35.0 if is_representative_case else statistical_ltv
             st.session_state["housing_region"] = housing_region
             st.session_state["housing_ltv"] = housing_ltv
 
             if housing_region != "지역 선택":
-                apartment_median_thousand = HOUSING_PRICE_DATA[housing_region][3]
-                apartment_median_won = apartment_median_thousand * 1000
-                housing_equity_won = apartment_median_won * (1 - housing_ltv / 100)
-                st.caption(
-                    f"선택 지역: {housing_region} · "
-                    f"아파트 중위가격: {apartment_median_won / 100000000:.2f}억 원 · "
-                    f"자기자금 기준: {housing_equity_won / 100000000:.2f}억 원"
-                )
+                if is_representative_case:
+                    st.caption(
+                        f"대표사례 기준: 주택가격 4억 원 · 통계 LTV {statistical_ltv:.1f}% "
+                        f"→ 추정 대출 1억 3,720만 원 · 천만 원 단위 반올림 적용 1억 4천만 원 "
+                        f"· 자기자금 2억 6천만 원"
+                    )
+                else:
+                    apartment_median_won = HOUSING_PRICE_DATA[housing_region][3] * 1000
+                    housing_equity_won = apartment_median_won * (1 - housing_ltv / 100)
+                    st.caption(
+                        f"선택 지역: {housing_region} · "
+                        f"아파트 중위가격: {apartment_median_won / 100000000:.2f}억 원 · "
+                        f"통계 LTV1: {housing_ltv:.1f}% · "
+                        f"자기자금 기준: {housing_equity_won / 100000000:.2f}억 원"
+                    )
 
-            st.caption("자료: 한국부동산원 R-ONE · 전국주택가격동향조사 · 2025년 12월 · 아파트 중위가격")
+            st.caption("주택가격 자료: 한국부동산원 R-ONE · 전국주택가격동향조사 · 2025년 12월 아파트 중위가격")
 
 #--------------------------------------------------------
 # 6.03.04 | 고급 모드 — 은퇴 시점 가족 미래 나이 카드
@@ -2998,9 +3033,18 @@ elif selected_page == "인생의 사계절":
             selected_region = "부산"
             st.session_state["housing_region"] = "부산"
 
-        selected_ltv = float(st.session_state.get("housing_ltv", 50))
-        region_apt_price = HOUSING_PRICE_DATA.get(selected_region, HOUSING_PRICE_DATA["부산"])[3] / 10.0
-        home_equity_display = region_apt_price * (1.0 - selected_ltv / 100.0)
+        representative_case_id = st.session_state.get("_representative_case_id")
+        is_representative_case = representative_case_id in {"case_32_female", "case_45_female"}
+        selected_ltv = 35.0 if is_representative_case else float(REGIONAL_LTV1.get(selected_region, 34.3))
+        region_apt_price = (
+            REPRESENTATIVE_HOME_PRICE_MAN if is_representative_case
+            else HOUSING_PRICE_DATA.get(selected_region, HOUSING_PRICE_DATA["부산"])[3] / 10.0
+        )
+        home_equity_display = (
+            region_apt_price - REPRESENTATIVE_MORTGAGE_PRINCIPAL_MAN
+            if is_representative_case
+            else region_apt_price * (1.0 - selected_ltv / 100.0)
+        )
 
 #############    6.03.05.02 | 기본 재무·연금 파라미터 수집 및 정제
         cur_age = int(st.session_state.get("person_age", 35) or 35)
@@ -3016,7 +3060,26 @@ elif selected_page == "인생의 사계절":
         annual_bonus = float(getv("income_bonus", 0) or 0)
         annual_other_income = float(getv("income_other", 0) or 0) * 12.0
         
-        cur_annual_expense = float(getv("expense_living", 0) or 0) * 12.0 + float(getv("expense_loan", 0) or 0) * 12.0 + float(getv("expense_other", 0) or 0)
+        current_loan_payment = float(getv("expense_loan", 0) or 0)
+        representative_case_id = st.session_state.get("_representative_case_id")
+        current_loan_interest_monthly = current_loan_payment
+        if representative_case_id == "case_45_female":
+            current_payment_number = (cur_age - REPRESENTATIVE_MORTGAGE_PURCHASE_AGE) * 12 + 1
+            _, _, current_loan_interest_monthly = mortgage_monthly_split(
+                REPRESENTATIVE_MORTGAGE_PRINCIPAL_MAN,
+                REPRESENTATIVE_MORTGAGE_ANNUAL_RATE,
+                REPRESENTATIVE_MORTGAGE_TERM_YEARS,
+                current_payment_number,
+            )
+        elif representative_case_id == "case_32_female":
+            current_loan_interest_monthly = 0.0
+
+        # 통계 비교용 소비지출에는 이자만 포함하고 원금은 제외한다.
+        cur_annual_expense = (
+            float(getv("expense_living", 0) or 0) * 12.0
+            + current_loan_interest_monthly * 12.0
+            + float(getv("expense_other", 0) or 0)
+        )
         # 화면의 월 생활비는 대표값·통계 미탑재 시 대체값이며,
         # 은퇴 후 기본 지출 계산에는 아래 MDIS 연령대별 통계값을 직접 적용한다.
         ret_annual_expense = float(getv("retirement_monthly_expenses", 270) or 0) * 12.0
@@ -3434,8 +3497,10 @@ elif selected_page == "인생의 사계절":
 
         current_household_size = household_size_at_age(cur_age)
         current_expense_reference = lookup_household_expense(cur_age, current_household_size)
-        if current_expense_reference and current_expense_reference["monthly"] > 0 and cur_annual_expense > 0:
-            # 현재 입력 지출은 그대로 유지되도록 2024 MDIS 기준을 최신 관측 물가수준에 맞춰 보정
+        if is_representative_case:
+            # 대표사례는 개인 지출성향을 임의로 낮추지 않고 MDIS 통계 평균 100%를 기준으로 한다.
+            expense_scale_ratio = 1.0
+        elif current_expense_reference and current_expense_reference["monthly"] > 0 and cur_annual_expense > 0:
             expense_scale_ratio = cur_annual_expense / (
                 current_expense_reference["monthly"] * 12.0 * cpi_current_factor
             )
@@ -3447,6 +3512,8 @@ elif selected_page == "인생의 사계절":
         my_income_curve = []
         household_income_curve = []
         household_expense_curve = []
+        mortgage_principal_curve = []
+        mortgage_interest_curve = []
         expense_debug_rows = []  # 임시 진단: 연령별 기본 지출·생애사건 지출 분리 확인
 
         for a in ages_sim:
@@ -3528,7 +3595,24 @@ elif selected_page == "인생의 사계절":
 
             household_income_curve.append(total_hh_inc)
 
-            # --- [D. 가구 지출 곡선] ---
+            # --- [D. 주택대출 원리금 분리] ---
+            annual_mortgage_principal = 0.0
+            annual_mortgage_interest = 0.0
+            if is_representative_case:
+                first_payment = (a - REPRESENTATIVE_MORTGAGE_PURCHASE_AGE) * 12 + 1
+                for payment_number in range(first_payment, first_payment + 12):
+                    _, principal_part, interest_part = mortgage_monthly_split(
+                        REPRESENTATIVE_MORTGAGE_PRINCIPAL_MAN,
+                        REPRESENTATIVE_MORTGAGE_ANNUAL_RATE,
+                        REPRESENTATIVE_MORTGAGE_TERM_YEARS,
+                        payment_number,
+                    )
+                    annual_mortgage_principal += principal_part
+                    annual_mortgage_interest += interest_part
+            mortgage_principal_curve.append(annual_mortgage_principal)
+            mortgage_interest_curve.append(annual_mortgage_interest)
+
+            # --- [E. 가구 지출 곡선] ---
             household_size = household_size_at_age(a)
             expense_reference = lookup_household_expense(a, household_size)
 
@@ -3564,6 +3648,8 @@ elif selected_page == "인생의 사계절":
                     "표본 주의": "30 미만" if expense_reference and expense_reference["small_sample"] else "",
                     "통계 대체 적용": bool(expense_reference and expense_reference["fallback"]),
                     "기본 지출(만원/년)": base_exp,
+                    "주택대출 원금상환(만원/년)": annual_mortgage_principal,
+                    "주택대출 이자(만원/년)": annual_mortgage_interest,
                     "생애사건 추가 지출(만원/년)": event_expense,
                     "최종 가구 지출(만원/년)": total_hh_exp,
                 })
@@ -3591,7 +3677,12 @@ elif selected_page == "인생의 사계절":
             st.dataframe(pd.DataFrame(expense_debug_rows), use_container_width=True, hide_index=True)
 
 #############    6.03.05.08 | 가구 순수지 분리 및 Y축 자동 스케일링
-        net_flow = [i - e for i, e in zip(household_income_curve, household_expense_curve)]
+        # MDIS 가계지출에는 이자 등 비소비지출이 포함되므로 이자를 별도 가산하지 않는다.
+        # 원금은 소비지출에서 제외하되 실제 현금 유출이므로 순현금흐름에서 별도 차감한다.
+        net_flow = [
+            i - e - p
+            for i, e, p in zip(household_income_curve, household_expense_curve, mortgage_principal_curve)
+        ]
 
         ages_fine = []
         flow_fine = []
@@ -3751,8 +3842,8 @@ elif selected_page == "인생의 사계절":
         fig_my_nta.add_trace(go.Scatter(
             x=ages_sim, y=net_flow, mode="lines",
             line=dict(color="#CBD5E1", width=2.4, shape='spline', smoothing=0.8),
-            name="가구 순수지 (소득-지출)",
-            hovertemplate="나이: %{x}세<br>가구 순수지: <b>%{y:,.0f}만 원</b><extra></extra>"
+            name="가구 순현금흐름 (소득-지출-원금상환)",
+            hovertemplate="나이: %{x}세<br>가구 순현금흐름: <b>%{y:,.0f}만 원</b><extra></extra>"
         ), row=2, col=1)
 
         fig_my_nta.add_annotation(
@@ -4259,6 +4350,30 @@ elif selected_page == "통계":
 은퇴 여부를 특정 나이 하나로 정하기보다, 생활비를 감당하는 소득 구조가 어떻게 이어지는지 살펴봅니다.
 """)
 
+    with st.expander("7. 주택대출과 원리금 분리"):
+        st.markdown("""
+**주택 구입자금과 대출 상환의 기준**
+
+- **LTV1:** 금융기관 대출액 ÷ 주택 구입가격. 2024년 주거실태조사에서 대출 이용 가구 기준 전국 37.2%, 수도권 34.3%, 광역시 등 34.3%, 도지역 41.8%입니다.
+- 부산은 '광역시 등'에 해당하므로 대표사례의 기본 LTV1은 34.3%입니다. 4억 원 주택이면 약 1억 3,720만 원이며, 대표사례에서는 천만 원 단위로 반올림해 1억 4천만 원(적용 LTV 약 35%)으로 단순화합니다.
+- 이 비율은 대출 이용 가구의 조사상 평균이며, 특정 연도 신규 구입자의 대출 실행비율이나 모든 가구의 평균과는 다릅니다.
+
+**나침반의 표준 상환 가정**
+
+- 상환 방식: 원리금 균등상환
+- 대출 기간: 30년
+- 연 이자율: 4% (대표 시뮬레이션 가정)
+- 1억 4천만 원 대출의 월 상환액: 약 66.8만 원(화면 표시는 약 67만 원)
+
+**원리금은 서로 다른 흐름으로 처리합니다.**
+
+- 이자: 가계지출에 포함되는 비용. MDIS 가계지출 기준에도 이자 등 비소비지출이 포함되므로 통계 기준곡선에 별도로 더하지 않습니다.
+- 원금: 소비지출이 아니라 부채 감소입니다. 가계지출 곡선에서는 제외하되, 실제 현금 유출이므로 가구 순현금흐름 계산에서 별도로 차감합니다.
+- 대표사례의 45세 여성은 39세에 대출을 시작해 6년간 상환한 것으로 가정합니다. 현재 추정 잔액은 약 1억 2,362만 원이며, 다음 회차 기준 월 이자는 약 41.2만 원, 원금은 약 25.6만 원입니다.
+- 32세 여성은 현재 주택·대출이 없는 상태로 두고, 39세 주택 구입 시점부터 같은 대출모형을 적용합니다.
+
+주의: 실제 대출계약의 금리·만기·상환방식과 다를 수 있는 교육용 표준 가정입니다. LTV1 또한 조사 평균이므로 개별 가구의 실제 대출을 뜻하지 않습니다.
+""")
     with st.expander("6. 동시성과 통시성", expanded=True):
         st.markdown("""
 **왜 시간의 기준을 맞춰야 하는가**
