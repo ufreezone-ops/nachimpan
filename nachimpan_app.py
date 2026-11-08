@@ -2926,10 +2926,16 @@ elif selected_page == "인생의 사계절":
 
         if housing_info_needed:
             st.markdown("#### 주택가격 산정 기준")
-            housing_region_options = ["지역 선택"] + list(HOUSING_PRICE_DATA.keys())
-            prev_housing_region = st.session_state.get("housing_region", "지역 선택")
+            is_representative_case = st.session_state.get("_representative_case_id") in {
+                "case_32_female", "case_45_female"
+            }
+            housing_region_options = (
+                ["부산"] if is_representative_case
+                else ["지역 선택"] + list(HOUSING_PRICE_DATA.keys())
+            )
+            prev_housing_region = st.session_state.get("housing_region", "부산" if is_representative_case else "지역 선택")
             if prev_housing_region not in housing_region_options:
-                prev_housing_region = "지역 선택"
+                prev_housing_region = "부산" if is_representative_case else "지역 선택"
 
             housing_region = st.selectbox(
                 "주택 구입 예정 지역",
@@ -2938,9 +2944,6 @@ elif selected_page == "인생의 사계절":
                 key="housing_region_select"
             )
 
-            is_representative_case = st.session_state.get("_representative_case_id") in {
-                "case_32_female", "case_45_female"
-            }
             statistical_ltv = REGIONAL_LTV1.get(housing_region, 34.3)
             housing_ltv = 35.0 if is_representative_case else statistical_ltv
             st.session_state["housing_region"] = housing_region
