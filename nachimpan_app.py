@@ -3095,7 +3095,15 @@ elif selected_page == "인생의 사계절":
         marriage_cost_man = half_home_equity_man + 6298.0
         childcare_cost_man = 8064.0
         housing_cost_man = home_equity_man
-        college_cost_man = 6632.0
+        # 자녀 대학 비용: 등록금과 생활비를 분리해 산출 (단위: 만 원)
+        # 등록금: 2026학년도 비수도권 4년제 일반·교육대학 평균 연 661.96만 원 × 4년
+        college_tuition_annual_man = 661.96
+        college_tuition_total_man = college_tuition_annual_man * 4.0
+        # 생활비: 2022년 대학생 학기 중 월평균 83만 원을 방학 포함 48개월에 적용한 모델 가정
+        college_living_monthly_man = 83.0
+        college_living_total_man = college_living_monthly_man * 48.0
+        # 합계 약 6,631.84만 원 (기존 6,632만 원과 사실상 동일)
+        college_cost_man = college_tuition_total_man + college_living_total_man
         # 자녀 결혼 지원 추정액 — 성별 입력 없이 양측 부모 지원 통계의 평균 적용
         # 가연 2024: 신혼집 24,176만 원, 신혼집 외 6,298만 원
         # 한국보건사회연구원 2020 표 3-2: 주거자금 중 부모 지원 7,616 / 전체 19,292
