@@ -1859,6 +1859,9 @@ if selected_page == "우리집 가계부":
         )
 
         cur_age = int(st.session_state.get("person_age", 35) or 35)
+        # 기대수명은 생애주기 탭보다 먼저 사용하는 소득 그래프에서 선행 정의
+        user_gender = st.session_state.get("gender", "🙋‍♂️ 남성")
+        life_expectancy = 87 if "여성" in user_gender else 81
         spouse_age_input = int(st.session_state.get("spouse_age", 0) or 0)
 
         current_monthly_income = float(
@@ -2008,8 +2011,8 @@ if selected_page == "우리집 가계부":
         )
 
 
-        # 그래프 X축: 인터뷰이 나이 20~100세
-        ages = list(range(20, 81))
+        # 그래프 연령 범위: 생애주기 계산과 동일하게 기대수명 직전까지
+        ages = list(range(20, life_expectancy))
 
         self_income_curve = []
         spouse_income_curve = []
