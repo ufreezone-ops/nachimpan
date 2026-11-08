@@ -3897,7 +3897,7 @@ elif selected_page == "인생의 사계절":
             st.caption("MDIS 지출 통계표를 읽지 못해 현재 입력한 연간 지출을 기준으로 표시하고 있습니다.")
         st.caption("표본 수 30 미만인 구간(특히 일부 3·4인 가구)은 변동 가능성이 커 참고값으로 해석해 주세요.")
         st.markdown(
-            '[지출 통계 출처 및 산출방법](https://github.com/ufreezone-ops/nachimpan/blob/dev/data/README_household_expenditure_2024.md) · '
+            '[지출 통계 출처 및 산출방법](https://github.com/ufreezone-ops/nachimpan/blob/dev/data/국가데이터처_2024_가계동향조사_가구주연령대별가구원수별가계지출_README.md) · '
             '[MDIS 자료 이용 안내](https://mdis.mods.go.kr/mobile/pageLink.do?link=mdisService)',
             unsafe_allow_html=True
         )
