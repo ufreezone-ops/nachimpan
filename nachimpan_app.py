@@ -492,7 +492,7 @@ INTERVIEWER_CASES = {
         "income_self": 290, "income_spouse": 0, "income_other": 0,
         "income_bonus": 200, "income_pension": 120,
         "expense_living": 130, "expense_loan": 0, "expense_other": 300,
-        "retirement_monthly_expenses": 180,
+        "retirement_monthly_expenses": 265,
         "asset_cash": 800, "asset_financial": 700, "asset_home": 0, "asset_deposit": 0, "asset_other": 0,
         "debt_home": 0, "debt_other": 0,
         "retirement_age": 60, "spouse_age": 0,
@@ -522,7 +522,7 @@ INTERVIEWER_CASES = {
         "income_bonus": 300,
         "income_pension": 120,
         "expense_living": 330, "expense_loan": 100, "expense_other": 500,
-        "retirement_monthly_expenses": 280,
+        "retirement_monthly_expenses": 265,
         "asset_cash": 1500, "asset_financial": 2500, "asset_home": 40000, "asset_deposit": 0, "asset_other": 0,
         "debt_home": 15000, "debt_other": 0,
         "retirement_age": 60, "spouse_age": 47,
@@ -1496,13 +1496,15 @@ if selected_page == "우리집 가계부":
 
                 with retirement_expense_col:
                     retirement_monthly_expenses = st.number_input(
-                        "은퇴 후 한 달 생활비",
+                        "은퇴 후 월 생활비 (통계상 대표값)",
                         min_value=0,
                         value=int(st.session_state.get(
-                            "retirement_monthly_expenses", 200
+                            "retirement_monthly_expenses", 265
                         ) or 0),
-                        step=10
+                        step=10,
+                        help="2024년 MDIS 2인 가구 연령별 지출을 60~86세 기간에 평균한 값입니다. 실제 생애주기 계산에는 연령대별 통계값이 각각 적용됩니다."
                     )
+                    st.caption("대표사례 기준: 월 약 265만 원 · 계산은 60~64세부터 80세 이상까지 연령대별 지출 통계를 적용")
 
             save_finance_trigger = st.button(
                 "입력 내용 AI 점검",
@@ -3015,7 +3017,9 @@ elif selected_page == "인생의 사계절":
         annual_other_income = float(getv("income_other", 0) or 0) * 12.0
         
         cur_annual_expense = float(getv("expense_living", 0) or 0) * 12.0 + float(getv("expense_loan", 0) or 0) * 12.0 + float(getv("expense_other", 0) or 0)
-        ret_annual_expense = float(getv("retirement_monthly_expenses", 200) or 0) * 12.0
+        # 화면의 월 생활비는 대표값·통계 미탑재 시 대체값이며,
+        # 은퇴 후 기본 지출 계산에는 아래 MDIS 연령대별 통계값을 직접 적용한다.
+        ret_annual_expense = float(getv("retirement_monthly_expenses", 265) or 0) * 12.0
 
         # 2024 MDIS 가구주 연령대·가구원 수별 지출 통계표
         household_expense_stats = pd.DataFrame()
@@ -3321,6 +3325,10 @@ elif selected_page == "인생의 사계절":
             return f"{lower}~{lower + 4}세"
 
         def household_size_at_age(age):
+            # 은퇴 시점에는 자녀가 독립한 것으로 보고, 부부 2인(비혼은 1인) 가구로 전환
+            if age >= retire_age:
+                return 2 if marriage_start is not None else 1
+
             size = 1
             if marriage_start is not None and age >= marriage_start:
                 size += 1
@@ -3521,12 +3529,12 @@ elif selected_page == "인생의 사계절":
             household_income_curve.append(total_hh_inc)
 
             # --- [D. 가구 지출 곡선] ---
+            household_size = household_size_at_age(a)
+            expense_reference = lookup_household_expense(a, household_size)
+
             if a < retire_age:
-                # 연령대·가구원 수별 MDIS 평균에 현재 가구의 지출 수준 보정계수를 적용
-                household_size = household_size_at_age(a)
-                expense_reference = lookup_household_expense(a, household_size)
+                # 은퇴 전: 연령대·가구원 수별 MDIS 평균에 현재 가구의 지출 수준 보정계수를 적용
                 if expense_reference:
-                    # 2024년 MDIS 지출 기준을 해당 달력연도의 CPI 수준으로 환산
                     base_exp = (
                         expense_reference["monthly"] * 12.0
                         * expense_scale_ratio * cpi_year_factor
@@ -3534,20 +3542,27 @@ elif selected_page == "인생의 사계절":
                 else:
                     base_exp = cur_annual_expense * cpi_relative_to_current
             else:
-                # 은퇴 후 생활비도 현재 입력가치를 기준으로 해당 연도의 물가수준 반영
-                base_exp = ret_annual_expense * cpi_relative_to_current
+                # 은퇴 후: 자녀 독립 후 가구원 수(부부 2인)를 기준으로
+                # 해당 연령대 MDIS 평균 지출을 적용하고 2024년 기준에서 해당 연도로 통시성 보정
+                if expense_reference:
+                    base_exp = expense_reference["monthly"] * 12.0 * cpi_year_factor
+                else:
+                    # 통계표를 읽지 못한 경우에만 화면 입력값을 대체 기준으로 사용
+                    base_exp = ret_annual_expense * cpi_relative_to_current
 
             # 결혼·출산·교육 등 생애사건 비용도 발생 연도의 물가 기준으로 환산
             event_expense = event_expense_by_age.get(a, 0.0) * cpi_relative_to_current
             total_hh_exp = base_exp + event_expense
             household_expense_curve.append(total_hh_exp)
-            if 30 <= a <= 45:
+            if 30 <= a <= 45 or a >= retire_age:
                 expense_debug_rows.append({
                     "나이": a,
-                    "가구원 수": household_size_at_age(a),
-                    "통계 기준 월지출(만원)": expense_reference["monthly"] if a < retire_age and expense_reference else None,
-                    "표본 수": expense_reference["sample_n"] if a < retire_age and expense_reference else None,
-                    "표본 주의": "30 미만" if a < retire_age and expense_reference and expense_reference["small_sample"] else "",
+                    "가구원 수": household_size,
+                    "통계 기준 월지출(만원)": expense_reference["monthly"] if expense_reference else None,
+                    "적용 연령대": expense_reference["age_band"] if expense_reference else "",
+                    "표본 수": expense_reference["sample_n"] if expense_reference else None,
+                    "표본 주의": "30 미만" if expense_reference and expense_reference["small_sample"] else "",
+                    "통계 대체 적용": bool(expense_reference and expense_reference["fallback"]),
                     "기본 지출(만원/년)": base_exp,
                     "생애사건 추가 지출(만원/년)": event_expense,
                     "최종 가구 지출(만원/년)": total_hh_exp,
