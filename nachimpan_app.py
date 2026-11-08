@@ -3093,7 +3093,9 @@ elif selected_page == "인생의 사계절":
         half_home_equity_man = home_equity_man * 0.5
 
         marriage_cost_man = half_home_equity_man + 6298.0
+        marriage_overlap_deduction_man = 2615.0  # 2024 가연 결혼비용 중 혼수: 가구 내구재 지출과 중복 의심
         childcare_cost_man = 8064.0
+        childcare_overlap_deduction_man = childcare_cost_man  # 보육실태조사 양육비는 가구 총지출의 부분집합
         housing_cost_man = home_equity_man
         # 자녀 대학 비용: 등록금과 생활비를 분리해 산출 (단위: 만 원)
         # 등록금: 2026학년도 비수도권 4년제 일반·교육대학 평균 연 661.96만 원 × 4년
@@ -3104,6 +3106,7 @@ elif selected_page == "인생의 사계절":
         college_living_total_man = college_living_monthly_man * 48.0
         # 합계 약 6,631.84만 원 (기존 6,632만 원과 사실상 동일)
         college_cost_man = college_tuition_total_man + college_living_total_man
+        college_overlap_deduction_man = college_cost_man  # 등록금·생활비 모두 MDIS 교육·일반생활 지출과 중복 의심
         # 자녀 결혼 지원 추정액 — 성별 입력 없이 양측 부모 지원 통계의 평균 적용
         # 가연 2024: 신혼집 24,176만 원, 신혼집 외 6,298만 원
         # 한국보건사회연구원 2020 표 3-2: 주거자금 중 부모 지원 7,616 / 전체 19,292
@@ -3113,6 +3116,8 @@ elif selected_page == "인생의 사계절":
         # 가연의 신혼집 외 비용은 양측 합산 총액이므로 절반을 한쪽 비용으로 보고 부모 지원 비율 적용
         child_other_wedding_support_man = 6298.0 * (1745.0 / 3611.0) / 2.0
         child_wedding_cost_man = child_housing_support_man + child_other_wedding_support_man
+        # 신혼집 외 부모지원은 가구간 이전지출과 중복 의심. 주거자금 지원은 자산이전 성격으로 차감하지 않음.
+        child_wedding_overlap_deduction_man = child_other_wedding_support_man
 
         event_costs = []
 
@@ -3124,13 +3129,15 @@ elif selected_page == "인생의 사계절":
             is_past_marriage = (m_plan == "결혼함")
             past_marriage_cost_man = 6298.0
             applied_marriage_cost_man = past_marriage_cost_man if is_past_marriage else marriage_cost_man
+            applied_marriage_deduction_man = min(marriage_overlap_deduction_man, applied_marriage_cost_man)
             event_costs.append({
                 "name": "나의 결혼",
                 "start": marriage_start,
                 "end": marriage_start + (1 if is_past_marriage else 2),
                 "center": marriage_start,
-                "total": applied_marriage_cost_man,
+                "total": applied_marriage_cost_man - applied_marriage_deduction_man,
                 "display_total": applied_marriage_cost_man,
+                "deducted_total": applied_marriage_deduction_man,
                 "duration": 1 if is_past_marriage else 2,
                 "color": "#3B82F6",
                 "is_past": is_past_marriage
@@ -3141,8 +3148,9 @@ elif selected_page == "인생의 사계절":
                 "name": "출산·육아",
                 "start": start,
                 "end": end,
-                "total": childcare_cost_man,
+                "total": childcare_cost_man - childcare_overlap_deduction_man,
                 "display_total": childcare_cost_man,
+                "deducted_total": childcare_overlap_deduction_man,
                 "duration": 6,
                 "color": "#F97316",
                 "is_past": (end <= cur_age)
@@ -3153,6 +3161,7 @@ elif selected_page == "인생의 사계절":
                 "end": housing_end,
                 "total": housing_cost_man,
                 "display_total": housing_cost_man,
+                "deducted_total": 0.0,
                 "duration": 4,
                 "color": "#14B8A6",
                 "is_past": False
@@ -3163,8 +3172,9 @@ elif selected_page == "인생의 사계절":
                 "name": "자녀 대학",
                 "start": start,
                 "end": end,
-                "total": college_cost_man,
+                "total": college_cost_man - college_overlap_deduction_man,
                 "display_total": college_cost_man,
+                "deducted_total": college_overlap_deduction_man,
                 "duration": 4,
                 "color": "#A855F7",
                 "is_past": (end <= cur_age)
@@ -3175,14 +3185,17 @@ elif selected_page == "인생의 사계절":
                 "name": "자녀 결혼",
                 "start": start,
                 "end": end,
-                "total": child_wedding_cost_man,
+                "total": child_wedding_cost_man - child_wedding_overlap_deduction_man,
                 "display_total": child_wedding_cost_man,
+                "deducted_total": child_wedding_overlap_deduction_man,
                 "duration": 5,
                 "color": "#F43F5E",
                 "is_past": False
             })
 
-        # 0세부터 85세까지 미래/현재 이벤트 비용 매핑 (과거 완료 이벤트 total은 0)
+        # 이벤트의 total은 중복 차감 후 가구 지출곡선에 추가할 금액.
+        # display_total은 예보원 면적을 결정하는 차감 전 총비용.
+        # 총비용과 차감액은 아래 시뮬레이션에서 동일한 연령별 CPI 상대계수를 적용받음.
         event_expense_by_age = {a: 0.0 for a in range(0, 86)}
         for event in event_costs:
             if event["total"] > 0:
@@ -3563,10 +3576,16 @@ elif selected_page == "인생의 사계절":
             disp_tot = event.get("display_total", event["total"])
             marker_size = 65 * ((disp_tot / max_event_total) ** 0.5)
 
-            if event.get("name") == "나의 결혼" and event.get("is_past"):
-                hover_cost_str = f"지출곡선 반영 비용: {disp_tot:,.0f}만 원"
+            deducted_tot = event.get("deducted_total", 0.0)
+            cashflow_tot = event.get("total", 0.0)
+            if event.get("is_past") and event.get("name") != "나의 결혼":
+                hover_cost_str = "과거 완료된 생애 사건"
             else:
-                hover_cost_str = f"비용: {disp_tot:,.0f}만 원" if not event.get("is_past") else "과거 완료된 생애 사건"
+                hover_cost_str = (
+                    f"이벤트 총비용: {disp_tot:,.0f}만 원<br>"
+                    f"중복 의심 차감: {deducted_tot:,.0f}만 원<br>"
+                    f"가구지출 추가분: {cashflow_tot:,.0f}만 원"
+                )
 
             fig_my_nta.add_trace(go.Scatter(
                 x=[event_mid_age],
@@ -4381,6 +4400,26 @@ elif selected_page == "통계":
 | ③ 주택구입 | 지역 아파트 가격 × (1-LTV). 4년 분산 | 주거실태조사 자금 구성 분석 완료. 연령·지역·주택유형별 통계 기본값을 설계 중이며 아직 계산식에 연결하지 않음 |
 | ④ 자녀 대학 | 등록금 2,648만 원 + 생활비 3,984만 원 = 약 6,632만 원 / 4년 | 2026학년도 비수도권 4년제 평균 등록금과 2022년 대학생 학기 중 생활비 조사. 생활비 48개월 적용은 모델 가정 |
 | ⑤ 자녀 결혼 | 약 6,294만 원 / 5년 (연 약 1,259만 원) | 가연 2024 결혼비용과 한국보건사회연구원 2020년 부모 지원 비율을 결합한 모델 추정치 |
+
+### 가구지출과 생애사건 비용의 중복 조정
+
+예보원의 크기는 **중복 차감 전 이벤트 총비용**을 기준으로 유지합니다. 반면 가구 재정곡선에는 MDIS 가계지출에 이미 포함되었을 가능성이 있는 항목을 차감한 금액만 추가합니다.
+
+| 이벤트 | 예보원 기준 총비용 | 가구지출과 중복 의심되어 차감 | 재정곡선 추가분 |
+|---|---:|---:|---:|
+| ① 나의 결혼 | 6,298만 원 + 신혼집 부담분 | 혼수 2,615만 원 | 3,683만 원 + 신혼집 부담분 |
+| ② 출산·육아 | 8,064만 원 | 8,064만 원 | 0원 |
+| ③ 주택구입 | 주택 자기자금 H | 0원 | H |
+| ④ 자녀 대학 | 등록금 2,648만 원 + 생활비 3,984만 원 | 6,632만 원 | 0원 |
+| ⑤ 자녀 결혼 | 약 6,294만 원 | 신혼집 외 부모지원 약 1,522만 원 | 신혼집 주거자금 지원 약 4,772만 원 |
+
+- **나의 결혼:** 혼수는 가구의 가전·가구 등 내구재 지출과 겹칠 가능성이 높아 차감합니다. 예식·여행 등 세부 중복액을 분리할 근거가 부족한 나머지 비용은 그대로 둡니다.
+- **출산·육아:** 2024년 보육실태조사의 월평균 양육비는 같은 조사에서 측정한 가구 총지출의 일부이므로, 중복 추가를 막기 위해 모델 양육비 전액을 차감합니다.
+- **주택구입:** 주택 자기자금은 일반 소비·가계지출과 구분되는 자산 취득 성격이므로 차감하지 않습니다.
+- **자녀 대학:** 등록금과 생활비는 각각 교육비 및 일반 생활비와 중복될 가능성이 있어 전액 차감합니다.
+- **자녀 결혼:** 신혼집 외 부모지원은 가구간 이전지출과 겹칠 가능성이 있어 차감하되, 주거자금 지원은 자산이전 성격으로 보아 추가분에 남깁니다.
+
+차감 전 총비용과 차감액은 이벤트 발생 연령에 적용하는 **동일한 CPI 상대계수**로 함께 환산합니다. 구분할 수 없는 비용은 임의로 차감하지 않고 재정곡선에 남깁니다. 이 조정은 중복 가능성을 반영한 모델 가정이며, 실제 가구별 중복액을 직접 측정한 통계는 아닙니다.
 
 ### ① 나의 결혼과 ⑤ 자녀 결혼 — 근거 확보
 
