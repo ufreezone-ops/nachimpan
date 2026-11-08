@@ -2196,7 +2196,7 @@ if selected_page == "우리집 가계부":
                 unifiedhovertitle=dict(
                     text="내 나이: %{x}세"
                 ),
-                range=[20, 80],
+                range=[20, life_expectancy],
                 tickmode="linear",
                 tick0=20,
                 dtick=5,
@@ -2966,7 +2966,7 @@ elif selected_page == "인생의 사계절":
         annual_other_income = float(getv("income_other", 0) or 0) * 12.0
         
         cur_annual_expense = float(getv("expense_living", 0) or 0) * 12.0 + float(getv("expense_loan", 0) or 0) * 12.0 + float(getv("expense_other", 0) or 0)
-        ret_annual_expense = float(getv("retirement_monthly_expenses", 200) or 0)
+        ret_annual_expense = float(getv("retirement_monthly_expenses", 200) or 0) * 12.0
 
         # 2024 MDIS 가구주 연령대·가구원 수별 지출 통계표
         household_expense_stats = pd.DataFrame()
@@ -3196,11 +3196,11 @@ elif selected_page == "인생의 사계절":
         # 이벤트의 total은 중복 차감 후 가구 지출곡선에 추가할 금액.
         # display_total은 예보원 면적을 결정하는 차감 전 총비용.
         # 총비용과 차감액은 아래 시뮬레이션에서 동일한 연령별 CPI 상대계수를 적용받음.
-        event_expense_by_age = {a: 0.0 for a in range(0, 86)}
+        event_expense_by_age = {a: 0.0 for a in range(0, life_expectancy + 1)}
         for event in event_costs:
             if event["total"] > 0:
                 annual_addition = event["total"] / float(event["duration"])
-                for a in range(max(20, event["start"]), min(86, event["end"])):
+                for a in range(max(20, event["start"]), min(life_expectancy + 1, event["end"])):
                     event_expense_by_age[a] += annual_addition
 
 #############    6.03.05.06 | 기준곡선 보간(Interpolation) 및 감쇄 엔진
@@ -3386,7 +3386,7 @@ elif selected_page == "인생의 사계절":
             expense_scale_ratio = 1.0
 
         #############    6.03.05.07 | 연령별 소득·지출 흐름 시뮬레이션 루프
-        ages_sim = list(range(20, 81))
+        ages_sim = list(range(20, life_expectancy + 1))
         my_income_curve = []
         household_income_curve = []
         household_expense_curve = []
@@ -3568,7 +3568,7 @@ elif selected_page == "인생의 사계절":
 
         for event in event_costs:
             event_mid_age = event.get("center", (event["start"] + event["end"] - 1) / 2.0)
-            if not 20 <= event_mid_age <= 80: continue
+            if not 20 <= event_mid_age <= life_expectancy: continue
 
             event_age_index = min(range(len(ages_sim)), key=lambda i: abs(ages_sim[i] - event_mid_age))
             event_y = household_expense_curve[event_age_index]
@@ -3617,7 +3617,7 @@ elif selected_page == "인생의 사계절":
                 font=dict(size=11, color=event["color"], weight="bold")
             )
 
-        # [Row 1] 가구 소득, 본인 단독소득 보조 점선, 가구 지출 (20~80세)
+        # [Row 1] 가구 소득, 본인 단독소득 보조 점선, 가구 지출 (20세~기대수명)
         fig_my_nta.add_trace(go.Scatter(
             x=ages_sim, y=household_income_curve, mode="lines",
             line=dict(color="#10B981", width=3.4, shape='spline', smoothing=0.8),
@@ -3665,7 +3665,7 @@ elif selected_page == "인생의 사계절":
             bordercolor=retire_line_color, borderwidth=1.2, borderpad=3
         )
 
-        # [Row 2] 0선 기준선 및 가구 순수지 영역 (20~80세)
+        # [Row 2] 0선 기준선 및 가구 순수지 영역 (20세~기대수명)
         fig_my_nta.add_hline(y=0, line_dash="solid", line_color="#94A3B8", line_width=1.5, row=2, col=1)
 
         fig_my_nta.add_trace(go.Scatter(
@@ -3727,7 +3727,7 @@ elif selected_page == "인생의 사계절":
             hovermode="x unified"
         )
 
-        # X축: 20세부터 80세까지 10년 단위 정렬
+        # X축: 20세부터 성별 기대수명까지 10년 단위 정렬
         fig_my_nta.update_xaxes(
             tickmode="linear", tick0=20, dtick=10,
             range=[20, 80],
@@ -3751,6 +3751,26 @@ elif selected_page == "인생의 사계절":
         fig_my_nta.update_yaxes(range=[0, y_top], row=1, col=1)
 
         st.plotly_chart(fig_my_nta, use_container_width=True, config={"displayModeBar": False, "scrollZoom": False, "doubleClick": False, "showAxisDragHandles": False})
+
+        # 생애주기 누적 총액: 20세부터 성별 기대수명까지 연령별 연간 금액을 합산
+        lifetime_income_total = float(sum(household_income_curve))
+        lifetime_expense_total = float(sum(household_expense_curve))
+        lifetime_net_total = lifetime_income_total - lifetime_expense_total
+
+        st.markdown("#### 생애주기 누적 총액 (20세~기대수명)")
+        total_cols = st.columns(3)
+        total_cols[0].metric("누적 가구소득", f"{lifetime_income_total:,.0f}만 원")
+        total_cols[1].metric("누적 가구지출", f"{lifetime_expense_total:,.0f}만 원")
+        total_cols[2].metric(
+            "누적 소득 − 지출",
+            f"{lifetime_net_total:+,.0f}만 원",
+            "누적 흑자" if lifetime_net_total > 0 else ("누적 적자" if lifetime_net_total < 0 else "균형")
+        )
+        st.caption(
+            f"20세부터 {life_expectancy}세까지 매년의 가구소득·가구지출을 합산한 모델값입니다. "
+            "은퇴 후 생활비는 입력한 월 금액을 연간 금액으로 환산한 뒤 물가를 반영합니다. "
+            "현재 자산·부채의 잔액이나 자산 매각·상속 등은 이 누적 현금흐름 합계에 포함하지 않습니다."
+        )
 
 #############    6.03.05.10.01 | 과거 소득·지출의 시간 기준 환산 안내
         # 2024년 MDIS 기준곡선을 공식 임금·물가지수로 과거 연도와 비교한다.
