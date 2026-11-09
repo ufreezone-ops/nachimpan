@@ -94,8 +94,10 @@ footer {
 /* 대표사례의 자동 계산 대출 상환액도 일반 입력창과 같은 명도·글자색으로 표시 */
 .st-key-expense_loan_case_45_female_45 [data-testid="stNumberInput"] input:disabled {
     opacity: 1 !important;
+    background-color: var(--nc-card-bg) !important;
     color: var(--nc-text) !important;
     -webkit-text-fill-color: var(--nc-text) !important;
+    border-color: var(--nc-border) !important;
 }
 </style>
 """, unsafe_allow_html=True)
