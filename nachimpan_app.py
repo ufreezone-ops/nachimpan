@@ -521,10 +521,10 @@ INTERVIEWER_CASES = {
         "income_self": 240, "income_spouse": 431, "income_other": 0,
         "income_bonus": 0,  # 월평균 보수 통계와 상여 중복 방지
         "income_pension": 120,  # 본인 45~49세 여성 중위 266.2 × 90%; 배우자 45~49세 남성 중위 478.8 × 90%
-        "expense_living": 420, "expense_loan": 67, "expense_other": 500,  # 통계 비교 월환산: 420 + 대출이자 약 41.2 + 500/12 = 502.9만 원(45~49세·3인 가구 중위 503.55만 원 근사; 원금 제외)
+        "expense_living": 420, "expense_loan": 67, "expense_other": 500,  # 월 원리금 약 66.84만 원(화면 67); 통계 비교에는 73회차 이자 약 41.21만 원만 포함
         "retirement_monthly_expenses": 270,
         "asset_cash": 1500, "asset_financial": 2500, "asset_home": 40000, "asset_deposit": 0, "asset_other": 0,
-        "debt_home": 12362, "debt_other": 0,
+        "debt_home": 12000, "debt_other": 0,  # 계산 잔액 12,362만 원을 인터뷰 입력값 기준으로 천만 원 단위 반올림
         "retirement_age": 60, "spouse_age": 47,
         "child_count": "1명",
         "child_count_select_direct": "1명",   # 위젯에 직격 주입
@@ -697,7 +697,8 @@ def active_quadrant(job):
 #--------------------------------------------------------
 # [주택대출 표준 가정] 대표사례 내부 상환모형 (금액 단위: 만 원)
 REPRESENTATIVE_HOME_PRICE_MAN = 40000.0
-REPRESENTATIVE_MORTGAGE_PRINCIPAL_MAN = 14000.0
+REPRESENTATIVE_MORTGAGE_LTV = 0.35
+REPRESENTATIVE_MORTGAGE_PRINCIPAL_MAN = REPRESENTATIVE_HOME_PRICE_MAN * REPRESENTATIVE_MORTGAGE_LTV
 REPRESENTATIVE_MORTGAGE_PURCHASE_AGE = 39
 REPRESENTATIVE_MORTGAGE_TERM_YEARS = 30
 REPRESENTATIVE_MORTGAGE_ANNUAL_RATE = 0.04
@@ -736,6 +737,17 @@ def mortgage_balance_after_payments(principal_man, annual_rate, term_years, paym
         - payment * (((1.0 + monthly_rate) ** payments_made - 1.0) / monthly_rate)
     )
 
+def representative_mortgage_monthly_payment(age):
+    """대표사례의 현재 나이에 해당하는 월 원리금 상환액(만원)."""
+    payment_number = (int(age) - REPRESENTATIVE_MORTGAGE_PURCHASE_AGE) * 12 + 1
+    payment, _, _ = mortgage_monthly_split(
+        REPRESENTATIVE_MORTGAGE_PRINCIPAL_MAN,
+        REPRESENTATIVE_MORTGAGE_ANNUAL_RATE,
+        REPRESENTATIVE_MORTGAGE_TERM_YEARS,
+        payment_number,
+    )
+    return payment
+
 def current_financial_summary():
     # 1) 들어오는 돈 집계
     regular_income = sum(float(getv(k, 0)) for k in ["income_self", "income_spouse", "income_other"])
@@ -744,7 +756,13 @@ def current_financial_summary():
     monthly_effective_income = annual_total_income / 12.0
     
     # 2) 나가는 돈 집계 (기본 생활비·대출은 월간, 기타 지출은 연간 비정기 지출로 처리)
-    monthly_regular_expenses = sum(float(getv(k, 0)) for k in ["expense_living", "expense_loan"])
+    representative_case_id = st.session_state.get("_representative_case_id")
+    if representative_case_id in {"case_32_female", "case_45_female"}:
+        current_age = int(getv("person_age", 35) or 35)
+        monthly_loan_payment = representative_mortgage_monthly_payment(current_age)
+    else:
+        monthly_loan_payment = float(getv("expense_loan", 0) or 0)
+    monthly_regular_expenses = float(getv("expense_living", 0) or 0) + monthly_loan_payment
     annual_other_expense = float(getv("expense_other", 0))
     annual_total_expenses = (monthly_regular_expenses * 12.0) + annual_other_expense
     monthly_effective_expenses = annual_total_expenses / 12.0
@@ -1496,7 +1514,23 @@ if selected_page == "우리집 가계부":
                 with st.container(border=True, key="expense-panel"):
                     st.markdown("### ② 나가는 돈 (만원)")
                     expense_living = st.number_input("기본 월 생활비 (식비·관리비·통신비 등)", min_value=0, value=st.session_state.get("expense_living"), step=10, placeholder="월 생활 유지비")
-                    expense_loan = st.number_input("대출 원리금 월 상환액 (원금+이자 합계)", min_value=0, value=st.session_state.get("expense_loan"), step=10, placeholder="은행 납입 합계")
+                    representative_case_id_for_loan = st.session_state.get("_representative_case_id")
+                    is_representative_case_for_loan = representative_case_id_for_loan in {"case_32_female", "case_45_female"}
+                    loan_payment_input = (
+                        round(representative_mortgage_monthly_payment(int(st.session_state.get("person_age", 35) or 35)))
+                        if is_representative_case_for_loan
+                        else st.session_state.get("expense_loan")
+                    )
+                    expense_loan = st.number_input(
+                        "대출 원리금 월 상환액 (원금+이자 합계)",
+                        min_value=0,
+                        value=loan_payment_input,
+                        step=10,
+                        placeholder="은행 납입 합계",
+                        disabled=is_representative_case_for_loan,
+                    )
+                    if is_representative_case_for_loan:
+                        st.caption("대표사례는 주택가격·LTV·금리·상환기간·구입시점에 따라 월 원리금을 계산합니다.")
                     expense_other = st.number_input("그 밖의 연간 비정기 지출 (여행·경조사·세금)", min_value=0, value=st.session_state.get("expense_other"), step=10, placeholder="연간 비정기 지출 합계")
 
 #--------------------------------------------------------
@@ -2963,16 +2997,15 @@ elif selected_page == "인생의 사계절":
             )
 
             statistical_ltv = REGIONAL_LTV1.get(housing_region, 34.3)
-            housing_ltv = 35.0 if is_representative_case else statistical_ltv
+            housing_ltv = REPRESENTATIVE_MORTGAGE_LTV * 100.0 if is_representative_case else statistical_ltv
             st.session_state["housing_region"] = housing_region
             st.session_state["housing_ltv"] = housing_ltv
 
             if housing_region != "지역 선택":
                 if is_representative_case:
                     st.caption(
-                        f"대표사례 기준: 주택가격 4억 원 · 통계 LTV {statistical_ltv:.1f}% "
-                        f"→ 추정 대출 1억 3,720만 원 · 천만 원 단위 반올림 적용 1억 4천만 원 "
-                        f"· 자기자금 2억 6천만 원"
+                        f"대표사례 기준: 주택가격 4억 원 · LTV {REPRESENTATIVE_MORTGAGE_LTV * 100:.0f}% "
+                        f"→ 최초 대출 1억 4천만 원 · 자기자금 2억 6천만 원"
                     )
                 else:
                     apartment_median_won = HOUSING_PRICE_DATA[housing_region][3] * 1000
@@ -3056,7 +3089,7 @@ elif selected_page == "인생의 사계절":
 
         representative_case_id = st.session_state.get("_representative_case_id")
         is_representative_case = representative_case_id in {"case_32_female", "case_45_female"}
-        selected_ltv = 35.0 if is_representative_case else float(REGIONAL_LTV1.get(selected_region, 34.3))
+        selected_ltv = REPRESENTATIVE_MORTGAGE_LTV * 100.0 if is_representative_case else float(REGIONAL_LTV1.get(selected_region, 34.3))
         region_apt_price = (
             REPRESENTATIVE_HOME_PRICE_MAN if is_representative_case
             else HOUSING_PRICE_DATA.get(selected_region, HOUSING_PRICE_DATA["부산"])[3] / 10.0
@@ -3081,9 +3114,8 @@ elif selected_page == "인생의 사계절":
         annual_bonus = float(getv("income_bonus", 0) or 0)
         annual_other_income = float(getv("income_other", 0) or 0) * 12.0
         
-        current_loan_payment = float(getv("expense_loan", 0) or 0)
         representative_case_id = st.session_state.get("_representative_case_id")
-        current_loan_interest_monthly = current_loan_payment
+        current_loan_interest_monthly = float(getv("expense_loan", 0) or 0)
         if representative_case_id == "case_45_female":
             current_payment_number = (cur_age - REPRESENTATIVE_MORTGAGE_PURCHASE_AGE) * 12 + 1
             _, _, current_loan_interest_monthly = mortgage_monthly_split(
