@@ -4120,8 +4120,8 @@ elif selected_page == "인생의 사계절":
         
         if current_expense_reference:
             st.caption(
-                f"단위: 연간 만 원 · 현재 {cur_age}세·{current_household_size}인 가구의 통계 월 가중중위값 "
-                f"{current_expense_reference['monthly']:,.1f}만 원을 기준으로 적용했습니다. "
+                f"기준: 2024년 현재 {cur_age}세·{current_household_size}인 가구의 월 가중중위값 "
+                f"{current_expense_reference['monthly']:,.1f}만 원을 연간 지출 곡선에 적용했습니다. "
                 f"개인 지출 보정률: {expense_scale_ratio:.1%}."
             )
         else:
