@@ -491,8 +491,7 @@ INTERVIEWER_CASES = {
         "career_stage": "🌿 4~9년 (성장기)",
         "income_self": 275, "income_spouse": 0, "income_other": 0,
         "income_bonus": 0, "income_pension": 120,  # 2024 여성 30~34세 중위 세전 305.6 × 90% ≈ 실수령 275; 보너스 중복 방지
-        "expense_living": 130, "expense_loan": 0, "expense_other": 300,
-        "expense_scale_reference_annual": 1860,  # 이전 대표사례 지출 기준(연간, 만 원)
+        "expense_living": 225, "expense_loan": 0, "expense_other": 300,  # 통계 비교 월환산: 225 + 300/12 = 250만 원(30~34세·1인 가구 중위 251.77만 원 근사)
         "retirement_monthly_expenses": 270,
         "asset_cash": 800, "asset_financial": 700, "asset_home": 0, "asset_deposit": 0, "asset_other": 0,
         "debt_home": 0, "debt_other": 0,
@@ -522,8 +521,7 @@ INTERVIEWER_CASES = {
         "income_self": 240, "income_spouse": 431, "income_other": 0,
         "income_bonus": 0,  # 월평균 보수 통계와 상여 중복 방지
         "income_pension": 120,  # 본인 45~49세 여성 중위 266.2 × 90%; 배우자 45~49세 남성 중위 478.8 × 90%
-        "expense_living": 330, "expense_loan": 67, "expense_other": 500,
-        "expense_scale_reference_annual": 5660,  # 이전 대표사례 지출 기준(연간, 만 원)
+        "expense_living": 420, "expense_loan": 67, "expense_other": 500,  # 통계 비교 월환산: 420 + 대출이자 약 41.2 + 500/12 = 502.9만 원(45~49세·3인 가구 중위 503.55만 원 근사; 원금 제외)
         "retirement_monthly_expenses": 270,
         "asset_cash": 1500, "asset_financial": 2500, "asset_home": 40000, "asset_deposit": 0, "asset_other": 0,
         "debt_home": 12362, "debt_other": 0,
