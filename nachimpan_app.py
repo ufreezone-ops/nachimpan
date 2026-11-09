@@ -1908,7 +1908,7 @@ if selected_page == "우리집 가계부":
             "가구 합산 소득과는 기준 인원이 다르며, 70세 이상 값은 해당 연령집단의 평균이지 실제 노동 종료 연령이 아닙니다."
         )
         st.markdown(
-            "[통계 출처·산출 기준](https://github.com/ufreezone-ops/nachimpan/blob/dev/data/국가데이터처_2024_연령별_임금근로일자리_평균보수_README.md)"
+            "[통계 출처·산출 기준](https://github.com/ufreezone-ops/nachimpan/blob/dev/data/기준데이터/국가데이터처_2024_연령별_임금근로일자리_평균보수_README.md)"
         )
 
         cur_age = int(st.session_state.get("person_age", 35) or 35)
@@ -2186,6 +2186,7 @@ if selected_page == "우리집 가계부":
             wage_stats_path = (
                 Path(__file__).resolve().parent
                 / "data"
+                / "기준데이터"
                 / "국가데이터처_2024_연령별_임금근로일자리_평균보수.csv"
             )
             wage_stats = pd.read_csv(wage_stats_path)
@@ -3109,7 +3110,7 @@ elif selected_page == "인생의 사계절":
         # 2024 MDIS 가구주 연령대·가구원 수별 지출 통계표
         household_expense_stats = pd.DataFrame()
         try:
-            stats_path = Path(__file__).resolve().parent / "data" / "국가데이터처_2024_가계동향조사_가구주연령대별가구원수별가계지출.csv"
+            stats_path = Path(__file__).resolve().parent / "data" / "기준데이터" / "국가데이터처_2024_가계동향조사_가구주연령대별가구원수별가계지출.csv"
             household_expense_stats = pd.read_csv(stats_path, dtype={"가구원수": str})
         except Exception as e:
             st.warning(f"가구 지출 통계표를 불러오지 못했습니다. 기존 입력 지출을 사용합니다. ({e})")
@@ -3486,7 +3487,7 @@ elif selected_page == "인생의 사계절":
         # 2024년 MDIS 기준곡선을 연령별 해당 연도의 명목가치로 옮기기 위한 거시지수
         macro_index_stats = pd.DataFrame()
         try:
-            macro_path = Path(__file__).resolve().parent / "data" / "국가데이터처_소비자물가지수_및_고용노동부_임금지수_1965-2025.csv"
+            macro_path = Path(__file__).resolve().parent / "data" / "기준데이터" / "국가데이터처_소비자물가지수_및_고용노동부_임금지수_1965-2025.csv"
             macro_index_stats = pd.read_csv(macro_path)
         except Exception as e:
             st.warning(f"통시성 보정 지수표를 불러오지 못했습니다. ({e})")
@@ -3973,7 +3974,7 @@ elif selected_page == "인생의 사계절":
             historical_year = date.today().year - years_back
             macro_index_stats = pd.DataFrame()
             try:
-                macro_path = Path(__file__).resolve().parent / "data" / "국가데이터처_소비자물가지수_및_고용노동부_임금지수_1965-2025.csv"
+                macro_path = Path(__file__).resolve().parent / "data" / "기준데이터" / "국가데이터처_소비자물가지수_및_고용노동부_임금지수_1965-2025.csv"
                 macro_index_stats = pd.read_csv(macro_path)
             except Exception as e:
                 st.warning(f"시간축 보정 지수표를 불러오지 못했습니다. ({e})")
@@ -4129,7 +4130,7 @@ elif selected_page == "인생의 사계절":
             st.caption("MDIS 지출 통계표를 읽지 못해 현재 입력한 연간 지출을 기준으로 표시하고 있습니다.")
         st.caption("표본 수 30 미만인 구간(특히 일부 3·4인 가구)은 변동 가능성이 커 참고값으로 해석해 주세요.")
         st.markdown(
-            '[지출 통계 출처 및 산출방법](https://github.com/ufreezone-ops/nachimpan/blob/dev/data/국가데이터처_2024_가계동향조사_가구주연령대별가구원수별가계지출_README.md) · '
+            '[지출 통계 출처 및 산출방법](https://github.com/ufreezone-ops/nachimpan/blob/dev/data/기준데이터/국가데이터처_2024_가계동향조사_가구주연령대별가구원수별가계지출_README.md) · '
             '[MDIS 자료 이용 안내](https://mdis.mods.go.kr/mobile/pageLink.do?link=mdisService)',
             unsafe_allow_html=True
         )
@@ -4560,7 +4561,7 @@ elif selected_page == "통계":
 - 조사: 2019년 「청년세대의 결혼 및 출산 동향에 관한 조사」 원자료 분석
 - 표 3-2·3-9: 신혼집 주거자금 원천별 금액. 2015년 가격 기준
 - 표 3-10: 신랑 측·신부 측 주거 이외 결혼비용 규모. 보고서 수록 금액
-- CSV 백데이터: `data/한국보건사회연구원_2020_신혼부부_결혼비용_자금원천.csv`
+- CSV 백데이터: `data/기준데이터/한국보건사회연구원_2020_신혼부부_결혼비용_자금원천.csv`
 - 산출 정의와 분모별 비율: 같은 폴더의 README 참고
 
 원문: [한국보건사회연구원 연구보고서 PDF](https://repository.kihasa.re.kr/bitstream/201002/37080/2/%EC%97%B0%EA%B5%AC%EB%B3%B4%EA%B3%A0%EC%84%9C%28%EC%88%98%EC%8B%9C%29%202020-08.pdf)
@@ -4703,8 +4704,8 @@ elif selected_page == "통계":
 
 예상 구매 연령·지역·주택유형에 맞는 통계값을 기본 참고값으로 제시하는 방향을 검토합니다. 표본이 적은 조합은 전국 또는 상위 지역 집단으로 대체하고, 표본 수를 함께 표시합니다.
 
-- [가공 CSV — 생애최초 주택 구입자금 구성](https://github.com/ufreezone-ops/nachimpan/blob/dev/data/국토교통부_2024_주거실태조사_생애최초주택_구입자금구성.csv)
-- [분석 README — 변수·가중치·필터·해석 기준](https://github.com/ufreezone-ops/nachimpan/blob/dev/data/국토교통부_2024_주거실태조사_생애최초주택_구입자금구성_README.md)
+- [가공 CSV — 생애최초 주택 구입자금 구성](https://github.com/ufreezone-ops/nachimpan/blob/dev/data/기준데이터/국토교통부_2024_주거실태조사_생애최초주택_구입자금구성.csv)
+- [분석 README — 변수·가중치·필터·해석 기준](https://github.com/ufreezone-ops/nachimpan/blob/dev/data/기준데이터/국토교통부_2024_주거실태조사_생애최초주택_구입자금구성_README.md)
 - [국토교통부 2024년 주거실태조사 조사표·요약보고서](https://mods.go.kr/boardDownload.es?bid=11477&list_no=442458&seq=4)
 
 기존 '생애최초 주택 마련 연령' CSV는 취득 연령 분포와 중앙값을 보여주는 자료이고, 이번 CSV는 자금 조달 구성을 보여주는 자료입니다. 분석 목적이 다르므로 두 파일은 삭제·통합하지 않고 함께 보존합니다.
@@ -4752,8 +4753,8 @@ elif selected_page == "통계":
 
 등록금은 2026학년도, 생활비는 2022년 조사 기준으로 서로 다릅니다. 따라서 6,632만 원은 동일 기준연도로 물가 조정한 합계가 아니라, 현재 확보한 두 통계를 결합한 참고 추정치입니다. 통시성 보정에서는 등록금과 생활비를 분리해 각각의 기준연도와 지수로 환산해야 합니다.
 
-- [가공 CSV — 등록금·생활비 분리 기준](https://github.com/ufreezone-ops/nachimpan/blob/dev/data/교육부_2026_대학등록금_및_대학생생활비_기준.csv)
-- [README — 출처·조사 범위·환산 가정](https://github.com/ufreezone-ops/nachimpan/blob/dev/data/교육부_2026_대학등록금_및_대학생생활비_기준_README.md)
+- [가공 CSV — 등록금·생활비 분리 기준](https://github.com/ufreezone-ops/nachimpan/blob/dev/data/기준데이터/교육부_2026_대학등록금_및_대학생생활비_기준.csv)
+- [README — 출처·조사 범위·환산 가정](https://github.com/ufreezone-ops/nachimpan/blob/dev/data/기준데이터/교육부_2026_대학등록금_및_대학생생활비_기준_README.md)
 
 기존 모델의 6,632만 원은 잠정 기준값으로 유지하되, 등록금과 생활비를 별도 항목으로 관리합니다. 특히 생활비 48개월 적용은 통계값 자체가 아니라 모델 가정임을 표시합니다.
 
@@ -4842,8 +4843,8 @@ elif selected_page == "통계":
 
 - [국가데이터처 — 2026년 5월 경제활동인구조사 고령층 부가조사 결과](https://www.mods.go.kr/board.es?act=view&bid=210&list_no=446335&mid=a10301010000)
 - [국가데이터처 — 2024년 임금근로일자리 소득(보수) 결과](https://www.mods.go.kr/board.es?act=view&bid=11113&list_no=443648&mid=a10301010000)
-- [가공 CSV — 연령별 임금근로일자리 평균보수](https://github.com/ufreezone-ops/nachimpan/blob/dev/data/국가데이터처_2024_연령별_임금근로일자리_평균보수.csv)
-- [README — 출처·자료 범위·해석 기준](https://github.com/ufreezone-ops/nachimpan/blob/dev/data/국가데이터처_2024_연령별_임금근로일자리_평균보수_README.md)
+- [가공 CSV — 연령별 임금근로일자리 평균보수](https://github.com/ufreezone-ops/nachimpan/blob/dev/data/기준데이터/국가데이터처_2024_연령별_임금근로일자리_평균보수.csv)
+- [README — 출처·자료 범위·해석 기준](https://github.com/ufreezone-ops/nachimpan/blob/dev/data/기준데이터/국가데이터처_2024_연령별_임금근로일자리_평균보수_README.md)
 """)
 
     st.caption("※ 이 자료실은 주제별 통계와 출처를 차근차근 확장하기 위한 첫 구성입니다. 출처와 기준이 확인되지 않은 수치는 제시하지 않습니다.")
