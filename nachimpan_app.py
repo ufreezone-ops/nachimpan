@@ -3110,7 +3110,7 @@ elif selected_page == "인생의 사계절":
         # 2024 MDIS 가구주 연령대·가구원 수별 지출 통계표
         household_expense_stats = pd.DataFrame()
         try:
-            stats_path = Path(__file__).resolve().parent / "data" / "기준데이터" / "국가데이터처_2024_가계동향조사_가구주연령대별가구원수별가계지출.csv"
+            stats_path = Path(__file__).resolve().parent / "data" / "기준데이터" / "국가데이터처_2024_가계동향조사_가구주연령대별가구원수별가계지출_가중중위값.csv"
             household_expense_stats = pd.read_csv(stats_path, dtype={"가구원수": str})
         except Exception as e:
             st.warning(f"가구 지출 통계표를 불러오지 못했습니다. 기존 입력 지출을 사용합니다. ({e})")
@@ -3432,7 +3432,7 @@ elif selected_page == "인생의 사계절":
 
             age_band = household_age_band(age)
             size_label = str(household_size) if household_size <= 4 else "5인 이상"
-            amount_col = "월평균_가계지출_만원"
+            amount_col = "월중위_가계지출_만원"
 
             rows = household_expense_stats[
                 (household_expense_stats["가구주_연령대"] == age_band)
@@ -3520,14 +3520,11 @@ elif selected_page == "인생의 사계절":
 
         current_household_size = household_size_at_age(cur_age)
         current_expense_reference = lookup_household_expense(cur_age, current_household_size)
-        # 대표사례는 이전에 확정해 사용하던 연간 지출 기준(32세 1,860만 원, 45세 5,660만 원)을 복원한다.
-        # 이 기준을 2024 MDIS 평균의 최신 관측 CPI 환산값과 비교해 사례별 보정률을 계산한다.
-        expense_scale_reference = (
-            float(getv("expense_scale_reference_annual", cur_annual_expense) or cur_annual_expense)
-            if is_representative_case else cur_annual_expense
-        )
-        if current_expense_reference and current_expense_reference["monthly"] > 0 and expense_scale_reference > 0:
-            expense_scale_ratio = expense_scale_reference / (
+        # 대표사례는 통계 기준선을 100%로 적용한다. 개인 사례만 현재 입력 지출과 가중중위값의 비율을 반영한다.
+        if is_representative_case:
+            expense_scale_ratio = 1.0
+        elif current_expense_reference and current_expense_reference["monthly"] > 0 and cur_annual_expense > 0:
+            expense_scale_ratio = cur_annual_expense / (
                 current_expense_reference["monthly"] * 12.0 * cpi_current_factor
             )
         else:
@@ -3655,7 +3652,7 @@ elif selected_page == "인생의 사계절":
             expense_reference = lookup_household_expense(a, household_size)
 
             if a < retire_age:
-                # 은퇴 전: 연령대·가구원 수별 MDIS 평균에 현재 가구의 지출 수준 보정계수를 적용
+                # 은퇴 전: 연령대·가구원 수별 MDIS 가중중위값에 개인별 지출 수준 보정계수를 적용
                 if expense_reference:
                     base_exp = (
                         expense_reference["monthly"] * 12.0
@@ -3665,7 +3662,7 @@ elif selected_page == "인생의 사계절":
                     base_exp = cur_annual_expense * cpi_relative_to_current
             else:
                 # 은퇴 후: 자녀 독립 후 가구원 수(부부 2인)를 기준으로
-                # 해당 연령대 MDIS 평균 지출을 적용하고 2024년 기준에서 해당 연도로 통시성 보정
+                # 해당 연령대 MDIS 가중중위값을 적용하고 2024년 기준에서 해당 연도로 통시성 보정
                 if expense_reference:
                     base_exp = expense_reference["monthly"] * 12.0 * cpi_year_factor
                 else:
@@ -4096,7 +4093,7 @@ elif selected_page == "인생의 사계절":
                     "확인할 수 없어 지출의 시간 환산을 생략했습니다."
                 )
             st.caption(
-                "주의: 2024년 MDIS 연령별 지출은 횡단면 평균이며, 과거 지출값은 실제 관측치가 아닌 "
+                "주의: 2024년 MDIS 연령별 지출 가중중위값은 횡단면 통계이며, 과거 지출값은 실제 관측치가 아닌 "
                 "2024년 기준곡선에 물가지수를 적용한 비교용 추정치입니다. "
                 "임금 통계는 2011년 이전과 시계열이 단절되어 있습니다."
             )
@@ -4123,14 +4120,15 @@ elif selected_page == "인생의 사계절":
         
         if current_expense_reference:
             st.caption(
-                f"단위: 연간 만 원 · 현재 {cur_age}세·{current_household_size}인 가구의 통계 월평균 "
-                f"{current_expense_reference['monthly']:,.1f}만 원을 현재 입력 지출에 맞춰 {expense_scale_ratio:.1%}로 보정했습니다."
+                f"단위: 연간 만 원 · 현재 {cur_age}세·{current_household_size}인 가구의 통계 월 가중중위값 "
+                f"{current_expense_reference['monthly']:,.1f}만 원을 기준으로 적용했습니다. "
+                f"개인 지출 보정률: {expense_scale_ratio:.1%}."
             )
         else:
             st.caption("MDIS 지출 통계표를 읽지 못해 현재 입력한 연간 지출을 기준으로 표시하고 있습니다.")
         st.caption("표본 수 30 미만인 구간(특히 일부 3·4인 가구)은 변동 가능성이 커 참고값으로 해석해 주세요.")
         st.markdown(
-            '[지출 통계 출처 및 산출방법](https://github.com/ufreezone-ops/nachimpan/blob/dev/data/기준데이터/국가데이터처_2024_가계동향조사_가구주연령대별가구원수별가계지출_README.md) · '
+            '[지출 통계 출처 및 산출방법](https://github.com/ufreezone-ops/nachimpan/blob/dev/data/기준데이터/국가데이터처_2024_가계동향조사_가구주연령대별가구원수별가계지출_가중중위값_README.md) · '
             '[MDIS 자료 이용 안내](https://mdis.mods.go.kr/mobile/pageLink.do?link=mdisService)',
             unsafe_allow_html=True
         )
