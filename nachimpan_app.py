@@ -518,7 +518,7 @@ INTERVIEWER_CASES = {
         "job_form": "직장인",
         "job_spouse_form": "직장인",
         "career_stage": "🌿 4~9년 (성장기)",
-        "income_self": 240, "income_spouse": 431, "income_other": 0,
+        "income_self": 240, "income_spouse": 430, "income_other": 0,
         "income_bonus": 0,  # 월평균 보수 통계와 상여 중복 방지
         "income_pension": 120,  # 본인 45~49세 여성 중위 266.2 × 90%; 배우자 45~49세 남성 중위 478.8 × 90%
         "expense_living": 420, "expense_loan": 67, "expense_other": 500,  # 월 원리금 약 66.84만 원(화면 67); 통계 비교에는 73회차 이자 약 41.21만 원만 포함
@@ -2171,52 +2171,40 @@ if selected_page == "우리집 가계부":
         # 그래프: 배우자 유무에 따라 곡선 표시
         fig_income = go.Figure()
 
+        # ① 가구 소득: 실선
+        fig_income.add_trace(go.Scatter(
+            x=ages,
+            y=household_income_curve,
+            mode="lines",
+            name="가구 소득",
+            line=dict(width=3.5, color="#636EFA"),
+            hovertemplate=(
+                "가구 연간 소득: %{y:,.0f}만 원<extra></extra>"
+            )
+        ))
+
+        # ② 내 소득: 점선
+        fig_income.add_trace(go.Scatter(
+            x=ages,
+            y=self_income_curve,
+            mode="lines",
+            name="내 소득",
+            line=dict(width=2.5, dash="dash", color="#EF553B"),
+            hovertemplate=(
+                "내 연간 소득: %{y:,.0f}만 원<extra></extra>"
+            )
+        ))
+
+        # ③ 배우자 소득: 점선 (배우자가 있는 경우에만 표시)
         if has_spouse:
-            # ① 가구 합산 소득: 실선
-            fig_income.add_trace(go.Scatter(
-                x=ages,
-                y=household_income_curve,
-                mode="lines",
-                name="가구 합산 소득(연금 포함)",
-                line=dict(width=4),
-                hovertemplate=(
-                    "가구 연간 소득: %{y:,.0f}만 원<extra></extra>"
-                )
-            ))
-
-            # ② 내 소득: 점선
-            fig_income.add_trace(go.Scatter(
-                x=ages,
-                y=self_income_curve,
-                mode="lines",
-                name="내 소득",
-                line=dict(width=2.8, dash="dash"),
-                hovertemplate=(
-                    "내 연간 소득: %{y:,.0f}만 원<extra></extra>"
-                )
-            ))
-
-            # ③ 배우자 소득: 점선
             fig_income.add_trace(go.Scatter(
                 x=ages,
                 y=spouse_income_curve,
                 mode="lines",
                 name="배우자 소득",
-                line=dict(width=2.8, dash="dash"),
-                hovertemplate=(                    "배우자 연간 소득: %{y:,.0f}만 원<extra></extra>"
-                )
-            ))
-
-        else:
-            # 배우자가 없으면 연금이 포함된 내 소득만 실선으로 표시
-            fig_income.add_trace(go.Scatter(
-                x=ages,
-                y=self_income_curve,
-                mode="lines",
-                name="내 소득(연금 포함)",
-                line=dict(width=3.5),
+                line=dict(width=2.5, dash="dash", color="#00CC96"),
                 hovertemplate=(
-                    "내 연간 소득(연금 포함): %{y:,.0f}만 원<extra></extra>"
+                    "배우자 연간 소득: %{y:,.0f}만 원<extra></extra>"
                 )
             ))
         # 2024년 국가데이터처 연령·성별 임금근로일자리 평균보수 비교선
@@ -2244,8 +2232,8 @@ if selected_page == "우리집 가계부":
                 y=wage_annualized,
                 customdata=list(zip(wage_age_groups, wage_monthly)),
                 mode="lines+markers",
-                name="동연령 임금근로자 평균보수(1인 통계)",
-                line=dict(width=2.5, dash="dot", color="#A78BFA"),
+                name="동연령 근로자 평균소득",
+                line=dict(width=3.5, dash="dot", color="#A78BFA"),
                 marker=dict(size=7, symbol="diamond"),
                 hovertemplate=(
                     "통계 연령구간: %{customdata[0]}<br>"
@@ -2256,15 +2244,6 @@ if selected_page == "우리집 가계부":
             ))
         except Exception as e:
             st.warning(f"연령별 임금근로소득 통계 비교선을 불러오지 못했습니다. ({e})")
-
-        # 75세 이후 개인 기준곡선의 추정 연장 구간
-        fig_income.add_vline(            x=75,
-            line_dash="dot",
-            line_color="#94A3B8",
-            line_width=1.5,
-            annotation_text="75세 이후 추정 구간",
-            annotation_position="top right"
-        )
 
         # 인터뷰이 현재 나이
         fig_income.add_vline(
@@ -2277,44 +2256,21 @@ if selected_page == "우리집 가계부":
         fig_income.add_annotation(
             x=cur_age,
             y=current_monthly_income * 12,
-            text=f"나 {cur_age}세",
+            text="나",
             showarrow=True,
             arrowhead=2,
-            ay=-35
+            ay=-35,
+            font=dict(color="#EF553B"),
+            arrowcolor="#EF553B"
         )
 
-        # 배우자의 현재 나이를 인터뷰이 나이축에 표시
-        if has_spouse:
-            fig_income.add_annotation(
-                x=cur_age,
-                y=spouse_monthly_income * 12,
-                text=f"배우자 {spouse_age}세",
-                showarrow=True,
-                arrowhead=2,
-                ay=35
-            )
-
-        # 배우자가 먼저 은퇴하는 시점
-        if has_spouse:
-            spouse_retire_x = retire_age - age_gap
-
-            if 20 <= spouse_retire_x <= 100:
-                fig_income.add_vline(
-                    x=spouse_retire_x,
-                    line_dash="dash",
-                    line_color="#38BDF8",
-                    line_width=1.8,
-                    annotation_text=f"배우자 은퇴 ({retire_age}세)",
-                    annotation_position="top left"
-                )
-
-        # 인터뷰이 은퇴 시점
+        # 인터뷰이 은퇴 시점만 작은 점 형태의 수직 점선으로 표시
         fig_income.add_vline(
             x=retire_age,
-            line_dash="dash",
+            line_dash="dot",
             line_color="#F59E0B",
-            line_width=1.8,
-            annotation_text=f" 은퇴 ({retire_age}세)",
+            line_width=1.5,
+            annotation_text=f"내 은퇴 ({retire_age}세)",
             annotation_position="bottom right"
         )
 
