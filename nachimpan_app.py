@@ -4371,98 +4371,98 @@ elif selected_page == "통계":
 
 연령별 노동소득에서 소비를 뺀 금액을 매년 더하면, 한 해의 흑자·적자와는 다른 흐름이 보입니다. 아래 두 그래프는 같은 2024년 1인당 자료를 사용하되, 누적을 시작하는 나이만 다르게 계산했습니다.
 
-nta_cumulative_path = os.path.join(
-    "data", "기준데이터",
-    "국가데이터처_2024_국민이전계정_연령별_누적노동잉여.csv"
-)
-if os.path.exists(nta_cumulative_path):
-    nta_cumulative_df = pd.read_csv(nta_cumulative_path)
-    nta_cumulative_df["age"] = pd.to_numeric(
-        nta_cumulative_df["age"], errors="coerce"
-    )
-    nta_cumulative_df["cumulative_from_0_eok"] = (
-        nta_cumulative_df["cumulative_from_0_thousand_won"] / 100000
-    )
-    nta_cumulative_df["cumulative_from_20_eok"] = (
-        nta_cumulative_df["cumulative_from_20_thousand_won"] / 100000
-    )
+        nta_cumulative_path = os.path.join(
+            "data", "기준데이터",
+            "국가데이터처_2024_국민이전계정_연령별_누적노동잉여.csv"
+        )
+        if os.path.exists(nta_cumulative_path):
+            nta_cumulative_df = pd.read_csv(nta_cumulative_path)
+            nta_cumulative_df["age"] = pd.to_numeric(
+                nta_cumulative_df["age"], errors="coerce"
+            )
+            nta_cumulative_df["cumulative_from_0_eok"] = (
+                nta_cumulative_df["cumulative_from_0_thousand_won"] / 100000
+            )
+            nta_cumulative_df["cumulative_from_20_eok"] = (
+                nta_cumulative_df["cumulative_from_20_thousand_won"] / 100000
+            )
 
-    def _build_nta_cumulative_chart(data, value_col, line_color):
-        fig = go.Figure()
-        fig.add_trace(go.Scatter(
-            x=data["age"],
-            y=data[value_col],
-            customdata=data["age_label"],
-            mode="lines",
-            line=dict(color=line_color, width=3),
-            hovertemplate=(
-                "연령: %{customdata}<br>"
-                "누적 노동잉여: <b>%{y:,.2f}억 원</b>"
-                "<extra></extra>"
-            ),
-            showlegend=False,
-        ))
-        fig.add_hline(
-            y=0, line_color="#CBD5E1", line_width=1.4,
-            line_dash="solid"
-        )
-        fig.update_layout(
-            height=330,
-            margin=dict(l=12, r=12, t=12, b=48),
-            paper_bgcolor="rgba(0,0,0,0)",
-            plot_bgcolor="rgba(0,0,0,0)",
-            font=dict(color="#E2E8F0", size=12),
-            xaxis=dict(
-                title="연령",
-                range=[0, 85],
-                tickmode="linear",
-                tick0=0,
-                dtick=10,
-                gridcolor="rgba(100, 116, 139, 0.18)",
-                fixedrange=True,
-            ),
-            yaxis=dict(
-                title="누적액 (억 원)",
-                range=[-9, 4],
-                dtick=2,
-                gridcolor="rgba(100, 116, 139, 0.18)",
-                zeroline=False,
-                fixedrange=True,
-            ),
-            hovermode="x",
-        )
-        return fig
+            def _build_nta_cumulative_chart(data, value_col, line_color):
+                fig = go.Figure()
+                fig.add_trace(go.Scatter(
+                    x=data["age"],
+                    y=data[value_col],
+                    customdata=data["age_label"],
+                    mode="lines",
+                    line=dict(color=line_color, width=3),
+                    hovertemplate=(
+                        "연령: %{customdata}<br>"
+                        "누적 노동잉여: <b>%{y:,.2f}억 원</b>"
+                        "<extra></extra>"
+                    ),
+                    showlegend=False,
+                ))
+                fig.add_hline(
+                    y=0, line_color="#CBD5E1", line_width=1.4,
+                    line_dash="solid"
+                )
+                fig.update_layout(
+                    height=330,
+                    margin=dict(l=12, r=12, t=12, b=48),
+                    paper_bgcolor="rgba(0,0,0,0)",
+                    plot_bgcolor="rgba(0,0,0,0)",
+                    font=dict(color="#E2E8F0", size=12),
+                    xaxis=dict(
+                        title="연령",
+                        range=[0, 85],
+                        tickmode="linear",
+                        tick0=0,
+                        dtick=10,
+                        gridcolor="rgba(100, 116, 139, 0.18)",
+                        fixedrange=True,
+                    ),
+                    yaxis=dict(
+                        title="누적액 (억 원)",
+                        range=[-9, 4],
+                        dtick=2,
+                        gridcolor="rgba(100, 116, 139, 0.18)",
+                        zeroline=False,
+                        fixedrange=True,
+                    ),
+                    hovermode="x",
+                )
+                return fig
 
-    nta_col0, nta_col20 = st.columns(2)
-    with nta_col0:
-        st.markdown("**① 출생부터 누적 (0세 기준)**")
-        fig_nta_cum0 = _build_nta_cumulative_chart(
-            nta_cumulative_df,
-            "cumulative_from_0_eok",
-            "#38BDF8",
-        )
-        st.plotly_chart(
-            fig_nta_cum0,
-            use_container_width=True,
-            config={"displayModeBar": False, "scrollZoom": False},
-        )
-    with nta_col20:
-        st.markdown("**② 성인기부터 누적 (20세 기준)**")
-        nta_adult_df = nta_cumulative_df[
-            nta_cumulative_df["age"] >= 20
-        ].copy()
-        fig_nta_cum20 = _build_nta_cumulative_chart(
-            nta_adult_df,
-            "cumulative_from_20_eok",
-            "#F59E0B",
-        )
-        st.plotly_chart(
-            fig_nta_cum20,
-            use_container_width=True,
-            config={"displayModeBar": False, "scrollZoom": False},
-        )
+            nta_col0, nta_col20 = st.columns(2)
+            with nta_col0:
+                st.markdown("**① 출생부터 누적 (0세 기준)**")
+                fig_nta_cum0 = _build_nta_cumulative_chart(
+                    nta_cumulative_df,
+                    "cumulative_from_0_eok",
+                    "#38BDF8",
+                )
+                st.plotly_chart(
+                    fig_nta_cum0,
+                    use_container_width=True,
+                    config={"displayModeBar": False, "scrollZoom": False},
+                )
+            with nta_col20:
+                st.markdown("**② 성인기부터 누적 (20세 기준)**")
+                nta_adult_df = nta_cumulative_df[
+                    nta_cumulative_df["age"] >= 20
+                ].copy()
+                fig_nta_cum20 = _build_nta_cumulative_chart(
+                    nta_adult_df,
+                    "cumulative_from_20_eok",
+                    "#F59E0B",
+                )
+                st.plotly_chart(
+                    fig_nta_cum20,
+                    use_container_width=True,
+                    config={"displayModeBar": False, "scrollZoom": False},
+                )
 
-    st.markdown("""
+            st.markdown("""
 - **0세 기준:** 출생부터 85세 이상까지 누적 노동잉여는 계속 마이너스입니다. 노동소득이 없는 유년기의 소비가 생애 초기에 큰 누적 적자로 쌓이기 때문입니다.
 - **20세 기준:** 20세부터 누적하면 39세까지는 마이너스지만 **40세에 처음 플러스로 전환**합니다. 60세에 약 **2억 9,695만 원**으로 가장 높아집니다.
 - **연간 수지와 누적 수지는 다릅니다.** 연간 노동소득이 소비보다 작아지는 시점은 61세입니다. 그러나 20세부터 쌓인 누적 노동잉여는 79세에도 약 **934만 원** 남아 있고, 80세에 약 **-1,504만 원**으로 다시 마이너스가 됩니다.
@@ -4476,8 +4476,8 @@ if os.path.exists(nta_cumulative_path):
 
 자료: 국가데이터처 「2024년 국민이전계정」 연령별 1인 규모 원자료. 단위는 1인당 연간 천 원이며, 85세 이상은 집단 구간입니다. [원자료 CSV](https://github.com/ufreezone-ops/nachimpan/blob/dev/data/원자료/생애주기적자계정_1인규모__20261110084848.csv) · [가공 데이터 및 산출방법](https://github.com/ufreezone-ops/nachimpan/blob/dev/data/기준데이터/국가데이터처_2024_국민이전계정_연령별_누적노동잉여_README.md)
 """)
-else:
-    st.info("국민이전계정 누적 노동잉여 기준데이터 파일을 찾지 못했습니다. data/기준데이터 파일을 확인해 주세요.")
+        else:
+            st.info("국민이전계정 누적 노동잉여 기준데이터 파일을 찾지 못했습니다. data/기준데이터 파일을 확인해 주세요.")
 
     with st.expander("2. 취업과 소득의 변화"):
         st.markdown("""
