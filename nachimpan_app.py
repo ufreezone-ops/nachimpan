@@ -1516,10 +1516,16 @@ if selected_page == "우리집 가계부":
                     expense_living = st.number_input("기본 월 생활비 (식비·관리비·통신비 등)", min_value=0, value=st.session_state.get("expense_living"), step=10, placeholder="월 생활 유지비")
                     representative_case_id_for_loan = st.session_state.get("_representative_case_id")
                     is_representative_case_for_loan = representative_case_id_for_loan in {"case_32_female", "case_45_female"}
+                    current_person_age_for_loan = int(st.session_state.get("person_age", 35) or 35)
                     loan_payment_input = (
-                        round(representative_mortgage_monthly_payment(int(st.session_state.get("person_age", 35) or 35)))
+                        round(representative_mortgage_monthly_payment(current_person_age_for_loan))
                         if is_representative_case_for_loan
                         else st.session_state.get("expense_loan")
+                    )
+                    loan_widget_key = (
+                        f"expense_loan_{representative_case_id_for_loan}_{current_person_age_for_loan}"
+                        if is_representative_case_for_loan
+                        else "expense_loan_user"
                     )
                     expense_loan = st.number_input(
                         "대출 원리금 월 상환액 (원금+이자 합계)",
@@ -1528,6 +1534,7 @@ if selected_page == "우리집 가계부":
                         step=10,
                         placeholder="은행 납입 합계",
                         disabled=is_representative_case_for_loan,
+                        key=loan_widget_key,
                     )
                     if is_representative_case_for_loan:
                         st.caption("대표사례는 주택가격·LTV·금리·상환기간·구입시점에 따라 월 원리금을 계산합니다.")
