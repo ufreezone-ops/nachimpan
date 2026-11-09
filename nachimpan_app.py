@@ -489,8 +489,8 @@ INTERVIEWER_CASES = {
         "job_form": "직장인",
         "job_spouse_form": "해당 없음",
         "career_stage": "🌿 4~9년 (성장기)",
-        "income_self": 290, "income_spouse": 0, "income_other": 0,
-        "income_bonus": 200, "income_pension": 120,
+        "income_self": 275, "income_spouse": 0, "income_other": 0,
+        "income_bonus": 0, "income_pension": 120,  # 2024 여성 30~34세 중위 세전 305.6 × 90% ≈ 실수령 275; 보너스 중복 방지
         "expense_living": 130, "expense_loan": 0, "expense_other": 300,
         "expense_scale_reference_annual": 1860,  # 이전 대표사례 지출 기준(연간, 만 원)
         "retirement_monthly_expenses": 270,
@@ -519,9 +519,9 @@ INTERVIEWER_CASES = {
         "job_form": "직장인",
         "job_spouse_form": "직장인",
         "career_stage": "🌿 4~9년 (성장기)",
-        "income_self": 260, "income_spouse": 360, "income_other": 0,
-        "income_bonus": 300,
-        "income_pension": 120,
+        "income_self": 240, "income_spouse": 431, "income_other": 0,
+        "income_bonus": 0,  # 월평균 보수 통계와 상여 중복 방지
+        "income_pension": 120,  # 본인 45~49세 여성 중위 266.2 × 90%; 배우자 45~49세 남성 중위 478.8 × 90%
         "expense_living": 330, "expense_loan": 67, "expense_other": 500,
         "expense_scale_reference_annual": 5660,  # 이전 대표사례 지출 기준(연간, 만 원)
         "retirement_monthly_expenses": 270,
