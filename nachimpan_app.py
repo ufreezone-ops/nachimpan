@@ -90,6 +90,13 @@ div[data-testid="stMainBlockContainer"] {
 footer {
     visibility: hidden !important;
 }
+
+/* 대표사례의 자동 계산 대출 상환액도 일반 입력창과 같은 명도·글자색으로 표시 */
+.st-key-expense_loan_case_45_female_45 [data-testid="stNumberInput"] input:disabled {
+    opacity: 1 !important;
+    color: var(--nc-text) !important;
+    -webkit-text-fill-color: var(--nc-text) !important;
+}
 </style>
 """, unsafe_allow_html=True)
 
@@ -2177,7 +2184,7 @@ if selected_page == "우리집 가계부":
             y=household_income_curve,
             mode="lines",
             name="가구 소득",
-            line=dict(width=3.5, color="#636EFA"),
+            line=dict(width=3.5, color="#FFFFFF"),
             hovertemplate=(
                 "가구 연간 소득: %{y:,.0f}만 원<extra></extra>"
             )
@@ -2225,20 +2232,21 @@ if selected_page == "우리집 가계부":
             wage_ages = wage_stats["대표연령"].astype(int).tolist()
             wage_age_groups = wage_stats["연령구간"].astype(str).tolist()
             wage_monthly = wage_stats[wage_value_col].astype(float).tolist()
-            wage_annualized = [value * 12 for value in wage_monthly]
+            wage_monthly_net_estimated = [value * 0.9 for value in wage_monthly]
+            wage_annualized = [value * 12 for value in wage_monthly_net_estimated]
 
             fig_income.add_trace(go.Scatter(
                 x=wage_ages,
                 y=wage_annualized,
-                customdata=list(zip(wage_age_groups, wage_monthly)),
+                customdata=list(zip(wage_age_groups, wage_monthly_net_estimated)),
                 mode="lines+markers",
-                name="동연령 근로자 평균소득",
+                name="동연령 근로자 평균 실수령액(추정)",
                 line=dict(width=3.5, dash="dot", color="#A78BFA"),
                 marker=dict(size=7, symbol="diamond"),
                 hovertemplate=(
                     "통계 연령구간: %{customdata[0]}<br>"
-                    "월평균 보수: %{customdata[1]:,.0f}만 원<br>"
-                    "연환산 참고값: %{y:,.0f}만 원"
+                    "월평균 실수령액(추정): %{customdata[1]:,.0f}만 원<br>"
+                    "연환산 실수령액(추정): %{y:,.0f}만 원"
                     "<extra></extra>"
                 )
             ))
@@ -2268,7 +2276,7 @@ if selected_page == "우리집 가계부":
         fig_income.add_vline(
             x=retire_age,
             line_dash="dot",
-            line_color="#F59E0B",
+            line_color="#3B82F6",
             line_width=1.5,
             annotation_text=f"내 은퇴 ({retire_age}세)",
             annotation_position="bottom right"
