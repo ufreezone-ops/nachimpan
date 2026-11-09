@@ -2281,7 +2281,8 @@ if selected_page == "우리집 가계부":
             line_color="#3B82F6",
             line_width=1.5,
             annotation_text=f"내 은퇴 ({retire_age}세)",
-            annotation_position="bottom right"
+            annotation_position="bottom right",
+            annotation_font_color="#3B82F6"
         )
 
         fig_income.update_layout(
