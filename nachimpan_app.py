@@ -4715,80 +4715,82 @@ elif selected_page == "통계":
                 nta_cumulative_df["cumulative_from_20_thousand_won"] / 100000
             )
 
-            def _build_nta_cumulative_chart(data, value_col, line_color):
-                fig = go.Figure()
-                fig.add_trace(go.Scatter(
-                    x=data["age"],
-                    y=data[value_col],
-                    customdata=data["age_label"],
-                    mode="lines",
-                    line=dict(color=line_color, width=3),
-                    hovertemplate=(
-                        "연령: %{customdata}<br>"
-                        "누적 노동잉여: <b>%{y:,.2f}억 원</b>"
-                        "<extra></extra>"
-                    ),
-                    showlegend=False,
-                ))
-                fig.add_hline(
-                    y=0, line_color="#CBD5E1", line_width=1.4,
-                    line_dash="solid"
-                )
-                fig.update_layout(
-                    height=330,
-                    margin=dict(l=12, r=12, t=12, b=48),
-                    paper_bgcolor="rgba(0,0,0,0)",
-                    plot_bgcolor="rgba(0,0,0,0)",
-                    font=dict(color="#E2E8F0", size=12),
-                    xaxis=dict(
-                        title="연령",
-                        range=[0, 85],
-                        tickmode="linear",
-                        tick0=0,
-                        dtick=10,
-                        gridcolor="rgba(100, 116, 139, 0.18)",
-                        fixedrange=True,
-                    ),
-                    yaxis=dict(
-                        title="누적액 (억 원)",
-                        range=[-9, 4],
-                        dtick=2,
-                        gridcolor="rgba(100, 116, 139, 0.18)",
-                        zeroline=False,
-                        fixedrange=True,
-                    ),
-                    hovermode="x",
-                )
-                return fig
+            fig_nta_cumulative = go.Figure()
 
-            nta_col0, nta_col20 = st.columns(2)
-            with nta_col0:
-                st.markdown("**① 출생부터 누적 (0세 기준)**")
-                fig_nta_cum0 = _build_nta_cumulative_chart(
-                    nta_cumulative_df,
-                    "cumulative_from_0_eok",
-                    "#38BDF8",
-                )
-                st.plotly_chart(
-                    fig_nta_cum0,
-                    use_container_width=True,
-                    config={"displayModeBar": False, "scrollZoom": False},
-                )
-            with nta_col20:
-                st.markdown("**② 성인기부터 누적 (20세 기준)**")
-                nta_adult_df = nta_cumulative_df[
-                    nta_cumulative_df["age"] >= 20
-                ].copy()
-                fig_nta_cum20 = _build_nta_cumulative_chart(
-                    nta_adult_df,
-                    "cumulative_from_20_eok",
-                    "#F59E0B",
-                )
-                st.plotly_chart(
-                    fig_nta_cum20,
-                    use_container_width=True,
-                    config={"displayModeBar": False, "scrollZoom": False},
-                )
+            # 20세부터 누적한 값: 실선
+            nta_adult_df = nta_cumulative_df[
+                nta_cumulative_df["age"] >= 20
+            ].copy()
+            fig_nta_cumulative.add_trace(go.Scatter(
+                x=nta_adult_df["age"],
+                y=nta_adult_df["cumulative_from_20_eok"],
+                customdata=nta_adult_df["age_label"],
+                mode="lines",
+                name="20세부터 누적",
+                line=dict(color="#F59E0B", width=3, dash="solid"),
+                hovertemplate=(
+                    "연령: %{customdata}<br>"
+                    "20세부터 누적: <b>%{y:,.2f}억 원</b>"
+                    "<extra></extra>"
+                ),
+            ))
+
+            # 0세부터 누적한 값: 점선
+            fig_nta_cumulative.add_trace(go.Scatter(
+                x=nta_cumulative_df["age"],
+                y=nta_cumulative_df["cumulative_from_0_eok"],
+                customdata=nta_cumulative_df["age_label"],
+                mode="lines",
+                name="0세부터 누적",
+                line=dict(color="#38BDF8", width=3, dash="dot"),
+                hovertemplate=(
+                    "연령: %{customdata}<br>"
+                    "0세부터 누적: <b>%{y:,.2f}억 원</b>"
+                    "<extra></extra>"
+                ),
+            ))
+
+            fig_nta_cumulative.add_hline(
+                y=0, line_color="#CBD5E1", line_width=1.4,
+                line_dash="solid"
+            )
+            fig_nta_cumulative.update_layout(
+                height=390,
+                margin=dict(l=12, r=12, t=28, b=48),
+                paper_bgcolor="rgba(0,0,0,0)",
+                plot_bgcolor="rgba(0,0,0,0)",
+                font=dict(color="#E2E8F0", size=12),
+                xaxis=dict(
+                    title="연령",
+                    range=[0, 85],
+                    tickmode="linear",
+                    tick0=0,
+                    dtick=10,
+                    gridcolor="rgba(100, 116, 139, 0.18)",
+                    fixedrange=True,
+                ),
+                yaxis=dict(
+                    title="누적액 (억 원)",
+                    range=[-9, 4],
+                    dtick=2,
+                    gridcolor="rgba(100, 116, 139, 0.18)",
+                    zeroline=False,
+                    fixedrange=True,
+                ),
+                hovermode="x",
+                legend=dict(
+                    orientation="h",
+                    yanchor="bottom",
+                    y=1.02,
+                    xanchor="left",
+                    x=0,
+                ),
+            )
+            st.plotly_chart(
+                fig_nta_cumulative,
+                use_container_width=True,
+                config={"displayModeBar": False, "scrollZoom": False},
+            )
 
             st.markdown("""
 - **0세 기준:** 출생부터 85세 이상까지 누적 노동잉여는 계속 마이너스이며, 마지막 85세 이상 구간에서는 약 **-8억 588만 원**입니다. 노동소득이 없는 유년기의 소비가 생애 초기에 큰 누적 적자로 쌓이기 때문입니다.
