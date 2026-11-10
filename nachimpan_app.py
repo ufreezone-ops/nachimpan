@@ -4316,7 +4316,6 @@ elif selected_page == "AI 시선":
 #--------------------------------------------------------
     if not is_adv:
     
-        # 6.04.01 | 기본모드 — AI 자동 성찰문 생성 및 표시
         st.caption("AI는 평가자가 아닌, 내가 작성한 삶의 숫자를 객관적인 거울처럼 비춰주는 성찰 파트너입니다.")
         inc_val = float(getv("income_self", 0) or 0)
         exp_val = float(getv("expense_living", 0) or 0)
