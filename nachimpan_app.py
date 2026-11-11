@@ -91,15 +91,13 @@ footer {
     visibility: hidden !important;
 }
 
-/* 논문 주석처럼 보이는 텍스트형 출처 표식 */
+/* 본문 제목·설명 전체를 클릭 가능한 링크형 출처/설명 컨트롤로 표시 */
 .st-key-source_retirement_expense,
 .st-key-source_nta_basic,
 .st-key-source_nta_generational {
-    width: auto !important;
+    width: 100% !important;
     min-width: 0 !important;
-    max-width: max-content !important;
-    flex: 0 0 auto !important;
-    margin-left: -0.15rem !important;
+    flex: 1 1 auto !important;
 }
 .st-key-source_retirement_expense [data-testid="stButton"] button,
 .st-key-source_nta_basic [data-testid="stButton"] button,
@@ -107,10 +105,10 @@ footer {
 .st-key-expense-panel [data-testid="stPopover"] button {
     width: auto !important;
     min-width: 0 !important;
-    max-width: max-content !important;
+    max-width: 100% !important;
     height: auto !important;
     min-height: 0 !important;
-    padding: 0 0.08rem !important;
+    padding: 0 !important;
     margin: 0 !important;
     border: 0 !important;
     background: transparent !important;
@@ -120,12 +118,11 @@ footer {
     border-radius: 0 !important;
     color: #38BDF8 !important;
     -webkit-text-fill-color: #38BDF8 !important;
-    font-size: 0.9rem !important;
-    line-height: 1 !important;
-    display: inline-flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-    flex: 0 0 auto !important;
+    font-size: inherit !important;
+    line-height: inherit !important;
+    text-align: left !important;
+    justify-content: flex-start !important;
+    white-space: normal !important;
 }
 .st-key-source_retirement_expense [data-testid="stButton"] button:hover,
 .st-key-source_nta_basic [data-testid="stButton"] button:hover,
@@ -144,8 +141,8 @@ footer {
 .st-key-source_nta_basic [data-testid="stButton"] button p,
 .st-key-source_nta_generational [data-testid="stButton"] button p,
 .st-key-expense-panel [data-testid="stPopover"] button p {
-    font-size: 0.9rem !important;
-    line-height: 1 !important;
+    font-size: inherit !important;
+    line-height: inherit !important;
     margin: 0 !important;
 }
 
@@ -1620,30 +1617,37 @@ if selected_page == "우리집 가계부":
                         if is_representative_case_for_loan
                         else "expense_loan_user"
                     )
-                    loan_input_col, loan_info_col = st.columns([20, 1])
-                    with loan_input_col:
+                    if is_representative_case_for_loan:
+                        with st.popover(
+                            "대출 원리금 월 상환액 (원금+이자 합계)",
+                            help="대표사례의 월 원리금 계산 방식 보기",
+                            type="tertiary",
+                        ):
+                            st.markdown(
+                                "**대표사례의 대출 상환액**\n\n"
+                                "주택 구입가격과 LTV로 대출원금을 정하고, "
+                                "연 이자율·상환기간·구입시점을 반영해 "
+                                "현재 시점의 월 원리금(원금+이자 합계)을 계산합니다."
+                            )
                         expense_loan = st.number_input(
                             "대출 원리금 월 상환액 (원금+이자 합계)",
                             min_value=0,
                             value=loan_payment_input,
                             step=10,
                             placeholder="은행 납입 합계",
-                            disabled=is_representative_case_for_loan,
+                            disabled=True,
+                            key=loan_widget_key,
+                            label_visibility="collapsed",
+                        )
+                    else:
+                        expense_loan = st.number_input(
+                            "대출 원리금 월 상환액 (원금+이자 합계)",
+                            min_value=0,
+                            value=loan_payment_input,
+                            step=10,
+                            placeholder="은행 납입 합계",
                             key=loan_widget_key,
                         )
-                    if is_representative_case_for_loan:
-                        with loan_info_col:
-                            with st.popover(
-                                "¹",
-                                help="대표사례의 월 원리금 계산 방식 보기",
-                                type="tertiary",
-                            ):
-                                st.markdown(
-                                    "**대표사례의 대출 상환액**\n\n"
-                                    "주택 구입가격과 LTV로 대출원금을 정하고, "
-                                    "연 이자율·상환기간·구입시점을 반영해 "
-                                    "현재 시점의 월 원리금(원금+이자 합계)을 계산합니다."
-                                )
                     expense_other = st.number_input("그 밖의 연간 비정기 지출 (여행·경조사·세금)", min_value=0, value=st.session_state.get("expense_other"), step=10, placeholder="연간 비정기 지출 합계")
 
 #--------------------------------------------------------
@@ -1669,9 +1673,8 @@ if selected_page == "우리집 가계부":
 #--------------------------------------------------------
             with st.container(border=True, key="retirement-panel"):
                 with st.container(horizontal=True, vertical_alignment="center", gap=None):
-                    st.markdown("### 은퇴 후에는? (만원)")
                     if st.button(
-                        "¹",
+                        "은퇴 후에는? (만원)",
                         key="source_retirement_expense",
                         help="은퇴 후 연령대별 생활비 통계와 적용 방식 보기",
                         type="tertiary",
@@ -2758,12 +2761,8 @@ elif selected_page == "인생의 사계절":
         )
 
         with st.container(horizontal=True, vertical_alignment="center", gap=None):
-            st.caption(
-                "가벼운 3분 산책: 국가데이터처 「2024년 국민이전계정」의 "
-                "공식 지표를 통해 내 인생의 사계절 중 어디쯤 와 있는지 확인합니다."
-            )
             if st.button(
-                "¹",
+                "가벼운 3분 산책: 국가데이터처 「2024년 국민이전계정」의 공식 지표를 통해 내 인생의 사계절 중 어디쯤 와 있는지 확인합니다.",
                 key="source_nta_basic",
                 help="국가데이터처 2024년 국민이전계정 출처 보기",
                 type="tertiary",
@@ -4324,12 +4323,8 @@ elif selected_page == "인생의 사계절":
         )
 
         with st.container(horizontal=True, vertical_alignment="center", gap=None):
-            st.caption(
-                "※ 국가데이터처 「2024년 국민이전계정」"
-                "(2026. 9. 17. 발표) 기준 · 전 국민 1인당 평균 지표"
-            )
             if st.button(
-                "¹",
+                "※ 국가데이터처 「2024년 국민이전계정」(2026. 9. 17. 발표) 기준 · 전 국민 1인당 평균 지표",
                 key="source_nta_generational",
                 help="국가데이터처 2024년 국민이전계정 출처 보기",
                 type="tertiary",
