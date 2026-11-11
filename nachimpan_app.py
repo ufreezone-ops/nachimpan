@@ -195,13 +195,25 @@ footer {
         margin-left: 0.05rem !important;
     }
 }
-/* 모바일: 아이콘을 추가로 약 2px 내리고, 제목과 간격을 아이콘 폭의 약 1/3만큼 확대 */
-@media (max-width: 768px) {
+/* 모바일 공통: 실제 아이콘 요소의 왼쪽 여백으로 제목과 간격 확보 */
+@media (max-width: 1024px) and (pointer: coarse) {
     .st-key-retirement-title-row [data-testid="stHorizontalBlock"] {
-        column-gap: 0.6rem !important;
+        column-gap: 0 !important;
     }
     .st-key-source_retirement_expense {
+        margin-left: 0.5rem !important;
+    }
+}
+/* 모바일 세로보기: 제목 중심에 맞춰 아이콘을 아래로 미세 조정 */
+@media (max-width: 600px) and (orientation: portrait) and (pointer: coarse) {
+    .st-key-source_retirement_expense {
         transform: translateY(0.3rem) !important;
+    }
+}
+/* 모바일 가로보기: 세로보기보다 덜 내려 기준선에 맞춤 */
+@media (orientation: landscape) and (max-height: 500px) and (pointer: coarse) {
+    .st-key-source_retirement_expense {
+        transform: translateY(0.08rem) !important;
     }
 }
 .st-key-source_retirement_expense [data-testid="stButton"] button,
