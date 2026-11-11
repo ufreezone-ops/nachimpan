@@ -1794,7 +1794,7 @@ if selected_page == "우리집 가계부":
             with st.container(border=True, key="retirement-panel"):
                 with st.container(horizontal=True, vertical_alignment="center", gap=None):
                     if st.button(
-                        "은퇴 후에는? (만원) [출처]",
+                        "은퇴 후에는? (만원) ↗",
                         key="source_retirement_expense",
                         help="은퇴 후 연령대별 생활비 통계와 적용 방식 보기",
                         type="tertiary",
