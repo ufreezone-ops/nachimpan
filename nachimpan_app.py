@@ -91,6 +91,17 @@ footer {
     visibility: hidden !important;
 }
 
+/* 출처 아이콘 위젯 자체도 내용 폭만 차지하도록 고정 */
+.st-key-source_retirement_expense,
+.st-key-source_nta_basic,
+.st-key-source_nta_generational {
+    width: 1.25rem !important;
+    min-width: 1.25rem !important;
+    max-width: 1.25rem !important;
+    flex: 0 0 1.25rem !important;
+    margin-left: -0.12rem !important;
+}
+
 /* 출처·설명 나침반: 아이콘만 노출하고 버튼 상자·배경·테두리는 제거 */
 .st-key-source_retirement_expense [data-testid="stButton"] button,
 .st-key-source_nta_basic [data-testid="stButton"] button,
@@ -1650,7 +1661,7 @@ if selected_page == "우리집 가계부":
 # 6.01.05 | 고급 모드 — 은퇴 후 가정 입력 패널
 #--------------------------------------------------------
             with st.container(border=True, key="retirement-panel"):
-                with st.container(horizontal=True, vertical_alignment="center", gap="small"):
+                with st.container(horizontal=True, vertical_alignment="center", gap=None):
                     st.markdown("### 은퇴 후에는? (만원)")
                     if st.button(
                         "🧭",
@@ -2738,7 +2749,7 @@ elif selected_page == "인생의 사계절":
             unsafe_allow_html=True
         )
 
-        with st.container(horizontal=True, vertical_alignment="center", gap="small"):
+        with st.container(horizontal=True, vertical_alignment="center", gap=None):
             st.caption(
                 "가벼운 3분 산책: 국가데이터처 「2024년 국민이전계정」의 "
                 "공식 지표를 통해 내 인생의 사계절 중 어디쯤 와 있는지 확인합니다."
@@ -4303,7 +4314,7 @@ elif selected_page == "인생의 사계절":
             unsafe_allow_html=True
         )
 
-        with st.container(horizontal=True, vertical_alignment="center", gap="small"):
+        with st.container(horizontal=True, vertical_alignment="center", gap=None):
             st.caption(
                 "※ 국가데이터처 「2024년 국민이전계정」"
                 "(2026. 9. 17. 발표) 기준 · 전 국민 1인당 평균 지표"
