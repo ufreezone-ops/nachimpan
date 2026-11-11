@@ -201,7 +201,7 @@ footer {
         column-gap: 0 !important;
     }
     .st-key-source_retirement_expense {
-        margin-left: 0.5rem !important;
+        margin-left: 0.65rem !important;
     }
 }
 /* 모바일 세로보기: 제목 중심에 맞춰 아이콘을 아래로 미세 조정 */
