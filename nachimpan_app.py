@@ -2814,7 +2814,7 @@ elif selected_page == "삶과 생계수단":
 # 6.02.02 | 고급 모드 — 2x2 사분면 (물통과 파이프라인)
 #--------------------------------------------------------
         st.markdown("""
-<div style="background: rgba(30, 41, 59, 0.45); border: 1.5px solid #334155; border-radius: 14px; padding: 18px 22px; margin-bottom: 44px;">
+<div style="background: rgba(30, 41, 59, 0.45); border: none; border-radius: 14px; padding: 18px 22px; margin-bottom: 44px;">
 <div style="font-size: 18px; font-weight: 850; color: #F8FAFC; line-height: 1.4; margin: 0 0 14px 0; padding: 0;">물통 &amp; 파이프라인</div>
 """, unsafe_allow_html=True)
         
