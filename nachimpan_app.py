@@ -195,10 +195,13 @@ footer {
         margin-left: 0.05rem !important;
     }
 }
-/* 모바일: 아이콘을 약 2px 아래로 미세 조정 */
+/* 모바일: 아이콘을 추가로 약 2px 내리고, 제목과 간격을 아이콘 폭의 약 1/3만큼 확대 */
 @media (max-width: 768px) {
+    .st-key-retirement-title-row [data-testid="stHorizontalBlock"] {
+        column-gap: 0.6rem !important;
+    }
     .st-key-source_retirement_expense {
-        transform: translateY(0.18rem) !important;
+        transform: translateY(0.3rem) !important;
     }
 }
 .st-key-source_retirement_expense [data-testid="stButton"] button,
