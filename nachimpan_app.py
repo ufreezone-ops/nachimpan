@@ -1384,6 +1384,8 @@ def _open_source_reference(source_id, origin_page, origin_anchor):
         "page": origin_page,
         "anchor": origin_anchor,
     }
+    if source_id == "6050600-01":
+        st.session_state["_source_open_anchor"] = "stats-anchor-retirement-expense"
     st.session_state["_pending_nav"] = "통계"
     st.rerun()
 
@@ -1396,6 +1398,7 @@ if (
 ):
     st.session_state.pop("_active_source_id", None)
     st.session_state.pop("_source_return_context", None)
+    st.session_state.pop("_source_open_anchor", None)
 
 
 #########################################################
@@ -4657,14 +4660,18 @@ elif selected_page == "통계":
     st.markdown("""
     <style>
     div.st-key-source-return-bar {
-        position: sticky;
-        top: 0.5rem;
-        z-index: 999;
-        background: rgba(15, 23, 42, 0.97);
+        position: fixed !important;
+        top: 7rem !important;
+        left: 50% !important;
+        transform: translateX(-50%) !important;
+        width: min(calc(100vw - 2rem), 1180px) !important;
+        box-sizing: border-box !important;
+        z-index: 9999 !important;
+        background: rgba(15, 23, 42, 0.98);
         padding: 8px 12px;
         border: 1px solid #475569;
         border-radius: 10px;
-        margin-bottom: 12px;
+        box-shadow: 0 4px 16px rgba(0,0,0,0.28);
     }
     div.st-key-source-return-bar button {
         width: 100%;
@@ -4697,6 +4704,7 @@ elif selected_page == "통계":
                     )
                     st.rerun()
 
+        st.markdown("<div style='height: 58px;'></div>", unsafe_allow_html=True)
         st.caption(f"선택한 출처: {_source_labels[_active_source_id]}")
 
     st.markdown("## 통계로 읽는 인생")
@@ -4898,6 +4906,10 @@ elif selected_page == "통계":
     #--------------------------------------------------------
     # 6.05.06.00 | 5. 노후와 은퇴
     #--------------------------------------------------------
+    st.markdown(
+        '<div id="stats-anchor-retirement-expense" style="scroll-margin-top: 150px;"></div>',
+        unsafe_allow_html=True,
+    )
     with st.expander(
         "5. 노후와 은퇴",
         expanded=_active_source_id == "6050600-01",
@@ -4923,8 +4935,21 @@ elif selected_page == "통계":
 
 이 값은 특정 개인의 미래 지출 예측이 아닙니다. 2024년 가구 표본의 가중중위값이며, 개인의 주거 형태·건강·돌봄·지역·생활 방식에 따라 실제 지출은 달라질 수 있습니다.
 
-자료: 국가데이터처 「가계동향조사(2019~2024년 구분류)」 2024년 연간자료, MDIS 제공 공공용 마이크로데이터. [산출 방법과 원자료 변수 보기](https://github.com/ufreezone-ops/nachimpan/blob/dev/data/기준데이터/국가데이터처_2024_가계동향조사_가구주연령대별가구원수별가계지출_가중중위값_README.md)
+자료: 국가데이터처 「가계동향조사(2019~2024년 구분류)」 2024년 연간자료, MDIS 제공 공공용 마이크로데이터.
 """)
+        with st.popover("산출 방법과 원자료 변수 보기"):
+            _retirement_readme_path = (
+                Path(__file__).resolve().parent
+                / "data"
+                / "기준데이터"
+                / "국가데이터처_2024_가계동향조사_가구주연령대별가구원수별가계지출_가중중위값_README.md"
+            )
+            if _retirement_readme_path.exists():
+                st.markdown(
+                    _retirement_readme_path.read_text(encoding="utf-8")
+                )
+            else:
+                st.info("산출 방법 파일을 현재 앱에서 찾을 수 없습니다.")
 
     #--------------------------------------------------------
     # 6.05.07.00 | 6. 주택대출과 원리금 분리
@@ -5456,21 +5481,25 @@ elif selected_page == "통계":
 # 5.01.03 | 출처 복귀 — 원래 화면 위치 복원
 #--------------------------------------------------------
 _restore_anchor = st.session_state.get("_source_restore_anchor")
+_open_anchor = st.session_state.get("_source_open_anchor")
 
-if _restore_anchor:
+if _restore_anchor or _open_anchor:
+    _scroll_target_id = _open_anchor or _restore_anchor
+    _scroll_block = "start" if _open_anchor else "center"
     st.components.v1.html(
         f"""
         <script>
         try {{
-            const target = window.parent.document.getElementById(
-                "{_restore_anchor}"
-            );
+            const doc = window.parent.document;
+            const target = doc.getElementById("{_scroll_target_id}");
 
             if (target) {{
-                target.scrollIntoView({{
-                    behavior: "instant",
-                    block: "center"
-                }});
+                window.parent.setTimeout(() => {{
+                    target.scrollIntoView({{
+                        behavior: "auto",
+                        block: "{_scroll_block}"
+                    }});
+                }}, 250);
             }}
         }} catch(e) {{}}
         </script>
@@ -5479,5 +5508,7 @@ if _restore_anchor:
     )
 
     st.session_state.pop("_source_restore_anchor", None)
-    st.session_state.pop("_source_return_context", None)
-    st.session_state.pop("_active_source_id", None)
+    st.session_state.pop("_source_open_anchor", None)
+    if _restore_anchor:
+        st.session_state.pop("_source_return_context", None)
+        st.session_state.pop("_active_source_id", None)
