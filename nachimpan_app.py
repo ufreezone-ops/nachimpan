@@ -990,10 +990,7 @@ with st.sidebar:
 #--------------------------------------------------------
 # 4.01.02 | 개발용 테스트 메뉴 (사례 저장/불러오기)
 #--------------------------------------------------------
-_dev_enabled = (
-    st.secrets.get("DEV_MODE", False)
-    or st.query_params.get("dev") == "1"
-)
+_dev_enabled = st.secrets.get("DEV_MODE", False)
 
 if _dev_enabled:
     with st.sidebar:
