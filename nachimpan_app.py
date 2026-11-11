@@ -104,6 +104,7 @@ footer {
 .st-key-source_retirement_expense [data-testid="stButton"] button,
 .st-key-source_nta_basic [data-testid="stButton"] button,
 .st-key-source_nta_generational [data-testid="stButton"] button,
+.st-key-expense-panel [data-testid="stPopoverButton"],
 .st-key-expense-panel [data-testid="stPopover"] button {
     width: auto !important;
     min-width: 0 !important;
@@ -130,6 +131,7 @@ footer {
 .st-key-source_retirement_expense [data-testid="stButton"] button:hover,
 .st-key-source_nta_basic [data-testid="stButton"] button:hover,
 .st-key-source_nta_generational [data-testid="stButton"] button:hover,
+.st-key-expense-panel [data-testid="stPopoverButton"]:hover,
 .st-key-expense-panel [data-testid="stPopover"] button:hover {
     background: transparent !important;
     background-color: transparent !important;
@@ -143,6 +145,7 @@ footer {
 .st-key-source_retirement_expense [data-testid="stButton"] button p,
 .st-key-source_nta_basic [data-testid="stButton"] button p,
 .st-key-source_nta_generational [data-testid="stButton"] button p,
+.st-key-expense-panel [data-testid="stPopoverButton"] p,
 .st-key-expense-panel [data-testid="stPopover"] button p {
     font-size: inherit !important;
     line-height: 1 !important;
