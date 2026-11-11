@@ -205,7 +205,12 @@ footer {
         min-width: 0 !important;
         max-width: max-content !important;
         flex: 0 0 auto !important;
-        margin: 0 0 0 0.75rem !important;
+        margin: 0 !important;
+    }
+    /* 버튼 안에 얇은 공백을 넣어 제목과 나침반 사이를 시각적으로 분리 */
+    .st-key-source_retirement_expense [data-testid="stButton"] button p::before {
+        content: " ";
+        white-space: pre;
     }
 }
 /* 모바일 세로보기: 제목 중심에 맞춰 아이콘을 아래로 미세 조정 */
