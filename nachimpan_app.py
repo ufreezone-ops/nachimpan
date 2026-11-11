@@ -1636,6 +1636,7 @@ if selected_page == "우리집 가계부":
                             with st.popover(
                                 "¹",
                                 help="대표사례의 월 원리금 계산 방식 보기",
+                                type="tertiary",
                             ):
                                 st.markdown(
                                     "**대표사례의 대출 상환액**\n\n"
@@ -1673,6 +1674,7 @@ if selected_page == "우리집 가계부":
                         "¹",
                         key="source_retirement_expense",
                         help="은퇴 후 연령대별 생활비 통계와 적용 방식 보기",
+                        type="tertiary",
                     ):
                         _open_source_reference(
                             "6050600-01",
@@ -2763,7 +2765,8 @@ elif selected_page == "인생의 사계절":
             if st.button(
                 "¹",
                 key="source_nta_basic",
-                help="국가데이터처 2024년 국민이전계정 출처 보기"
+                help="국가데이터처 2024년 국민이전계정 출처 보기",
+                type="tertiary",
             ):
                 _open_source_reference(
                     "6030200-01",
@@ -4328,7 +4331,8 @@ elif selected_page == "인생의 사계절":
             if st.button(
                 "¹",
                 key="source_nta_generational",
-                help="국가데이터처 2024년 국민이전계정 출처 보기"
+                help="국가데이터처 2024년 국민이전계정 출처 보기",
+                type="tertiary",
             ):
                 _open_source_reference(
                     "6030200-01",
