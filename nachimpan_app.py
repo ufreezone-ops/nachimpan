@@ -1434,6 +1434,100 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
+#--------------------------------------------------------
+# 1.02.05 | 탭1 텍스트형 클릭 요소 — 기존 글자 스타일 보존
+#--------------------------------------------------------
+st.markdown("""
+<style>
+/* 은퇴 제목: 기존 제목 크기·굵기를 유지하고 버튼 외형은 완전히 제거 */
+div.st-key-source_retirement_expense {
+    width: 100% !important;
+    flex: 1 1 auto !important;
+    margin: 0 !important;
+}
+div.st-key-source_retirement_expense [data-testid="stButton"] button,
+div.st-key-source_retirement_expense [data-testid="stButton"] button:hover,
+div.st-key-source_retirement_expense [data-testid="stButton"] button:focus,
+div.st-key-source_retirement_expense [data-testid="stButton"] button:focus-visible,
+div.st-key-source_retirement_expense [data-testid="stButton"] button:active {
+    width: auto !important;
+    min-width: 0 !important;
+    min-height: 0 !important;
+    height: auto !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    border: 0 !important;
+    outline: 0 !important;
+    background: transparent !important;
+    background-color: transparent !important;
+    background-image: none !important;
+    box-shadow: none !important;
+    border-radius: 0 !important;
+    color: #38BDF8 !important;
+    -webkit-text-fill-color: #38BDF8 !important;
+    font-size: 1.75rem !important;
+    font-weight: 700 !important;
+    line-height: 1.25 !important;
+    justify-content: flex-start !important;
+    text-decoration: none !important;
+}
+div.st-key-source_retirement_expense [data-testid="stButton"] button p {
+    margin: 0 !important;
+    font-size: 1.75rem !important;
+    font-weight: 700 !important;
+    line-height: 1.25 !important;
+    color: #38BDF8 !important;
+    -webkit-text-fill-color: #38BDF8 !important;
+}
+div.st-key-source_retirement_expense [data-testid="stButton"] button:hover p {
+    color: #7DD3FC !important;
+    -webkit-text-fill-color: #7DD3FC !important;
+    text-decoration: underline !important;
+}
+
+/* 대출 설명: 기존 입력 라벨 크기의 청색 텍스트만 남기고 버튼 외형 제거 */
+div.st-key-expense-panel [data-testid="stPopoverButton"],
+div.st-key-expense-panel [data-testid="stPopoverButton"]:hover,
+div.st-key-expense-panel [data-testid="stPopoverButton"]:focus,
+div.st-key-expense-panel [data-testid="stPopoverButton"]:focus-visible,
+div.st-key-expense-panel [data-testid="stPopoverButton"]:active {
+    width: auto !important;
+    min-width: 0 !important;
+    min-height: 0 !important;
+    height: auto !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    border: 0 !important;
+    outline: 0 !important;
+    background: transparent !important;
+    background-color: transparent !important;
+    background-image: none !important;
+    box-shadow: none !important;
+    border-radius: 0 !important;
+    color: #38BDF8 !important;
+    -webkit-text-fill-color: #38BDF8 !important;
+    font-size: 0.875rem !important;
+    font-weight: 400 !important;
+    line-height: 1.5 !important;
+    justify-content: flex-start !important;
+    text-decoration: none !important;
+}
+div.st-key-expense-panel [data-testid="stPopoverButton"] p {
+    margin: 0 !important;
+    font-size: 0.875rem !important;
+    font-weight: 400 !important;
+    line-height: 1.5 !important;
+    color: #38BDF8 !important;
+    -webkit-text-fill-color: #38BDF8 !important;
+}
+div.st-key-expense-panel [data-testid="stPopoverButton"]:hover p {
+    color: #7DD3FC !important;
+    -webkit-text-fill-color: #7DD3FC !important;
+    text-decoration: underline !important;
+}
+</style>
+""", unsafe_allow_html=True)
+
 with st.container(key="main_navigation_shell"):
     with st.container(key="main_navigation", horizontal=True, wrap=False, gap=None):
         for _i, _page in enumerate(nav_options):
