@@ -159,7 +159,7 @@ footer {
     line-height: inherit !important;
     justify-content: flex-start !important;
 }
-/* 탭1: 제목과 나침반 아이콘을 같은 기준선에 맞춤 */
+/* 탭1: 제목과 나침반 아이콘 정렬 */
 .st-key-retirement-title-row [data-testid="stHorizontalBlock"] {
     align-items: baseline !important;
     column-gap: 0.15rem !important;
@@ -171,6 +171,21 @@ footer {
     flex: 0 0 auto !important;
     margin: 0 0 0 0.1rem !important;
     transform: translateY(0.08rem) !important;
+}
+/* PC: 제목과 아이콘 사이 간격을 현재의 절반으로 */
+@media (min-width: 769px) {
+    .st-key-retirement-title-row [data-testid="stHorizontalBlock"] {
+        column-gap: 0.075rem !important;
+    }
+    .st-key-source_retirement_expense {
+        margin-left: 0.05rem !important;
+    }
+}
+/* 모바일: 아이콘을 약 2px 아래로 미세 조정 */
+@media (max-width: 768px) {
+    .st-key-source_retirement_expense {
+        transform: translateY(0.18rem) !important;
+    }
 }
 .st-key-source_retirement_expense [data-testid="stButton"] button,
 .st-key-source_retirement_expense [data-testid="stButton"] button:hover,
@@ -1510,9 +1525,9 @@ div.st-key-source_retirement_expense [data-testid="stButton"] button p {
     -webkit-text-fill-color: #38BDF8 !important;
 }
 div.st-key-source_retirement_expense [data-testid="stButton"] button:hover p {
-    color: #7DD3FC !important;
-    -webkit-text-fill-color: #7DD3FC !important;
-    text-decoration: underline !important;
+    color: #38BDF8 !important;
+    -webkit-text-fill-color: #38BDF8 !important;
+    text-decoration: none !important;
 }
 
 /* 대출 설명: 기존 입력 라벨 크기의 청색 텍스트만 남기고 버튼 외형 제거 */
