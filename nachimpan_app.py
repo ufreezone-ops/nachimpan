@@ -2988,6 +2988,8 @@ elif selected_page == "삶과 생계수단":
                     if st.button("🧭", key="source_retirement_oecd", help="OECD 실질 노동시장 이탈 연령의 국가별 보고서 보기", type="tertiary"):
                         _open_source_reference("6051300-03", "인생의 사계절", "retirement-milestones-origin")
 
+            st.markdown("</div>", unsafe_allow_html=True)
+
 
 #########################################################
 # 6.03 | Tab 3 — 인생의 사계절
