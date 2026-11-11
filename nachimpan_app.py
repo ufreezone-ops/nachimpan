@@ -1532,17 +1532,29 @@ if selected_page == "우리집 가계부":
                         if is_representative_case_for_loan
                         else "expense_loan_user"
                     )
-                    expense_loan = st.number_input(
-                        "대출 원리금 월 상환액 (원금+이자 합계)",
-                        min_value=0,
-                        value=loan_payment_input,
-                        step=10,
-                        placeholder="은행 납입 합계",
-                        disabled=is_representative_case_for_loan,
-                        key=loan_widget_key,
-                    )
+                    loan_input_col, loan_info_col = st.columns([20, 1])
+                    with loan_input_col:
+                        expense_loan = st.number_input(
+                            "대출 원리금 월 상환액 (원금+이자 합계)",
+                            min_value=0,
+                            value=loan_payment_input,
+                            step=10,
+                            placeholder="은행 납입 합계",
+                            disabled=is_representative_case_for_loan,
+                            key=loan_widget_key,
+                        )
                     if is_representative_case_for_loan:
-                        st.caption("대표사례는 주택가격·LTV·금리·상환기간·구입시점에 따라 월 원리금을 계산합니다.")
+                        with loan_info_col:
+                            with st.popover(
+                                "🧭",
+                                help="대표사례의 월 원리금 계산 방식 보기",
+                            ):
+                                st.markdown(
+                                    "**대표사례의 대출 상환액**\n\n"
+                                    "주택 구입가격과 LTV로 대출원금을 정하고, "
+                                    "연 이자율·상환기간·구입시점을 반영해 "
+                                    "현재 시점의 월 원리금(원금+이자 합계)을 계산합니다."
+                                )
                     expense_other = st.number_input("그 밖의 연간 비정기 지출 (여행·경조사·세금)", min_value=0, value=st.session_state.get("expense_other"), step=10, placeholder="연간 비정기 지출 합계")
 
 #--------------------------------------------------------
@@ -1567,7 +1579,24 @@ if selected_page == "우리집 가계부":
 # 6.01.05 | 고급 모드 — 은퇴 후 가정 입력 패널
 #--------------------------------------------------------
             with st.container(border=True, key="retirement-panel"):
-                st.markdown("### 은퇴 후에는? (만원)")
+                retirement_title_col, retirement_source_col = st.columns([20, 1])
+                with retirement_title_col:
+                    st.markdown("### 은퇴 후에는? (만원)")
+                with retirement_source_col:
+                    if st.button(
+                        "🧭",
+                        key="source_retirement_expense",
+                        help="은퇴 후 연령대별 생활비 통계와 적용 방식 보기",
+                    ):
+                        _open_source_reference(
+                            "6050600-01",
+                            "우리집 가계부",
+                            "source-anchor-retirement-expense",
+                        )
+                st.markdown(
+                    '<div id="source-anchor-retirement-expense"></div>',
+                    unsafe_allow_html=True,
+                )
 
                 pension_col, retirement_expense_col = st.columns(2)
 
@@ -1582,15 +1611,13 @@ if selected_page == "우리집 가계부":
 
                 with retirement_expense_col:
                     retirement_monthly_expenses = st.number_input(
-                        "은퇴 후 월 생활비 (통계상 대표값)",
+                        "은퇴 후 월 생활비",
                         min_value=0,
                         value=int(st.session_state.get(
                             "retirement_monthly_expenses", 270
                         ) or 0),
                         step=10,
-                        help="2024년 MDIS 2인 가구 연령별 지출의 60~86세 평균(약 265만 원)을 최신 관측 소비자물가지수(2025년)로 환산한 대표값입니다. 실제 계산에는 연령대별 통계값을 각각 적용합니다."
                     )
-                    st.caption("대표사례 기준: 월 약 270만 원(2025년 물가 환산) · 계산은 60~64세부터 80세 이상까지 연령대별 지출 통계를 적용")
 
             save_finance_trigger = st.button(
                 "입력 내용 AI 점검",
@@ -4647,7 +4674,11 @@ elif selected_page == "통계":
 
     _active_source_id = st.session_state.get("_active_source_id")
 
-    if _active_source_id == "6030200-01":
+    _source_labels = {
+        "6030200-01": "국가데이터처 「2024년 국민이전계정」",
+        "6050600-01": "국가데이터처 「2024년 가계동향조사」 은퇴 후 연령대별 가계지출",
+    }
+    if _active_source_id in _source_labels:
         with st.container(key="source-return-bar"):
             if st.button(
                 "← 이전 위치로 돌아가기",
@@ -4666,9 +4697,7 @@ elif selected_page == "통계":
                     )
                     st.rerun()
 
-        st.caption(
-            "선택한 출처: 국가데이터처 「2024년 국민이전계정」"
-        )
+        st.caption(f"선택한 출처: {_source_labels[_active_source_id]}")
 
     st.markdown("## 통계로 읽는 인생")
     st.caption("내 삶의 숫자를 사회 전체의 흐름과 나란히 놓고 살펴보는 자료실입니다. 통계는 정답이 아니라, 내 생각의 경계를 넓히는 참고선입니다.")
@@ -4869,16 +4898,32 @@ elif selected_page == "통계":
     #--------------------------------------------------------
     # 6.05.06.00 | 5. 노후와 은퇴
     #--------------------------------------------------------
-    with st.expander("5. 노후와 은퇴"):
+    with st.expander(
+        "5. 노후와 은퇴",
+        expanded=_active_source_id == "6050600-01",
+    ):
         st.markdown("""
-은퇴 이후의 생활 기간과 소득원을 살펴보는 영역입니다.
+**은퇴 후 생활비는 한 가지 금액으로 고정되지 않습니다.**
 
-- 기대수명과 은퇴 후 생활 기간
-- 공적연금 등 노후 소득원의 구조
-- 고령층의 소득·소비와 경제활동
-- 생계를 위해 반드시 일해야 하는 삶에서 벗어나는 시점
+나침반은 은퇴 후 자녀가 독립한 가구를 가정하고, 가구주 연령대와 가구원 수에 해당하는 2024년 가계동향조사의 월 가계지출 가중중위값을 기준으로 사용합니다. 부부 가구는 2인, 1인 가구는 1인 기준을 적용하며, 이후 연도의 금액은 소비자물가지수로 환산합니다.
 
-은퇴 여부를 특정 나이 하나로 정하기보다, 생활비를 감당하는 소득 구조가 어떻게 이어지는지 살펴봅니다.
+**2024년 연령대별 월 가계지출 가중중위값**
+
+| 가구주 연령 | 1인 가구 | 2인 가구 |
+|---|---:|---:|
+| 60~64세 | 161.83만 원 | 324.27만 원 |
+| 65~69세 | 159.16만 원 | 262.55만 원 |
+| 70~74세 | 124.42만 원 | 221.71만 원 |
+| 75~79세 | 112.79만 원 | 195.72만 원 |
+| 80세 이상 | 101.82만 원 | 161.91만 원 |
+
+**화면의 ‘은퇴 후 월 생활비’ 입력값은 어떻게 쓰이나요?**
+
+화면에 기본 표시되는 270만 원은 은퇴 후 생활비를 생각해 보기 위한 참고 입력값입니다. 실제 생애주기 재정곡선에서는 이 금액을 모든 은퇴 연령에 일괄 적용하지 않습니다. 위 표처럼 해당 연령대와 가구원 수에 맞는 통계값을 연령별로 적용합니다. 통계 파일을 읽지 못하는 경우에만 입력값을 대체 기준으로 사용합니다.
+
+이 값은 특정 개인의 미래 지출 예측이 아닙니다. 2024년 가구 표본의 가중중위값이며, 개인의 주거 형태·건강·돌봄·지역·생활 방식에 따라 실제 지출은 달라질 수 있습니다.
+
+자료: 국가데이터처 「가계동향조사(2019~2024년 구분류)」 2024년 연간자료, MDIS 제공 공공용 마이크로데이터. [산출 방법과 원자료 변수 보기](https://github.com/ufreezone-ops/nachimpan/blob/dev/data/기준데이터/국가데이터처_2024_가계동향조사_가구주연령대별가구원수별가계지출_가중중위값_README.md)
 """)
 
     #--------------------------------------------------------
