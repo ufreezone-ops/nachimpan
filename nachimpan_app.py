@@ -1862,6 +1862,10 @@ if selected_page == "우리집 가계부":
                                 """,
                                 height=0,
                             )
+                            st.markdown(
+                                '<div style="height: 0.5rem;"></div>',
+                                unsafe_allow_html=True,
+                            )
                             expense_loan = st.number_input(
                                 "대출 원리금 월 상환액 (원금+이자 합계)",
                                 min_value=0,
