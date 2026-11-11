@@ -91,43 +91,41 @@ footer {
     visibility: hidden !important;
 }
 
-/* 출처 아이콘 위젯 자체도 내용 폭만 차지하도록 고정 */
+/* 논문 주석처럼 보이는 텍스트형 출처 표식 */
 .st-key-source_retirement_expense,
 .st-key-source_nta_basic,
 .st-key-source_nta_generational {
-    width: 1.25rem !important;
-    min-width: 1.25rem !important;
-    max-width: 1.25rem !important;
-    flex: 0 0 1.25rem !important;
-    margin-left: -0.12rem !important;
+    width: auto !important;
+    min-width: 0 !important;
+    max-width: max-content !important;
+    flex: 0 0 auto !important;
+    margin-left: -0.15rem !important;
 }
-
-/* 출처·설명 나침반: 아이콘만 노출하고 버튼 상자·배경·테두리는 제거 */
 .st-key-source_retirement_expense [data-testid="stButton"] button,
 .st-key-source_nta_basic [data-testid="stButton"] button,
 .st-key-source_nta_generational [data-testid="stButton"] button,
 .st-key-expense-panel [data-testid="stPopover"] button {
-    width: 1.25rem !important;
-    min-width: 1.25rem !important;
-    max-width: 1.25rem !important;
-    height: 1.35rem !important;
-    min-height: 1.35rem !important;
-    padding: 0 !important;
+    width: auto !important;
+    min-width: 0 !important;
+    max-width: max-content !important;
+    height: auto !important;
+    min-height: 0 !important;
+    padding: 0 0.08rem !important;
     margin: 0 !important;
     border: 0 !important;
-    border-color: transparent !important;
     background: transparent !important;
     background-color: transparent !important;
+    background-image: none !important;
     box-shadow: none !important;
     border-radius: 0 !important;
-    color: inherit !important;
-    -webkit-text-fill-color: currentColor !important;
-    font-size: 1rem !important;
+    color: #38BDF8 !important;
+    -webkit-text-fill-color: #38BDF8 !important;
+    font-size: 0.9rem !important;
     line-height: 1 !important;
     display: inline-flex !important;
     align-items: center !important;
     justify-content: center !important;
-    flex: 0 0 1.25rem !important;
+    flex: 0 0 auto !important;
 }
 .st-key-source_retirement_expense [data-testid="stButton"] button:hover,
 .st-key-source_nta_basic [data-testid="stButton"] button:hover,
@@ -135,26 +133,32 @@ footer {
 .st-key-expense-panel [data-testid="stPopover"] button:hover {
     background: transparent !important;
     background-color: transparent !important;
+    background-image: none !important;
     border: 0 !important;
     box-shadow: none !important;
-    opacity: 0.78 !important;
+    color: #7DD3FC !important;
+    -webkit-text-fill-color: #7DD3FC !important;
+    text-decoration: underline !important;
 }
 .st-key-source_retirement_expense [data-testid="stButton"] button p,
 .st-key-source_nta_basic [data-testid="stButton"] button p,
 .st-key-source_nta_generational [data-testid="stButton"] button p,
 .st-key-expense-panel [data-testid="stPopover"] button p {
-    font-size: 1rem !important;
+    font-size: 0.9rem !important;
     line-height: 1 !important;
     margin: 0 !important;
 }
 
-/* 통계 자료실의 산출 방법 팝오버: 주황색 캡슐 버튼 */
-.st-key-retirement-source-details [data-testid="stPopover"] button {
+/* 통계 자료실의 산출 방법 팝오버 버튼: primary 색상과 명시적 배경 지정 */
+.st-key-retirement-source-details [data-testid="stPopoverButton"],
+.st-key-retirement-source-details [data-testid="stPopover"] button,
+div.st-key-retirement-source-details button {
     width: auto !important;
     min-width: 0 !important;
     padding: 0.38rem 0.75rem !important;
     background: #F97316 !important;
     background-color: #F97316 !important;
+    background-image: none !important;
     color: #1C1917 !important;
     -webkit-text-fill-color: #1C1917 !important;
     border: 1px solid #FDBA74 !important;
@@ -162,14 +166,16 @@ footer {
     font-weight: 700 !important;
     box-shadow: 0 1px 5px rgba(249, 115, 22, 0.24) !important;
 }
-.st-key-retirement-source-details [data-testid="stPopover"] button:hover {
+.st-key-retirement-source-details [data-testid="stPopoverButton"]:hover,
+.st-key-retirement-source-details [data-testid="stPopover"] button:hover,
+div.st-key-retirement-source-details button:hover {
     background: #FB923C !important;
     background-color: #FB923C !important;
+    background-image: none !important;
     border-color: #FED7AA !important;
     color: #1C1917 !important;
     -webkit-text-fill-color: #1C1917 !important;
 }
-
 /* 대표사례의 자동 계산 대출 상환액도 일반 입력창과 같은 명도·글자색으로 표시 */
 .st-key-expense_loan_case_45_female_45 [data-testid="stNumberInput"] input:disabled {
     opacity: 1 !important;
@@ -1628,7 +1634,7 @@ if selected_page == "우리집 가계부":
                     if is_representative_case_for_loan:
                         with loan_info_col:
                             with st.popover(
-                                "🧭",
+                                "¹",
                                 help="대표사례의 월 원리금 계산 방식 보기",
                             ):
                                 st.markdown(
@@ -1664,7 +1670,7 @@ if selected_page == "우리집 가계부":
                 with st.container(horizontal=True, vertical_alignment="center", gap=None):
                     st.markdown("### 은퇴 후에는? (만원)")
                     if st.button(
-                        "🧭",
+                        "¹",
                         key="source_retirement_expense",
                         help="은퇴 후 연령대별 생활비 통계와 적용 방식 보기",
                     ):
@@ -2755,7 +2761,7 @@ elif selected_page == "인생의 사계절":
                 "공식 지표를 통해 내 인생의 사계절 중 어디쯤 와 있는지 확인합니다."
             )
             if st.button(
-                "🧭",
+                "¹",
                 key="source_nta_basic",
                 help="국가데이터처 2024년 국민이전계정 출처 보기"
             ):
@@ -4320,7 +4326,7 @@ elif selected_page == "인생의 사계절":
                 "(2026. 9. 17. 발표) 기준 · 전 국민 1인당 평균 지표"
             )
             if st.button(
-                "🧭",
+                "¹",
                 key="source_nta_generational",
                 help="국가데이터처 2024년 국민이전계정 출처 보기"
             ):
@@ -5026,7 +5032,7 @@ elif selected_page == "통계":
 자료: 국가데이터처 「가계동향조사(2019~2024년 구분류)」 2024년 연간자료, MDIS 제공 공공용 마이크로데이터.
 """)
         with st.container(key="retirement-source-details"):
-            with st.popover("산출 방법과 원자료 변수 보기"):
+            with st.popover("산출 방법과 원자료 변수 보기", type="primary"):
                 _retirement_readme_path = (
                     Path(__file__).resolve().parent
                     / "data"
