@@ -2323,45 +2323,13 @@ if selected_page == "우리집 가계부":
                 st.rerun()
 
 #--------------------------------------------------------
-# 6.01.07 | 고급 모드 — 우리집 재무 현황 2x2 ESBI 매트릭스 카드
+# 6.01.07 | 고급 모드 — 우리집 재무 현황
 #--------------------------------------------------------
-        q_self = active_quadrant(st.session_state.get("job_form", "직장인"))
-        q_spouse = active_quadrant(st.session_state.get("job_spouse_form", ""))
         st.markdown("### 우리집 재무 현황")
         st.markdown("<div id='selected-esbi'></div>", unsafe_allow_html=True)
         if st.session_state.pop("finance_saved_notice", False):
             st.success("입력 및 AI 점검이 완료된 재무 정보가 완벽히 반영되었습니다.")
             st.components.v1.html("<script>try { window.parent.document.getElementById('selected-esbi').scrollIntoView({behavior:'smooth',block:'center'}); } catch(e) {}</script>", height=0)
-
-        def get_quad_ui(code, title, desc):
-            is_self = (q_self == code)
-            is_spouse = (q_spouse == code)
-            if is_self and is_spouse: border_style = "border: 2.5px solid #EA580C; outline: 2.5px dashed #38BDF8; outline-offset: -5px; background: rgba(234, 88, 12, 0.16);"
-            elif is_self: border_style = "border: 2.5px solid #EA580C; background: rgba(234, 88, 12, 0.14);"
-            elif is_spouse: border_style = "border: 2.5px dashed #38BDF8; background: rgba(56, 189, 248, 0.14);"
-            else: border_style = "border: 1px solid #334155; background: rgba(15, 23, 42, 0.7);"
-            badges = []
-            if is_self: badges.append("<span style='background:#EA580C; color:#FFFFFF; font-size:12px; font-weight:800; padding:2px 8px; border-radius:4px;'>나</span>")
-            if is_spouse: badges.append("<span style='background:#0284C7; color:#FFFFFF; font-size:12px; font-weight:800; padding:2px 8px; border-radius:4px;'>배우자</span>")
-            badge_row = f"<div style='min-height:24px; margin-bottom:4px; display:flex; justify-content:center; gap:6px;'>{' '.join(badges)}</div>" if badges else "<div style='min-height:24px; margin-bottom:4px;'></div>"
-            return f'<div style="{border_style} border-radius: 12px; padding: 18px 12px; text-align: center; display: flex; flex-direction: column; justify-content: center; align-items: center; height: 165px; box-sizing: border-box; width: 100%;">{badge_row}<div style="font-size: 28px; font-weight: 850; color: #F8FAFC; line-height: 1.1;">{code}</div><div style="font-size: 17.5px; font-weight: 700; color: #F1F5F9; margin: 4px 0 6px 0;">{title}</div><div style="font-size: 14px; color: #CBD5E1; line-height: 1.4; word-break: keep-all; text-align: center;">{desc}</div></div>'
-
-        card_e = get_quad_ui("E", "직장인", "나의 시간과 돈을 바꿈.<br><span style='color:#F59E0B; font-weight:600;'>(작은 물통)</span>")
-        card_s = get_quad_ui("S", "자영업·전문직", "나의 시간과 돈을 바꿈.<br><span style='color:#F59E0B; font-weight:600;'>(큰 물통)</span>")
-        card_b = get_quad_ui("B", "사업가", "나의 회사가 돈을 만듦.<br><span style='color:#38BDF8; font-weight:600;'>(파이프라인)</span>")
-        card_i = get_quad_ui("I", "투자자·임대소득자", "나의 자산이 돈을 만듦.<br><span style='color:#38BDF8; font-weight:600;'>(파이프라인)</span>")
-
-        st.markdown(f"""
-<div style="margin: 16px 0 24px 0;">
-<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0px; align-items: stretch;">
-<div style="display: flex; flex-direction: column; gap: 14px; padding-right: 14px; border-right: 3.5px dashed #475569;">
-<div>{card_e}</div><div>{card_s}</div>
-</div>
-<div style="display: flex; flex-direction: column; gap: 14px; padding-left: 14px;">
-<div>{card_b}</div><div>{card_i}</div>
-</div></div>
-</div>
-""", unsafe_allow_html=True)
 
 #--------------------------------------------------------
 # 6.01.08 | 고급 모드 — 현재 재무 요약 메트릭
