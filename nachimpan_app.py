@@ -179,25 +179,25 @@ div.st-key-retirement-source-details button {
     width: auto !important;
     min-width: 0 !important;
     padding: 0.38rem 0.75rem !important;
-    background: #F97316 !important;
-    background-color: #F97316 !important;
+    background: #0284C7 !important;
+    background-color: #0284C7 !important;
     background-image: none !important;
-    color: #1C1917 !important;
-    -webkit-text-fill-color: #1C1917 !important;
-    border: 1px solid #FDBA74 !important;
+    color: #FFFFFF !important;
+    -webkit-text-fill-color: #FFFFFF !important;
+    border: 1px solid #38BDF8 !important;
     border-radius: 999px !important;
     font-weight: 700 !important;
-    box-shadow: 0 1px 5px rgba(249, 115, 22, 0.24) !important;
+    box-shadow: 0 1px 5px rgba(2, 132, 199, 0.24) !important;
 }
 .st-key-retirement-source-details [data-testid="stPopoverButton"]:hover,
 .st-key-retirement-source-details [data-testid="stPopover"] button:hover,
 div.st-key-retirement-source-details button:hover {
-    background: #FB923C !important;
-    background-color: #FB923C !important;
+    background: #0369A1 !important;
+    background-color: #0369A1 !important;
     background-image: none !important;
-    border-color: #FED7AA !important;
-    color: #1C1917 !important;
-    -webkit-text-fill-color: #1C1917 !important;
+    border-color: #7DD3FC !important;
+    color: #FFFFFF !important;
+    -webkit-text-fill-color: #FFFFFF !important;
 }
 /* 대표사례의 자동 계산 대출 상환액도 일반 입력창과 같은 명도·글자색으로 표시 */
 .st-key-expense_loan_case_45_female_45 [data-testid="stNumberInput"] input:disabled {
@@ -1465,7 +1465,7 @@ div.st-key-source_retirement_expense [data-testid="stButton"] button:active {
     border-radius: 0 !important;
     color: #38BDF8 !important;
     -webkit-text-fill-color: #38BDF8 !important;
-    font-size: 1.75rem !important;
+    font-size: 1.17rem !important;
     font-weight: 700 !important;
     line-height: 1.25 !important;
     justify-content: flex-start !important;
@@ -1473,7 +1473,7 @@ div.st-key-source_retirement_expense [data-testid="stButton"] button:active {
 }
 div.st-key-source_retirement_expense [data-testid="stButton"] button p {
     margin: 0 !important;
-    font-size: 1.75rem !important;
+    font-size: 1.17rem !important;
     font-weight: 700 !important;
     line-height: 1.25 !important;
     color: #38BDF8 !important;
@@ -1506,17 +1506,17 @@ div.st-key-expense-panel [data-testid="stPopoverButton"]:active {
     border-radius: 0 !important;
     color: #38BDF8 !important;
     -webkit-text-fill-color: #38BDF8 !important;
-    font-size: 0.875rem !important;
+    font-size: inherit !important;
     font-weight: 400 !important;
-    line-height: 1.5 !important;
+    line-height: inherit !important;
     justify-content: flex-start !important;
     text-decoration: none !important;
 }
 div.st-key-expense-panel [data-testid="stPopoverButton"] p {
     margin: 0 !important;
-    font-size: 0.875rem !important;
+    font-size: inherit !important;
     font-weight: 400 !important;
-    line-height: 1.5 !important;
+    line-height: inherit !important;
     color: #38BDF8 !important;
     -webkit-text-fill-color: #38BDF8 !important;
 }
@@ -1794,7 +1794,7 @@ if selected_page == "우리집 가계부":
             with st.container(border=True, key="retirement-panel"):
                 with st.container(horizontal=True, vertical_alignment="center", gap=None):
                     if st.button(
-                        "은퇴 후에는? (만원)",
+                        "은퇴 후에는? (만원) [출처]",
                         key="source_retirement_expense",
                         help="은퇴 후 연령대별 생활비 통계와 적용 방식 보기",
                         type="tertiary",
@@ -4880,22 +4880,22 @@ elif selected_page == "통계":
         min-width: max-content !important;
         padding: 0.42rem 0.85rem !important;
         border-radius: 999px !important;
-        border: 1px solid #FDBA74 !important;
-        background: #F97316 !important;
-        background-color: #F97316 !important;
-        color: #1C1917 !important;
-        -webkit-text-fill-color: #1C1917 !important;
+        border: 1px solid #38BDF8 !important;
+        background: #0284C7 !important;
+        background-color: #0284C7 !important;
+        color: #FFFFFF !important;
+        -webkit-text-fill-color: #FFFFFF !important;
         font-weight: 700 !important;
-        box-shadow: 0 2px 8px rgba(249, 115, 22, 0.25) !important;
+        box-shadow: 0 2px 8px rgba(2, 132, 199, 0.25) !important;
         white-space: nowrap !important;
         flex: 0 0 auto !important;
     }
     div.st-key-source-return-bar [data-testid="stButton"] button:hover {
-        background: #FB923C !important;
-        background-color: #FB923C !important;
-        border-color: #FED7AA !important;
-        color: #1C1917 !important;
-        -webkit-text-fill-color: #1C1917 !important;
+        background: #0369A1 !important;
+        background-color: #0369A1 !important;
+        border-color: #7DD3FC !important;
+        color: #FFFFFF !important;
+        -webkit-text-fill-color: #FFFFFF !important;
     }
     </style>
     """, unsafe_allow_html=True)
