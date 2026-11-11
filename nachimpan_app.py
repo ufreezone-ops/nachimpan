@@ -1822,7 +1822,7 @@ if selected_page == "우리집 가계부":
 # 6.01.05 | 고급 모드 — 은퇴 후 가정 입력 패널
 #--------------------------------------------------------
             with st.container(border=True, key="retirement-panel"):
-                with st.container(horizontal=True, vertical_alignment="bottom", gap="0", key="retirement-title-row"):
+                with st.container(horizontal=True, vertical_alignment="bottom", gap=None, key="retirement-title-row"):
                     st.markdown("### 은퇴 후에는? (만원)")
                     if st.button(
                         "🧭",
