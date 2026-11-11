@@ -159,7 +159,21 @@ footer {
     line-height: inherit !important;
     justify-content: flex-start !important;
 }
-/* 탭1: 제목과 나침반 아이콘 정렬 */
+/* 탭1: 제목 앵커 표시는 숨기고 제목 영역을 글자 너비만 사용 */
+.st-key-retirement-title-row [data-testid="stElementContainer"]:has(h3) {
+    flex: 0 0 auto !important;
+    width: max-content !important;
+    min-width: 0 !important;
+}
+.st-key-retirement-title-row h3 {
+    white-space: nowrap !important;
+}
+/* Streamlit이 제목에 자동으로 붙이는 내부 앵커 링크 아이콘 숨김 */
+.st-key-retirement-title-row [data-testid="stHeaderActionElements"],
+.st-key-retirement-title-row h3 a[aria-label="Link to heading"] {
+    display: none !important;
+}
+/* 제목과 나침반을 같은 기준선에 배치 */
 .st-key-retirement-title-row [data-testid="stHorizontalBlock"] {
     align-items: baseline !important;
     column-gap: 0.15rem !important;
