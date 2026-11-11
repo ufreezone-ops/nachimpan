@@ -163,9 +163,9 @@ footer {
     line-height: inherit !important;
     justify-content: flex-start !important;
 }
-/* 대출 라벨과 출처 아이콘을 한 줄에 놓고 글자 기준선에 맞춤 */
+/* 대출 라벨과 아이콘을 은퇴 제목 행과 같은 하단 기준선으로 정렬 */
 .st-key-loan-payment-label-row [data-testid="stHorizontalBlock"] {
-    align-items: baseline !important;
+    align-items: flex-end !important;
     column-gap: 0.12rem !important;
 }
 .st-key-loan-payment-label-row [data-testid="stElementContainer"] {
@@ -185,10 +185,9 @@ footer {
 .st-key-loan-payment-field [data-testid="stMarkdownContainer"] p {
     margin: 0 !important;
 }
-/* 버튼 외곽 래퍼까지 초기화해 Streamlit 기본 사각형 제거 */
-.st-key-loan_payment_source_link,
-.st-key-loan_payment_source_link [data-testid="stButton"],
-.st-key-loan_payment_source_link [data-testid="stButton"] > div {
+/* 행 안의 버튼을 은퇴 제목 옆 나침반과 동일한 무테·무배경 형태로 */
+.st-key-loan-payment-label-row [data-testid="stButton"],
+.st-key-loan-payment-label-row [data-testid="stButton"] > div {
     width: max-content !important;
     min-width: 0 !important;
     height: auto !important;
@@ -199,11 +198,11 @@ footer {
     background: transparent !important;
     box-shadow: none !important;
 }
-.st-key-loan_payment_source_link button,
-.st-key-loan_payment_source_link button:hover,
-.st-key-loan_payment_source_link button:focus,
-.st-key-loan_payment_source_link button:focus-visible,
-.st-key-loan_payment_source_link button:active {
+.st-key-loan-payment-label-row [data-testid="stButton"] button,
+.st-key-loan-payment-label-row [data-testid="stButton"] button:hover,
+.st-key-loan-payment-label-row [data-testid="stButton"] button:focus,
+.st-key-loan-payment-label-row [data-testid="stButton"] button:focus-visible,
+.st-key-loan-payment-label-row [data-testid="stButton"] button:active {
     appearance: none !important;
     -webkit-appearance: none !important;
     width: auto !important;
@@ -214,30 +213,25 @@ footer {
     margin: 0 !important;
     border: 0 !important;
     outline: none !important;
-    background: none !important;
+    background: transparent !important;
     background-color: transparent !important;
     background-image: none !important;
     box-shadow: none !important;
     border-radius: 0 !important;
     color: #38BDF8 !important;
     -webkit-text-fill-color: #38BDF8 !important;
-    font: inherit !important;
+    font-size: 0.9rem !important;
     line-height: 1 !important;
     display: inline-flex !important;
     align-items: center !important;
     justify-content: center !important;
-    transform: translateY(0.28rem) !important;
+    transform: none !important;
 }
-.st-key-loan_payment_source_link button p {
+.st-key-loan-payment-label-row [data-testid="stButton"] button p {
     margin: 0 !important;
     padding: 0 !important;
-    font: inherit !important;
+    font-size: inherit !important;
     line-height: 1 !important;
-}
-.st-key-loan_payment_source_link button::before,
-.st-key-loan_payment_source_link button::after {
-    display: none !important;
-    content: none !important;
 }
 /* 탭1: 제목 앵커 표시는 숨기고 제목 영역을 글자 너비만 사용 */
 .st-key-retirement-title-row [data-testid="stElementContainer"]:has(h3) {
@@ -1906,7 +1900,7 @@ if selected_page == "우리집 가계부":
                         with st.container(key="loan-payment-field"):
                             with st.container(
                                 horizontal=True,
-                                vertical_alignment="center",
+                                vertical_alignment="bottom",
                                 gap=None,
                                 key="loan-payment-label-row",
                             ):
