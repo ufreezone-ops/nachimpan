@@ -177,13 +177,42 @@ footer {
     display: inline-block;
     margin: 0 !important;
     color: var(--text-color) !important;
-    font-size: 0.875rem !important;
-    font-weight: 400 !important;
-    line-height: 1.25rem !important;
+    font: inherit !important;
     white-space: nowrap !important;
 }
 .st-key-loan-payment-field [data-testid="stMarkdownContainer"] p {
     margin: 0 !important;
+}
+/* 대출 출처 아이콘은 다른 나침반 버튼과 동일하게 무테·무배경 처리 */
+div.st-key-loan_payment_source_link button,
+div.st-key-loan_payment_source_link button:hover,
+div.st-key-loan_payment_source_link button:focus,
+div.st-key-loan_payment_source_link button:active {
+    width: auto !important;
+    min-width: 0 !important;
+    height: auto !important;
+    min-height: 0 !important;
+    padding: 0 0.12rem !important;
+    margin: 0 !important;
+    border: 0 !important;
+    outline: 0 !important;
+    background: transparent !important;
+    background-color: transparent !important;
+    background-image: none !important;
+    box-shadow: none !important;
+    border-radius: 0 !important;
+    color: #38BDF8 !important;
+    -webkit-text-fill-color: #38BDF8 !important;
+    font: inherit !important;
+    line-height: 1 !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+}
+div.st-key-loan_payment_source_link button p {
+    margin: 0 !important;
+    font: inherit !important;
+    line-height: 1 !important;
 }
 /* 탭1: 제목 앵커 표시는 숨기고 제목 영역을 글자 너비만 사용 */
 .st-key-retirement-title-row [data-testid="stElementContainer"]:has(h3) {
