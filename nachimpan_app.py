@@ -1827,7 +1827,7 @@ if selected_page == "우리집 가계부":
                     )
                     if is_representative_case_for_loan:
                         st.markdown(
-                            '<div id="loan-payment-label-origin" style="font-size: 0.875rem; font-weight: 400; line-height: 1.4; margin: 0 0 0.25rem 0;">대출 원리금 월상환액(원금+이자) [주석]</div>',
+                            '<div id="loan-payment-label-origin" style="margin: 0 0 0.25rem 0;">대출 원리금 월상환액(원금+이자) [주석]</div>',
                             unsafe_allow_html=True,
                         )
                         if st.button(
