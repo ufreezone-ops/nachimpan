@@ -1861,8 +1861,20 @@ if selected_page == "우리집 가계부":
                                     );
                                     if (label && hiddenButton && !label.dataset.sourceLinkBound) {
                                         label.dataset.sourceLinkBound = "true";
-                                        label.addEventListener("click", () => hiddenButton.click());
-                                        label.style.cursor = "pointer";
+                                        const textNode = label.querySelector("p") || label;
+                                        textNode.replaceChildren(
+                                            doc.createTextNode("대출 원리금 월상환액(원금+이자) "),
+                                            (() => {
+                                                const note = doc.createElement("span");
+                                                note.textContent = "[주석]";
+                                                note.style.cursor = "pointer";
+                                                note.addEventListener("click", (event) => {
+                                                    event.stopPropagation();
+                                                    hiddenButton.click();
+                                                });
+                                                return note;
+                                            })()
+                                        );
                                     }
                                 } catch (e) {}
                             })();
