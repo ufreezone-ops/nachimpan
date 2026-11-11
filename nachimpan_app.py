@@ -110,10 +110,10 @@ footer {
 .st-key-source_retirement_expense button,
 .st-key-source_nta_basic button,
 .st-key-source_nta_generational button {
-    width: 2.15rem !important;
-    min-width: 2.15rem !important;
-    height: 2.15rem !important;
-    min-height: 2.15rem !important;
+    width: 1.9rem !important;
+    min-width: 1.9rem !important;
+    height: 1.9rem !important;
+    min-height: 1.9rem !important;
     padding: 0 !important;
     border-radius: 999px !important;
     border: 1px solid #FDBA74 !important;
@@ -1623,7 +1623,7 @@ if selected_page == "우리집 가계부":
 # 6.01.05 | 고급 모드 — 은퇴 후 가정 입력 패널
 #--------------------------------------------------------
             with st.container(border=True, key="retirement-panel"):
-                retirement_title_col, retirement_source_col = st.columns([1, 0.16])
+                retirement_title_col, retirement_source_col = st.columns([1, 0.1])
                 with retirement_title_col:
                     st.markdown("### 은퇴 후에는? (만원)")
                 with retirement_source_col:
@@ -2713,7 +2713,7 @@ elif selected_page == "인생의 사계절":
             unsafe_allow_html=True
         )
 
-        source_caption_col, source_button_col = st.columns([1, 0.16])
+        source_caption_col, source_button_col = st.columns([1, 0.1])
 
         with source_caption_col:
             st.caption(
@@ -4282,7 +4282,7 @@ elif selected_page == "인생의 사계절":
             unsafe_allow_html=True
         )
 
-        source_caption_col, source_button_col = st.columns([1, 0.16])
+        source_caption_col, source_button_col = st.columns([1, 0.1])
 
         with source_caption_col:
             st.caption(
