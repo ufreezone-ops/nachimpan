@@ -1465,7 +1465,7 @@ div.st-key-source_retirement_expense [data-testid="stButton"] button:active {
     border-radius: 0 !important;
     color: #38BDF8 !important;
     -webkit-text-fill-color: #38BDF8 !important;
-    font-size: 1.17rem !important;
+    font-size: 1.75rem !important;
     font-weight: 700 !important;
     line-height: 1.25 !important;
     justify-content: flex-start !important;
@@ -1473,7 +1473,7 @@ div.st-key-source_retirement_expense [data-testid="stButton"] button:active {
 }
 div.st-key-source_retirement_expense [data-testid="stButton"] button p {
     margin: 0 !important;
-    font-size: 1.17rem !important;
+    font-size: 1.75rem !important;
     font-weight: 700 !important;
     line-height: 1.25 !important;
     color: #38BDF8 !important;
@@ -1794,7 +1794,7 @@ if selected_page == "우리집 가계부":
             with st.container(border=True, key="retirement-panel"):
                 with st.container(horizontal=True, vertical_alignment="center", gap=None):
                     if st.button(
-                        "은퇴 후에는? (만원) ↗",
+                        "은퇴 후에는? (만원) 🧭",
                         key="source_retirement_expense",
                         help="은퇴 후 연령대별 생활비 통계와 적용 방식 보기",
                         type="tertiary",
