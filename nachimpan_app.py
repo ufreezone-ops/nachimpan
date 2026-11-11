@@ -159,17 +159,40 @@ footer {
     line-height: inherit !important;
     justify-content: flex-start !important;
 }
-/* 탭1 제목형 출처 링크: 원래 제목 크기와 위치를 유지 */
+/* 탭1: 제목은 일반 제목으로, 나침반 아이콘만 출처 링크로 */
 .st-key-source_retirement_expense {
-    width: 100% !important;
-    flex: 1 1 auto !important;
-    margin-left: 0 !important;
-}
-.st-key-source_retirement_expense [data-testid="stButton"] button {
     width: auto !important;
-    font-size: 1.17rem !important;
-    font-weight: 700 !important;
-    justify-content: flex-start !important;
+    min-width: 0 !important;
+    max-width: max-content !important;
+    flex: 0 0 auto !important;
+    margin-left: 0.2rem !important;
+}
+.st-key-source_retirement_expense [data-testid="stButton"] button,
+.st-key-source_retirement_expense [data-testid="stButton"] button:hover,
+.st-key-source_retirement_expense [data-testid="stButton"] button:focus,
+.st-key-source_retirement_expense [data-testid="stButton"] button:focus-visible,
+.st-key-source_retirement_expense [data-testid="stButton"] button:active {
+    width: auto !important;
+    min-width: 0 !important;
+    min-height: 0 !important;
+    height: auto !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    border: 0 !important;
+    outline: 0 !important;
+    background: transparent !important;
+    background-color: transparent !important;
+    box-shadow: none !important;
+    color: #38BDF8 !important;
+    -webkit-text-fill-color: #38BDF8 !important;
+    font-size: 1.3rem !important;
+    line-height: 1 !important;
+    justify-content: center !important;
+}
+.st-key-source_retirement_expense [data-testid="stButton"] button p {
+    margin: 0 !important;
+    font-size: 1.3rem !important;
+    line-height: 1 !important;
 }
 
 /* 통계 자료실의 산출 방법 팝오버 버튼: primary 색상과 명시적 배경 지정 */
@@ -1793,8 +1816,9 @@ if selected_page == "우리집 가계부":
 #--------------------------------------------------------
             with st.container(border=True, key="retirement-panel"):
                 with st.container(horizontal=True, vertical_alignment="center", gap=None):
+                    st.markdown("### 은퇴 후에는? (만원)")
                     if st.button(
-                        "은퇴 후에는? (만원) 🧭",
+                        "🧭",
                         key="source_retirement_expense",
                         help="은퇴 후 연령대별 생활비 통계와 적용 방식 보기",
                         type="tertiary",
