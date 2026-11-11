@@ -94,7 +94,8 @@ footer {
 /* 본문 텍스트 배치를 유지하고, 옆의 문자형 출처 표식만 클릭 가능하게 표시 */
 .st-key-source_retirement_expense,
 .st-key-source_nta_basic,
-.st-key-source_nta_generational {
+.st-key-source_nta_generational,
+.st-key-loan_payment_source_link {
     width: auto !important;
     min-width: 0 !important;
     max-width: max-content !important;
@@ -104,6 +105,7 @@ footer {
 .st-key-source_retirement_expense [data-testid="stButton"] button,
 .st-key-source_nta_basic [data-testid="stButton"] button,
 .st-key-source_nta_generational [data-testid="stButton"] button,
+.st-key-loan_payment_source_link [data-testid="stButton"] button,
 .st-key-expense-panel [data-testid="stPopoverButton"],
 .st-key-expense-panel [data-testid="stPopover"] button {
     width: auto !important;
@@ -131,6 +133,7 @@ footer {
 .st-key-source_retirement_expense [data-testid="stButton"] button:hover,
 .st-key-source_nta_basic [data-testid="stButton"] button:hover,
 .st-key-source_nta_generational [data-testid="stButton"] button:hover,
+.st-key-loan_payment_source_link [data-testid="stButton"] button:hover,
 .st-key-expense-panel [data-testid="stPopoverButton"]:hover,
 .st-key-expense-panel [data-testid="stPopover"] button:hover {
     background: transparent !important;
@@ -145,6 +148,7 @@ footer {
 .st-key-source_retirement_expense [data-testid="stButton"] button p,
 .st-key-source_nta_basic [data-testid="stButton"] button p,
 .st-key-source_nta_generational [data-testid="stButton"] button p,
+.st-key-loan_payment_source_link [data-testid="stButton"] button p,
 .st-key-expense-panel [data-testid="stPopoverButton"] p,
 .st-key-expense-panel [data-testid="stPopover"] button p {
     font-size: inherit !important;
@@ -159,18 +163,27 @@ footer {
     line-height: inherit !important;
     justify-content: flex-start !important;
 }
-.st-key-loan_payment_source_link {
-    position: absolute !important;
-    width: 1px !important;
-    height: 1px !important;
-    padding: 0 !important;
-    margin: -1px !important;
-    overflow: hidden !important;
-    clip: rect(0, 0, 0, 0) !important;
+/* 대출 항목은 기본 입력 라벨과 같은 크기의 텍스트 + 출처 아이콘으로 구성 */
+.st-key-loan-payment-label-row [data-testid="stHorizontalBlock"] {
+    align-items: center !important;
+    column-gap: 0.1rem !important;
+}
+.st-key-loan-payment-label-row [data-testid="stElementContainer"] {
+    flex: 0 0 auto !important;
+    width: max-content !important;
+    min-width: 0 !important;
+}
+.loan-payment-label-text {
+    display: inline-block;
+    margin: 0 !important;
+    color: var(--text-color) !important;
+    font-size: 0.875rem !important;
+    font-weight: 400 !important;
+    line-height: 1.25rem !important;
     white-space: nowrap !important;
-    border: 0 !important;
-    opacity: 0 !important;
-    pointer-events: none !important;
+}
+.st-key-loan-payment-field [data-testid="stMarkdownContainer"] p {
+    margin: 0 !important;
 }
 /* 탭1: 제목 앵커 표시는 숨기고 제목 영역을 글자 너비만 사용 */
 .st-key-retirement-title-row [data-testid="stElementContainer"]:has(h3) {
@@ -1836,68 +1849,42 @@ if selected_page == "우리집 가계부":
                         else "expense_loan_user"
                     )
                     if is_representative_case_for_loan:
-                        if st.button(
-                            "대출 원리금 월상환액(원금+이자) [주석]",
-                            key="loan_payment_source_link",
-                        ):
-                            _open_source_reference(
-                                "6050700-01",
-                                "우리집 가계부",
-                                "loan-payment-label-origin",
+                        with st.container(key="loan-payment-field"):
+                            with st.container(
+                                horizontal=True,
+                                vertical_alignment="center",
+                                gap=None,
+                                key="loan-payment-label-row",
+                            ):
+                                st.markdown(
+                                    '<span class="loan-payment-label-text">대출 원리금 월상환액(원금+이자)</span>',
+                                    unsafe_allow_html=True,
+                                )
+                                if st.button(
+                                    "🧭",
+                                    key="loan_payment_source_link",
+                                    help="대출 원리금 산출 기준과 적용 방식 보기",
+                                    type="tertiary",
+                                ):
+                                    _open_source_reference(
+                                        "6050700-01",
+                                        "우리집 가계부",
+                                        "loan-payment-label-origin",
+                                    )
+                            st.markdown(
+                                '<div id="loan-payment-label-origin"></div>',
+                                unsafe_allow_html=True,
                             )
-                        expense_loan = st.number_input(
-                            "대출 원리금 월상환액(원금+이자) [주석]",
-                            min_value=0,
-                            value=loan_payment_input,
-                            step=10,
-                            placeholder="은행 납입 합계",
-                            disabled=True,
-                            key=loan_widget_key,
-                        )
-                        st.components.v1.html(
-                            """
-                            <script>
-                            (() => {
-                                try {
-                                    const doc = window.parent.document;
-                                    const labels = Array.from(
-                                        doc.querySelectorAll('[data-testid="stWidgetLabel"]')
-                                    );
-                                    const label = labels.find(
-                                        el => el.innerText.trim() === "대출 원리금 월상환액(원금+이자) [주석]"
-                                    );
-                                    const hiddenButton = doc.querySelector(
-                                        ".st-key-loan_payment_source_link button"
-                                    );
-                                    if (label && hiddenButton && !label.dataset.sourceLinkBound) {
-                                        label.dataset.sourceLinkBound = "true";
-                                        const textNode = label.querySelector("p") || label;
-                                        textNode.replaceChildren(
-                                            doc.createTextNode("대출 원리금 월상환액(원금+이자) "),
-                                            (() => {
-                                                const note = doc.createElement("span");
-                                                note.textContent = "[주석]";
-                                                note.style.cursor = "pointer";
-                                                note.addEventListener("click", (event) => {
-                                                    event.stopPropagation();
-                                                    hiddenButton.dispatchEvent(
-                                                        new MouseEvent("click", {
-                                                            bubbles: true,
-                                                            cancelable: true,
-                                                            view: window,
-                                                        })
-                                                    );
-                                                });
-                                                return note;
-                                            })()
-                                        );
-                                    }
-                                } catch (e) {}
-                            })();
-                            </script>
-                            """,
-                            height=0,
-                        )
+                            expense_loan = st.number_input(
+                                "",
+                                min_value=0,
+                                value=loan_payment_input,
+                                step=10,
+                                placeholder="은행 납입 합계",
+                                disabled=True,
+                                key=loan_widget_key,
+                                label_visibility="collapsed",
+                            )
                     else:
                         expense_loan = st.number_input(
                             "대출 원리금 월 상환액 (원금+이자 합계)",
