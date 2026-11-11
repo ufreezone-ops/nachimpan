@@ -160,7 +160,17 @@ footer {
     justify-content: flex-start !important;
 }
 .st-key-loan_payment_source_link {
-    display: none !important;
+    position: absolute !important;
+    width: 1px !important;
+    height: 1px !important;
+    padding: 0 !important;
+    margin: -1px !important;
+    overflow: hidden !important;
+    clip: rect(0, 0, 0, 0) !important;
+    white-space: nowrap !important;
+    border: 0 !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
 }
 /* 탭1: 제목 앵커 표시는 숨기고 제목 영역을 글자 너비만 사용 */
 .st-key-retirement-title-row [data-testid="stElementContainer"]:has(h3) {
@@ -1870,7 +1880,13 @@ if selected_page == "우리집 가계부":
                                                 note.style.cursor = "pointer";
                                                 note.addEventListener("click", (event) => {
                                                     event.stopPropagation();
-                                                    hiddenButton.click();
+                                                    hiddenButton.dispatchEvent(
+                                                        new MouseEvent("click", {
+                                                            bubbles: true,
+                                                            cancelable: true,
+                                                            view: window,
+                                                        })
+                                                    );
                                                 });
                                                 return note;
                                             })()
