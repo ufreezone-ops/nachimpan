@@ -2763,7 +2763,7 @@ elif selected_page == "삶과 생계수단":
         """기본 모드와 고급 모드에서 공통으로 사용하는 우화 카드"""
         st.markdown("""
 
-<div style="background: rgba(45, 35, 20, 0.35); border: 1.5px solid #6d4a1a; border-radius: 10px; padding: 10px 16px; margin-bottom: 14px; font-size: 18px; font-weight: 850; color: #FDE68A; line-height: 1.4;">지혜로운 산책: 돌쇠와 똘똘이</div>
+<div style="font-size: 18px; font-weight: 850; color: #F8FAFC; line-height: 1.4; margin: 0 0 14px 0; padding: 0;">지혜로운 산책: 돌쇠와 똘똘이</div>
 <div style="font-size: 14.5px; color: #E2E8F0; margin-bottom: 16px;">옛날 어느 마을, 머슴을 구하는 대감댁에 두 젊은이가 찾아왔습니다.</div>
 
 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px;">
@@ -2814,7 +2814,7 @@ elif selected_page == "삶과 생계수단":
 # 6.02.02 | 고급 모드 — 2x2 사분면 (물통과 파이프라인)
 #--------------------------------------------------------
         st.markdown("""
-<div style="background: rgba(30, 41, 59, 0.45); border: 1.5px solid #334155; border-radius: 14px; padding: 18px 22px; margin-bottom: 22px;">
+<div style="background: rgba(30, 41, 59, 0.45); border: 1.5px solid #334155; border-radius: 14px; padding: 18px 22px; margin-bottom: 44px;">
 <div style="font-size: 18px; font-weight: 850; color: #F8FAFC; line-height: 1.4; margin: 0 0 14px 0; padding: 0;">물통 &amp; 파이프라인</div>
 """, unsafe_allow_html=True)
         
