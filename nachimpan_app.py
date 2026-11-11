@@ -91,45 +91,72 @@ footer {
     visibility: hidden !important;
 }
 
-/* 통계 자료실의 산출 방법 팝오버 버튼 */
-.st-key-retirement-source-details [data-testid="stPopover"] > button {
+/* 출처·설명 나침반: 아이콘만 노출하고 버튼 상자·배경·테두리는 제거 */
+.st-key-source_retirement_expense [data-testid="stButton"] button,
+.st-key-source_nta_basic [data-testid="stButton"] button,
+.st-key-source_nta_generational [data-testid="stButton"] button,
+.st-key-expense-panel [data-testid="stPopover"] button {
+    width: 1.25rem !important;
+    min-width: 1.25rem !important;
+    max-width: 1.25rem !important;
+    height: 1.35rem !important;
+    min-height: 1.35rem !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    border: 0 !important;
+    border-color: transparent !important;
+    background: transparent !important;
+    background-color: transparent !important;
+    box-shadow: none !important;
+    border-radius: 0 !important;
+    color: inherit !important;
+    -webkit-text-fill-color: currentColor !important;
+    font-size: 1rem !important;
+    line-height: 1 !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    flex: 0 0 1.25rem !important;
+}
+.st-key-source_retirement_expense [data-testid="stButton"] button:hover,
+.st-key-source_nta_basic [data-testid="stButton"] button:hover,
+.st-key-source_nta_generational [data-testid="stButton"] button:hover,
+.st-key-expense-panel [data-testid="stPopover"] button:hover {
+    background: transparent !important;
+    background-color: transparent !important;
+    border: 0 !important;
+    box-shadow: none !important;
+    opacity: 0.78 !important;
+}
+.st-key-source_retirement_expense [data-testid="stButton"] button p,
+.st-key-source_nta_basic [data-testid="stButton"] button p,
+.st-key-source_nta_generational [data-testid="stButton"] button p,
+.st-key-expense-panel [data-testid="stPopover"] button p {
+    font-size: 1rem !important;
+    line-height: 1 !important;
+    margin: 0 !important;
+}
+
+/* 통계 자료실의 산출 방법 팝오버: 주황색 캡슐 버튼 */
+.st-key-retirement-source-details [data-testid="stPopover"] button {
+    width: auto !important;
+    min-width: 0 !important;
+    padding: 0.38rem 0.75rem !important;
     background: #F97316 !important;
+    background-color: #F97316 !important;
     color: #1C1917 !important;
+    -webkit-text-fill-color: #1C1917 !important;
     border: 1px solid #FDBA74 !important;
     border-radius: 999px !important;
     font-weight: 700 !important;
     box-shadow: 0 1px 5px rgba(249, 115, 22, 0.24) !important;
 }
-.st-key-retirement-source-details [data-testid="stPopover"] > button:hover {
+.st-key-retirement-source-details [data-testid="stPopover"] button:hover {
     background: #FB923C !important;
+    background-color: #FB923C !important;
     border-color: #FED7AA !important;
     color: #1C1917 !important;
-}
-
-/* 본문 출처 나침반: 작고 선명한 주황색 인라인 버튼 */
-.st-key-source_retirement_expense button,
-.st-key-source_nta_basic button,
-.st-key-source_nta_generational button {
-    width: 1.9rem !important;
-    min-width: 1.9rem !important;
-    height: 1.9rem !important;
-    min-height: 1.9rem !important;
-    padding: 0 !important;
-    border-radius: 999px !important;
-    border: 1px solid #FDBA74 !important;
-    background: #F97316 !important;
-    color: #1C1917 !important;
-    box-shadow: 0 1px 5px rgba(249, 115, 22, 0.28) !important;
-    display: inline-flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-}
-.st-key-source_retirement_expense button:hover,
-.st-key-source_nta_basic button:hover,
-.st-key-source_nta_generational button:hover {
-    background: #FB923C !important;
-    border-color: #FED7AA !important;
-    color: #1C1917 !important;
+    -webkit-text-fill-color: #1C1917 !important;
 }
 
 /* 대표사례의 자동 계산 대출 상환액도 일반 입력창과 같은 명도·글자색으로 표시 */
@@ -1623,10 +1650,8 @@ if selected_page == "우리집 가계부":
 # 6.01.05 | 고급 모드 — 은퇴 후 가정 입력 패널
 #--------------------------------------------------------
             with st.container(border=True, key="retirement-panel"):
-                retirement_title_col, retirement_source_col = st.columns([1, 0.1])
-                with retirement_title_col:
+                with st.container(horizontal=True, vertical_alignment="center", gap="small"):
                     st.markdown("### 은퇴 후에는? (만원)")
-                with retirement_source_col:
                     if st.button(
                         "🧭",
                         key="source_retirement_expense",
@@ -2713,15 +2738,11 @@ elif selected_page == "인생의 사계절":
             unsafe_allow_html=True
         )
 
-        source_caption_col, source_button_col = st.columns([1, 0.1])
-
-        with source_caption_col:
+        with st.container(horizontal=True, vertical_alignment="center", gap="small"):
             st.caption(
                 "가벼운 3분 산책: 국가데이터처 「2024년 국민이전계정」의 "
                 "공식 지표를 통해 내 인생의 사계절 중 어디쯤 와 있는지 확인합니다."
             )
-
-        with source_button_col:
             if st.button(
                 "🧭",
                 key="source_nta_basic",
@@ -4282,15 +4303,11 @@ elif selected_page == "인생의 사계절":
             unsafe_allow_html=True
         )
 
-        source_caption_col, source_button_col = st.columns([1, 0.1])
-
-        with source_caption_col:
+        with st.container(horizontal=True, vertical_alignment="center", gap="small"):
             st.caption(
                 "※ 국가데이터처 「2024년 국민이전계정」"
                 "(2026. 9. 17. 발표) 기준 · 전 국민 1인당 평균 지표"
             )
-
-        with source_button_col:
             if st.button(
                 "🧭",
                 key="source_nta_generational",
@@ -4714,22 +4731,27 @@ elif selected_page == "통계":
         border: 0 !important;
         box-shadow: none !important;
     }
-    div.st-key-source-return-bar button {
+    div.st-key-source-return-bar [data-testid="stButton"] button {
         width: auto !important;
-        min-width: 0 !important;
+        min-width: max-content !important;
         padding: 0.42rem 0.85rem !important;
         border-radius: 999px !important;
         border: 1px solid #FDBA74 !important;
         background: #F97316 !important;
+        background-color: #F97316 !important;
         color: #1C1917 !important;
+        -webkit-text-fill-color: #1C1917 !important;
         font-weight: 700 !important;
         box-shadow: 0 2px 8px rgba(249, 115, 22, 0.25) !important;
         white-space: nowrap !important;
+        flex: 0 0 auto !important;
     }
-    div.st-key-source-return-bar button:hover {
+    div.st-key-source-return-bar [data-testid="stButton"] button:hover {
         background: #FB923C !important;
+        background-color: #FB923C !important;
         border-color: #FED7AA !important;
         color: #1C1917 !important;
+        -webkit-text-fill-color: #1C1917 !important;
     }
     </style>
     """, unsafe_allow_html=True)
