@@ -2340,7 +2340,12 @@ if selected_page == "우리집 가계부":
         cols[0].metric("월 수입", money(s["regular_income"]))
         cols[1].metric("월 지출", money(s["expenses"]))
         bonus_help = f"연간 상여금 {money(s['annual_bonus'])} 및 연간 비정기 지출 {money(s['annual_other_expense'])} 반영"
-        cols[2].metric("연간 잉여자금", money(s["annual_net_surplus"]), delta=f"월평균 {money(s['monthly_effective_surplus'])}", help=bonus_help)
+        with cols[2]:
+            with st.container(horizontal=True, vertical_alignment="center", gap="small"):
+                st.markdown("연간 잉여자금")
+                with st.popover("🧭", help="연간 잉여자금 계산에 반영된 항목 보기"):
+                    st.write(bonus_help)
+            st.metric("", money(s["annual_net_surplus"]), delta=f"월평균 {money(s['monthly_effective_surplus'])}")
         cols[3].metric("현재 파악된 금융자산", fmt_eok(s["net_worth"]))
 
 
