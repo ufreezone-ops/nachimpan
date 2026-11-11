@@ -909,7 +909,7 @@ with st.sidebar:
 """, unsafe_allow_html=True)
 
     # 고유번호 바로 아래에 일회성 세션 안내 문구 배치
-    st.caption("※ 나침반은 외부 서버에 저장되지 않는 일회성 안전 세션입니다.")
+    st.caption("※ 일회성 안전 세션입니다.")
     st.markdown("<div style='height: 8px;'></div>", unsafe_allow_html=True)
 
     # 인터뷰어 체험용 2대 대표 사례 버튼 (상단 인터뷰어 영역)
@@ -997,7 +997,6 @@ if _dev_enabled:
         st.divider()
         st.markdown("### 🧪 개발자 영역")
 
-        st.caption("테스트 사례의 금액은 기능 검증을 위한 예시입니다.")
 
         _cases = get_test_cases()
         _all_names = list(_cases.keys())
