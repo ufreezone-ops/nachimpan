@@ -159,13 +159,18 @@ footer {
     line-height: inherit !important;
     justify-content: flex-start !important;
 }
-/* 탭1: 제목은 일반 제목으로, 나침반 아이콘만 출처 링크로 */
+/* 탭1: 제목과 나침반 아이콘을 같은 기준선에 맞춤 */
+.st-key-retirement-title-row [data-testid="stHorizontalBlock"] {
+    align-items: baseline !important;
+    column-gap: 0.15rem !important;
+}
 .st-key-source_retirement_expense {
     width: auto !important;
     min-width: 0 !important;
     max-width: max-content !important;
     flex: 0 0 auto !important;
-    margin-left: 0.2rem !important;
+    margin: 0 0 0 0.1rem !important;
+    transform: translateY(0.08rem) !important;
 }
 .st-key-source_retirement_expense [data-testid="stButton"] button,
 .st-key-source_retirement_expense [data-testid="stButton"] button:hover,
@@ -187,12 +192,14 @@ footer {
     -webkit-text-fill-color: #38BDF8 !important;
     font-size: 1.3rem !important;
     line-height: 1 !important;
+    text-decoration: none !important;
     justify-content: center !important;
 }
 .st-key-source_retirement_expense [data-testid="stButton"] button p {
     margin: 0 !important;
     font-size: 1.3rem !important;
     line-height: 1 !important;
+    text-decoration: none !important;
 }
 
 /* 통계 자료실의 산출 방법 팝오버 버튼: primary 색상과 명시적 배경 지정 */
@@ -1815,7 +1822,7 @@ if selected_page == "우리집 가계부":
 # 6.01.05 | 고급 모드 — 은퇴 후 가정 입력 패널
 #--------------------------------------------------------
             with st.container(border=True, key="retirement-panel"):
-                with st.container(horizontal=True, vertical_alignment="center", gap=None):
+                with st.container(horizontal=True, vertical_alignment="bottom", gap="0", key="retirement-title-row"):
                     st.markdown("### 은퇴 후에는? (만원)")
                     if st.button(
                         "🧭",
