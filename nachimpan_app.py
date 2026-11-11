@@ -159,6 +159,47 @@ footer {
     line-height: inherit !important;
     justify-content: flex-start !important;
 }
+/* 대출 원리금 라벨: 클릭 기능만 제공하고 일반 입력 라벨처럼 표시 */
+.st-key-loan_payment_source_link {
+    width: max-content !important;
+    margin: 0 0 0.25rem 0 !important;
+}
+.st-key-loan_payment_source_link [data-testid="stButton"] {
+    width: max-content !important;
+}
+.st-key-loan_payment_source_link [data-testid="stButton"] button,
+.st-key-loan_payment_source_link [data-testid="stButton"] button:hover,
+.st-key-loan_payment_source_link [data-testid="stButton"] button:focus,
+.st-key-loan_payment_source_link [data-testid="stButton"] button:focus-visible,
+.st-key-loan_payment_source_link [data-testid="stButton"] button:active {
+    width: max-content !important;
+    min-width: 0 !important;
+    min-height: 0 !important;
+    height: auto !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    border: 0 !important;
+    outline: 0 !important;
+    border-radius: 0 !important;
+    background: transparent !important;
+    background-color: transparent !important;
+    box-shadow: none !important;
+    color: inherit !important;
+    -webkit-text-fill-color: currentColor !important;
+    font-size: 0.875rem !important;
+    font-weight: 400 !important;
+    line-height: 1.4 !important;
+    text-decoration: none !important;
+    justify-content: flex-start !important;
+}
+.st-key-loan_payment_source_link [data-testid="stButton"] button p {
+    margin: 0 !important;
+    font-size: 0.875rem !important;
+    font-weight: 400 !important;
+    line-height: 1.4 !important;
+    color: inherit !important;
+    text-decoration: none !important;
+}
 /* 탭1: 제목 앵커 표시는 숨기고 제목 영역을 글자 너비만 사용 */
 .st-key-retirement-title-row [data-testid="stElementContainer"]:has(h3) {
     flex: 0 0 auto !important;
@@ -1824,9 +1865,19 @@ if selected_page == "우리집 가계부":
                     )
                     if is_representative_case_for_loan:
                         st.markdown(
-                            '<div style="font-size: 0.875rem; font-weight: 400; line-height: 1.4; margin: 0 0 0.25rem 0;">대출 원리금 월상환액(원금+이자) [주석]</div>',
+                            '<div id="loan-payment-label-origin"></div>',
                             unsafe_allow_html=True,
                         )
+                        if st.button(
+                            "대출 원리금 월상환액(원금+이자) [주석]",
+                            key="loan_payment_source_link",
+                            type="tertiary",
+                        ):
+                            _open_source_reference(
+                                "6050700-01",
+                                "우리집 가계부",
+                                "loan-payment-label-origin",
+                            )
                         expense_loan = st.number_input(
                             "대출 원리금 월 상환액 (원금+이자 합계)",
                             min_value=0,
