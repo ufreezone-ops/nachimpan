@@ -190,13 +190,13 @@ footer {
     font-size: 1.2rem !important;
     line-height: 1 !important;
 }
-.st-key-loan-source-compass [data-testid="stPopoverButton"] svg {
-    display: none !important;
-}
 .st-key-loan-source-compass [data-testid="stPopoverButton"]:hover {
     background: transparent !important;
     color: #7DD3FC !important;
     -webkit-text-fill-color: #7DD3FC !important;
+    text-decoration: underline !important;
+}
+.st-key-loan-source-compass [data-testid="stPopoverButton"]:hover p {
     text-decoration: underline !important;
 }
 @media (max-width: 1024px) and (pointer: coarse) {
@@ -1876,7 +1876,7 @@ if selected_page == "우리집 가계부":
                             gap=None,
                             key="loan-title-row",
                         ):
-                            st.markdown("#### 대출 원리금 월 상환액 (원금+이자)")
+                            st.markdown("#### 대출 원리금 월상환액(원금+이자)")
                             with st.popover(
                                 "🧭",
                                 help="대표사례의 월 원리금 계산 방식 보기",
