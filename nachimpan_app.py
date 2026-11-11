@@ -94,7 +94,8 @@ footer {
 /* 본문 텍스트 배치를 유지하고, 옆의 문자형 출처 표식만 클릭 가능하게 표시 */
 .st-key-source_retirement_expense,
 .st-key-source_nta_basic,
-.st-key-source_nta_generational {
+.st-key-source_nta_generational,
+.st-key-loan_payment_source_link {
     width: auto !important;
     min-width: 0 !important;
     max-width: max-content !important;
@@ -104,6 +105,7 @@ footer {
 .st-key-source_retirement_expense [data-testid="stButton"] button,
 .st-key-source_nta_basic [data-testid="stButton"] button,
 .st-key-source_nta_generational [data-testid="stButton"] button,
+.st-key-loan_payment_source_link [data-testid="stButton"] button,
 .st-key-expense-panel [data-testid="stPopoverButton"],
 .st-key-expense-panel [data-testid="stPopover"] button {
     width: auto !important;
@@ -131,6 +133,7 @@ footer {
 .st-key-source_retirement_expense [data-testid="stButton"] button:hover,
 .st-key-source_nta_basic [data-testid="stButton"] button:hover,
 .st-key-source_nta_generational [data-testid="stButton"] button:hover,
+.st-key-loan_payment_source_link [data-testid="stButton"] button:hover,
 .st-key-expense-panel [data-testid="stPopoverButton"]:hover,
 .st-key-expense-panel [data-testid="stPopover"] button:hover {
     background: transparent !important;
@@ -145,6 +148,7 @@ footer {
 .st-key-source_retirement_expense [data-testid="stButton"] button p,
 .st-key-source_nta_basic [data-testid="stButton"] button p,
 .st-key-source_nta_generational [data-testid="stButton"] button p,
+.st-key-loan_payment_source_link [data-testid="stButton"] button p,
 .st-key-expense-panel [data-testid="stPopoverButton"] p,
 .st-key-expense-panel [data-testid="stPopover"] button p {
     font-size: inherit !important;
