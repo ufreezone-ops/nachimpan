@@ -2763,7 +2763,7 @@ elif selected_page == "삶과 생계수단":
         """기본 모드와 고급 모드에서 공통으로 사용하는 우화 카드"""
         st.markdown("""
 
-<div style="font-size: 21px; font-weight: 850; color: #FDE68A; margin-bottom: 12px;">🌾 지혜로운 산책: 돌쇠와 똘똘이</div>
+<div style="background: rgba(45, 35, 20, 0.35); border: 1.5px solid #6d4a1a; border-radius: 10px; padding: 10px 16px; margin-bottom: 14px; font-size: 18px; font-weight: 850; color: #FDE68A; line-height: 1.4;">지혜로운 산책: 돌쇠와 똘똘이</div>
 <div style="font-size: 14.5px; color: #E2E8F0; margin-bottom: 16px;">옛날 어느 마을, 머슴을 구하는 대감댁에 두 젊은이가 찾아왔습니다.</div>
 
 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px;">
@@ -2815,7 +2815,7 @@ elif selected_page == "삶과 생계수단":
 #--------------------------------------------------------
         st.markdown("""
 <div style="background: rgba(30, 41, 59, 0.45); border: 1.5px solid #334155; border-radius: 14px; padding: 18px 22px; margin-bottom: 22px;">
-<div style="font-size: 20px; font-weight: 850; color: #F8FAFC; margin-bottom: 14px;">물통  &  파이프라인</div>
+<div style="font-size: 18px; font-weight: 850; color: #F8FAFC; line-height: 1.4; margin: 0 0 14px 0; padding: 0;">물통 &amp; 파이프라인</div>
 """, unsafe_allow_html=True)
         
         q_self = active_quadrant(st.session_state.get("job_form", "직장인"))
@@ -2861,16 +2861,16 @@ elif selected_page == "삶과 생계수단":
             return f'<div style="{border_style} border-radius: 12px; padding: 14px 10px; text-align: center; display: flex; flex-direction: column; justify-content: center; align-items: center; height: 100%; min-height: 195px; box-sizing: border-box; width: 100%;">{badge_html}<div style="height: 100px; display: flex; align-items: center; justify-content: center; margin-bottom: 4px;">{icon_html}</div><div style="font-size: 17.5px; font-weight: 850; color: #F8FAFC; line-height: 1.2;">{title}</div><div style="font-size: 13px; font-weight: 700; color: {accent_color}; margin: 3px 0 5px 0; line-height: 1.3;">{sub_title}</div><div style="font-size: 12.5px; color: #CBD5E1; line-height: 1.4; word-break: keep-all; text-align: center;">{desc}</div></div>'
 
 
-        card_e = render_livelihood_quad("E", make_livelihood_icon("E_small_buckets.png", 88), "작은 물통 (E)", "나의 시간과 돈을 1:1 맞교환", "직접 일한 시간만큼 소득 창출<br><span style='color:#F59E0B; font-weight:600;'>(노동을 멈추면 수입도 멈춤)</span>", is_right=False)
+        card_e = render_livelihood_quad("E", make_livelihood_icon("E_small_buckets.png", 88), "작은 물통 (E)", "시간과 돈을 1:1 교환", "일한 시간만큼 소득<br><span style='color:#F59E0B; font-weight:600;'>(NO 노동, NO 수입)</span>", is_right=False)
 
-        card_s = render_livelihood_quad("S", make_livelihood_icon("S_large_bucket.png", 112), "큰 물통 (S)", "전문성과 몸값으로 키운 물통", "한 번에 담는 물통의 양을 키운 모습<br><span style='color:#F59E0B; font-weight:600;'>(큰 물통이지만 여전히 지고 다님)</span>", is_right=False)
+        card_s = render_livelihood_quad("S", make_livelihood_icon("S_large_bucket.png", 112), "큰 물통 (S)", "전문성과 큰 몸값", "시간당 소득이 큼", is_right=False)
 
-        card_b = render_livelihood_quad("B", make_livelihood_icon("B_pipeline_build.png", 112), "파이프라인<br>구축 (B)", "시스템 소유", "스스로 굴러가는 비즈니스 소유<br><span style='color:#38BDF8; font-weight:600;'>(내가 멈추어도 시스템이 일함)</span>", is_right=True)
+        card_b = render_livelihood_quad("B", make_livelihood_icon("B_pipeline_build.png", 112), "파이프라인<br>구축 (B)", "시스템 소유", "스스로 굴러가는 비즈니스<br><span style='color:#38BDF8; font-weight:600;'>(나 대신 시스템이 일함)</span>", is_right=True)
 
-        card_i = render_livelihood_quad("I", make_livelihood_icon("I_pipeline_connect.png", 112), "파이프라인<br>접속 (I)", "플랫폼·자본 접속", "이미 구축된 플랫폼에 접속 레버리지<br><span style='color:#38BDF8; font-weight:600;'>(자산과 네트워크가 소득을 만듦)</span>", is_right=True)
+        card_i = render_livelihood_quad("I", make_livelihood_icon("I_pipeline_connect.png", 112), "파이프라인<br>접속 (I)", "플랫폼·자본 접속", "이미 구축된 플랫폼에 접속<br><span style='color:#38BDF8; font-weight:600;'>(나 대신 시스템이 일함)</span>", is_right=True)
 
         st.markdown(f"""
-<div style="margin: 6px 0 16px 0;">
+<div style="margin: 6px 0 30px 0;">
 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px 0px; align-items: stretch;">
 <div style="padding-right: 12px; border-right: 3.5px dashed #475569; display: flex; box-sizing: border-box;">{card_e}</div>
 <div style="padding-left: 12px; display: flex; box-sizing: border-box;">{card_b}</div>
