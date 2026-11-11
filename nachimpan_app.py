@@ -155,12 +155,10 @@ footer {
     font-size: 0.85rem !important;
     font-weight: 600 !important;
 }
-/* 대출 설명 라벨은 일반 입력 라벨처럼 보이고, 아래 화살표만 트리거 */
-.loan-label-text {
-    font-size: 0.875rem;
-    font-weight: 400;
-    line-height: 1.5;
-    color: var(--text-color);
+/* 탭1 제목형 출처 링크: 원래 제목 크기와 위치를 유지 */
+.st-key-source_retirement_expense [data-testid="stButton"] button {
+    font-size: 1.17rem !important;
+    font-weight: 700 !important;
 }
 
 /* 통계 자료실의 산출 방법 팝오버 버튼: primary 색상과 명시적 배경 지정 */
@@ -1635,22 +1633,17 @@ if selected_page == "우리집 가계부":
                         else "expense_loan_user"
                     )
                     if is_representative_case_for_loan:
-                        with st.container(horizontal=True, vertical_alignment="center", gap=None):
+                        with st.popover(
+                            "대출 원리금 월 상환액 (원금+이자 합계)",
+                            help="대표사례의 월 원리금 계산 방식 보기",
+                            type="tertiary",
+                        ):
                             st.markdown(
-                                '<div class="loan-label-text">대출 원리금 월 상환액 (원금+이자 합계)</div>',
-                                unsafe_allow_html=True,
+                                "**대표사례의 대출 상환액**\n\n"
+                                "주택 구입가격과 LTV로 대출원금을 정하고, "
+                                "연 이자율·상환기간·구입시점을 반영해 "
+                                "현재 시점의 월 원리금(원금+이자 합계)을 계산합니다."
                             )
-                            with st.popover(
-                                "▾",
-                                help="대표사례의 월 원리금 계산 방식 보기",
-                                type="tertiary",
-                            ):
-                                st.markdown(
-                                    "**대표사례의 대출 상환액**\n\n"
-                                    "주택 구입가격과 LTV로 대출원금을 정하고, "
-                                    "연 이자율·상환기간·구입시점을 반영해 "
-                                    "현재 시점의 월 원리금(원금+이자 합계)을 계산합니다."
-                                )
                         expense_loan = st.number_input(
                             "대출 원리금 월 상환액 (원금+이자 합계)",
                             min_value=0,
@@ -1695,9 +1688,8 @@ if selected_page == "우리집 가계부":
 #--------------------------------------------------------
             with st.container(border=True, key="retirement-panel"):
                 with st.container(horizontal=True, vertical_alignment="center", gap=None):
-                    st.markdown("### 은퇴 후에는? (만원)")
                     if st.button(
-                        "☞",
+                        "은퇴 후에는? (만원)",
                         key="source_retirement_expense",
                         help="은퇴 후 연령대별 생활비 통계와 적용 방식 보기",
                         type="tertiary",
