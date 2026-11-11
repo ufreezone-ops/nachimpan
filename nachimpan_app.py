@@ -5833,7 +5833,15 @@ if _restore_anchor or _open_anchor:
         <script>
         try {{
             const doc = window.parent.document;
-            const target = doc.getElementById("{_scroll_target_id}");
+            let target = doc.getElementById("{_scroll_target_id}");
+            if (!target && "{_scroll_target_id}" === "loan-payment-label-origin") {{
+                const labels = Array.from(
+                    doc.querySelectorAll('[data-testid="stWidgetLabel"]')
+                );
+                target = labels.find(
+                    el => el.innerText.trim() === "대출 원리금 월상환액(원금+이자) [주석]"
+                );
+            }}
 
             if (target) {{
                 window.parent.setTimeout(() => {{
