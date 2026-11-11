@@ -160,6 +160,7 @@ footer {
     justify-content: flex-start !important;
 }
 /* 대출 상환액 제목과 나침반 출처 팝오버 */
+/* 대출 제목과 출처 나침반: 은퇴 제목과 같은 한 줄 배치 */
 .st-key-loan-title-row [data-testid="stElementContainer"]:has(h4) {
     flex: 0 0 auto !important;
     width: max-content !important;
@@ -170,40 +171,57 @@ footer {
     font-size: 0.95rem !important;
     margin: 0 !important;
 }
+.st-key-loan-title-row [data-testid="stHeaderActionElements"],
+.st-key-loan-title-row h4 a[aria-label="Link to heading"] {
+    display: none !important;
+}
 .st-key-loan-title-row [data-testid="stHorizontalBlock"] {
     align-items: center !important;
     column-gap: 0.1rem !important;
 }
-.st-key-loan-source-compass [data-testid="stPopoverButton"] {
+.st-key-source_loan_payment {
     width: auto !important;
     min-width: 0 !important;
     max-width: max-content !important;
-    height: auto !important;
+    flex: 0 0 auto !important;
+    margin: 0 0 0 0.1rem !important;
+}
+.st-key-source_loan_payment [data-testid="stButton"] button,
+.st-key-source_loan_payment [data-testid="stButton"] button:hover,
+.st-key-source_loan_payment [data-testid="stButton"] button:focus,
+.st-key-source_loan_payment [data-testid="stButton"] button:focus-visible,
+.st-key-source_loan_payment [data-testid="stButton"] button:active {
+    width: auto !important;
+    min-width: 0 !important;
+    max-width: max-content !important;
     min-height: 0 !important;
+    height: auto !important;
     padding: 0 !important;
     margin: 0 !important;
     border: 0 !important;
+    outline: 0 !important;
     background: transparent !important;
+    background-color: transparent !important;
     box-shadow: none !important;
     color: #38BDF8 !important;
     -webkit-text-fill-color: #38BDF8 !important;
-    font-size: 1.2rem !important;
+    font-size: 1.3rem !important;
+    line-height: 1 !important;
+    text-decoration: none !important;
+    justify-content: center !important;
+}
+.st-key-source_loan_payment [data-testid="stButton"] button p {
+    margin: 0 !important;
     line-height: 1 !important;
 }
-.st-key-loan-source-compass [data-testid="stPopoverButton"]:hover {
-    background: transparent !important;
-    color: #7DD3FC !important;
-    -webkit-text-fill-color: #7DD3FC !important;
-    text-decoration: underline !important;
-}
-.st-key-loan-source-compass [data-testid="stPopoverButton"]:hover p {
-    text-decoration: underline !important;
+.st-key-source_loan_payment [data-testid="stButton"] button:hover {
+    text-decoration: none !important;
 }
 @media (max-width: 1024px) and (pointer: coarse) {
     .st-key-loan-title-row [data-testid="stHorizontalBlock"] {
         column-gap: 0 !important;
     }
-    .st-key-loan-source-compass [data-testid="stPopoverButton"] p::before {
+    .st-key-source_loan_payment [data-testid="stButton"] button p::before {
         content: " ";
         white-space: pre;
     }
@@ -1720,6 +1738,8 @@ def _open_source_reference(source_id, origin_page, origin_anchor):
     }
     if source_id == "6050600-01":
         st.session_state["_source_open_anchor"] = "stats-anchor-retirement-expense"
+    elif source_id == "6050700-01":
+        st.session_state["_source_open_anchor"] = "stats-anchor-loan-payment"
     st.session_state["_pending_nav"] = "통계"
     st.rerun()
 
@@ -1877,18 +1897,17 @@ if selected_page == "우리집 가계부":
                             key="loan-title-row",
                         ):
                             st.markdown("#### 대출 원리금 월상환액(원금+이자)")
-                            with st.popover(
+                            if st.button(
                                 "🧭",
-                                help="대표사례의 월 원리금 계산 방식 보기",
+                                key="source_loan_payment",
+                                help="대표사례의 대출 상환액 산출 기준과 자료 보기",
                                 type="tertiary",
-                                key="loan-source-compass",
                             ):
-                                    st.markdown(
-                                        "**대표사례의 대출 상환액**\n\n"
-                                        "주택 구입가격과 LTV로 대출원금을 정하고, "
-                                        "연 이자율·상환기간·구입시점을 반영해 "
-                                        "현재 시점의 월 원리금(원금+이자 합계)을 계산합니다."
-                                    )
+                                _open_source_reference(
+                                    "6050700-01",
+                                    "우리집 가계부",
+                                    "source-anchor-loan-payment",
+                                )
                         expense_loan = st.number_input(
                             "대출 원리금 월 상환액 (원금+이자 합계)",
                             min_value=0,
@@ -5046,6 +5065,7 @@ elif selected_page == "통계":
     _source_labels = {
         "6030200-01": "국가데이터처 「2024년 국민이전계정」",
         "6050600-01": "국가데이터처 「2024년 가계동향조사」 은퇴 후 연령대별 가계지출",
+        "6050700-01": "국토교통부 「2024년도 주거실태조사 결과」 및 나침반의 표준 대출 상환 가정",
     }
     if _active_source_id in _source_labels:
         with st.container(key="source-return-bar"):
@@ -5317,7 +5337,14 @@ elif selected_page == "통계":
     #--------------------------------------------------------
     # 6.05.07.00 | 6. 주택대출과 원리금 분리
     #--------------------------------------------------------
-    with st.expander("6. 주택대출과 원리금 분리"):
+    st.markdown(
+        '<div id="stats-anchor-loan-payment" style="scroll-margin-top: 150px;"></div>',
+        unsafe_allow_html=True,
+    )
+    with st.expander(
+        "6. 주택대출과 원리금 분리",
+        expanded=_active_source_id == "6050700-01",
+    ):
         st.markdown("""
 **주택 구입자금과 대출 상환의 기준**
 
