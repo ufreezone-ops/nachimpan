@@ -159,59 +159,6 @@ footer {
     line-height: inherit !important;
     justify-content: flex-start !important;
 }
-/* 대출 상환액 제목과 [주석] 링크를 한 줄로 배치 */
-.st-key-loan-title-row [data-testid="stElementContainer"]:has(h4) {
-    flex: 0 0 auto !important;
-    width: max-content !important;
-    min-width: 0 !important;
-}
-.st-key-loan-title-row h4 {
-    white-space: nowrap !important;
-    font-size: 0.95rem !important;
-    margin: 0 !important;
-}
-.st-key-loan-title-row [data-testid="stHeaderActionElements"],
-.st-key-loan-title-row h4 a[aria-label="Link to heading"] {
-    display: none !important;
-}
-.st-key-loan-title-row [data-testid="stHorizontalBlock"] {
-    align-items: center !important;
-    column-gap: 0.2rem !important;
-}
-.st-key-loan-payment-note {
-    width: auto !important;
-    min-width: 0 !important;
-    max-width: max-content !important;
-    flex: 0 0 auto !important;
-}
-.st-key-loan-payment-note [data-testid="stButton"] button,
-.st-key-loan-payment-note [data-testid="stButton"] button:hover,
-.st-key-loan-payment-note [data-testid="stButton"] button:focus,
-.st-key-loan-payment-note [data-testid="stButton"] button:focus-visible,
-.st-key-loan-payment-note [data-testid="stButton"] button:active {
-    width: auto !important;
-    min-width: 0 !important;
-    max-width: max-content !important;
-    min-height: 0 !important;
-    height: auto !important;
-    padding: 0 !important;
-    margin: 0 !important;
-    border: 0 !important;
-    outline: 0 !important;
-    background: transparent !important;
-    background-color: transparent !important;
-    box-shadow: none !important;
-    color: #38BDF8 !important;
-    -webkit-text-fill-color: #38BDF8 !important;
-    font-size: 0.95rem !important;
-    line-height: 1 !important;
-    text-decoration: none !important;
-    justify-content: flex-start !important;
-}
-.st-key-loan-payment-note [data-testid="stButton"] button p {
-    margin: 0 !important;
-    line-height: 1 !important;
-}
 /* 탭1: 제목 앵커 표시는 숨기고 제목 영역을 글자 너비만 사용 */
 .st-key-retirement-title-row [data-testid="stElementContainer"]:has(h3) {
     flex: 0 0 auto !important;
@@ -1882,19 +1829,7 @@ if selected_page == "우리집 가계부":
                             gap=None,
                             key="loan-title-row",
                         ):
-                            st.markdown("#### 대출 원리금 월상환액(원금+이자)")
-                            with st.container(key="loan-payment-note"):
-                                if st.button(
-                                    "[주석]",
-                                    key="source_loan_payment_note",
-                                    help="대출 상환액 산출 기준과 자료 보기",
-                                    type="tertiary",
-                                ):
-                                    _open_source_reference(
-                                        "6050700-01",
-                                        "우리집 가계부",
-                                        "source-anchor-loan-payment",
-                                    )
+                            st.markdown("#### 대출 원리금 월상환액(원금+이자) [주석]")
                         expense_loan = st.number_input(
                             "대출 원리금 월 상환액 (원금+이자 합계)",
                             min_value=0,
