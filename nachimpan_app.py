@@ -1747,6 +1747,12 @@ def _open_source_reference(source_id, origin_page, origin_anchor):
         st.session_state["_source_open_anchor"] = "stats-anchor-retirement-expense"
     elif source_id == "6050700-01":
         st.session_state["_source_open_anchor"] = "stats-anchor-loan-payment"
+    elif source_id == "6051300-01":
+        st.session_state["_source_open_anchor"] = "stats-anchor-retirement-mainjob"
+    elif source_id == "6051300-02":
+        st.session_state["_source_open_anchor"] = "stats-anchor-retirement-nta"
+    elif source_id == "6051300-03":
+        st.session_state["_source_open_anchor"] = "stats-anchor-retirement-oecd"
     st.session_state["_pending_nav"] = "통계"
     st.rerun()
 
@@ -5085,6 +5091,9 @@ elif selected_page == "통계":
         "6030200-01": "국가데이터처 「2024년 국민이전계정」",
         "6050600-01": "국가데이터처 「2024년 가계동향조사」 은퇴 후 연령대별 가계지출",
         "6050700-01": "국토교통부 「2024년도 주거실태조사 결과」 및 나침반의 표준 대출 상환 가정",
+        "6051300-01": "국가데이터처 「2026년 5월 경제활동인구조사 고령층 부가조사」 주된 일자리 퇴직 연령",
+        "6051300-02": "국가데이터처 「2024년 국민이전계정」 생애주기 적자 재전환 연령",
+        "6051300-03": "OECD 「Pensions at a Glance 2025: Korea」 실질 노동시장 이탈 연령",
     }
     if _active_source_id in _source_labels:
         with st.container(key="source-return-bar"):
@@ -5110,6 +5119,60 @@ elif selected_page == "통계":
 
     st.markdown("## 통계로 읽는 인생")
     st.caption("내 삶의 숫자를 사회 전체의 흐름과 나란히 놓고 살펴보는 자료실입니다. 통계는 정답이 아니라, 내 생각의 경계를 넓히는 참고선입니다.")
+
+    #--------------------------------------------------------
+    # 6.05.13.00 | 통계로 본 대한민국 3대 은퇴 분기점
+    #--------------------------------------------------------
+    with st.expander(
+        "통계로 본 대한민국 3대 은퇴 분기점",
+        expanded=True,
+    ):
+        st.markdown("""
+은퇴는 하나의 나이로 끝나는 사건이 아닙니다. **주된 일자리에서 물러나는 시기**, **사회 전체의 생애주기 수지가 적자로 돌아서는 시기**, **노동시장에서 실질적으로 이탈하는 시기**는 서로 다른 통계가 보여주는 세 가지 장면입니다.
+
+### ① 주된 일자리에서 물러나는 시기
+
+<div id="stats-anchor-retirement-mainjob" style="scroll-margin-top: 150px;"></div>
+
+# 55~60세 전후
+
+국가데이터처의 2026년 5월 고령층 부가조사에서, 가장 오래 근무한 일자리를 그만둔 당시 평균 연령은 **53.0세**였습니다.
+
+**55~60세 전후**는 조사에서 직접 측정한 평균 퇴직 연령이 아니라, 주된 일자리에서 물러난 뒤 경력과 소득 구조를 재편하는 시기를 살펴보기 위한 나침반의 해석 구간입니다. 주된 일자리의 퇴직이 곧 모든 경제활동의 종료를 뜻하지는 않습니다.
+
+### ② 사회 전체의 생애주기 수지가 적자로 돌아서는 시기
+
+<div id="stats-anchor-retirement-nta" style="scroll-margin-top: 150px;"></div>
+
+# 61세
+
+국가데이터처 「2024년 국민이전계정」에서 노동소득보다 소비가 다시 커지는 **적자 재전환 연령은 61세**입니다. 국민 전체의 연령별 노동소득과 소비를 1인당 평균으로 살펴본 결과입니다.
+
+이는 개인이 61세에 은퇴한다는 뜻이 아닙니다. 사회 전체의 평균적인 생애주기에서 노동소득만으로 소비를 충당하기 어려워지는 연령을 보여줍니다.
+
+### ③ 노동시장에서 실질적으로 이탈하는 시기
+
+<div id="stats-anchor-retirement-oecd" style="scroll-margin-top: 150px;"></div>
+
+# 남성 67.4세 · 여성 69.6세
+
+OECD 「Pensions at a Glance 2025: Korea」는 2024년 한국의 실질 노동시장 이탈 연령을 **남성 67.4세, 여성 69.6세**로 제시합니다. 한국의 65~69세 고용률도 **57%**로, OECD 평균 26%보다 높았습니다.
+
+이 지표는 개인이 마지막 일자리를 그만둔 나이를 직접 조사한 값이 아닙니다. OECD가 40세 이상 인구의 노동시장 참여율 변화를 연령집단별로 분석해 추정한 평균 이탈 연령입니다. 따라서 개인의 정년이나 실제 은퇴 시점과 동일하게 해석해서는 안 됩니다.
+
+---
+
+**세 통계가 함께 보여주는 것**
+
+주된 일자리에서 물러나는 시기와 생애주기 수지가 적자로 바뀌는 시기, 노동시장 참여에서 실질적으로 이탈하는 시기는 일치하지 않습니다. 은퇴를 한 번의 퇴직이 아니라 **소득활동과 생계 구조가 단계적으로 바뀌는 과정**으로 바라볼 필요가 있습니다.
+
+**자료 출처**
+
+- [국가데이터처 — 2026년 5월 경제활동인구조사 고령층 부가조사 결과](https://www.mods.go.kr/board.es?act=view&bid=210&list_no=446335&mid=a10301010000)
+- [국가데이터처 — 2024년 국민이전계정](https://mods.go.kr/board.es?act=view&bid=11898&list_no=447028&mid=a10301130100)
+- [OECD — Pensions at a Glance 2025: Korea](https://www.oecd.org/en/publications/pensions-at-a-glance-2025-country-notes_8a53ef12-en/korea-republic-of_5cd52913-en.html)
+- [OECD — Effective age of labour market exit: definition and methodology](https://www.oecd.org/en/publications/pensions-at-a-glance-2025_e40274c1-en/full-report/effective-age-of-labour-market-exit_fd1212b7.html)
+""", unsafe_allow_html=True)
 
     #--------------------------------------------------------
     # 6.05.02.00 | 1. 소득과 소비의 생애주기
