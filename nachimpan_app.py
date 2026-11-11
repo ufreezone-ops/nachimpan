@@ -163,10 +163,10 @@ footer {
     line-height: inherit !important;
     justify-content: flex-start !important;
 }
-/* 대출 항목은 기본 입력 라벨과 같은 크기의 텍스트 + 출처 아이콘으로 구성 */
+/* 대출 라벨과 출처 아이콘을 한 줄에 놓고 글자 기준선에 맞춤 */
 .st-key-loan-payment-label-row [data-testid="stHorizontalBlock"] {
-    align-items: center !important;
-    column-gap: 0.1rem !important;
+    align-items: baseline !important;
+    column-gap: 0.12rem !important;
 }
 .st-key-loan-payment-label-row [data-testid="stElementContainer"] {
     flex: 0 0 auto !important;
@@ -176,18 +176,36 @@ footer {
 .loan-payment-label-text {
     display: inline-block;
     margin: 0 !important;
+    padding: 0 !important;
     color: var(--text-color) !important;
     font: inherit !important;
+    line-height: inherit !important;
     white-space: nowrap !important;
 }
 .st-key-loan-payment-field [data-testid="stMarkdownContainer"] p {
     margin: 0 !important;
 }
-/* 대출 출처 아이콘은 다른 나침반 버튼과 동일하게 무테·무배경 처리 */
-div.st-key-loan_payment_source_link button,
-div.st-key-loan_payment_source_link button:hover,
-div.st-key-loan_payment_source_link button:focus,
-div.st-key-loan_payment_source_link button:active {
+/* 버튼 외곽 래퍼까지 초기화해 Streamlit 기본 사각형 제거 */
+.st-key-loan_payment_source_link,
+.st-key-loan_payment_source_link [data-testid="stButton"],
+.st-key-loan_payment_source_link [data-testid="stButton"] > div {
+    width: max-content !important;
+    min-width: 0 !important;
+    height: auto !important;
+    min-height: 0 !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    border: 0 !important;
+    background: transparent !important;
+    box-shadow: none !important;
+}
+.st-key-loan_payment_source_link button,
+.st-key-loan_payment_source_link button:hover,
+.st-key-loan_payment_source_link button:focus,
+.st-key-loan_payment_source_link button:focus-visible,
+.st-key-loan_payment_source_link button:active {
+    appearance: none !important;
+    -webkit-appearance: none !important;
     width: auto !important;
     min-width: 0 !important;
     height: auto !important;
@@ -195,8 +213,8 @@ div.st-key-loan_payment_source_link button:active {
     padding: 0 0.12rem !important;
     margin: 0 !important;
     border: 0 !important;
-    outline: 0 !important;
-    background: transparent !important;
+    outline: none !important;
+    background: none !important;
     background-color: transparent !important;
     background-image: none !important;
     box-shadow: none !important;
@@ -208,11 +226,18 @@ div.st-key-loan_payment_source_link button:active {
     display: inline-flex !important;
     align-items: center !important;
     justify-content: center !important;
+    transform: translateY(0.28rem) !important;
 }
-div.st-key-loan_payment_source_link button p {
+.st-key-loan_payment_source_link button p {
     margin: 0 !important;
+    padding: 0 !important;
     font: inherit !important;
     line-height: 1 !important;
+}
+.st-key-loan_payment_source_link button::before,
+.st-key-loan_payment_source_link button::after {
+    display: none !important;
+    content: none !important;
 }
 /* 탭1: 제목 앵커 표시는 숨기고 제목 영역을 글자 너비만 사용 */
 .st-key-retirement-title-row [data-testid="stElementContainer"]:has(h3) {
