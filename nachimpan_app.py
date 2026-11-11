@@ -2762,7 +2762,7 @@ elif selected_page == "삶과 생계수단":
     def render_dolssoe_story_card():
         """기본 모드와 고급 모드에서 공통으로 사용하는 우화 카드"""
         st.markdown("""
-<div style="background: rgba(45, 35, 20, 0.55); border: 1.5px solid #6d4a1a; border-radius: 14px; padding: 24px 26px; margin: 16px 0 24px 0;">
+
 <div style="font-size: 21px; font-weight: 850; color: #FDE68A; margin-bottom: 12px;">🌾 지혜로운 산책: 돌쇠와 똘똘이</div>
 <div style="font-size: 14.5px; color: #E2E8F0; margin-bottom: 16px;">옛날 어느 마을, 머슴을 구하는 대감댁에 두 젊은이가 찾아왔습니다.</div>
 
@@ -2790,7 +2790,7 @@ elif selected_page == "삶과 생계수단":
 돌쇠처럼 성실하게 당장의 가족 생계를 책임지면서도, 똘똘이가 구상한 파이프라인을 덧붙일 수 있는 길은 없을까요?<br>바로 그 <b>'현명한 플랜 B'</b>를 생각하게 하는 얘기입니다.
 </div>
 </div>
-</div>
+
 """, unsafe_allow_html=True)
     
     if not is_adv:
