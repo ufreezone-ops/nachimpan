@@ -1751,6 +1751,35 @@ def _open_source_reference(source_id, origin_page, origin_anchor):
     st.rerun()
 
 
+@st.dialog("통계 비교선", width="large")
+def _show_income_wage_stats_dialog():
+    st.markdown(
+        "**자료**  \n"
+        "국가데이터처 「2024년 임금근로일자리 소득(보수) 결과」 "
+        "(2026년 2월 발표)"
+    )
+    st.markdown(
+        "**통계 기준**  \n"
+        "2024년 12월 임금근로일자리에서 하루 이상 일한 근로자의 "
+        "성별·연령대별 월평균 보수입니다. 원자료는 세전 금액입니다."
+    )
+    st.markdown(
+        "**그래프 적용 방식**  \n"
+        "월평균 보수에 90%를 적용해 실수령액을 근사하고, "
+        "12개월을 곱해 연간 참고값으로 표시합니다. "
+        "90%는 세금을 개인별로 계산한 값이 아닌 단순 추정 비율입니다."
+    )
+    st.markdown(
+        "**해석할 때 참고하세요**  \n"
+        "- 가구 합산 예상소득과 달리, 통계 비교선은 1인 기준입니다.\n"
+        "- 70세 이상은 해당 연령집단의 평균이며, 실제 노동 종료 연령을 뜻하지 않습니다."
+    )
+    st.markdown(
+        "[국가데이터처 원문 보고서](https://www.mods.go.kr/board.es?act=view&bid=11113&list_no=443648&mid=a10301010000) · "
+        "[자료 및 산출 기준](https://github.com/ufreezone-ops/nachimpan/blob/dev/data/기준데이터/국가데이터처_2024_연령별_임금근로일자리_평균보수_README.md)"
+    )
+
+
 # 통계 자료실에서 다른 메뉴로 이동한 경우 이전 복귀 경로 폐기
 # 단, 복귀 버튼으로 원래 화면을 복원하는 중에는 유지한다.
 if (
@@ -2352,22 +2381,7 @@ if selected_page == "우리집 가계부":
 #--------------------------------------------------------
         st.markdown("### 우리 가정 생애 소득(예상)")
 
-        st.caption(
-            "내 직업과 배우자의 직업에 따라 각각 하나의 기준곡선을 적용합니다. "
-            "배우자의 현재 소득이 입력되지 않았다면 직업군 기준곡선을 사용합니다. "
-            "연금은 각자의 수령 시작 시점부터 가구 합산 소득에 반영합니다. "
-            "그래프는 내 나이를 기준으로 표시합니다."
-        )
-
-        st.caption(
-            "보라색 점선은 2024년 임금근로일자리의 연령·성별 월평균 보수를 1인 기준으로 표시한 통계 비교선입니다. "
-            "개인의 은퇴 희망 연령과 무관하며, 연령대별 평균 보수(세전)를 연환산해 참고 표시합니다. "
-            "가구 합산 소득과는 기준 인원이 다르며, 70세 이상 값은 해당 연령집단의 평균이지 실제 노동 종료 연령이 아닙니다."
-        )
-        st.markdown(
-            "[통계 출처·산출 기준](https://github.com/ufreezone-ops/nachimpan/blob/dev/data/기준데이터/국가데이터처_2024_연령별_임금근로일자리_평균보수_README.md)"
-        )
-
+        # 그래프 설명은 그래프 아래의 통계 비교선 안내와 인앱 팝업으로 제공
         cur_age = int(st.session_state.get("person_age", 35) or 35)
         # 기대수명은 생애주기 탭보다 먼저 사용하는 소득 그래프에서 선행 정의
         user_gender = st.session_state.get("gender", "🙋‍♂️ 남성")
@@ -2739,6 +2753,21 @@ if selected_page == "우리집 가계부":
                 "showAxisDragHandles": False
             }
         )
+
+        with st.container(
+            horizontal=True,
+            vertical_alignment="center",
+            gap=None,
+            key="income-wage-stats-note-row",
+        ):
+            st.markdown("보라색 점선은 통계 비교선입니다.")
+            if st.button(
+                "🧭",
+                key="income_wage_stats_popup",
+                help="통계 비교선의 자료와 산출 기준 보기",
+                type="tertiary",
+            ):
+                _show_income_wage_stats_dialog()
 
         # 기존 다음 버튼 유지
         _, next_col = st.columns([5, 1])
