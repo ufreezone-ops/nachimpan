@@ -200,8 +200,12 @@ footer {
     .st-key-retirement-title-row [data-testid="stHorizontalBlock"] {
         column-gap: 0 !important;
     }
-    .st-key-source_retirement_expense {
-        margin-left: 0.65rem !important;
+    div.st-key-source_retirement_expense {
+        width: auto !important;
+        min-width: 0 !important;
+        max-width: max-content !important;
+        flex: 0 0 auto !important;
+        margin: 0 0 0 0.75rem !important;
     }
 }
 /* 모바일 세로보기: 제목 중심에 맞춰 아이콘을 아래로 미세 조정 */
