@@ -124,6 +124,10 @@ footer {
     justify-content: flex-start !important;
     white-space: normal !important;
 }
+.st-key-source_retirement_expense [data-testid="stButton"] button {
+    font-size: 1.17rem !important;
+    font-weight: 700 !important;
+}
 .st-key-source_retirement_expense [data-testid="stButton"] button:hover,
 .st-key-source_nta_basic [data-testid="stButton"] button:hover,
 .st-key-source_nta_generational [data-testid="stButton"] button:hover,
