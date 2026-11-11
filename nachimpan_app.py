@@ -95,6 +95,9 @@ footer {
 .st-key-source_retirement_expense,
 .st-key-source_nta_basic,
 .st-key-source_nta_generational,
+.st-key-source_retirement_mainjob,
+.st-key-source_retirement_nta,
+.st-key-source_retirement_oecd,
 .st-key-loan_payment_source_link {
     width: auto !important;
     min-width: 0 !important;
@@ -105,6 +108,9 @@ footer {
 .st-key-source_retirement_expense [data-testid="stButton"] button,
 .st-key-source_nta_basic [data-testid="stButton"] button,
 .st-key-source_nta_generational [data-testid="stButton"] button,
+.st-key-source_retirement_mainjob [data-testid="stButton"] button,
+.st-key-source_retirement_nta [data-testid="stButton"] button,
+.st-key-source_retirement_oecd [data-testid="stButton"] button,
 .st-key-loan_payment_source_link [data-testid="stButton"] button,
 .st-key-expense-panel [data-testid="stPopoverButton"],
 .st-key-expense-panel [data-testid="stPopover"] button {
@@ -133,6 +139,9 @@ footer {
 .st-key-source_retirement_expense [data-testid="stButton"] button:hover,
 .st-key-source_nta_basic [data-testid="stButton"] button:hover,
 .st-key-source_nta_generational [data-testid="stButton"] button:hover,
+.st-key-source_retirement_mainjob [data-testid="stButton"] button:hover,
+.st-key-source_retirement_nta [data-testid="stButton"] button:hover,
+.st-key-source_retirement_oecd [data-testid="stButton"] button:hover,
 .st-key-loan_payment_source_link [data-testid="stButton"] button:hover,
 .st-key-expense-panel [data-testid="stPopoverButton"]:hover,
 .st-key-expense-panel [data-testid="stPopover"] button:hover {
@@ -148,6 +157,9 @@ footer {
 .st-key-source_retirement_expense [data-testid="stButton"] button p,
 .st-key-source_nta_basic [data-testid="stButton"] button p,
 .st-key-source_nta_generational [data-testid="stButton"] button p,
+.st-key-source_retirement_mainjob [data-testid="stButton"] button p,
+.st-key-source_retirement_nta [data-testid="stButton"] button p,
+.st-key-source_retirement_oecd [data-testid="stButton"] button p,
 .st-key-loan_payment_source_link [data-testid="stButton"] button p,
 .st-key-expense-panel [data-testid="stPopoverButton"] p,
 .st-key-expense-panel [data-testid="stPopover"] button p {
@@ -2948,18 +2960,33 @@ elif selected_page == "삶과 생계수단":
         if st.session_state.get("retire_age_saved_notice", False) or "retirement_age" in st.session_state:
             st.success(f"은퇴 예상 나이({st.session_state.get('retirement_age', retirement_input)}세)가 반영되었습니다.")
 
-            st.markdown("""
-<div style="background: rgba(15, 23, 42, 0.85); border: 1px solid #475569; border-radius: 10px; padding: 16px 18px; margin-top: 12px;">
-<div style="font-size: 15px; font-weight: 800; color: #38BDF8; margin-bottom: 10px;">📊 국가데이터처 통계로 본 대한민국 3대 은퇴 분기점</div>
-<div style="display: flex; flex-direction: column; gap: 8px; font-size: 14.5px; color: #E2E8F0; line-height: 1.6;">
-  <div>• <b>"근로소득의 정점 및 본업 졸업"</b> 관점이라면 ➔ <span style="color: #F59E0B; font-weight: 800;">55~60세 전후</span> <span style="font-size: 13px; color: #94A3B8;">(주된 일자리 퇴직 평균 53세)</span></div>
-  <div>• <b>"국가 통계적 흑자·적자 수지 균형"</b> 관점이라면 ➔ <span style="color: #F59E0B; font-weight: 800;">61세</span> <span style="font-size: 13px; color: #94A3B8;">(국민이전계정 NTA 공식 적자 재전환 연령)</span></div>
-  <div>• <b>"완전히 노동을 손에서 놓는 시점"</b> 관점이라면 ➔ <span style="color: #F59E0B; font-weight: 800;">72~73세</span> <span style="font-size: 13px; color: #94A3B8;">(OECD 실질 은퇴 연령 및 2·3차 일자리 종료)</span></div>
-</div>
-</div>
-""", unsafe_allow_html=True)
-
-        st.markdown("</div>", unsafe_allow_html=True)
+            st.markdown('<div id="retirement-milestones-origin" style="scroll-margin-top: 150px;"></div>', unsafe_allow_html=True)
+            with st.container(border=True, key="retirement-milestones-panel"):
+                st.markdown("**통계로 본 대한민국 3대 은퇴 분기점**")
+                with st.container(horizontal=True, vertical_alignment="center", gap=None):
+                    st.markdown(
+                        '**"근로소득의 정점 및 본업 졸업" 관점이라면**  \n'
+                        '➔ **55~60세 전후** <span style="font-size: 0.9em; color: #94A3B8;">(주된 일자리 퇴직 당시 평균 53.0세)</span>',
+                        unsafe_allow_html=True,
+                    )
+                    if st.button("🧭", key="source_retirement_mainjob", help="주된 일자리 퇴직 연령의 조사 결과와 해석 보기", type="tertiary"):
+                        _open_source_reference("6051300-01", "인생의 사계절", "retirement-milestones-origin")
+                with st.container(horizontal=True, vertical_alignment="center", gap=None):
+                    st.markdown(
+                        '**"국가 통계적 흑자·적자 수지 균형" 관점이라면**  \n'
+                        '➔ **61세** <span style="font-size: 0.9em; color: #94A3B8;">(국민이전계정 NTA 적자 재전환 연령)</span>',
+                        unsafe_allow_html=True,
+                    )
+                    if st.button("🧭", key="source_retirement_nta", help="국민이전계정의 생애주기 적자 재전환 연령 보기", type="tertiary"):
+                        _open_source_reference("6051300-02", "인생의 사계절", "retirement-milestones-origin")
+                with st.container(horizontal=True, vertical_alignment="center", gap=None):
+                    st.markdown(
+                        '**"노동시장에서 실질적으로 이탈하는 시점" 관점이라면**  \n'
+                        '➔ **남성 67.4세 · 여성 69.6세** <span style="font-size: 0.9em; color: #94A3B8;">(OECD 2024년 추정치)</span>',
+                        unsafe_allow_html=True,
+                    )
+                    if st.button("🧭", key="source_retirement_oecd", help="OECD 실질 노동시장 이탈 연령의 국가별 보고서 보기", type="tertiary"):
+                        _open_source_reference("6051300-03", "인생의 사계절", "retirement-milestones-origin")
 
 
 #########################################################
