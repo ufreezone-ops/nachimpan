@@ -91,6 +91,47 @@ footer {
     visibility: hidden !important;
 }
 
+/* 통계 자료실의 산출 방법 팝오버 버튼 */
+.st-key-retirement-source-details [data-testid="stPopover"] > button {
+    background: #F97316 !important;
+    color: #1C1917 !important;
+    border: 1px solid #FDBA74 !important;
+    border-radius: 999px !important;
+    font-weight: 700 !important;
+    box-shadow: 0 1px 5px rgba(249, 115, 22, 0.24) !important;
+}
+.st-key-retirement-source-details [data-testid="stPopover"] > button:hover {
+    background: #FB923C !important;
+    border-color: #FED7AA !important;
+    color: #1C1917 !important;
+}
+
+/* 본문 출처 나침반: 작고 선명한 주황색 인라인 버튼 */
+.st-key-source_retirement_expense button,
+.st-key-source_nta_basic button,
+.st-key-source_nta_generational button {
+    width: 2.15rem !important;
+    min-width: 2.15rem !important;
+    height: 2.15rem !important;
+    min-height: 2.15rem !important;
+    padding: 0 !important;
+    border-radius: 999px !important;
+    border: 1px solid #FDBA74 !important;
+    background: #F97316 !important;
+    color: #1C1917 !important;
+    box-shadow: 0 1px 5px rgba(249, 115, 22, 0.28) !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+}
+.st-key-source_retirement_expense button:hover,
+.st-key-source_nta_basic button:hover,
+.st-key-source_nta_generational button:hover {
+    background: #FB923C !important;
+    border-color: #FED7AA !important;
+    color: #1C1917 !important;
+}
+
 /* 대표사례의 자동 계산 대출 상환액도 일반 입력창과 같은 명도·글자색으로 표시 */
 .st-key-expense_loan_case_45_female_45 [data-testid="stNumberInput"] input:disabled {
     opacity: 1 !important;
@@ -1582,7 +1623,7 @@ if selected_page == "우리집 가계부":
 # 6.01.05 | 고급 모드 — 은퇴 후 가정 입력 패널
 #--------------------------------------------------------
             with st.container(border=True, key="retirement-panel"):
-                retirement_title_col, retirement_source_col = st.columns([20, 1])
+                retirement_title_col, retirement_source_col = st.columns([1, 0.16])
                 with retirement_title_col:
                     st.markdown("### 은퇴 후에는? (만원)")
                 with retirement_source_col:
@@ -2672,7 +2713,7 @@ elif selected_page == "인생의 사계절":
             unsafe_allow_html=True
         )
 
-        source_caption_col, source_button_col = st.columns([20, 1])
+        source_caption_col, source_button_col = st.columns([1, 0.16])
 
         with source_caption_col:
             st.caption(
@@ -4241,7 +4282,7 @@ elif selected_page == "인생의 사계절":
             unsafe_allow_html=True
         )
 
-        source_caption_col, source_button_col = st.columns([20, 1])
+        source_caption_col, source_button_col = st.columns([1, 0.16])
 
         with source_caption_col:
             st.caption(
@@ -4664,17 +4705,31 @@ elif selected_page == "통계":
         top: 7rem !important;
         left: 50% !important;
         transform: translateX(-50%) !important;
-        width: min(calc(100vw - 2rem), 1180px) !important;
+        width: max-content !important;
+        max-width: calc(100vw - 1.5rem) !important;
         box-sizing: border-box !important;
         z-index: 9999 !important;
-        background: rgba(15, 23, 42, 0.98);
-        padding: 8px 12px;
-        border: 1px solid #475569;
-        border-radius: 10px;
-        box-shadow: 0 4px 16px rgba(0,0,0,0.28);
+        background: transparent !important;
+        padding: 0 !important;
+        border: 0 !important;
+        box-shadow: none !important;
     }
     div.st-key-source-return-bar button {
-        width: 100%;
+        width: auto !important;
+        min-width: 0 !important;
+        padding: 0.42rem 0.85rem !important;
+        border-radius: 999px !important;
+        border: 1px solid #FDBA74 !important;
+        background: #F97316 !important;
+        color: #1C1917 !important;
+        font-weight: 700 !important;
+        box-shadow: 0 2px 8px rgba(249, 115, 22, 0.25) !important;
+        white-space: nowrap !important;
+    }
+    div.st-key-source-return-bar button:hover {
+        background: #FB923C !important;
+        border-color: #FED7AA !important;
+        color: #1C1917 !important;
     }
     </style>
     """, unsafe_allow_html=True)
@@ -4690,7 +4745,7 @@ elif selected_page == "통계":
             if st.button(
                 "← 이전 위치로 돌아가기",
                 key="source_return_button",
-                use_container_width=True,
+                use_container_width=False,
             ):
                 _return_context = st.session_state.get(
                     "_source_return_context"
@@ -4704,7 +4759,7 @@ elif selected_page == "통계":
                     )
                     st.rerun()
 
-        st.markdown("<div style='height: 58px;'></div>", unsafe_allow_html=True)
+        st.markdown("<div style='height: 42px;'></div>", unsafe_allow_html=True)
         st.caption(f"선택한 출처: {_source_labels[_active_source_id]}")
 
     st.markdown("## 통계로 읽는 인생")
@@ -4937,19 +4992,20 @@ elif selected_page == "통계":
 
 자료: 국가데이터처 「가계동향조사(2019~2024년 구분류)」 2024년 연간자료, MDIS 제공 공공용 마이크로데이터.
 """)
-        with st.popover("산출 방법과 원자료 변수 보기"):
-            _retirement_readme_path = (
-                Path(__file__).resolve().parent
-                / "data"
-                / "기준데이터"
-                / "국가데이터처_2024_가계동향조사_가구주연령대별가구원수별가계지출_가중중위값_README.md"
-            )
-            if _retirement_readme_path.exists():
-                st.markdown(
-                    _retirement_readme_path.read_text(encoding="utf-8")
+        with st.container(key="retirement-source-details"):
+            with st.popover("산출 방법과 원자료 변수 보기"):
+                _retirement_readme_path = (
+                    Path(__file__).resolve().parent
+                    / "data"
+                    / "기준데이터"
+                    / "국가데이터처_2024_가계동향조사_가구주연령대별가구원수별가계지출_가중중위값_README.md"
                 )
-            else:
-                st.info("산출 방법 파일을 현재 앱에서 찾을 수 없습니다.")
+                if _retirement_readme_path.exists():
+                    st.markdown(
+                        _retirement_readme_path.read_text(encoding="utf-8")
+                    )
+                else:
+                    st.info("산출 방법 파일을 현재 앱에서 찾을 수 없습니다.")
 
     #--------------------------------------------------------
     # 6.05.07.00 | 6. 주택대출과 원리금 분리
