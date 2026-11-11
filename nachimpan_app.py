@@ -2870,7 +2870,7 @@ elif selected_page == "삶과 생계수단":
         card_i = render_livelihood_quad("I", make_livelihood_icon("I_pipeline_connect.png", 112), "파이프라인<br>접속 (I)", "플랫폼·자본 접속", "이미 구축된 플랫폼에 접속<br><span style='color:#38BDF8; font-weight:600;'>(나 대신 시스템이 일함)</span>", is_right=True)
 
         st.markdown(f"""
-<div style="margin: 6px 0 30px 0;">
+<div style="margin: 6px 0 50px 0;">
 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px 0px; align-items: stretch;">
 <div style="padding-right: 12px; border-right: 3.5px dashed #475569; display: flex; box-sizing: border-box;">{card_e}</div>
 <div style="padding-left: 12px; display: flex; box-sizing: border-box;">{card_b}</div>
