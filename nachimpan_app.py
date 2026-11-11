@@ -151,14 +151,25 @@ footer {
     line-height: 1 !important;
     margin: 0 !important;
 }
+/* 대출 팝오버는 기존 입력 라벨 크기와 정렬을 유지 */
+.st-key-expense-panel [data-testid="stPopoverButton"],
 .st-key-expense-panel [data-testid="stPopover"] button {
-    font-size: 0.85rem !important;
-    font-weight: 600 !important;
+    font-size: inherit !important;
+    font-weight: 400 !important;
+    line-height: inherit !important;
+    justify-content: flex-start !important;
 }
 /* 탭1 제목형 출처 링크: 원래 제목 크기와 위치를 유지 */
+.st-key-source_retirement_expense {
+    width: 100% !important;
+    flex: 1 1 auto !important;
+    margin-left: 0 !important;
+}
 .st-key-source_retirement_expense [data-testid="stButton"] button {
+    width: auto !important;
     font-size: 1.17rem !important;
     font-weight: 700 !important;
+    justify-content: flex-start !important;
 }
 
 /* 통계 자료실의 산출 방법 팝오버 버튼: primary 색상과 명시적 배경 지정 */
