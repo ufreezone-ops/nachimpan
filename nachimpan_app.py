@@ -5163,7 +5163,7 @@ elif selected_page == "통계":
 
 <div id="stats-anchor-retirement-mainjob" style="scroll-margin-top: 150px;"></div>
 
-# 55~60세 전후
+#### 55~60세 전후
 
 국가데이터처의 2026년 5월 고령층 부가조사에서, 가장 오래 근무한 일자리를 그만둔 당시 평균 연령은 **53.0세**였습니다.
 
@@ -5173,7 +5173,7 @@ elif selected_page == "통계":
 
 <div id="stats-anchor-retirement-nta" style="scroll-margin-top: 150px;"></div>
 
-# 61세
+#### 61세
 
 국가데이터처 「2024년 국민이전계정」에서 노동소득보다 소비가 다시 커지는 **적자 재전환 연령은 61세**입니다. 국민 전체의 연령별 노동소득과 소비를 1인당 평균으로 살펴본 결과입니다.
 
@@ -5183,7 +5183,7 @@ elif selected_page == "통계":
 
 <div id="stats-anchor-retirement-oecd" style="scroll-margin-top: 150px;"></div>
 
-# 남성 67.4세 · 여성 69.6세
+#### 남성 67.4세 · 여성 69.6세
 
 OECD 「Pensions at a Glance 2025: Korea」는 2024년 한국의 실질 노동시장 이탈 연령을 **남성 67.4세, 여성 69.6세**로 제시합니다. 한국의 65~69세 고용률도 **57%**로, OECD 평균 26%보다 높았습니다.
 
