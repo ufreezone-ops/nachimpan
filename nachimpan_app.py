@@ -159,6 +159,55 @@ footer {
     line-height: inherit !important;
     justify-content: flex-start !important;
 }
+/* 대출 상환액 제목과 나침반 출처 팝오버 */
+.st-key-loan-title-row [data-testid="stElementContainer"]:has(h4) {
+    flex: 0 0 auto !important;
+    width: max-content !important;
+    min-width: 0 !important;
+}
+.st-key-loan-title-row h4 {
+    white-space: nowrap !important;
+    font-size: 1.05rem !important;
+    margin: 0 !important;
+}
+.st-key-loan-title-row [data-testid="stHorizontalBlock"] {
+    align-items: center !important;
+    column-gap: 0.1rem !important;
+}
+.st-key-loan-source-compass [data-testid="stPopoverButton"] {
+    width: auto !important;
+    min-width: 0 !important;
+    max-width: max-content !important;
+    height: auto !important;
+    min-height: 0 !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    border: 0 !important;
+    background: transparent !important;
+    box-shadow: none !important;
+    color: #38BDF8 !important;
+    -webkit-text-fill-color: #38BDF8 !important;
+    font-size: 1.2rem !important;
+    line-height: 1 !important;
+}
+.st-key-loan-source-compass [data-testid="stPopoverButton"] svg {
+    display: none !important;
+}
+.st-key-loan-source-compass [data-testid="stPopoverButton"]:hover {
+    background: transparent !important;
+    color: #7DD3FC !important;
+    -webkit-text-fill-color: #7DD3FC !important;
+    text-decoration: underline !important;
+}
+@media (max-width: 1024px) and (pointer: coarse) {
+    .st-key-loan-title-row [data-testid="stHorizontalBlock"] {
+        column-gap: 0 !important;
+    }
+    .st-key-loan-source-compass [data-testid="stPopoverButton"] p::before {
+        content: " ";
+        white-space: pre;
+    }
+}
 /* 탭1: 제목 앵커 표시는 숨기고 제목 영역을 글자 너비만 사용 */
 .st-key-retirement-title-row [data-testid="stElementContainer"]:has(h3) {
     flex: 0 0 auto !important;
@@ -1821,17 +1870,25 @@ if selected_page == "우리집 가계부":
                         else "expense_loan_user"
                     )
                     if is_representative_case_for_loan:
-                        with st.popover(
-                            "대출 원리금 월 상환액 (원금+이자 합계)",
-                            help="대표사례의 월 원리금 계산 방식 보기",
-                            type="tertiary",
+                        with st.container(
+                            horizontal=True,
+                            vertical_alignment="center",
+                            gap=None,
+                            key="loan-title-row",
                         ):
-                            st.markdown(
-                                "**대표사례의 대출 상환액**\n\n"
-                                "주택 구입가격과 LTV로 대출원금을 정하고, "
-                                "연 이자율·상환기간·구입시점을 반영해 "
-                                "현재 시점의 월 원리금(원금+이자 합계)을 계산합니다."
-                            )
+                            st.markdown("#### 대출 원리금 월 상환액 (원금+이자)")
+                            with st.container(key="loan-source-compass"):
+                                with st.popover(
+                                    "🧭",
+                                    help="대표사례의 월 원리금 계산 방식 보기",
+                                    type="tertiary",
+                                ):
+                                    st.markdown(
+                                        "**대표사례의 대출 상환액**\n\n"
+                                        "주택 구입가격과 LTV로 대출원금을 정하고, "
+                                        "연 이자율·상환기간·구입시점을 반영해 "
+                                        "현재 시점의 월 원리금(원금+이자 합계)을 계산합니다."
+                                    )
                         expense_loan = st.number_input(
                             "대출 원리금 월 상환액 (원금+이자 합계)",
                             min_value=0,
