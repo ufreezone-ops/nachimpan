@@ -1823,13 +1823,10 @@ if selected_page == "우리집 가계부":
                         else "expense_loan_user"
                     )
                     if is_representative_case_for_loan:
-                        with st.container(
-                            horizontal=True,
-                            vertical_alignment="center",
-                            gap=None,
-                            key="loan-title-row",
-                        ):
-                            st.markdown("#### 대출 원리금 월상환액(원금+이자) [주석]")
+                        st.markdown(
+                            '<div style="font-size: 0.875rem; font-weight: 400; line-height: 1.4; margin: 0 0 0.25rem 0;">대출 원리금 월상환액(원금+이자) [주석]</div>',
+                            unsafe_allow_html=True,
+                        )
                         expense_loan = st.number_input(
                             "대출 원리금 월 상환액 (원금+이자 합계)",
                             min_value=0,
