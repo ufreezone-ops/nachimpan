@@ -3433,8 +3433,8 @@ elif selected_page == "인생의 사계절":
         if getv("child_age2", 0) > 0: people.append(("둘째", int(getv("child_age2"))))
         if getv("child_age3", 0) > 0: people.append(("셋째", int(getv("child_age3"))))
         if getv("child_age4", 0) > 0: people.append(("넷째", int(getv("child_age4"))))
-        if getv("father_age", 0) > 0: people.append(("아버지", int(getv("father_age"))))
-        if getv("mother_age", 0) > 0: people.append(("어머니", int(getv("mother_age"))))
+        if getv("mother_age", 0) > 0: people.append(("엄마", int(getv("mother_age"))))
+        if getv("father_age", 0) > 0: people.append(("아빠", int(getv("father_age"))))
 
         st.markdown(f"""
 <div style="background: rgba(30, 41, 59, 0.4); border: 1px solid #334155; border-radius: 10px; padding: 12px 18px; margin: 18px 0 10px 0; display:flex; justify-content:space-between; align-items:center;">
