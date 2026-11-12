@@ -4007,7 +4007,6 @@ elif selected_page == "인생의 사계절":
         mortgage_principal_curve = []
         mortgage_interest_curve = []
         mortgage_balance_curve = []
-        expense_debug_rows = []  # 임시 진단: 연령별 기본 지출·생애사건 지출 분리 확인
 
         for a in ages_sim:
             # 연령 a가 실제로 해당하는 달력연도. 실행 시점의 현재 나이를 기준으로 과거·미래를 연결한다.
@@ -4146,45 +4145,12 @@ elif selected_page == "인생의 사계절":
             event_expense = event_expense_by_age.get(a, 0.0) * cpi_relative_to_current
             total_hh_exp = base_exp + event_expense
             household_expense_curve.append(total_hh_exp)
-            if 30 <= a <= 45 or a >= retire_age:
-                expense_debug_rows.append({
-                    "나이": a,
-                    "가구원 수": household_size,
-                    "통계 기준 월지출(만원)": expense_reference["monthly"] if expense_reference else None,
-                    "적용 연령대": expense_reference["age_band"] if expense_reference else "",
-                    "표본 수": expense_reference["sample_n"] if expense_reference else None,
-                    "표본 주의": "30 미만" if expense_reference and expense_reference["small_sample"] else "",
-                    "통계 대체 적용": bool(expense_reference and expense_reference["fallback"]),
-                    "기본 지출(만원/년)": base_exp,
-                    "주택대출 연초 잔액(만원)": mortgage_balance_at_age_start,
-                    "주택대출 원금상환(만원/년)": annual_mortgage_principal,
-                    "주택대출 이자(만원/년)": annual_mortgage_interest,
-                    "생애사건 추가 지출(만원/년)": event_expense,
-                    "최종 가구 지출(만원/년)": total_hh_exp,
-                })
-
         st.caption(
             "통시성 보정 적용: 근로소득은 2011~2025년 실제 임금지수, 지출은 실제 CPI를 사용합니다. "
             "2026년은 최신 실적연도(2025년) 수준을 기준점으로 두고, 2027년 이후에는 2011~2025년 연평균 복합상승률 "
             f"(임금 {wage_forecast_rate * 100:.2f}%, 물가 {cpi_forecast_rate * 100:.2f}%)을 미래 가정으로 적용합니다. "
             "2011년 이전 임금지수는 자료가 없어 임의 추정하지 않습니다."
         )
-
-        # 임시 진단 패널: 계산식과 그래프에는 영향을 주지 않음
-        with st.expander("🔎 임시 진단 — 연령별 가구 지출 계산", expanded=True):
-            st.write({
-                "현재 나이": cur_age,
-                "결혼 상태(m_plan)": m_plan,
-                "결혼 시작 나이(marriage_start)": marriage_start,
-                "현재 가구원 수": current_household_size,
-                "현재 연령·가구원 수 통계 월지출(만원)": current_expense_reference["monthly"] if current_expense_reference else None,
-                "현재 통계 표본 수": current_expense_reference["sample_n"] if current_expense_reference else None,
-                "현재 가구 연간 기본 지출(만원)": cur_annual_expense,
-                "현재 지출 보정계수": round(expense_scale_ratio, 4),
-                "실제 결혼 나이 입력값": st.session_state.get("actual_marriage_age", 0),
-                "목표 결혼 나이 입력값": st.session_state.get("target_marriage_age", 0),
-            })
-            st.dataframe(pd.DataFrame(expense_debug_rows), use_container_width=True, hide_index=True)
 
 #############    6.03.05.08 | 가구 순수지 분리 및 Y축 자동 스케일링
         # MDIS 가계지출에는 이자 등 비소비지출이 포함되므로 이자를 별도 가산하지 않는다.
