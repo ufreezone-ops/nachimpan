@@ -3433,8 +3433,8 @@ elif selected_page == "인생의 사계절":
         if getv("child_age2", 0) > 0: people.append(("둘째", int(getv("child_age2"))))
         if getv("child_age3", 0) > 0: people.append(("셋째", int(getv("child_age3"))))
         if getv("child_age4", 0) > 0: people.append(("넷째", int(getv("child_age4"))))
-        if getv("mother_age", 0) > 0: people.append(("엄마", int(getv("mother_age"))))
-        if getv("father_age", 0) > 0: people.append(("아빠", int(getv("father_age"))))
+        if getv("mother_age", 0) > 0: people.append(("어머니", int(getv("mother_age"))))
+        if getv("father_age", 0) > 0: people.append(("아버지", int(getv("father_age"))))
 
         st.markdown(f"""
 <div style="background: rgba(30, 41, 59, 0.4); border: 1px solid #334155; border-radius: 10px; padding: 12px 18px; margin: 18px 0 10px 0; display:flex; justify-content:space-between; align-items:center;">
@@ -3443,12 +3443,13 @@ elif selected_page == "인생의 사계절":
 </div>
 """, unsafe_allow_html=True)
 
-        f_cols = st.columns(2)
-        for idx, (name, current) in enumerate(people):
-            c = f_cols[idx % 2]
-            future = current + years_left
-            with c:
-                st.markdown(f"""
+        # 한 행씩 두 사람을 배치해 모바일에서도 가족 순서를 유지한다.
+        for row_start in range(0, len(people), 2):
+            f_cols = st.columns(2)
+            for col_idx, (name, current) in enumerate(people[row_start:row_start + 2]):
+                future = current + years_left
+                with f_cols[col_idx]:
+                    st.markdown(f"""
 <div class='soft-card' style='display:flex; align-items:center; justify-content:space-between; padding:12px 18px; margin:5px 0;'>
 <b style='font-size:16px; color:#F8FAFC;'>{name}</b>
 <div style='display:flex; align-items:center; gap:12px;'>
