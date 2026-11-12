@@ -4361,25 +4361,25 @@ elif selected_page == "인생의 사계절":
 
             # 결혼·출산·교육 등 생애사건 비용도 발생 연도의 물가 기준으로 환산
             event_expense = event_expense_by_age.get(a, 0.0) * cpi_relative_to_current
-            total_hh_exp = base_exp + event_expense
+            # 대출 원금은 소비지출 통계에는 없지만 실제 가계 현금 유출이므로 가구지출에 포함한다.
+            # 이자는 MDIS 비소비지출에 포함된 것으로 보고 별도 가산하지 않는다.
+            total_hh_exp = base_exp + event_expense + annual_mortgage_principal
             household_expense_curve.append(total_hh_exp)
 
         # 별도 가구처분가능소득 자료는 사용하지 않는다.
         # 기존 직업군별 연령 기준곡선을 은퇴 이후까지 연장한 비교 시나리오를 사용한다.
 
 #############    6.03.05.08 | 가구 순수지 분리 및 Y축 자동 스케일링
-        # MDIS 가계지출에는 이자 등 비소비지출이 포함되므로 이자를 별도 가산하지 않는다.
-        # 원금은 소비지출에서 제외하되 실제 현금 유출이므로 순현금흐름에서 별도 차감한다.
+        # 대출 원금상환액은 가구지출에 이미 포함했으므로 여기서 중복 차감하지 않는다.
         net_flow = [
-            i - e - p
-            for i, e, p in zip(household_income_curve, household_expense_curve, mortgage_principal_curve)
+            i - e
+            for i, e in zip(household_income_curve, household_expense_curve)
         ]
         statistical_adjusted_net_flow = [
-            income - expense - principal if income is not None else None
-            for income, expense, principal in zip(
+            income - expense if income is not None else None
+            for income, expense in zip(
                 statistical_adjusted_income_curve,
                 household_expense_curve,
-                mortgage_principal_curve,
             )
         ]
 
