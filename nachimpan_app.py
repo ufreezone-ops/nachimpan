@@ -4491,8 +4491,7 @@ elif selected_page == "인생의 사계절":
             y=statistical_adjusted_income_curve,
             mode="lines",
             line=dict(color="#22C55E", width=3.0, dash="dot", shape="spline", smoothing=0.8),
-            name="통계적 보정 소득 (연금 제외)",
-            showlegend=False,
+            name="가구소득(통계보정)",
             connectgaps=False,
             hovertemplate=(
                 "나이: %{x}세<br>"
@@ -4651,12 +4650,7 @@ elif selected_page == "인생의 사계절":
         fig_my_nta.update_yaxes(range=[0, y_top], row=1, col=1)
 
         st.plotly_chart(fig_my_nta, use_container_width=True, config={"displayModeBar": False, "scrollZoom": False, "doubleClick": False, "showAxisDragHandles": False})
-        st.caption(
-            "녹색 실선은 우리 가정의 기존 예상 가구소득으로, 은퇴 후 입력된 국민연금과 기타 연금도 그대로 포함합니다. "
-            "녹색 점선은 2024년 대한민국 가구의 연령대별 평균 처분가능소득을 은퇴 시작 연도의 물가로 한 번 환산한 통계 비교선입니다. "
-            "같은 연령대 안에서는 물가를 매년 누적하지 않으므로 60세 이상 구간은 평평하게 유지됩니다. "
-            "점선은 비교용이며 아래 순현금흐름과 누적액에는 반영하지 않습니다."
-        )
+
 
         # 생애주기 누적 총액: 20세부터 성별 기대수명까지 연령별 연간 금액을 합산
         lifetime_income_total = float(sum(household_income_curve))
@@ -5446,10 +5440,10 @@ OECD 「Pensions at a Glance 2025: Korea」는 2024년 한국의 실질 노동�
 
 ### 아래 그래프의 '통계적 보정' 순현금흐름
 
-아래 그래프에는 기존 '순 현금흐름'과 함께 녹색 점선 '통계적 보정'을 표시합니다. 두 곡선은 지출과 대출 원금상환액을 동일하게 사용하고, **소득 부분만 다르게** 계산합니다.
+아래 그래프에는 기존 '순 현금흐름'과 함께 녹색 점선 '통계적 보정'을 표시합니다. 두 곡선은 **동일한 가구지출(대출 원금상환액 포함)**을 사용하고, 소득 부분만 다르게 계산합니다.
 
-- 기존 순 현금흐름 = 기존 가구소득 실선 − 가구지출 − 대출 원금상환액
-- 통계적 보정 = 은퇴 후 연장한 통계적 기준소득 − 동일한 가구지출 − 동일한 대출 원금상환액
+- 기존 순 현금흐름 = 기존 가구소득 실선 − 가구지출
+- 통계적 보정 = 은퇴 후 연장한 통계적 기준소득 − 동일한 가구지출
 
 따라서 두 선의 차이는 은퇴 후 소득을 어떤 기준으로 가정하느냐에 따른 차이입니다. 통계적 보정선은 은퇴 연령부터 표시하며, 기존 실선이나 기존 순현금흐름을 대체하지 않습니다.
 
