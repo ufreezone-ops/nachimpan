@@ -4005,6 +4005,9 @@ elif selected_page == "인생의 사계절":
                     midpoint = (float(lower_text) + float(upper_text)) / 2.0
                 else:
                     continue
+                # 시뮬레이션은 20세부터 시작하므로 17~19세 소표본 구간은 보간 기준점에서 제외한다.
+                if midpoint < 20:
+                    continue
                 age_points.append((midpoint, band))
 
             age_points = sorted(set(age_points), key=lambda item: item[0])
