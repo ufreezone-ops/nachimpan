@@ -3127,7 +3127,7 @@ elif selected_page == "인생의 사계절":
                 st.rerun()
 
     else:
-        st.caption("가족 정보를 입력하고 우리 가정의 흐름을 살펴본 뒤, 국가 평균과 비교하며 인생의 계절을 생각해 봅니다.")
+        st.caption("우리가족을 통계와 비교하며 인생의 사계절을 생각해 봅니다.")
 
 #--------------------------------------------------------
 # 6.03.03 | 고급 모드 — 1. 가족 구성원 나이 및 주택가격 기준 통계
@@ -3355,12 +3355,6 @@ elif selected_page == "인생의 사계절":
                             st.session_state.get("housing_plan", "미정")
                         ) if st.session_state.get("housing_plan", "미정") in housing_options else 0
                     )
-
-                save_family_trigger = st.button(
-                    "입력 정보 AI 점검",
-                    use_container_width=True,
-                    type="primary"
-                )
 
             st.session_state["child_count"] = child_count
             st.session_state["spouse_age"] = int(spouse_age or 0)
