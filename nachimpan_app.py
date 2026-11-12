@@ -95,9 +95,7 @@ footer {
 .st-key-source_retirement_expense,
 .st-key-source_nta_basic,
 .st-key-source_nta_generational,
-.st-key-source_retirement_mainjob,
-.st-key-source_retirement_nta,
-.st-key-source_retirement_oecd,
+.st-key-source_retirement_milestones,
 .st-key-loan_payment_source_link {
     width: auto !important;
     min-width: 0 !important;
@@ -108,9 +106,7 @@ footer {
 .st-key-source_retirement_expense [data-testid="stButton"] button,
 .st-key-source_nta_basic [data-testid="stButton"] button,
 .st-key-source_nta_generational [data-testid="stButton"] button,
-.st-key-source_retirement_mainjob [data-testid="stButton"] button,
-.st-key-source_retirement_nta [data-testid="stButton"] button,
-.st-key-source_retirement_oecd [data-testid="stButton"] button,
+.st-key-source_retirement_milestones [data-testid="stButton"] button,
 .st-key-loan_payment_source_link [data-testid="stButton"] button,
 .st-key-expense-panel [data-testid="stPopoverButton"],
 .st-key-expense-panel [data-testid="stPopover"] button {
@@ -139,9 +135,7 @@ footer {
 .st-key-source_retirement_expense [data-testid="stButton"] button:hover,
 .st-key-source_nta_basic [data-testid="stButton"] button:hover,
 .st-key-source_nta_generational [data-testid="stButton"] button:hover,
-.st-key-source_retirement_mainjob [data-testid="stButton"] button:hover,
-.st-key-source_retirement_nta [data-testid="stButton"] button:hover,
-.st-key-source_retirement_oecd [data-testid="stButton"] button:hover,
+.st-key-source_retirement_milestones [data-testid="stButton"] button:hover,
 .st-key-loan_payment_source_link [data-testid="stButton"] button:hover,
 .st-key-expense-panel [data-testid="stPopoverButton"]:hover,
 .st-key-expense-panel [data-testid="stPopover"] button:hover {
@@ -157,9 +151,7 @@ footer {
 .st-key-source_retirement_expense [data-testid="stButton"] button p,
 .st-key-source_nta_basic [data-testid="stButton"] button p,
 .st-key-source_nta_generational [data-testid="stButton"] button p,
-.st-key-source_retirement_mainjob [data-testid="stButton"] button p,
-.st-key-source_retirement_nta [data-testid="stButton"] button p,
-.st-key-source_retirement_oecd [data-testid="stButton"] button p,
+.st-key-source_retirement_milestones [data-testid="stButton"] button p,
 .st-key-loan_payment_source_link [data-testid="stButton"] button p,
 .st-key-expense-panel [data-testid="stPopoverButton"] p,
 .st-key-expense-panel [data-testid="stPopover"] button p {
@@ -1759,12 +1751,8 @@ def _open_source_reference(source_id, origin_page, origin_anchor):
         st.session_state["_source_open_anchor"] = "stats-anchor-retirement-expense"
     elif source_id == "6050700-01":
         st.session_state["_source_open_anchor"] = "stats-anchor-loan-payment"
-    elif source_id == "6051300-01":
-        st.session_state["_source_open_anchor"] = "stats-anchor-retirement-mainjob"
-    elif source_id == "6051300-02":
-        st.session_state["_source_open_anchor"] = "stats-anchor-retirement-nta"
-    elif source_id == "6051300-03":
-        st.session_state["_source_open_anchor"] = "stats-anchor-retirement-oecd"
+    elif source_id == "6051300-00":
+        st.session_state["_source_open_anchor"] = "stats-anchor-retirement-milestones"
     st.session_state["_pending_nav"] = "통계"
     st.rerun()
 
@@ -2962,31 +2950,28 @@ elif selected_page == "삶과 생계수단":
 
             st.markdown('<div id="retirement-milestones-origin" style="scroll-margin-top: 150px;"></div>', unsafe_allow_html=True)
             with st.container(border=True, key="retirement-milestones-panel"):
-                st.markdown("**통계로 본 대한민국 3대 은퇴 분기점**")
+                with st.container(horizontal=True, vertical_alignment="center", gap=None):
+                    st.markdown("**통계로 본 대한민국 3대 은퇴 분기점**")
+                    if st.button("🧭", key="source_retirement_milestones", help="대한민국 3대 은퇴 분기점 통계 리포트 보기", type="tertiary"):
+                        _open_source_reference("6051300-00", "삶과 생계수단", "retirement-milestones-origin")
                 with st.container(horizontal=True, vertical_alignment="center", gap=None):
                     st.markdown(
                         '**"근로소득의 정점 및 본업 졸업" 관점이라면**  \n'
                         '➔ **55~60세 전후** <span style="font-size: 0.9em; color: #94A3B8;">(주된 일자리 퇴직 당시 평균 53.0세)</span>',
                         unsafe_allow_html=True,
                     )
-                    if st.button("🧭", key="source_retirement_mainjob", help="주된 일자리 퇴직 연령의 조사 결과와 해석 보기", type="tertiary"):
-                        _open_source_reference("6051300-01", "인생의 사계절", "retirement-milestones-origin")
                 with st.container(horizontal=True, vertical_alignment="center", gap=None):
                     st.markdown(
                         '**"국가 통계적 흑자·적자 수지 균형" 관점이라면**  \n'
                         '➔ **61세** <span style="font-size: 0.9em; color: #94A3B8;">(국민이전계정 NTA 적자 재전환 연령)</span>',
                         unsafe_allow_html=True,
                     )
-                    if st.button("🧭", key="source_retirement_nta", help="국민이전계정의 생애주기 적자 재전환 연령 보기", type="tertiary"):
-                        _open_source_reference("6051300-02", "인생의 사계절", "retirement-milestones-origin")
                 with st.container(horizontal=True, vertical_alignment="center", gap=None):
                     st.markdown(
                         '**"노동시장에서 실질적으로 이탈하는 시점" 관점이라면**  \n'
                         '➔ **남성 67.4세 · 여성 69.6세** <span style="font-size: 0.9em; color: #94A3B8;">(OECD 2024년 추정치)</span>',
                         unsafe_allow_html=True,
                     )
-                    if st.button("🧭", key="source_retirement_oecd", help="OECD 실질 노동시장 이탈 연령의 국가별 보고서 보기", type="tertiary"):
-                        _open_source_reference("6051300-03", "인생의 사계절", "retirement-milestones-origin")
 
             st.markdown("</div>", unsafe_allow_html=True)
 
@@ -5120,9 +5105,7 @@ elif selected_page == "통계":
         "6030200-01": "국가데이터처 「2024년 국민이전계정」",
         "6050600-01": "국가데이터처 「2024년 가계동향조사」 은퇴 후 연령대별 가계지출",
         "6050700-01": "국토교통부 「2024년도 주거실태조사 결과」 및 나침반의 표준 대출 상환 가정",
-        "6051300-01": "국가데이터처 「2026년 5월 경제활동인구조사 고령층 부가조사」 주된 일자리 퇴직 연령",
-        "6051300-02": "국가데이터처 「2024년 국민이전계정」 생애주기 적자 재전환 연령",
-        "6051300-03": "OECD 「Pensions at a Glance 2025: Korea」 실질 노동시장 이탈 연령",
+        "6051300-00": "통계로 본 대한민국 3대 은퇴 분기점",
     }
     if _active_source_id in _source_labels:
         with st.container(key="source-return-bar"):
@@ -5152,6 +5135,7 @@ elif selected_page == "통계":
     #--------------------------------------------------------
     # 6.05.13.00 | 통계로 본 대한민국 3대 은퇴 분기점
     #--------------------------------------------------------
+    st.markdown('<div id="stats-anchor-retirement-milestones" style="scroll-margin-top: 150px;"></div>', unsafe_allow_html=True)
     with st.expander(
         "통계로 본 대한민국 3대 은퇴 분기점",
         expanded=True,
@@ -5161,8 +5145,6 @@ elif selected_page == "통계":
 
 ### ① 주된 일자리에서 물러나는 시기
 
-<div id="stats-anchor-retirement-mainjob" style="scroll-margin-top: 150px;"></div>
-
 #### 55~60세 전후
 
 국가데이터처의 2026년 5월 고령층 부가조사에서, 가장 오래 근무한 일자리를 그만둔 당시 평균 연령은 **53.0세**였습니다.
@@ -5171,8 +5153,6 @@ elif selected_page == "통계":
 
 ### ② 사회 전체의 생애주기 수지가 적자로 돌아서는 시기
 
-<div id="stats-anchor-retirement-nta" style="scroll-margin-top: 150px;"></div>
-
 #### 61세
 
 국가데이터처 「2024년 국민이전계정」에서 노동소득보다 소비가 다시 커지는 **적자 재전환 연령은 61세**입니다. 국민 전체의 연령별 노동소득과 소비를 1인당 평균으로 살펴본 결과입니다.
@@ -5180,8 +5160,6 @@ elif selected_page == "통계":
 이는 개인이 61세에 은퇴한다는 뜻이 아닙니다. 사회 전체의 평균적인 생애주기에서 노동소득만으로 소비를 충당하기 어려워지는 연령을 보여줍니다.
 
 ### ③ 노동시장에서 실질적으로 이탈하는 시기
-
-<div id="stats-anchor-retirement-oecd" style="scroll-margin-top: 150px;"></div>
 
 #### 남성 67.4세 · 여성 69.6세
 
