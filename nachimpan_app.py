@@ -4704,204 +4704,25 @@ div[class*="st-key-graph_stat_report_"] [data-testid="stButton"] button > div {
                         "chart-stat-report-links",
                     )
 
-        with st.expander("과거 소득·지출을 현재 기준과 비교하기", expanded=False):
-    #############    6.03.05.10.01 | 과거 소득·지출의 시간 기준 환산 안내
-            # 2024년 MDIS 기준곡선을 공식 임금·물가지수로 과거 연도와 비교한다.
-            if cur_age > 20 and self_base is not None:
-                historical_compare_age = max(20, cur_age - 13)
-                years_back = cur_age - historical_compare_age
-                historical_year = date.today().year - years_back
-                macro_index_stats = pd.DataFrame()
-                try:
-                    macro_path = Path(__file__).resolve().parent / "data" / "기준데이터" / "국가데이터처_소비자물가지수_및_고용노동부_임금지수_1965-2025.csv"
-                    macro_index_stats = pd.read_csv(macro_path)
-                except Exception as e:
-                    st.warning(f"시간축 보정 지수표를 불러오지 못했습니다. ({e})")
-
-                def get_macro_value(year, column):
-                    if macro_index_stats.empty:
-                        return None
-                    matched = macro_index_stats[macro_index_stats["year"] == year]
-                    if matched.empty or pd.isna(matched.iloc[0][column]):
-                        return None
-                    return float(matched.iloc[0][column])
-
-                wage_base_index = get_macro_value(2025, "moel_wage_index_2024_100")
-                historical_wage_index = get_macro_value(historical_year, "moel_wage_index_2024_100")
-                cpi_base_index = get_macro_value(2024, "cpi_index_2020_100")
-                historical_cpi_index = get_macro_value(historical_year, "cpi_index_2020_100")
-
-                historical_current_value_monthly = (
-                    extended_base_income(historical_compare_age, self_base) * self_scale
+        # 통계 설명은 통계탭에 모으고, 이 화면에는 이동 제목만 둔다.
+        _case_stat_links = [
+            ("과거 소득·지출을 현재 기준과 비교하기", "6050600-00"),
+            ("지출 통계 출처 및 산출방법", "6050400-01"),
+            ("부동산 산정 기준", "6050500-01"),
+            ("소득 기준곡선의 출처와 산정 방식", "6050700-00"),
+        ]
+        for _case_stat_title, _case_stat_id in _case_stat_links:
+            if st.button(
+                f"🧭 {_case_stat_title}",
+                key=f"case_stat_detail_{_case_stat_id}",
+                type="tertiary",
+                use_container_width=False,
+            ):
+                _open_source_reference(
+                    _case_stat_id,
+                    "인생의 사계절",
+                    "case-stat-detail-links",
                 )
-
-                if (
-                    wage_base_index is not None
-                    and historical_wage_index is not None
-                    and historical_wage_index > 0
-                ):
-                    historical_wage_factor = wage_base_index / historical_wage_index
-                    historical_nominal_monthly = (
-                        historical_current_value_monthly / historical_wage_factor
-                    )
-                else:
-                    historical_wage_factor = None
-                    historical_nominal_monthly = None
-
-                # 월 기본급끼리 비교하도록 연간 상여금은 제외하고,
-                # 해당 연령의 육아·경력 회복 계수만 기존 소득곡선과 동일하게 적용한다.
-                historical_career_factor = 1.0
-                historical_is_in_childcare = False
-                historical_has_completed_childcare = False
-                for c_start, c_end in childcare_windows:
-                    if c_start <= historical_compare_age < c_end:
-                        years_in = historical_compare_age - c_start
-                        historical_career_factor = 0.35 if years_in <= 1 else 0.50
-                        historical_is_in_childcare = True
-                        break
-                    elif historical_compare_age >= c_end:
-                        historical_has_completed_childcare = True
-
-                if (
-                    not historical_is_in_childcare
-                    and historical_has_completed_childcare
-                ):
-                    historical_career_factor = 0.80
-
-                historical_model_monthly = (
-                    historical_nominal_monthly * historical_career_factor
-                    if historical_nominal_monthly is not None else None
-                )
-
-                historical_expense_reference = lookup_household_expense(
-                    historical_compare_age,
-                    household_size_at_age(historical_compare_age)
-                )
-                if (
-                    historical_expense_reference
-                    and cpi_base_index is not None
-                    and historical_cpi_index is not None
-                    and historical_cpi_index > 0
-                ):
-                    historical_cpi_factor = cpi_base_index / historical_cpi_index
-                    historical_expense_2024 = (
-                        historical_expense_reference["monthly"] * 12.0 * expense_scale_ratio
-                    )
-                    historical_expense_nominal = historical_expense_2024 / historical_cpi_factor
-                else:
-                    historical_cpi_factor = None
-                    historical_expense_2024 = None
-                    historical_expense_nominal = None
-
-                st.markdown("#### 시간을 맞춰 소득과 지출 비교하기")
-                st.caption(
-                    f"{historical_year}년 소득은 2025년 임금통계 기준으로, 지출은 2024년 MDIS 기준으로 환산합니다. "
-                    "소득은 임금지수, 지출은 소비자물가지수를 각각 적용합니다."
-                )
-                time_value_col1, time_value_col2 = st.columns(2)
-                if historical_nominal_monthly is not None:
-                    time_value_col1.metric(
-                        f"{historical_year}년 소득 추정",
-                        f"{historical_nominal_monthly:,.0f}만 원/월",
-                        help="2025년 임금지수 기준 소득을 실제 임금지수의 연도 간 비율로 역산한 추정치입니다."
-                    )
-                    time_value_col2.metric(
-                        "2025년 임금통계 기준 소득",
-                        f"{historical_current_value_monthly:,.0f}만 원/월",
-                        help="가장 최근 연간 임금통계인 2025년을 기준으로 본 소득 추정치입니다."
-                    )
-                    st.caption(
-                        f"임금지수 환산 배율: {historical_wage_factor:.3f}배. "
-                        f"육아·경력 영향을 반영한 {historical_compare_age}세 당시의 모델 소득은 "
-                        f"월 {historical_model_monthly:,.0f}만 원입니다."
-                    )
-                else:
-                    st.info(
-                        f"{historical_year}년 임금지수는 현재 자료표에서 확인되지 않아 "
-                        "소득의 시간 환산을 생략했습니다."
-                    )
-
-                if historical_expense_nominal is not None:
-                    st.caption(
-                        f"같은 연령·가구원 수의 2024년 MDIS 지출 기준은 연 "
-                        f"{historical_expense_2024:,.0f}만 원이며, "
-                        f"{historical_year}년 물가로 환산한 추정치는 연 "
-                        f"{historical_expense_nominal:,.0f}만 원입니다. "
-                        f"물가 환산 배율은 {historical_cpi_factor:.3f}배입니다."
-                    )
-                else:
-                    st.caption(
-                        f"{historical_year}년 소비자물가지수 또는 해당 연령·가구원 수 지출 기준을 "
-                        "확인할 수 없어 지출의 시간 환산을 생략했습니다."
-                    )
-                st.caption(
-                    "주의: 2024년 MDIS 연령별 지출 가중중위값은 횡단면 통계이며, 과거 지출값은 실제 관측치가 아닌 "
-                    "2024년 기준곡선에 물가지수를 적용한 비교용 추정치입니다. "
-                    "임금 통계는 2011년 이전과 시계열이 단절되어 있습니다."
-                )
-
-#############    6.03.05.10.02 | [개발 메모] 시간축 보정 원칙 — 과거와 미래
-        # >>> 개발 중 계속 눈에 띄게 확인할 것: 돈의 액수만 비교하지 말고, 시간의 기준을 맞춘다. <<<
-        #
-        # [과거의 시간] 과거 소득을 현재 소득과 비교할 때는 당시 명목금액만 나란히 놓지 않는다.
-        # 임금상승률을 적용해 현재 가치로 환산한 값도 함께 살펴본다.
-        # 예: 2013년 추정 소득은 2011~2025년 고용노동부 임금총액 지수로 2025년 기준 환산한다.
-        # 같은 시점의 지출은 2024년 MDIS 기준곡선에 소비자물가지수를 별도로 적용한다.
-        # 과거 지출·소득 환산값은 해당 개인·가구의 실제 과거 관측치가 아니라 비교용 추정치다.
-        #
-        # [현재의 시간] 현재 입력소득과 통계 기준소득을 비교할 때도 기준 시점을 분명히 한다.
-        # 경력단절·육아 등에 따른 실제 소득 감소와, 시간 경과에 따른 임금수준 변화는 섞지 않는다.
-        #
-        # [미래의 시간] 시간축 보정은 과거 비교만으로 완성되지 않는다. 이것은 절반이다.
-        # 앞으로 받을 연금과 은퇴 후 생활비도 수령·지출 시점의 가치로 함께 바라봐야 한다.
-        # 미래 연금의 증가·물가 반영, 은퇴 후 생활비의 구매력 변화는 별도의 시간축 문제로 이어서 검토한다.
-        #
-        # 임금상승률과 물가상승률은 장기적으로 비슷하게 움직일 수 있어도 같은 지표로 취급하지 않는다.
-        # 이 메모는 일반 사용자 화면에 노출하기 위한 설명문이 아니라, 개발·검토 과정에서
-        # 이 시간의 문제를 잊지 않도록 코드 안에 붙여 두는 작업 메모다.
-        
-        if current_expense_reference:
-            st.caption(
-                f"기준: 2024년 현재 {cur_age}세·{current_household_size}인 가구의 월 가중중위값 "
-                f"{current_expense_reference['monthly']:,.1f}만 원을 연간 지출 곡선에 적용했습니다. "
-                f"개인 지출 보정률: {expense_scale_ratio:.1%}."
-            )
-        else:
-            st.caption("MDIS 지출 통계표를 읽지 못해 현재 입력한 연간 지출을 기준으로 표시하고 있습니다.")
-        st.caption("표본 수 30 미만인 구간(특히 일부 3·4인 가구)은 변동 가능성이 커 참고값으로 해석해 주세요.")
-        st.markdown(
-            '[지출 통계 출처 및 산출방법](https://github.com/ufreezone-ops/nachimpan/blob/dev/data/기준데이터/국가데이터처_2024_가계동향조사_가구주연령대별가구원수별가계지출_가중중위값_README.md) · '
-            '[MDIS 자료 이용 안내](https://mdis.mods.go.kr/mobile/pageLink.do?link=mdisService)',
-            unsafe_allow_html=True
-        )
-
-        # 기준 지역 안내 카드
-        housing_price_label = "대표사례 적용 주택가격" if is_representative_case else "아파트 중위가격"
-        st.markdown(f"""
-<div style="background: rgba(30, 41, 59, 0.5); border: 1px solid #0284C7; border-radius: 8px; padding: 10px 14px; margin: 6px 0 12px 0; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px;">
-    <div style="font-size: 14.5px; color: #F8FAFC;">
-        🏠 <b>부동산 산정 기준 지역: <span style="color: #38BDF8; font-size: 16px;">{selected_region}</span></b>
-        <span style="font-size: 13px; color: #94A3B8; margin-left: 8px;">({housing_price_label}: <b>{region_apt_price/10000:.2f}억 원</b> · 대출 LTV {selected_ltv:.0f}% 적용 자기자금: <b>{home_equity_display/10000:.2f}억 원</b>)</span>
-    </div>
-    <div style="font-size: 12px; color: #CBD5E1; background: rgba(15, 23, 42, 0.6); padding: 3px 8px; border-radius: 4px;">
-        ※ 지역에 따라 결혼 주거지원비와 내 집 마련 규모가 크게 변동됩니다.
-    </div>
-</div>
-""", unsafe_allow_html=True)
-
-        with st.expander("소득 기준곡선의 출처와 산정 방식", expanded=False):
-            st.markdown("""
-    <div style="background: rgba(30, 41, 59, 0.45); border: 1px solid #475569; border-radius: 8px; padding: 12px 15px; margin: 8px 0 12px 0; font-size: 13.5px; line-height: 1.7; color: #CBD5E1;">
-    <b style="color:#F8FAFC;">소득 기준곡선의 출처와 산정 방식</b><br>
-    • <b>직장인 기준곡선:</b> 국가데이터처 「2023년 국민이전계정」의 연령별 1인당 임금소득 흐름을 참고해 나침반에서 월소득 기준으로 재구성한 자체 기준곡선입니다. NTA의 1인당 금액은 해당 연령의 전체 인구를 기준으로 계산한 값이므로, 취업자 개인의 실제 평균임금과 같지 않으며 원자료 수치를 그대로 옮긴 곡선도 아닙니다.<br>
-    • <b>자영업자 기준곡선:</b> NTA의 자영자 노동소득은 사업소득 전체가 아니라 노동소득으로 분류된 일부이며, 전체 인구 기준 1인당 값이므로 자영업자 개인의 실제 사업소득 곡선으로 직접 사용하지 않았습니다. 대신 국가데이터처 「2024년 가계금융복지조사」(2023년 소득 자료)의 가구주 종사상지위별 통계를 참고했습니다. 자영업자 가구의 평균 가구소득은 7,769만 원, 그중 사업소득은 4,680만 원, 재산소득은 634만 원입니다. 이 수치는 가구 단위 평균이며 연령별 개인 소득곡선이 아니므로, 나침반의 자영업자 연령별 기준곡선은 이 자료를 참고하되 코로나 시기 왜곡을 정상화한다는 별도 가정을 반영해 구성한 자체 시뮬레이션입니다.<br>
-    • 각 기준곡선은 현재 입력한 소득을 기준으로 조정되며, 연령 사이 값은 보간합니다. 75세 이후는 추정 연장값입니다. 배우자의 미래 소득도 직업군 기준곡선을 적용한 가정이며 실제 미래 소득을 보장하거나 예측하지 않습니다.<br>
-    자료: <a href="https://mods.go.kr/board.es?act=view&amp;bid=11898&amp;list_no=438783&amp;mid=a10301130100" target="_blank" style="color:#38BDF8;">국가데이터처, 2023년 국민이전계정</a> · <a href="https://mods.go.kr/boardDownload.es?bid=215&amp;list_no=434107&amp;seq=4" target="_blank" style="color:#38BDF8;">국가데이터처·한국은행·금융감독원, 2024년 가계금융복지조사</a>
-    </div>
-    """, unsafe_allow_html=True)
-
-
-            st.markdown("<div style='height: 14px;'></div>", unsafe_allow_html=True)
 
     #--------------------------------------------------------
 # 6.03.06 | 고급 모드 — 3. 세대 계승 생애주기 재정곡선
@@ -5700,6 +5521,12 @@ OECD 「Pensions at a Glance 2025: Korea」는 2024년 한국의 실질 노동�
 
 이 값은 특정 개인의 미래 지출 예측이 아닙니다. 2024년 가구 표본의 가중중위값이며, 개인의 주거 형태·건강·돌봄·지역·생활 방식에 따라 실제 지출은 달라질 수 있습니다.
 
+**우리 가정 생애주기 지출곡선의 현재 기준**
+
+현재 연령과 가구원 수에 해당하는 MDIS 월 가계지출 가중중위값을 기준으로 연간 지출곡선을 구성합니다. 인터뷰이가 입력한 현재 지출과 통계 기준값의 차이는 개인 지출 보정률로 반영합니다. 화면에 표시되는 기준 금액과 보정률은 사례마다 달라지며, 통계 원자료 자체를 수정하는 값은 아닙니다.
+
+연령대·가구원 수 조합에 따라 표본 수가 30 미만인 구간이 있습니다. 특히 일부 3·4인 가구의 가중중위값은 표본 변동 가능성이 있으므로 정밀한 예측값이 아닌 참고 기준으로 해석해야 합니다. 세부 변수, 가중치 적용 및 산출 절차는 기준데이터 README에 정리했습니다.
+
 자료: 국가데이터처 「가계동향조사(2019~2024년 구분류)」 2024년 연간자료, MDIS 제공 공공용 마이크로데이터.
 """)
         with st.container(key="retirement-source-details"):
@@ -5745,7 +5572,7 @@ OECD 「Pensions at a Glance 2025: Korea」는 2024년 한국의 실질 노동�
 **원리금은 서로 다른 흐름으로 처리합니다.**
 
 - 이자: 가계지출에 포함되는 비용. MDIS 가계지출 기준에도 이자 등 비소비지출이 포함되므로 통계 기준곡선에 별도로 더하지 않습니다.
-- 원금: 소비지출이 아니라 부채 감소입니다. 가계지출 곡선에서는 제외하되, 실제 현금 유출이므로 가구 순현금흐름 계산에서 별도로 차감합니다.
+- 원금: 소비지출이 아니라 부채 감소입니다. 다만 실제 현금 유출이므로 나침반의 가구지출 곡선에 원금상환액을 포함하고, 순현금흐름에서는 가구지출에 포함된 금액을 별도로 다시 차감하지 않습니다.
 - 대표사례의 45세 여성은 39세에 대출을 시작해 6년간 상환한 것으로 가정합니다. 현재 추정 잔액은 약 1억 2,362만 원이며, 다음 회차 기준 월 이자는 약 41.2만 원, 원금은 약 25.6만 원입니다.
 - 32세 여성은 현재 주택·대출이 없는 상태로 두고, 39세 주택 구입 시점부터 같은 대출모형을 적용합니다.
 
@@ -5776,6 +5603,12 @@ OECD 「Pensions at a Glance 2025: Korea」는 2024년 한국의 실질 노동�
 현재 기준데이터 파일에는 CPI가 1965~2025년, 임금지수가 2011~2025년까지 들어 있습니다. 임금지수는 2024년을 100으로 재기준화한 값이며, 임금 자료가 없는 1965~2010년은 빈칸으로 보존합니다. 임금 통계는 2011년 조사통합·추정법 변경으로 이전 자료와 시계열 단절이 있다는 공식 주석이 있어, 그 이전을 임의로 이어 붙이지 않습니다.
 
 2024년 MDIS 지출 기준값을 다른 연도의 명목가치로 옮길 때는 해당 연도의 CPI를 적용합니다. 임금 기준값은 연도별 임금지수로 환산합니다. 기준연도가 다르므로 화면과 보고서에서 각각의 기준연도를 구분합니다.
+
+**과거 소득·지출을 현재 기준과 비교하는 방법**
+
+과거의 소득과 지출을 당시 명목금액만으로 현재 값과 나란히 놓으면 화폐가치의 변화를 놓치게 됩니다. 나침반은 과거 연령의 소득 기준값에 당시 임금지수를 적용해 과거 명목소득을 추정하고, 같은 연도의 지출 기준값에는 CPI를 적용해 과거 명목지출을 추정합니다. 소득에는 임금지수, 지출에는 소비자물가지수를 각각 사용하며 서로 바꾸어 적용하지 않습니다.
+
+이 비교는 과거 개인·가구의 실제 소득과 지출을 복원한 값이 아닙니다. 2024년 연령별·가구원 수별 기준곡선을 과거 지수로 환산한 비교용 추정치입니다. 임금지수는 2011년 이전과 시계열이 단절되어 있으므로, 그 이전 소득은 동일한 방식으로 연속 환산할 수 없습니다.
 
 | 항목 | 기준연도 | 실제 자료 범위 |
 |---|---:|---:|
