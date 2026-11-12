@@ -3931,11 +3931,11 @@ elif selected_page == "인생의 사계절":
 
             return min(size, 5)
 
-        def lookup_household_expense(age, household_size):
+        def lookup_household_expense_band(age_band, household_size):
+            """특정 5세 연령 구간의 가중중위값을 조회하고 기존 결측 셀 대체 규칙을 적용한다."""
             if household_expense_stats.empty:
                 return None
 
-            age_band = household_age_band(age)
             size_label = str(household_size) if household_size <= 4 else "5인 이상"
             amount_col = "월중위_가계지출_만원"
 
@@ -3960,7 +3960,7 @@ elif selected_page == "인생의 사계절":
                     )
                     rows = same_age.sort_values("_size_distance").head(1)
                 else:
-                    # 연령대 셀 자체가 없을 때는 같은 가구원 수의 가장 가까운 연령대를 참고
+                    # 같은 가구원 수 자료가 있는 가장 가까운 연령 구간을 참고
                     same_size = household_expense_stats[
                         (household_expense_stats["가구원수"] == size_label)
                         & (household_expense_stats[amount_col].notna())
@@ -3970,7 +3970,7 @@ elif selected_page == "인생의 사계절":
                     same_size["_age_distance"] = same_size["가구주_연령대"].map(
                         lambda value: abs(
                             (80 if value == "80세 이상" else int(value.split("~")[0]) + 2)
-                            - age
+                            - (80 if age_band == "80세 이상" else int(age_band.split("~")[0]) + 2)
                         )
                     )
                     rows = same_size.sort_values("_age_distance").head(1)
@@ -3987,6 +3987,70 @@ elif selected_page == "인생의 사계절":
                 "household_size": used_size,
                 "fallback": fallback or used_size != size_label or used_age_band != age_band,
                 "small_sample": sample_n < 30,
+            }
+
+        def lookup_household_expense(age, household_size):
+            """5세 단위 MDIS 기준값을 인접 연령구간 사이에서 선형 보간한다."""
+            if household_expense_stats.empty:
+                return None
+
+            # 각 통계 구간의 대표 연령을 보간 기준점으로 사용한다.
+            age_points = []
+            for band in household_expense_stats["가구주_연령대"].dropna().unique():
+                band = str(band)
+                if band == "80세 이상":
+                    midpoint = 80.0
+                elif "~" in band:
+                    lower_text, upper_text = band.replace("세", "").split("~", 1)
+                    midpoint = (float(lower_text) + float(upper_text)) / 2.0
+                else:
+                    continue
+                age_points.append((midpoint, band))
+
+            age_points = sorted(set(age_points), key=lambda item: item[0])
+            if not age_points:
+                return None
+
+            target_age = float(age)
+            if target_age <= age_points[0][0]:
+                return lookup_household_expense_band(age_points[0][1], household_size)
+            if target_age >= age_points[-1][0]:
+                return lookup_household_expense_band(age_points[-1][1], household_size)
+
+            lower_point = age_points[0]
+            upper_point = age_points[-1]
+            for idx in range(len(age_points) - 1):
+                if age_points[idx][0] <= target_age <= age_points[idx + 1][0]:
+                    lower_point = age_points[idx]
+                    upper_point = age_points[idx + 1]
+                    break
+
+            lower_data = lookup_household_expense_band(lower_point[1], household_size)
+            upper_data = lookup_household_expense_band(upper_point[1], household_size)
+
+            if lower_data is None and upper_data is None:
+                return None
+            if lower_data is None:
+                return upper_data
+            if upper_data is None:
+                return lower_data
+
+            ratio = (
+                (target_age - lower_point[0])
+                / (upper_point[0] - lower_point[0])
+            )
+            monthly = (
+                lower_data["monthly"]
+                + (upper_data["monthly"] - lower_data["monthly"]) * ratio
+            )
+
+            return {
+                "monthly": monthly,
+                "sample_n": min(lower_data["sample_n"], upper_data["sample_n"]),
+                "age_band": f'{lower_point[1]} ↔ {upper_point[1]} 보간',
+                "household_size": str(household_size),
+                "fallback": lower_data["fallback"] or upper_data["fallback"],
+                "small_sample": lower_data["small_sample"] or upper_data["small_sample"],
             }
 
         # 2024년 MDIS 기준곡선을 연령별 해당 연도의 명목가치로 옮기기 위한 거시지수
