@@ -4708,7 +4708,7 @@ div[class*="st-key-graph_stat_report_"] [data-testid="stButton"] button > div {
         _case_stat_links = [
             ("과거 소득·지출을 현재 기준과 비교하기", "6050600-00"),
             ("지출 통계 출처 및 산출방법", "6050400-01"),
-            ("부동산 산정 기준", "6050500-01"),
+            ("부동산 산정 기준 지역", "6050500-01"),
             ("소득 기준곡선의 출처와 산정 방식", "6050700-00"),
         ]
         for _case_stat_title, _case_stat_id in _case_stat_links:
