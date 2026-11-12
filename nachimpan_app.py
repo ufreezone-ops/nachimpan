@@ -3758,8 +3758,8 @@ elif selected_page == "인생의 사계절":
         event_costs = []
 
         # [수정 1] 본인 결혼:
-        # - 미래 결혼: 신혼집 부담분 + 신혼집 외 비용을 2년에 걸쳐 분산 반영
-        # - 과거 결혼: 신혼집 외 총비용 6,298만 원에서 혼수 중복분 2,615만 원을 차감한 금액을 반영
+        # - 과거·미래 모두 결혼 관련 비용을 2년에 걸쳐 분산 반영
+        # - 과거 결혼은 신혼집 외 총비용 6,298만 원에서 혼수 중복분 2,615만 원을 차감
         #   (신혼집 부담분은 과거 실제 부담액을 확인할 수 없어 이번 계산에서는 제외)
         if marriage_start is not None and 20 <= marriage_start <= 85 and m_plan != "계획 없음":
             is_past_marriage = (m_plan == "결혼함")
@@ -3769,12 +3769,12 @@ elif selected_page == "인생의 사계절":
             event_costs.append({
                 "name": "나의 결혼",
                 "start": marriage_start,
-                "end": marriage_start + (1 if is_past_marriage else 2),
+                "end": marriage_start + 2,
                 "center": marriage_start,
                 "total": applied_marriage_cost_man - applied_marriage_deduction_man,
                 "display_total": applied_marriage_cost_man,
                 "deducted_total": applied_marriage_deduction_man,
-                "duration": 1 if is_past_marriage else 2,
+                "duration": 2,
                 "color": "#3B82F6",
                 "is_past": is_past_marriage
             })
@@ -3820,11 +3820,11 @@ elif selected_page == "인생의 사계절":
             event_costs.append({
                 "name": "자녀 결혼",
                 "start": start,
-                "end": end,
+                "end": start + 2,
                 "total": child_wedding_cost_man - child_wedding_overlap_deduction_man,
                 "display_total": child_wedding_cost_man,
                 "deducted_total": child_wedding_overlap_deduction_man,
-                "duration": 5,
+                "duration": 2,
                 "color": "#F43F5E",
                 "is_past": False
             })
