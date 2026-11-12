@@ -3528,7 +3528,7 @@ elif selected_page == "인생의 사계절":
             if st.button(
                 "🧭",
                 key="source_retirement_expense",
-                help="은퇴 이후 통계적 가구소득의 자료와 적용 방식 보기",
+                help="우리 가정 생애주기 소득곡선의 통계적 보정 방식 보기",
                 type="tertiary",
             ):
                 _open_source_reference(
@@ -4066,6 +4066,8 @@ elif selected_page == "인생의 사계절":
         ages_sim = list(range(20, life_expectancy))
         my_income_curve = []
         household_income_curve = []
+        # 은퇴 후에도 기존 연령별 근로·사업소득 기준곡선을 연장한 비교용 가구소득
+        statistical_adjusted_income_curve = []
         household_expense_curve = []
         mortgage_principal_curve = []
         mortgage_interest_curve = []
@@ -4154,6 +4156,66 @@ elif selected_page == "인생의 사계절":
 
             household_income_curve.append(total_hh_inc)
 
+            # --- [C-1. 은퇴 이후 통계적 보정 소득 비교선] ---
+            # 기존 가구소득 실선은 유지하고, 은퇴 이후에만 직업군별 연령 기준곡선을 연장한다.
+            if a >= retire_age:
+                stat_self_inc = (
+                    extended_base_income(a, self_base) * self_scale * 12.0
+                    + normalized_annual_bonus
+                ) if self_base is not None else 0.0
+
+                if is_female and childcare_windows:
+                    stat_in_childcare = False
+                    stat_completed_childcare = False
+                    for c_start, c_end in childcare_windows:
+                        if c_start <= a < c_end:
+                            stat_in_childcare = True
+                            years_in = a - c_start
+                            stat_self_inc *= 0.35 if years_in <= 1 else 0.50
+                            break
+                        elif a >= c_end:
+                            stat_completed_childcare = True
+                    if not stat_in_childcare and stat_completed_childcare:
+                        stat_self_inc *= 0.80
+
+                stat_self_inc *= wage_year_factor
+                stat_spouse_inc = 0.0
+                if (
+                    has_future_or_current_spouse
+                    and marriage_start is not None
+                    and a >= marriage_start
+                    and spouse_base is not None
+                ):
+                    stat_spouse_inc = (
+                        extended_base_income(sp_a, spouse_base)
+                        * spouse_scale * 12.0 * wage_year_factor
+                    )
+
+                stat_total_hh_inc = stat_self_inc + stat_spouse_inc + annual_other_income
+
+                # 국민연금: 기존 실선과 동일한 가구원별 개시 연령 및 분담 방식
+                if has_future_or_current_spouse:
+                    if a >= national_pension_start_age:
+                        stat_total_hh_inc += annual_pension / 2.0
+                    if sp_a >= national_pension_start_age:
+                        stat_total_hh_inc += annual_pension / 2.0
+                elif a >= national_pension_start_age:
+                    stat_total_hh_inc += annual_pension
+
+                # 국민연금 외 본인·배우자 연금도 기존 실선과 동일한 조건으로 반영
+                if other_self_enabled and a >= other_self_start_age:
+                    stat_total_hh_inc += other_self_annual
+                if (
+                    has_future_or_current_spouse
+                    and other_spouse_enabled
+                    and sp_a >= other_spouse_start_age
+                ):
+                    stat_total_hh_inc += other_spouse_annual
+
+                statistical_adjusted_income_curve.append(stat_total_hh_inc)
+            else:
+                statistical_adjusted_income_curve.append(None)
+
             # --- [D. 주택대출 원리금 분리] ---
             annual_mortgage_principal = 0.0
             annual_mortgage_interest = 0.0
@@ -4209,70 +4271,8 @@ elif selected_page == "인생의 사계절":
             total_hh_exp = base_exp + event_expense
             household_expense_curve.append(total_hh_exp)
 
-        # 2024년 가구주 연령대별 평균 처분가능소득: 은퇴 후 통계 비교선
-        statistical_income_ages = []
-        statistical_income_values = []
-        statistical_income_groups = []
-        try:
-            statistical_income_path = (
-                Path(__file__).resolve().parent
-                / "data"
-                / "기준데이터"
-                / "국가데이터처_2024_가구주연령대별_가구처분가능소득.csv"
-            )
-            statistical_income_df = pd.read_csv(
-                statistical_income_path,
-                encoding="utf-8-sig",
-            )
-            statistical_income_df["age_min"] = pd.to_numeric(
-                statistical_income_df["age_min"], errors="coerce"
-            )
-            statistical_income_df["age_max"] = pd.to_numeric(
-                statistical_income_df["age_max"], errors="coerce"
-            )
-            statistical_income_df["annual_disposable_income_man"] = pd.to_numeric(
-                statistical_income_df["annual_disposable_income_man"],
-                errors="coerce",
-            )
-
-            # 통계값은 모두 2024년 기준이므로, 은퇴 시작 연도의 물가로 한 번만 환산한다.
-            # 이후 같은 연령구간(특히 60세 이상)에서는 연령이 높아져도 값이 상승하지 않도록
-            # 연령별 미래 CPI를 반복 적용하지 않는다.
-            stat_reference_calendar_year = current_calendar_year + (retire_age - cur_age)
-            stat_reference_cpi_index = macro_index_for_model_year(
-                stat_reference_calendar_year,
-                "cpi_index_2020_100",
-                cpi_forecast_rate,
-            )
-            stat_reference_cpi_factor = (
-                stat_reference_cpi_index / cpi_reference_index
-                if stat_reference_cpi_index is not None and cpi_reference_index
-                else 1.0
-            )
-
-            for a in ages_sim:
-                if a < retire_age:
-                    continue
-                matched_income = statistical_income_df[
-                    (statistical_income_df["age_min"] <= a)
-                    & (statistical_income_df["age_max"] >= a)
-                ]
-                if matched_income.empty:
-                    continue
-
-                stat_row = matched_income.iloc[0]
-                stat_annual_income = float(
-                    stat_row["annual_disposable_income_man"]
-                )
-                statistical_income_ages.append(a)
-                statistical_income_values.append(
-                    stat_annual_income * stat_reference_cpi_factor
-                )
-                statistical_income_groups.append(str(stat_row["age_group"]))
-        except Exception as stat_income_error:
-            st.warning(
-                f"연령대별 통계소득 비교선을 불러오지 못했습니다. ({stat_income_error})"
-            )
+        # 별도 가구처분가능소득 자료는 사용하지 않는다.
+        # 기존 직업군별 연령 기준곡선을 은퇴 이후까지 연장한 비교 시나리오를 사용한다.
 
 #############    6.03.05.08 | 가구 순수지 분리 및 Y축 자동 스케일링
         # MDIS 가계지출에는 이자 등 비소비지출이 포함되므로 이자를 별도 가산하지 않는다.
@@ -4280,6 +4280,14 @@ elif selected_page == "인생의 사계절":
         net_flow = [
             i - e - p
             for i, e, p in zip(household_income_curve, household_expense_curve, mortgage_principal_curve)
+        ]
+        statistical_adjusted_net_flow = [
+            income - expense - principal if income is not None else None
+            for income, expense, principal in zip(
+                statistical_adjusted_income_curve,
+                household_expense_curve,
+                mortgage_principal_curve,
+            )
         ]
 
         ages_fine = []
@@ -4304,12 +4312,11 @@ elif selected_page == "인생의 사계절":
         max_exp_val = max(household_expense_curve) if household_expense_curve else 5000.0
         max_income_val = max(household_income_curve) if household_income_curve else 6000.0
 
-        max_stat_income_val = (
-            max(statistical_income_values)
-            if statistical_income_values
-            else 0.0
+        max_stat_adjusted_income_val = max(
+            (value for value in statistical_adjusted_income_curve if value is not None),
+            default=0.0,
         )
-        y_max = max(max_income_val, max_exp_val, max_stat_income_val)
+        y_max = max(max_income_val, max_exp_val, max_stat_adjusted_income_val)
         y_top = max(10000.0, y_max * 1.15)  # 최소 10,000(1억) 확보
         alt_level_2 = y_top * 0.35
         alt_level_1 = y_top * 0.12
@@ -4385,21 +4392,21 @@ elif selected_page == "인생의 사계절":
             hovertemplate="나이: %{x}세<br>우리 가정 예상 연간소득(연금 포함): <b>%{y:,.0f}만 원</b><extra></extra>"
         ), row=1, col=1)
 
-        if statistical_income_ages:
-            fig_my_nta.add_trace(go.Scatter(
-                x=statistical_income_ages,
-                y=statistical_income_values,
-                customdata=statistical_income_groups,
-                mode="lines",
-                line=dict(color="#10B981", width=3.4, dash="dot", shape="hv"),
-                name="통계적 가구소득",
-                hovertemplate=(
-                    "나이: %{x}세<br>"
-                    "가구주 연령대: %{customdata}<br>"
-                    "연간 평균 처분가능소득(은퇴 시점 물가 기준): "
-                    "<b>%{y:,.0f}만 원</b><extra></extra>"
-                ),
-            ), row=1, col=1)
+        # 은퇴 이후 통계적 기준곡선을 연장한 가구소득(연금 포함)
+        fig_my_nta.add_trace(go.Scatter(
+            x=ages_sim,
+            y=statistical_adjusted_income_curve,
+            mode="lines",
+            line=dict(color="#22C55E", width=3.0, dash="dot", shape="spline", smoothing=0.8),
+            name="통계적 보정 소득",
+            showlegend=False,
+            connectgaps=False,
+            hovertemplate=(
+                "나이: %{x}세<br>"
+                "통계적 보정 가구소득(연금 포함): "
+                "<b>%{y:,.0f}만 원</b><extra></extra>"
+            ),
+        ), row=1, col=1)
 
         if has_future_or_current_spouse and marriage_start is not None and marriage_start < retire_age:
             fig_my_nta.add_trace(go.Scatter(
@@ -4466,6 +4473,20 @@ elif selected_page == "인생의 사계절":
             name="순 현금흐름",
             legend="legend2",
             hovertemplate="나이: %{x}세<br>순 현금흐름: <b>%{y:,.0f}만 원</b><extra></extra>"
+        ), row=2, col=1)
+
+        fig_my_nta.add_trace(go.Scatter(
+            x=ages_sim,
+            y=statistical_adjusted_net_flow,
+            mode="lines",
+            line=dict(color="#22C55E", width=2.8, dash="dot", shape="spline", smoothing=0.8),
+            name="통계적 보정",
+            legend="legend2",
+            connectgaps=False,
+            hovertemplate=(
+                "나이: %{x}세<br>"
+                "통계적 보정 순현금흐름: <b>%{y:,.0f}만 원</b><extra></extra>"
+            ),
         ), row=2, col=1)
 
         fig_my_nta.add_annotation(
@@ -5235,7 +5256,7 @@ elif selected_page == "통계":
         "6050600-01": "국가데이터처 「2024년 가계동향조사」 은퇴 후 연령대별 가계지출",
         "6050700-01": "국토교통부 「2024년도 주거실태조사 결과」 및 나침반의 표준 대출 상환 가정",
         "6051300-00": "통계로 본 대한민국 3대 은퇴 분기점",
-        "6051400-00": "은퇴 이후에도 이어지는 연령대별 통계적 가구소득",
+        "6051400-00": "우리 가정 생애주기 소득곡선의 통계적 보정",
     }
     if _active_source_id in _source_labels:
         with st.container(key="source-return-bar"):
@@ -5312,56 +5333,44 @@ OECD 「Pensions at a Glance 2025: Korea」는 2024년 한국의 실질 노동�
 """, unsafe_allow_html=True)
 
     #--------------------------------------------------------
-    # 6.05.14.00 | 은퇴 이후에도 이어지는 연령대별 통계적 가구소득
+    # 6.05.14.00 | 우리 가정 생애주기 소득곡선의 통계적 보정
     #--------------------------------------------------------
     st.markdown('<div id="stats-anchor-household-income-after-retirement" style="scroll-margin-top: 150px;"></div>', unsafe_allow_html=True)
     with st.expander(
-        "은퇴 이후에도 이어지는 연령대별 통계적 가구소득",
+        "우리 가정 생애주기 소득곡선의 통계적 보정",
         expanded=True,
     ):
         st.markdown("""
-은퇴는 소득이 0이 되는 시점이 아닙니다. 주된 일자리에서 물러난 뒤에도 가구는 근로·사업·재산·이전소득 등 여러 경로로 소득을 얻습니다. 이 리포트는 은퇴 이후의 소득을 임의로 0으로 끊지 않고, **대한민국 가구에서 실제로 관찰된 연령대별 처분가능소득**을 비교선으로 보여주기 위한 기준을 설명합니다.
+### 기존 가구소득 곡선은 어떻게 만들어지나요?
 
-### 그래프의 녹색 점선은 무엇인가요?
+우리 가정의 소득곡선은 별도의 연령대별 평균 가구처분가능소득을 덧붙여 만든 것이 아닙니다. 직업군별 연령 기준소득 곡선을 바탕으로, 인터뷰이 또는 대표사례가 입력한 현재 소득이 해당 기준에 비해 어느 수준인지 보정계수로 계산합니다. 그 비율을 전 연령대의 기준곡선에 적용하고, 임금지수에 따른 통시성 보정과 생애 이벤트의 추가 소득을 반영합니다.
 
-점선은 개인의 은퇴 후 예상 연금액이나 우리 가정의 미래 예측치가 아닙니다. 국가데이터처 「가계금융복지조사」를 바탕으로 공표된 **가구주 연령대별 평균 처분가능소득**입니다.
+### 그래프의 두 소득선
 
-가구소득에는 근로소득과 사업소득뿐 아니라 재산소득, 공적이전소득, 사적이전소득도 포함됩니다. 국민연금·기초연금 등 공적연금은 조사에 포착되는 범위에서 공적이전소득에 반영됩니다. 퇴직연금·개인연금도 조사상 소득 분류와 포착 범위에 따라 반영되므로, 모든 연금 종류가 동일한 방식으로 집계된다고 단정하지 않습니다. 이미 조사된 이전소득을 포함한 처분가능소득이므로 점선에 국민연금이나 다른 연금액을 별도로 더하지 않습니다.
+- **가구소득 실선**은 기존 우리 가정의 예상 소득입니다. 은퇴 시점부터 본인·배우자의 근로·사업소득 중단 조건이 적용되는 기존 계산을 그대로 유지합니다. 국민연금과 입력한 기타연금은 각 수령 개시 연령부터 기존 방식대로 반영합니다.
+- **통계적 보정 점선**은 은퇴 이후에도 기존 직업군별 연령 기준소득 곡선을 연장한 가상 비교선입니다. 현재 입력소득 대비 보정계수, 임금지수, 본인·배우자의 연령 차이와 기존 경력단절 조건 등 나머지 기준은 유지합니다. 여기에 국민연금과 본인·배우자의 기타연금을 실선과 동일한 개시 연령 및 금액 조건으로 더합니다.
+- 이 점선은 은퇴 후 실제 취업이나 사업소득을 예측하는 값이 아닙니다. 은퇴 시점에서 근로·사업소득을 자동으로 0으로 만드는 가정을 제거했을 때, 기존 통계적 기준곡선이 어떻게 이어지는지 살펴보는 비교 시나리오입니다.
 
-### 2024년 가구주 연령대별 평균 처분가능소득
+### 아래 그래프의 '통계적 보정' 순현금흐름
 
-| 가구주 연령 | 연간 평균 | 월 환산 |
-|---|---:|---:|
-| 30세 미만 | 3,838만 원 | 약 320만 원 |
-| 30~39세 | 5,976만 원 | 약 498만 원 |
-| 40~49세 | 7,311만 원 | 약 609만 원 |
-| 50~59세 | 7,476만 원 | 약 623만 원 |
-| 60세 이상 | 4,891만 원 | 약 408만 원 |
+아래 그래프에는 기존 '순 현금흐름'과 함께 녹색 점선 '통계적 보정'을 표시합니다. 두 곡선은 지출과 대출 원금상환액을 동일하게 사용하고, **소득 부분만 다르게** 계산합니다.
 
-단위는 가구당 만 원이며, 연간 금액을 12개월로 나눈 값은 이해를 돕기 위한 월 환산값입니다.
+- 기존 순 현금흐름 = 기존 가구소득 실선 − 가구지출 − 대출 원금상환액
+- 통계적 보정 = 은퇴 후 연장한 통계적 기준소득과 연금 − 동일한 가구지출 − 동일한 대출 원금상환액
 
-### 그래프 적용 방식과 해석의 한계
+따라서 두 선의 차이는 은퇴 후 소득을 어떤 기준으로 가정하느냐에 따른 차이입니다. 통계적 보정선은 은퇴 연령부터 표시하며, 기존 실선이나 기존 순현금흐름을 대체하지 않습니다.
 
-- 녹색 실선은 기존의 우리 가정 예상 가구소득 곡선입니다. 20세부터 기대수명까지 전 연령을 그대로 표시하며, 은퇴 후에는 모델에 설정된 국민연금과 기타 연금도 포함합니다.
-- 녹색 점선은 은퇴 시점부터 표시하는 대한민국 가구주 연령대별 평균 처분가능소득 통계 비교선입니다. 실선을 대체하지 않으며, 두 선을 나란히 비교할 수 있습니다.
-- 2024년 통계값은 은퇴 시작 연도의 소비자물가지수로 한 번만 환산합니다. 연령이 높아진다는 이유로 같은 연령대 통계값에 미래 물가를 매년 누적하지 않습니다.
-- 공표된 '30세 미만' 구간은 그래프의 20대에 적용합니다.
-- 공표자료에서 60세 이상은 하나의 구간으로 제공되므로, 60~64세와 65세 이상을 임의로 나누지 않고 60세 이후 같은 구간값을 사용합니다. 따라서 60세 이상 점선은 연령이 높아져도 같은 높이를 유지합니다.
-- 이 통계는 해당 연령대의 모든 가구를 대상으로 합니다. 은퇴한 가구만의 평균이 아니며, 계속 일하는 가구도 포함합니다.
-- 공식 통계는 가구주 연령 기준이며, 그래프의 연령축은 인터뷰이 나이입니다. 비교를 위해 인터뷰이 나이를 가구주 연령의 대리값으로 사용하므로, 실제 가구주가 배우자 등 다른 가족인 경우에는 차이가 날 수 있습니다.
-- 연령대별 통계는 가구원 수를 구분하지 않은 전체 가구 평균입니다. 1인·2인·다인가구 등 서로 다른 가구 구성이 함께 포함되어 있습니다.
-- 공표된 연령대별 값은 평균이지 중앙값이 아닙니다. 연령대별 처분가능소득 중앙값이 공개표에서 확인되지 않아 평균을 비교 기준으로 사용했습니다. 소득분포의 비대칭성 때문에 전형적인 가구의 소득보다 높을 수 있으므로, 개인의 미래 예측으로 해석하지 않습니다.
-- 점선은 비교를 위한 통계선입니다. 우리 가정의 순현금흐름 및 누적 총액 계산에는 반영하지 않으며, 해당 계산은 우리 가정에 입력된 소득·연금 기준을 유지합니다.
+### 해석할 때 유의할 점
 
-**이 선이 던지는 질문**
+- 직업군별 연령 기준곡선은 앱에 내장된 기준값이며, 현재 소득을 기준으로 한 보정계수를 적용합니다. 개별 인터뷰이의 실제 미래 소득을 보장하거나 예측하는 값은 아닙니다.
+- 임금지수 통시성 보정과 연령별 기준곡선은 기존 모델의 계산 방식을 그대로 사용합니다.
+- 국민연금 및 기타연금은 별도 입력값으로 더합니다. 따라서 연금이 근로·사업소득 기준곡선에 이미 포함된 것으로 간주하지 않습니다.
+- 통계적 보정선은 비교 시나리오입니다. 실제 은퇴 후 취업 여부, 근로시간, 사업 지속 여부, 건강 및 노동시장 상황은 개인마다 다릅니다.
+- 두 순현금흐름의 비교에서는 지출, 생애 이벤트 비용, 대출 원금상환 가정을 동일하게 유지합니다. 소득 가정 외의 차이를 섞지 않기 위한 설계입니다.
 
-은퇴 시점 이후에도 대한민국 가구의 소득은 이어집니다. 그렇다면 우리 가정은 어떤 소득으로, 어느 정도의 생활을 이어갈 수 있을까요? 통계적 현실과 우리 가정의 준비 상태를 나란히 놓고 살펴보는 것이 이 비교선의 목적입니다.
+**이 비교가 던지는 질문**
 
-**자료 출처**
-
-- [국가데이터처 — 2025 한국의 사회지표](https://mods.go.kr/board.es?act=view&bid=10820&list_no=443371&mid=a10301010000)
-- [국가데이터처 — 2025년 가계금융복지조사 결과](https://mods.go.kr/board.es?act=view&bid=215&list_no=439535&mid=a10301010000)
-- [연령대별 처분가능소득 원자료 및 산출 기준](https://github.com/ufreezone-ops/nachimpan/blob/dev/data/기준데이터/국가데이터처_2024_가구주연령대별_가구처분가능소득_README.md)
+은퇴 시점에 생계를 위한 노동을 줄이거나 그만두더라도 소득활동이 반드시 동시에 끝나는 것은 아닙니다. 기존 가구소득 시나리오와 통계적 기준곡선을 연장한 시나리오를 나란히 보며, 우리 가정의 은퇴 이후 현금흐름을 다시 생각해 볼 수 있습니다.
 """, unsafe_allow_html=True)
 
     #--------------------------------------------------------
