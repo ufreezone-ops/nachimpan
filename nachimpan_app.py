@@ -4018,7 +4018,44 @@ elif selected_page == "인생의 사계절":
             if target_age <= age_points[0][0]:
                 return lookup_household_expense_band(age_points[0][1], household_size)
             if target_age >= age_points[-1][0]:
-                return lookup_household_expense_band(age_points[-1][1], household_size)
+                # 80세 이상은 마지막 공개 통계 구간이므로,
+                # 75~79세와 80세 이상 기준값 사이의 감소 기울기를 이후에도 연장한다.
+                last_point = age_points[-1]
+                previous_point = age_points[-2] if len(age_points) >= 2 else None
+                last_data = lookup_household_expense_band(last_point[1], household_size)
+
+                if previous_point is None or last_data is None:
+                    return last_data
+
+                previous_data = lookup_household_expense_band(
+                    previous_point[1], household_size
+                )
+                if previous_data is None:
+                    return last_data
+
+                age_span = last_point[0] - previous_point[0]
+                if age_span <= 0:
+                    return last_data
+
+                monthly_slope = (
+                    last_data["monthly"] - previous_data["monthly"]
+                ) / age_span
+                extended_monthly = max(
+                    0.0,
+                    last_data["monthly"]
+                    + monthly_slope * (target_age - last_point[0])
+                )
+
+                return {
+                    "monthly": extended_monthly,
+                    "sample_n": min(
+                        last_data["sample_n"], previous_data["sample_n"]
+                    ),
+                    "age_band": f'{previous_point[1]} ↔ {last_point[1]} 감소추세 연장',
+                    "household_size": str(household_size),
+                    "fallback": last_data["fallback"] or previous_data["fallback"],
+                    "small_sample": last_data["small_sample"] or previous_data["small_sample"],
+                }
 
             lower_point = age_points[0]
             upper_point = age_points[-1]
