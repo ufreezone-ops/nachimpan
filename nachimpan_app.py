@@ -3476,12 +3476,7 @@ elif selected_page == "인생의 사계절":
         if getv("mother_age", 0) > 0: people.append(("어머니", int(getv("mother_age"))))
         if getv("father_age", 0) > 0: people.append(("아버지", int(getv("father_age"))))
 
-        st.markdown(f"""
-<div style="background: rgba(30, 41, 59, 0.4); border: 1px solid #334155; border-radius: 10px; padding: 12px 18px; margin: 18px 0 10px 0; display:flex; justify-content:space-between; align-items:center;">
-<span style="font-size: 15.5px; font-weight: 800; color: #F8FAFC;">내 은퇴 시점의 우리 가족</span>
-<span style="font-size: 13px; color: #94A3B8;">현재 나이 ➔ 은퇴 시 나이</span>
-</div>
-""", unsafe_allow_html=True)
+        st.markdown("### 내 은퇴 시점의 우리 가족")
 
         # 한 행씩 두 사람을 배치해 모바일에서도 가족 순서를 유지한다.
         for row_start in range(0, len(people), 2):
@@ -3506,8 +3501,8 @@ elif selected_page == "인생의 사계절":
             st.markdown(f"""
 <div style="background: rgba(234, 88, 12, 0.12); border-left: 4px solid #EA580C; border-radius: 6px; padding: 14px 18px; margin: 12px 0 20px 0;">
 <div style="font-size: 15px; font-weight: 750; color: #F8FAFC; line-height: 1.6;">
-<b>생애 주요지출</b><br>: '첫째가 대학에 입학하는 만 20세가 되면, 나의 나이는 <b>만 {college_my_age}세</b>가 되는구나...,'<br>
-<span style="font-size: 13.5px; color: #CBD5E1;">국가데이터처 통계상 소득 정점(45세)은 지나가면서, 자녀 학자금과 독립 비용으로 <b>인생에서 가장 큰 지출이 집중되는 결정적 시기</b>입니다.</span>
+<b>"첫째가 대학에 입학하는 20세가 되면, 나는 {college_my_age}세가 되는구나!"</b><br>
+: <b>국가데이터처 통계상 소득 정점(45세)은 지나가면서, 자녀 학자금과 독립 비용으로 인생에서 가장 큰 지출이 집중되는 시기가 됩니다.</b>
 </div></div>
 """, unsafe_allow_html=True)
         elif c_age1 >= 20:
