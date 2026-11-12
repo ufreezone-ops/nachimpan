@@ -3226,7 +3226,7 @@ elif selected_page == "인생의 사계절":
         RETIREMENT_INFLATION_RATE = None
 
         with st.container(key="family-retirement-expander"):
-            with st.expander("가족 구성과 나의 은퇴 시점", expanded=False):
+            with st.expander("가족 구성과 주택", expanded=False):
                 child_options = ["입력 안 함", "없음", "1명", "2명", "3명", "4명 이상"]
                 prev_c_count = st.session_state.get("child_count", "입력 안 함")
                 if prev_c_count not in child_options:
@@ -3239,7 +3239,8 @@ elif selected_page == "인생의 사계절":
                     key="child_count_select_direct"
                 )
 
-                with st.container():
+                with st.container(gap="small"):
+                    st.markdown("<div style='height: 8px;'></div>", unsafe_allow_html=True)
                     spouse_age = st.number_input(
                         "배우자 나이 (없거나 미입력 시 0)",
                         min_value=0, max_value=120,
@@ -3289,7 +3290,7 @@ elif selected_page == "인생의 사계절":
                             else:
                                 st.write("")
 
-                    st.markdown("<div style='height: 8px;'></div>", unsafe_allow_html=True)
+                    st.markdown("<div style='height: 14px;'></div>", unsafe_allow_html=True)
                     f_col, m_col = st.columns(2)
 
                     with f_col:
@@ -3390,6 +3391,7 @@ elif selected_page == "인생의 사계절":
                 )
 
                 if housing_info_needed:
+                    st.markdown("<div style='height: 18px;'></div>", unsafe_allow_html=True)
                     st.markdown("#### 주택가격 산정 기준")
                     is_representative_case = st.session_state.get("_representative_case_id") in {
                         "case_32_female", "case_45_female"
@@ -3403,7 +3405,7 @@ elif selected_page == "인생의 사계절":
                         prev_housing_region = "부산" if is_representative_case else "지역 선택"
 
                     housing_region = st.selectbox(
-                        "주택 구입 예정 지역",
+                        "주거지역 및 주택구입 예정지역",
                         housing_region_options,
                         index=housing_region_options.index(prev_housing_region),
                         key="housing_region_select"
