@@ -1,0 +1,5 @@
+# Local statistical source files (large downloads; keep only on the user's PC)
+/data/원자료/PC_원본파일/
+
+# PC-local original statistical downloads
+/data_RAW/
