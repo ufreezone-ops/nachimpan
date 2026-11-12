@@ -4357,8 +4357,9 @@ elif selected_page == "인생의 사계절":
         fig_my_nta.add_trace(go.Scatter(
             x=ages_sim, y=net_flow, mode="lines",
             line=dict(color="#CBD5E1", width=2.4, shape='spline', smoothing=0.8),
-            name="가구 순현금흐름 (소득-지출-원금상환)",
-            hovertemplate="나이: %{x}세<br>가구 순현금흐름: <b>%{y:,.0f}만 원</b><extra></extra>"
+            name="순 현금흐름",
+            legend="legend2",
+            hovertemplate="나이: %{x}세<br>순 현금흐름: <b>%{y:,.0f}만 원</b><extra></extra>"
         ), row=2, col=1)
 
         fig_my_nta.add_annotation(
@@ -4394,6 +4395,14 @@ elif selected_page == "인생의 사계절":
                 x=0.5,
                 font=dict(size=11, color="#F1F5F9")
             ),
+            legend2=dict(
+                orientation="h",
+                yanchor="bottom",
+                y=0.35,
+                xanchor="center",
+                x=0.5,
+                font=dict(size=11, color="#F1F5F9")
+            ),
             hovermode="x unified"
         )
 
@@ -4407,6 +4416,7 @@ elif selected_page == "인생의 사계절":
             showline=True, linecolor="#334155", linewidth=1.5, mirror=True,
             fixedrange=True
         )
+        fig_my_nta.update_xaxes(showticklabels=True, row=1, col=1)
         fig_my_nta.update_xaxes(title=dict(text="연령 (세)", font=dict(size=12, color="#94A3B8")), row=2, col=1)
 
         # Y축 상한선 일괄 적용
