@@ -3226,7 +3226,7 @@ elif selected_page == "인생의 사계절":
         RETIREMENT_INFLATION_RATE = None
 
         with st.container(key="family-retirement-expander"):
-            with st.expander(":orange[가족 구성과 나의 은퇴 시점]", expanded=False):
+            with st.expander("가족 구성과 나의 은퇴 시점", expanded=False):
                 child_options = ["입력 안 함", "없음", "1명", "2명", "3명", "4명 이상"]
                 prev_c_count = st.session_state.get("child_count", "입력 안 함")
                 if prev_c_count not in child_options:
