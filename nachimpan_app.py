@@ -3500,9 +3500,9 @@ elif selected_page == "인생의 사계절":
             college_my_age = cur_age + (20 - c_age1)
             st.markdown(f"""
 <div style="background: rgba(234, 88, 12, 0.12); border-left: 4px solid #EA580C; border-radius: 6px; padding: 14px 18px; margin: 12px 0 20px 0;">
-<div style="font-size: 15px; font-weight: 750; color: #F8FAFC; line-height: 1.6;">
-<b>"첫째가 대학에 입학하는 20세가 되면, 나는 {college_my_age}세가 되는구나!"</b><br>
-: <b>국가데이터처 통계상 소득 정점(45세)은 지나가면서, 자녀 학자금과 독립 비용으로 인생에서 가장 큰 지출이 집중되는 시기가 됩니다.</b>
+<div style="font-size: 15px; font-weight: 400; color: #F8FAFC; line-height: 1.6;">
+<span style="font-size: 17px; font-weight: 750;"><b>"첫째가 대학에 입학하는 20세가 되면, 나는 {college_my_age}세가 되는구나!"</b></span><br>
+: 국가데이터처 통계상 소득 정점(45세)은 지나가면서, 자녀 학자금과 독립 비용으로 인생에서 가장 큰 지출이 집중되는 시기가 됩니다.
 </div></div>
 """, unsafe_allow_html=True)
         elif c_age1 >= 20:
