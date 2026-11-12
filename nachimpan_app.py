@@ -1794,8 +1794,8 @@ def _open_source_reference(source_id, origin_page, origin_anchor):
         "6050800-00": "stats-anchor-marriage-cost",
         "6050900-00": "stats-anchor-household-events",
         "6051000-00": "stats-anchor-older-work",
-        "6051300-00": "stats-anchor-retirement-milestones",
-        "6051400-00": "stats-anchor-household-income-after-retirement",
+        "6051100-00": "stats-anchor-retirement-milestones",
+        "6051200-00": "stats-anchor-household-income-after-retirement",
     }
     if source_id in _source_anchor_map:
         st.session_state["_source_open_anchor"] = _source_anchor_map[source_id]
@@ -2997,9 +2997,9 @@ elif selected_page == "삶과 생계수단":
             st.markdown('<div id="retirement-milestones-origin" style="scroll-margin-top: 150px;"></div>', unsafe_allow_html=True)
             with st.container(border=True, key="retirement-milestones-panel"):
                 with st.container(horizontal=True, vertical_alignment="center", gap=None):
-                    st.markdown("**통계로 본 대한민국 3대 은퇴 분기점**")
+                    st.markdown("**10. 통계로 본 대한민국 3대 은퇴 분기점**")
                     if st.button("🧭", key="source_retirement_milestones", help="대한민국 3대 은퇴 분기점 통계 리포트 보기", type="tertiary"):
-                        _open_source_reference("6051300-00", "삶과 생계수단", "retirement-milestones-origin")
+                        _open_source_reference("6051100-00", "삶과 생계수단", "retirement-milestones-origin")
                 with st.container(horizontal=True, vertical_alignment="center", gap=None):
                     st.markdown(
                         '**"근로소득의 정점 및 본업 졸업" 관점이라면**  \n'
@@ -3535,11 +3535,11 @@ elif selected_page == "인생의 사계절":
             if st.button(
                 "🧭",
                 key="source_retirement_expense",
-                help="우리 가정 생애주기 소득곡선의 통계적 보정 방식 보기",
+                help="11. 우리 가정 생애주기 소득곡선의 통계적 보정 방식 보기",
                 type="tertiary",
             ):
                 _open_source_reference(
-                    "6051400-00",
+                    "6051200-00",
                     "인생의 사계절",
                     "statistical-household-income-origin",
                 )
@@ -4674,8 +4674,8 @@ elif selected_page == "인생의 사계절":
             ("7. 결혼비용 통계", "6050800-00"),
             ("8. 빅5 우리집 이벤트", "6050900-00"),
             ("9. 고령층 근로연령 통계", "6051000-00"),
-            ("통계로 본 대한민국 3대 은퇴 분기점", "6051300-00"),
-            ("우리 가정 생애주기 소득곡선의 통계적 보정", "6051400-00"),
+            ("10. 통계로 본 대한민국 3대 은퇴 분기점", "6051100-00"),
+            ("11. 우리 가정 생애주기 소득곡선의 통계적 보정", "6051200-00"),
         ]
         st.markdown("""
 <style>
@@ -5381,8 +5381,8 @@ elif selected_page == "통계":
         "6050800-00": "7. 결혼비용 통계",
         "6050900-00": "8. 빅5 우리집 이벤트",
         "6051000-00": "9. 고령층 근로연령 통계",
-        "6051300-00": "통계로 본 대한민국 3대 은퇴 분기점",
-        "6051400-00": "우리 가정 생애주기 소득곡선의 통계적 보정",
+        "6051100-00": "10. 통계로 본 대한민국 3대 은퇴 분기점",
+        "6051200-00": "11. 우리 가정 생애주기 소득곡선의 통계적 보정",
     }
     if _active_source_id in _source_labels:
         with st.container(key="source-return-bar"):
@@ -5410,11 +5410,11 @@ elif selected_page == "통계":
     st.caption("내 삶의 숫자를 사회 전체의 흐름과 나란히 놓고 살펴보는 자료실입니다. 통계는 정답이 아니라, 내 생각의 경계를 넓히는 참고선입니다.")
 
     #--------------------------------------------------------
-    # 6.05.13.00 | 통계로 본 대한민국 3대 은퇴 분기점
+    # 6.05.11.00 | 10. 통계로 본 대한민국 3대 은퇴 분기점
     #--------------------------------------------------------
     st.markdown('<div id="stats-anchor-retirement-milestones" style="scroll-margin-top: 150px;"></div>', unsafe_allow_html=True)
     with st.expander(
-        "통계로 본 대한민국 3대 은퇴 분기점",
+        "10. 통계로 본 대한민국 3대 은퇴 분기점",
         expanded=True,
     ):
         st.markdown("""
@@ -5459,11 +5459,11 @@ OECD 「Pensions at a Glance 2025: Korea」는 2024년 한국의 실질 노동�
 """, unsafe_allow_html=True)
 
     #--------------------------------------------------------
-    # 6.05.14.00 | 우리 가정 생애주기 소득곡선의 통계적 보정
+    # 6.05.12.00 | 11. 우리 가정 생애주기 소득곡선의 통계적 보정
     #--------------------------------------------------------
     st.markdown('<div id="stats-anchor-household-income-after-retirement" style="scroll-margin-top: 150px;"></div>', unsafe_allow_html=True)
     with st.expander(
-        "우리 가정 생애주기 소득곡선의 통계적 보정",
+        "11. 우리 가정 생애주기 소득곡선의 통계적 보정",
         expanded=True,
     ):
         st.markdown("""
