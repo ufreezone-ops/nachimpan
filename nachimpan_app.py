@@ -3212,8 +3212,7 @@ elif selected_page == "인생의 사계절":
         RETIREMENT_EXPENSE_DEFAULT_SURVEY = "2024년_제10차_부가조사"
         RETIREMENT_INFLATION_RATE = None
 
-        with st.expander("가족 구성과 미래 계획 입력", expanded=False):
-            st.markdown("### 가족 구성과 나의 은퇴 시점")
+        with st.expander("가족 구성과 나의 은퇴 시점", expanded=False):
             child_options = ["입력 안 함", "없음", "1명", "2명", "3명", "4명 이상"]
             prev_c_count = st.session_state.get("child_count", "입력 안 함")
             if prev_c_count not in child_options:
@@ -3428,12 +3427,12 @@ elif selected_page == "인생의 사계절":
     #--------------------------------------------------------
 # 6.03.04 | 고급 모드 — 은퇴 시점 가족 미래 나이 카드
 #--------------------------------------------------------
-        people = [(st.session_state.get("person_name", "나"), cur_age)]
+        people = [("나", cur_age)]
         if getv("spouse_age", 0) > 0: people.append(("배우자", int(getv("spouse_age"))))
-        if getv("child_age", 0) > 0: people.append(("첫째 자녀", int(getv("child_age"))))
-        if getv("child_age2", 0) > 0: people.append(("둘째 자녀", int(getv("child_age2"))))
-        if getv("child_age3", 0) > 0: people.append(("셋째 자녀", int(getv("child_age3"))))
-        if getv("child_age4", 0) > 0: people.append(("넷째 자녀", int(getv("child_age4"))))
+        if getv("child_age", 0) > 0: people.append(("첫째", int(getv("child_age"))))
+        if getv("child_age2", 0) > 0: people.append(("둘째", int(getv("child_age2"))))
+        if getv("child_age3", 0) > 0: people.append(("셋째", int(getv("child_age3"))))
+        if getv("child_age4", 0) > 0: people.append(("넷째", int(getv("child_age4"))))
         if getv("father_age", 0) > 0: people.append(("아버지", int(getv("father_age"))))
         if getv("mother_age", 0) > 0: people.append(("어머니", int(getv("mother_age"))))
 
