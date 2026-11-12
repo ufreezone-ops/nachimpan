@@ -2769,7 +2769,7 @@ elif selected_page == "삶과 생계수단":
         """기본 모드와 고급 모드에서 공통으로 사용하는 우화 카드"""
         st.markdown("""
 
-<div style="font-size: 18px; font-weight: 850; color: #F8FAFC; line-height: 1.4; margin: 0 0 14px 0; padding: 0;">지혜로운 산책: 돌쇠와 똘똘이</div>
+<div style="font-size: 24px; font-weight: 850; color: #F8FAFC; line-height: 1.4; margin: 0 0 14px 0; padding: 0;">지혜로운 산책: 돌쇠와 똘똘이</div>
 <div style="font-size: 14.5px; color: #E2E8F0; margin-bottom: 16px;">옛날 어느 마을, 머슴을 구하는 대감댁에 두 젊은이가 찾아왔습니다.</div>
 
 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px;">
@@ -2823,7 +2823,7 @@ elif selected_page == "삶과 생계수단":
 #--------------------------------------------------------
         st.markdown("""
 <div style="background: transparent; border: none; border-radius: 0; padding: 0; margin-bottom: 44px;">
-<div style="font-size: 18px; font-weight: 850; color: #F8FAFC; line-height: 1.4; margin: 0 0 14px 0; padding: 0;">물통 &amp; 파이프라인</div>
+<div style="font-size: 24px; font-weight: 850; color: #F8FAFC; line-height: 1.4; margin: 0 0 14px 0; padding: 0;">물통 &amp; 파이프라인</div>
 """, unsafe_allow_html=True)
         
         q_self = active_quadrant(st.session_state.get("job_form", "직장인"))
@@ -2897,7 +2897,7 @@ elif selected_page == "삶과 생계수단":
 #--------------------------------------------------------
         st.markdown("""
 <div style="margin: 50px 0 26px 0; padding: 4px 2px;">
-<div style="font-size: 21px; font-weight: 850; color: #F8FAFC; margin-bottom: 6px;">더 생각해보기</div>
+<div style="font-size: 24px; font-weight: 850; color: #F8FAFC; margin-bottom: 6px;">더 생각해보기</div>
 <div style="font-size: 14px; color: #94A3B8; margin-bottom: 18px; line-height: 1.6;">우리가 당연하게 여겨온 것들을 잠시 멈추어 생각해 봅니다.</div>
 <div style="display: flex; flex-direction: column; gap: 14px;">
 <div style="background: rgba(30, 41, 59, 0.35); border-left: 3.5px solid #64748B; border-radius: 4px; padding: 12px 16px; display: flex; align-items: baseline; gap: 12px;"><span style="font-size: 14px; font-weight: 800; color: #94A3B8; min-width: 24px;">01</span><span style="font-size: 18.5px; font-weight: 800; color: #F8FAFC; line-height: 1.5; word-break: keep-all;">'일을 하고 있는 것'과 '생계를 위해 반드시 일해야 하는 것'은 같은가?</span></div>
