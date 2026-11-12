@@ -3127,6 +3127,7 @@ elif selected_page == "인생의 사계절":
                 st.rerun()
 
     else:
+        st.caption("가족 정보를 입력하고 우리 가정의 흐름을 살펴본 뒤, 국가 평균과 비교하며 인생의 계절을 생각해 봅니다.")
 
 #--------------------------------------------------------
 # 6.03.03 | 고급 모드 — 1. 가족 구성원 나이 및 주택가격 기준 통계
@@ -3211,219 +3212,220 @@ elif selected_page == "인생의 사계절":
         RETIREMENT_EXPENSE_DEFAULT_SURVEY = "2024년_제10차_부가조사"
         RETIREMENT_INFLATION_RATE = None
 
-        st.markdown("### 1. 우리 가족과 나의 은퇴 나이")
-        child_options = ["입력 안 함", "없음", "1명", "2명", "3명", "4명 이상"]
-        prev_c_count = st.session_state.get("child_count", "입력 안 함")
-        if prev_c_count not in child_options:
-            prev_c_count = "입력 안 함"
+        with st.expander("가족 구성과 미래 계획 입력", expanded=False):
+            st.markdown("### 가족 구성과 나의 은퇴 시점")
+            child_options = ["입력 안 함", "없음", "1명", "2명", "3명", "4명 이상"]
+            prev_c_count = st.session_state.get("child_count", "입력 안 함")
+            if prev_c_count not in child_options:
+                prev_c_count = "입력 안 함"
 
-        child_count = st.selectbox(
-            "자녀 수",
-            child_options,
-            index=child_options.index(prev_c_count),
-            key="child_count_select_direct"
-        )
-
-        with st.container():
-            spouse_age = st.number_input(
-                "배우자 나이 (없거나 미입력 시 0)",
-                min_value=0, max_value=120,
-                value=int(st.session_state.get("spouse_age", 0)),
-                step=1
+            child_count = st.selectbox(
+                "자녀 수",
+                child_options,
+                index=child_options.index(prev_c_count),
+                key="child_count_select_direct"
             )
 
-            child_age1, child_age2, child_age3, child_age4 = 0, 0, 0, 0
-
-            if child_count in ["1명", "2명", "3명", "4명 이상"]:
-                c1_col, c2_col = st.columns(2)
-                with c1_col:
-                    child_age1 = st.number_input(
-                        "첫째 자녀 나이",
-                        min_value=0, max_value=100,
-                        value=int(st.session_state.get("child_age", 0)),
-                        step=1
-                    )
-                with c2_col:
-                    if child_count in ["2명", "3명", "4명 이상"]:
-                        child_age2 = st.number_input(
-                            "둘째 자녀 나이",
-                            min_value=0, max_value=100,
-                            value=int(st.session_state.get("child_age2", 0)),
-                            step=1
-                        )
-                    else:
-                        st.write("")
-
-            if child_count in ["3명", "4명 이상"]:
-                c3_col, c4_col = st.columns(2)
-                with c3_col:
-                    child_age3 = st.number_input(
-                        "셋째 자녀 나이",
-                        min_value=0, max_value=100,
-                        value=int(st.session_state.get("child_age3", 0)),
-                        step=1
-                    )
-                with c4_col:
-                    if child_count == "4명 이상":
-                        child_age4 = st.number_input(
-                            "넷째 자녀 나이",
-                            min_value=0, max_value=100,
-                            value=int(st.session_state.get("child_age4", 0)),
-                            step=1
-                        )
-                    else:
-                        st.write("")
-
-            st.markdown("<div style='height: 8px;'></div>", unsafe_allow_html=True)
-            f_col, m_col = st.columns(2)
-
-            with f_col:
-                father_age = st.number_input(
-                    "아버지 나이 (선택, 모르면 0)",
+            with st.container():
+                spouse_age = st.number_input(
+                    "배우자 나이 (없거나 미입력 시 0)",
                     min_value=0, max_value=120,
-                    value=int(st.session_state.get("father_age", 0)),
+                    value=int(st.session_state.get("spouse_age", 0)),
                     step=1
                 )
 
-            with m_col:
-                mother_age = st.number_input(
-                    "어머니 나이 (선택, 모르면 0)",
-                    min_value=0, max_value=120,
-                    value=int(st.session_state.get("mother_age", 0)),
-                    step=1
-                )
+                child_age1, child_age2, child_age3, child_age4 = 0, 0, 0, 0
 
-            st.markdown("<div style='height: 10px;'></div>", unsafe_allow_html=True)
-            st.markdown("#### 앞으로의 가족 계획 (선택)")
+                if child_count in ["1명", "2명", "3명", "4명 이상"]:
+                    c1_col, c2_col = st.columns(2)
+                    with c1_col:
+                        child_age1 = st.number_input(
+                            "첫째 자녀 나이",
+                            min_value=0, max_value=100,
+                            value=int(st.session_state.get("child_age", 0)),
+                            step=1
+                        )
+                    with c2_col:
+                        if child_count in ["2명", "3명", "4명 이상"]:
+                            child_age2 = st.number_input(
+                                "둘째 자녀 나이",
+                                min_value=0, max_value=100,
+                                value=int(st.session_state.get("child_age2", 0)),
+                                step=1
+                            )
+                        else:
+                            st.write("")
 
-            p_c1, p_c2, p_c3 = st.columns(3)
+                if child_count in ["3명", "4명 이상"]:
+                    c3_col, c4_col = st.columns(2)
+                    with c3_col:
+                        child_age3 = st.number_input(
+                            "셋째 자녀 나이",
+                            min_value=0, max_value=100,
+                            value=int(st.session_state.get("child_age3", 0)),
+                            step=1
+                        )
+                    with c4_col:
+                        if child_count == "4명 이상":
+                            child_age4 = st.number_input(
+                                "넷째 자녀 나이",
+                                min_value=0, max_value=100,
+                                value=int(st.session_state.get("child_age4", 0)),
+                                step=1
+                            )
+                        else:
+                            st.write("")
 
-            with p_c1:
-                marriage_options = [
-                    "미정", "계획 없음", "결혼 예정", "결혼함",
-                    "1~3년 내 결혼 생각 있음",
-                    "3년 이후 결혼 생각 있음"
-                ]
-                marriage_plan = st.selectbox(
-                    "결혼 계획",
-                    marriage_options,
-                    index=marriage_options.index(
-                        st.session_state.get("marriage_plan", "미정")
-                    ) if st.session_state.get("marriage_plan", "미정") in marriage_options else 0
-                )
+                st.markdown("<div style='height: 8px;'></div>", unsafe_allow_html=True)
+                f_col, m_col = st.columns(2)
 
-                actual_marriage_age = int(
-                    st.session_state.get("actual_marriage_age", 0) or 0
-                )
-
-                if marriage_plan == "결혼함":
-                    actual_marriage_age = st.number_input(
-                        "실제 결혼 나이 (선택, 0이면 자동 추정)",
-                        min_value=0,
-                        max_value=max(0, int(cur_age)),
-                        value=min(
-                            max(0, actual_marriage_age),
-                            max(0, int(cur_age))
-                        ),
-                        step=1,
-                        help="실제 결혼 나이를 알고 있다면 입력하세요. 입력하지 않으면 통계와 가족 정보를 바탕으로 추정합니다."
+                with f_col:
+                    father_age = st.number_input(
+                        "아버지 나이 (선택, 모르면 0)",
+                        min_value=0, max_value=120,
+                        value=int(st.session_state.get("father_age", 0)),
+                        step=1
                     )
 
-            with p_c2:
-                child_plan_options = [
-                    "미정", "계획 없음", "자녀 계획 있음",
-                    "출산 예정", "추가 자녀 계획 있음", "추가 자녀 계획 없음"
-                ]
-                child_plan = st.selectbox(
-                    "출산·자녀 계획",
-                    child_plan_options,
-                    index=child_plan_options.index(
-                        st.session_state.get("child_plan", "미정")
-                    ) if st.session_state.get("child_plan", "미정") in child_plan_options else 0
-                )
-
-            with p_c3:
-                housing_options = [
-                    "미정", "주택 구입 고려", "현재 주거 유지",
-                    "전세·월세 이동 고려", "주거 계획 확정"
-                ]
-                housing_plan = st.selectbox(
-                    "주거 계획",
-                    housing_options,
-                    index=housing_options.index(
-                        st.session_state.get("housing_plan", "미정")
-                    ) if st.session_state.get("housing_plan", "미정") in housing_options else 0
-                )
-
-            save_family_trigger = st.button(
-                "입력 정보 AI 점검",
-                use_container_width=True,
-                type="primary"
-            )
-
-        st.session_state["child_count"] = child_count
-        st.session_state["spouse_age"] = int(spouse_age or 0)
-        st.session_state["child_age"] = int(child_age1 or 0)
-        st.session_state["child_age2"] = int(child_age2 or 0)
-        st.session_state["child_age3"] = int(child_age3 or 0)
-        st.session_state["child_age4"] = int(child_age4 or 0)
-        st.session_state["father_age"] = int(father_age or 0)
-        st.session_state["mother_age"] = int(mother_age or 0)
-        st.session_state["marriage_plan"] = marriage_plan
-        st.session_state["child_plan"] = child_plan
-        st.session_state["housing_plan"] = housing_plan
-        st.session_state["family_info_checked"] = True
-
-        housing_info_needed = (
-            st.session_state.get("family_info_checked", False)
-            and st.session_state.get("housing_plan", "미정")
-            not in ["현재 주거 유지", "주거 계획 확정"]
-        )
-
-        if housing_info_needed:
-            st.markdown("#### 주택가격 산정 기준")
-            is_representative_case = st.session_state.get("_representative_case_id") in {
-                "case_32_female", "case_45_female"
-            }
-            housing_region_options = (
-                ["부산"] if is_representative_case
-                else ["지역 선택"] + list(HOUSING_PRICE_DATA.keys())
-            )
-            prev_housing_region = st.session_state.get("housing_region", "부산" if is_representative_case else "지역 선택")
-            if prev_housing_region not in housing_region_options:
-                prev_housing_region = "부산" if is_representative_case else "지역 선택"
-
-            housing_region = st.selectbox(
-                "주택 구입 예정 지역",
-                housing_region_options,
-                index=housing_region_options.index(prev_housing_region),
-                key="housing_region_select"
-            )
-
-            statistical_ltv = REGIONAL_LTV1.get(housing_region, 34.3)
-            housing_ltv = REPRESENTATIVE_MORTGAGE_LTV * 100.0 if is_representative_case else statistical_ltv
-            st.session_state["housing_region"] = housing_region
-            st.session_state["housing_ltv"] = housing_ltv
-
-            if housing_region != "지역 선택":
-                if is_representative_case:
-                    st.caption(
-                        f"대표사례 기준: 주택가격 4억 원 · LTV {REPRESENTATIVE_MORTGAGE_LTV * 100:.0f}% "
-                        f"→ 최초 대출 1억 4천만 원 · 자기자금 2억 6천만 원"
-                    )
-                else:
-                    apartment_median_won = HOUSING_PRICE_DATA[housing_region][3] * 1000
-                    housing_equity_won = apartment_median_won * (1 - housing_ltv / 100)
-                    st.caption(
-                        f"선택 지역: {housing_region} · "
-                        f"아파트 중위가격: {apartment_median_won / 100000000:.2f}억 원 · "
-                        f"통계 LTV1: {housing_ltv:.1f}% · "
-                        f"자기자금 기준: {housing_equity_won / 100000000:.2f}억 원"
+                with m_col:
+                    mother_age = st.number_input(
+                        "어머니 나이 (선택, 모르면 0)",
+                        min_value=0, max_value=120,
+                        value=int(st.session_state.get("mother_age", 0)),
+                        step=1
                     )
 
-            st.caption("주택가격 자료: 한국부동산원 R-ONE · 전국주택가격동향조사 · 2025년 12월 아파트 중위가격")
+                st.markdown("<div style='height: 10px;'></div>", unsafe_allow_html=True)
+                st.markdown("#### 앞으로의 가족 계획 (선택)")
 
-#--------------------------------------------------------
+                p_c1, p_c2, p_c3 = st.columns(3)
+
+                with p_c1:
+                    marriage_options = [
+                        "미정", "계획 없음", "결혼 예정", "결혼함",
+                        "1~3년 내 결혼 생각 있음",
+                        "3년 이후 결혼 생각 있음"
+                    ]
+                    marriage_plan = st.selectbox(
+                        "결혼 계획",
+                        marriage_options,
+                        index=marriage_options.index(
+                            st.session_state.get("marriage_plan", "미정")
+                        ) if st.session_state.get("marriage_plan", "미정") in marriage_options else 0
+                    )
+
+                    actual_marriage_age = int(
+                        st.session_state.get("actual_marriage_age", 0) or 0
+                    )
+
+                    if marriage_plan == "결혼함":
+                        actual_marriage_age = st.number_input(
+                            "실제 결혼 나이 (선택, 0이면 자동 추정)",
+                            min_value=0,
+                            max_value=max(0, int(cur_age)),
+                            value=min(
+                                max(0, actual_marriage_age),
+                                max(0, int(cur_age))
+                            ),
+                            step=1,
+                            help="실제 결혼 나이를 알고 있다면 입력하세요. 입력하지 않으면 통계와 가족 정보를 바탕으로 추정합니다."
+                        )
+
+                with p_c2:
+                    child_plan_options = [
+                        "미정", "계획 없음", "자녀 계획 있음",
+                        "출산 예정", "추가 자녀 계획 있음", "추가 자녀 계획 없음"
+                    ]
+                    child_plan = st.selectbox(
+                        "출산·자녀 계획",
+                        child_plan_options,
+                        index=child_plan_options.index(
+                            st.session_state.get("child_plan", "미정")
+                        ) if st.session_state.get("child_plan", "미정") in child_plan_options else 0
+                    )
+
+                with p_c3:
+                    housing_options = [
+                        "미정", "주택 구입 고려", "현재 주거 유지",
+                        "전세·월세 이동 고려", "주거 계획 확정"
+                    ]
+                    housing_plan = st.selectbox(
+                        "주거 계획",
+                        housing_options,
+                        index=housing_options.index(
+                            st.session_state.get("housing_plan", "미정")
+                        ) if st.session_state.get("housing_plan", "미정") in housing_options else 0
+                    )
+
+                save_family_trigger = st.button(
+                    "입력 정보 AI 점검",
+                    use_container_width=True,
+                    type="primary"
+                )
+
+            st.session_state["child_count"] = child_count
+            st.session_state["spouse_age"] = int(spouse_age or 0)
+            st.session_state["child_age"] = int(child_age1 or 0)
+            st.session_state["child_age2"] = int(child_age2 or 0)
+            st.session_state["child_age3"] = int(child_age3 or 0)
+            st.session_state["child_age4"] = int(child_age4 or 0)
+            st.session_state["father_age"] = int(father_age or 0)
+            st.session_state["mother_age"] = int(mother_age or 0)
+            st.session_state["marriage_plan"] = marriage_plan
+            st.session_state["child_plan"] = child_plan
+            st.session_state["housing_plan"] = housing_plan
+            st.session_state["family_info_checked"] = True
+
+            housing_info_needed = (
+                st.session_state.get("family_info_checked", False)
+                and st.session_state.get("housing_plan", "미정")
+                not in ["현재 주거 유지", "주거 계획 확정"]
+            )
+
+            if housing_info_needed:
+                st.markdown("#### 주택가격 산정 기준")
+                is_representative_case = st.session_state.get("_representative_case_id") in {
+                    "case_32_female", "case_45_female"
+                }
+                housing_region_options = (
+                    ["부산"] if is_representative_case
+                    else ["지역 선택"] + list(HOUSING_PRICE_DATA.keys())
+                )
+                prev_housing_region = st.session_state.get("housing_region", "부산" if is_representative_case else "지역 선택")
+                if prev_housing_region not in housing_region_options:
+                    prev_housing_region = "부산" if is_representative_case else "지역 선택"
+
+                housing_region = st.selectbox(
+                    "주택 구입 예정 지역",
+                    housing_region_options,
+                    index=housing_region_options.index(prev_housing_region),
+                    key="housing_region_select"
+                )
+
+                statistical_ltv = REGIONAL_LTV1.get(housing_region, 34.3)
+                housing_ltv = REPRESENTATIVE_MORTGAGE_LTV * 100.0 if is_representative_case else statistical_ltv
+                st.session_state["housing_region"] = housing_region
+                st.session_state["housing_ltv"] = housing_ltv
+
+                if housing_region != "지역 선택":
+                    if is_representative_case:
+                        st.caption(
+                            f"대표사례 기준: 주택가격 4억 원 · LTV {REPRESENTATIVE_MORTGAGE_LTV * 100:.0f}% "
+                            f"→ 최초 대출 1억 4천만 원 · 자기자금 2억 6천만 원"
+                        )
+                    else:
+                        apartment_median_won = HOUSING_PRICE_DATA[housing_region][3] * 1000
+                        housing_equity_won = apartment_median_won * (1 - housing_ltv / 100)
+                        st.caption(
+                            f"선택 지역: {housing_region} · "
+                            f"아파트 중위가격: {apartment_median_won / 100000000:.2f}억 원 · "
+                            f"통계 LTV1: {housing_ltv:.1f}% · "
+                            f"자기자금 기준: {housing_equity_won / 100000000:.2f}억 원"
+                        )
+
+                st.caption("주택가격 자료: 한국부동산원 R-ONE · 전국주택가격동향조사 · 2025년 12월 아파트 중위가격")
+
+    #--------------------------------------------------------
 # 6.03.04 | 고급 모드 — 은퇴 시점 가족 미래 나이 카드
 #--------------------------------------------------------
         people = [(st.session_state.get("person_name", "나"), cur_age)]
@@ -4403,140 +4405,141 @@ elif selected_page == "인생의 사계절":
             "현재 자산·부채의 잔액이나 자산 매각·상속 등은 이 누적 현금흐름 합계에 포함하지 않습니다."
         )
 
-#############    6.03.05.10.01 | 과거 소득·지출의 시간 기준 환산 안내
-        # 2024년 MDIS 기준곡선을 공식 임금·물가지수로 과거 연도와 비교한다.
-        if cur_age > 20 and self_base is not None:
-            historical_compare_age = max(20, cur_age - 13)
-            years_back = cur_age - historical_compare_age
-            historical_year = date.today().year - years_back
-            macro_index_stats = pd.DataFrame()
-            try:
-                macro_path = Path(__file__).resolve().parent / "data" / "기준데이터" / "국가데이터처_소비자물가지수_및_고용노동부_임금지수_1965-2025.csv"
-                macro_index_stats = pd.read_csv(macro_path)
-            except Exception as e:
-                st.warning(f"시간축 보정 지수표를 불러오지 못했습니다. ({e})")
+        with st.expander("과거 소득·지출을 현재 기준과 비교하기", expanded=False):
+    #############    6.03.05.10.01 | 과거 소득·지출의 시간 기준 환산 안내
+            # 2024년 MDIS 기준곡선을 공식 임금·물가지수로 과거 연도와 비교한다.
+            if cur_age > 20 and self_base is not None:
+                historical_compare_age = max(20, cur_age - 13)
+                years_back = cur_age - historical_compare_age
+                historical_year = date.today().year - years_back
+                macro_index_stats = pd.DataFrame()
+                try:
+                    macro_path = Path(__file__).resolve().parent / "data" / "기준데이터" / "국가데이터처_소비자물가지수_및_고용노동부_임금지수_1965-2025.csv"
+                    macro_index_stats = pd.read_csv(macro_path)
+                except Exception as e:
+                    st.warning(f"시간축 보정 지수표를 불러오지 못했습니다. ({e})")
 
-            def get_macro_value(year, column):
-                if macro_index_stats.empty:
-                    return None
-                matched = macro_index_stats[macro_index_stats["year"] == year]
-                if matched.empty or pd.isna(matched.iloc[0][column]):
-                    return None
-                return float(matched.iloc[0][column])
+                def get_macro_value(year, column):
+                    if macro_index_stats.empty:
+                        return None
+                    matched = macro_index_stats[macro_index_stats["year"] == year]
+                    if matched.empty or pd.isna(matched.iloc[0][column]):
+                        return None
+                    return float(matched.iloc[0][column])
 
-            wage_base_index = get_macro_value(2025, "moel_wage_index_2024_100")
-            historical_wage_index = get_macro_value(historical_year, "moel_wage_index_2024_100")
-            cpi_base_index = get_macro_value(2024, "cpi_index_2020_100")
-            historical_cpi_index = get_macro_value(historical_year, "cpi_index_2020_100")
+                wage_base_index = get_macro_value(2025, "moel_wage_index_2024_100")
+                historical_wage_index = get_macro_value(historical_year, "moel_wage_index_2024_100")
+                cpi_base_index = get_macro_value(2024, "cpi_index_2020_100")
+                historical_cpi_index = get_macro_value(historical_year, "cpi_index_2020_100")
 
-            historical_current_value_monthly = (
-                extended_base_income(historical_compare_age, self_base) * self_scale
-            )
-
-            if (
-                wage_base_index is not None
-                and historical_wage_index is not None
-                and historical_wage_index > 0
-            ):
-                historical_wage_factor = wage_base_index / historical_wage_index
-                historical_nominal_monthly = (
-                    historical_current_value_monthly / historical_wage_factor
+                historical_current_value_monthly = (
+                    extended_base_income(historical_compare_age, self_base) * self_scale
                 )
-            else:
-                historical_wage_factor = None
-                historical_nominal_monthly = None
 
-            # 월 기본급끼리 비교하도록 연간 상여금은 제외하고,
-            # 해당 연령의 육아·경력 회복 계수만 기존 소득곡선과 동일하게 적용한다.
-            historical_career_factor = 1.0
-            historical_is_in_childcare = False
-            historical_has_completed_childcare = False
-            for c_start, c_end in childcare_windows:
-                if c_start <= historical_compare_age < c_end:
-                    years_in = historical_compare_age - c_start
-                    historical_career_factor = 0.35 if years_in <= 1 else 0.50
-                    historical_is_in_childcare = True
-                    break
-                elif historical_compare_age >= c_end:
-                    historical_has_completed_childcare = True
+                if (
+                    wage_base_index is not None
+                    and historical_wage_index is not None
+                    and historical_wage_index > 0
+                ):
+                    historical_wage_factor = wage_base_index / historical_wage_index
+                    historical_nominal_monthly = (
+                        historical_current_value_monthly / historical_wage_factor
+                    )
+                else:
+                    historical_wage_factor = None
+                    historical_nominal_monthly = None
 
-            if (
-                not historical_is_in_childcare
-                and historical_has_completed_childcare
-            ):
-                historical_career_factor = 0.80
+                # 월 기본급끼리 비교하도록 연간 상여금은 제외하고,
+                # 해당 연령의 육아·경력 회복 계수만 기존 소득곡선과 동일하게 적용한다.
+                historical_career_factor = 1.0
+                historical_is_in_childcare = False
+                historical_has_completed_childcare = False
+                for c_start, c_end in childcare_windows:
+                    if c_start <= historical_compare_age < c_end:
+                        years_in = historical_compare_age - c_start
+                        historical_career_factor = 0.35 if years_in <= 1 else 0.50
+                        historical_is_in_childcare = True
+                        break
+                    elif historical_compare_age >= c_end:
+                        historical_has_completed_childcare = True
 
-            historical_model_monthly = (
-                historical_nominal_monthly * historical_career_factor
-                if historical_nominal_monthly is not None else None
-            )
+                if (
+                    not historical_is_in_childcare
+                    and historical_has_completed_childcare
+                ):
+                    historical_career_factor = 0.80
 
-            historical_expense_reference = lookup_household_expense(
-                historical_compare_age,
-                household_size_at_age(historical_compare_age)
-            )
-            if (
-                historical_expense_reference
-                and cpi_base_index is not None
-                and historical_cpi_index is not None
-                and historical_cpi_index > 0
-            ):
-                historical_cpi_factor = cpi_base_index / historical_cpi_index
-                historical_expense_2024 = (
-                    historical_expense_reference["monthly"] * 12.0 * expense_scale_ratio
+                historical_model_monthly = (
+                    historical_nominal_monthly * historical_career_factor
+                    if historical_nominal_monthly is not None else None
                 )
-                historical_expense_nominal = historical_expense_2024 / historical_cpi_factor
-            else:
-                historical_cpi_factor = None
-                historical_expense_2024 = None
-                historical_expense_nominal = None
 
-            st.markdown("#### 시간을 맞춰 소득과 지출 비교하기")
-            st.caption(
-                f"{historical_year}년 소득은 2025년 임금통계 기준으로, 지출은 2024년 MDIS 기준으로 환산합니다. "
-                "소득은 임금지수, 지출은 소비자물가지수를 각각 적용합니다."
-            )
-            time_value_col1, time_value_col2 = st.columns(2)
-            if historical_nominal_monthly is not None:
-                time_value_col1.metric(
-                    f"{historical_year}년 소득 추정",
-                    f"{historical_nominal_monthly:,.0f}만 원/월",
-                    help="2025년 임금지수 기준 소득을 실제 임금지수의 연도 간 비율로 역산한 추정치입니다."
+                historical_expense_reference = lookup_household_expense(
+                    historical_compare_age,
+                    household_size_at_age(historical_compare_age)
                 )
-                time_value_col2.metric(
-                    "2025년 임금통계 기준 소득",
-                    f"{historical_current_value_monthly:,.0f}만 원/월",
-                    help="가장 최근 연간 임금통계인 2025년을 기준으로 본 소득 추정치입니다."
-                )
+                if (
+                    historical_expense_reference
+                    and cpi_base_index is not None
+                    and historical_cpi_index is not None
+                    and historical_cpi_index > 0
+                ):
+                    historical_cpi_factor = cpi_base_index / historical_cpi_index
+                    historical_expense_2024 = (
+                        historical_expense_reference["monthly"] * 12.0 * expense_scale_ratio
+                    )
+                    historical_expense_nominal = historical_expense_2024 / historical_cpi_factor
+                else:
+                    historical_cpi_factor = None
+                    historical_expense_2024 = None
+                    historical_expense_nominal = None
+
+                st.markdown("#### 시간을 맞춰 소득과 지출 비교하기")
                 st.caption(
-                    f"임금지수 환산 배율: {historical_wage_factor:.3f}배. "
-                    f"육아·경력 영향을 반영한 {historical_compare_age}세 당시의 모델 소득은 "
-                    f"월 {historical_model_monthly:,.0f}만 원입니다."
+                    f"{historical_year}년 소득은 2025년 임금통계 기준으로, 지출은 2024년 MDIS 기준으로 환산합니다. "
+                    "소득은 임금지수, 지출은 소비자물가지수를 각각 적용합니다."
                 )
-            else:
-                st.info(
-                    f"{historical_year}년 임금지수는 현재 자료표에서 확인되지 않아 "
-                    "소득의 시간 환산을 생략했습니다."
-                )
+                time_value_col1, time_value_col2 = st.columns(2)
+                if historical_nominal_monthly is not None:
+                    time_value_col1.metric(
+                        f"{historical_year}년 소득 추정",
+                        f"{historical_nominal_monthly:,.0f}만 원/월",
+                        help="2025년 임금지수 기준 소득을 실제 임금지수의 연도 간 비율로 역산한 추정치입니다."
+                    )
+                    time_value_col2.metric(
+                        "2025년 임금통계 기준 소득",
+                        f"{historical_current_value_monthly:,.0f}만 원/월",
+                        help="가장 최근 연간 임금통계인 2025년을 기준으로 본 소득 추정치입니다."
+                    )
+                    st.caption(
+                        f"임금지수 환산 배율: {historical_wage_factor:.3f}배. "
+                        f"육아·경력 영향을 반영한 {historical_compare_age}세 당시의 모델 소득은 "
+                        f"월 {historical_model_monthly:,.0f}만 원입니다."
+                    )
+                else:
+                    st.info(
+                        f"{historical_year}년 임금지수는 현재 자료표에서 확인되지 않아 "
+                        "소득의 시간 환산을 생략했습니다."
+                    )
 
-            if historical_expense_nominal is not None:
+                if historical_expense_nominal is not None:
+                    st.caption(
+                        f"같은 연령·가구원 수의 2024년 MDIS 지출 기준은 연 "
+                        f"{historical_expense_2024:,.0f}만 원이며, "
+                        f"{historical_year}년 물가로 환산한 추정치는 연 "
+                        f"{historical_expense_nominal:,.0f}만 원입니다. "
+                        f"물가 환산 배율은 {historical_cpi_factor:.3f}배입니다."
+                    )
+                else:
+                    st.caption(
+                        f"{historical_year}년 소비자물가지수 또는 해당 연령·가구원 수 지출 기준을 "
+                        "확인할 수 없어 지출의 시간 환산을 생략했습니다."
+                    )
                 st.caption(
-                    f"같은 연령·가구원 수의 2024년 MDIS 지출 기준은 연 "
-                    f"{historical_expense_2024:,.0f}만 원이며, "
-                    f"{historical_year}년 물가로 환산한 추정치는 연 "
-                    f"{historical_expense_nominal:,.0f}만 원입니다. "
-                    f"물가 환산 배율은 {historical_cpi_factor:.3f}배입니다."
+                    "주의: 2024년 MDIS 연령별 지출 가중중위값은 횡단면 통계이며, 과거 지출값은 실제 관측치가 아닌 "
+                    "2024년 기준곡선에 물가지수를 적용한 비교용 추정치입니다. "
+                    "임금 통계는 2011년 이전과 시계열이 단절되어 있습니다."
                 )
-            else:
-                st.caption(
-                    f"{historical_year}년 소비자물가지수 또는 해당 연령·가구원 수 지출 기준을 "
-                    "확인할 수 없어 지출의 시간 환산을 생략했습니다."
-                )
-            st.caption(
-                "주의: 2024년 MDIS 연령별 지출 가중중위값은 횡단면 통계이며, 과거 지출값은 실제 관측치가 아닌 "
-                "2024년 기준곡선에 물가지수를 적용한 비교용 추정치입니다. "
-                "임금 통계는 2011년 이전과 시계열이 단절되어 있습니다."
-            )
 
 #############    6.03.05.10.02 | [개발 메모] 시간축 보정 원칙 — 과거와 미래
         # >>> 개발 중 계속 눈에 띄게 확인할 것: 돈의 액수만 비교하지 말고, 시간의 기준을 맞춘다. <<<
@@ -4587,20 +4590,21 @@ elif selected_page == "인생의 사계절":
 </div>
 """, unsafe_allow_html=True)
 
-        st.markdown("""
-<div style="background: rgba(30, 41, 59, 0.45); border: 1px solid #475569; border-radius: 8px; padding: 12px 15px; margin: 8px 0 12px 0; font-size: 13.5px; line-height: 1.7; color: #CBD5E1;">
-<b style="color:#F8FAFC;">소득 기준곡선의 출처와 산정 방식</b><br>
-• <b>직장인 기준곡선:</b> 국가데이터처 「2023년 국민이전계정」의 연령별 1인당 임금소득 흐름을 참고해 나침반에서 월소득 기준으로 재구성한 자체 기준곡선입니다. NTA의 1인당 금액은 해당 연령의 전체 인구를 기준으로 계산한 값이므로, 취업자 개인의 실제 평균임금과 같지 않으며 원자료 수치를 그대로 옮긴 곡선도 아닙니다.<br>
-• <b>자영업자 기준곡선:</b> NTA의 자영자 노동소득은 사업소득 전체가 아니라 노동소득으로 분류된 일부이며, 전체 인구 기준 1인당 값이므로 자영업자 개인의 실제 사업소득 곡선으로 직접 사용하지 않았습니다. 대신 국가데이터처 「2024년 가계금융복지조사」(2023년 소득 자료)의 가구주 종사상지위별 통계를 참고했습니다. 자영업자 가구의 평균 가구소득은 7,769만 원, 그중 사업소득은 4,680만 원, 재산소득은 634만 원입니다. 이 수치는 가구 단위 평균이며 연령별 개인 소득곡선이 아니므로, 나침반의 자영업자 연령별 기준곡선은 이 자료를 참고하되 코로나 시기 왜곡을 정상화한다는 별도 가정을 반영해 구성한 자체 시뮬레이션입니다.<br>
-• 각 기준곡선은 현재 입력한 소득을 기준으로 조정되며, 연령 사이 값은 보간합니다. 75세 이후는 추정 연장값입니다. 배우자의 미래 소득도 직업군 기준곡선을 적용한 가정이며 실제 미래 소득을 보장하거나 예측하지 않습니다.<br>
-자료: <a href="https://mods.go.kr/board.es?act=view&amp;bid=11898&amp;list_no=438783&amp;mid=a10301130100" target="_blank" style="color:#38BDF8;">국가데이터처, 2023년 국민이전계정</a> · <a href="https://mods.go.kr/boardDownload.es?bid=215&amp;list_no=434107&amp;seq=4" target="_blank" style="color:#38BDF8;">국가데이터처·한국은행·금융감독원, 2024년 가계금융복지조사</a>
-</div>
-""", unsafe_allow_html=True)
+        with st.expander("소득 기준곡선의 출처와 산정 방식", expanded=False):
+            st.markdown("""
+    <div style="background: rgba(30, 41, 59, 0.45); border: 1px solid #475569; border-radius: 8px; padding: 12px 15px; margin: 8px 0 12px 0; font-size: 13.5px; line-height: 1.7; color: #CBD5E1;">
+    <b style="color:#F8FAFC;">소득 기준곡선의 출처와 산정 방식</b><br>
+    • <b>직장인 기준곡선:</b> 국가데이터처 「2023년 국민이전계정」의 연령별 1인당 임금소득 흐름을 참고해 나침반에서 월소득 기준으로 재구성한 자체 기준곡선입니다. NTA의 1인당 금액은 해당 연령의 전체 인구를 기준으로 계산한 값이므로, 취업자 개인의 실제 평균임금과 같지 않으며 원자료 수치를 그대로 옮긴 곡선도 아닙니다.<br>
+    • <b>자영업자 기준곡선:</b> NTA의 자영자 노동소득은 사업소득 전체가 아니라 노동소득으로 분류된 일부이며, 전체 인구 기준 1인당 값이므로 자영업자 개인의 실제 사업소득 곡선으로 직접 사용하지 않았습니다. 대신 국가데이터처 「2024년 가계금융복지조사」(2023년 소득 자료)의 가구주 종사상지위별 통계를 참고했습니다. 자영업자 가구의 평균 가구소득은 7,769만 원, 그중 사업소득은 4,680만 원, 재산소득은 634만 원입니다. 이 수치는 가구 단위 평균이며 연령별 개인 소득곡선이 아니므로, 나침반의 자영업자 연령별 기준곡선은 이 자료를 참고하되 코로나 시기 왜곡을 정상화한다는 별도 가정을 반영해 구성한 자체 시뮬레이션입니다.<br>
+    • 각 기준곡선은 현재 입력한 소득을 기준으로 조정되며, 연령 사이 값은 보간합니다. 75세 이후는 추정 연장값입니다. 배우자의 미래 소득도 직업군 기준곡선을 적용한 가정이며 실제 미래 소득을 보장하거나 예측하지 않습니다.<br>
+    자료: <a href="https://mods.go.kr/board.es?act=view&amp;bid=11898&amp;list_no=438783&amp;mid=a10301130100" target="_blank" style="color:#38BDF8;">국가데이터처, 2023년 국민이전계정</a> · <a href="https://mods.go.kr/boardDownload.es?bid=215&amp;list_no=434107&amp;seq=4" target="_blank" style="color:#38BDF8;">국가데이터처·한국은행·금융감독원, 2024년 가계금융복지조사</a>
+    </div>
+    """, unsafe_allow_html=True)
 
 
-        st.markdown("<div style='height: 14px;'></div>", unsafe_allow_html=True)
+            st.markdown("<div style='height: 14px;'></div>", unsafe_allow_html=True)
 
-#--------------------------------------------------------
+    #--------------------------------------------------------
 # 6.03.06 | 고급 모드 — 3. 세대 계승 생애주기 재정곡선
 #--------------------------------------------------------
         st.markdown("### 3. 세대 계승 생애주기 재정곡선")
