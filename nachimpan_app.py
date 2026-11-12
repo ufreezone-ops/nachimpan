@@ -725,6 +725,12 @@ LIFECYCLE_BENCHMARK = pd.DataFrame([
 OFFICIAL_PDF_URL = "https://mods.go.kr/boardDownload.es?bid=11898&list_no=447028&seq=3#page=7"
 OFFICIAL_RELEASE_URL = "https://mods.go.kr/board.es?act=view&bid=11898&list_no=447028&mid=a10301130100"
 
+# 첫 화면에서 받는 현재 주거지역 선택지
+KOREA_REGION_OPTIONS = [
+    "서울", "부산", "대구", "인천", "광주", "대전", "울산", "세종",
+    "경기", "강원", "충북", "충남", "전북", "전남", "경북", "경남", "제주",
+]
+
 
 
 #########################################################
@@ -763,7 +769,8 @@ CASE_DATA_KEYS = [
     "asset_cash", "asset_financial", "asset_home", "asset_deposit", "asset_other",
     "debt_home", "debt_other", "retirement_age", "spouse_age", "child_count",
     "child_age", "child_age2", "child_age3", "child_age4", "father_age", "mother_age",
-    "marriage_plan", "child_plan", "housing_plan", "sibling_items", "advanced_mode"
+    "marriage_plan", "child_plan", "housing_plan", "residence_region",
+    "housing_region", "housing_ltv", "sibling_items", "advanced_mode"
 ]
 
 #--------------------------------------------------------
@@ -795,6 +802,7 @@ INTERVIEWER_CASES = {
         "child_plan": "자녀 계획 있음",
         "housing_plan": "주택 구입 고려",
         "target_housing_age": 39,  # 2024 주거실태조사 가중 중앙값
+        "residence_region": "부산",
         "housing_region": "부산",
         "housing_region_select": "부산",    # 위젯에 직격 주입
         "housing_ltv": 35.0,
@@ -825,6 +833,7 @@ INTERVIEWER_CASES = {
         "child_plan": "계획 없음",
         "housing_plan": "현재 주거 유지",
         "target_housing_age": 39,  # 2024 주거실태조사 가중 중앙값
+        "residence_region": "부산",
         "housing_region": "부산",
         "housing_region_select": "부산",    # 위젯에 직격 주입
         "housing_ltv": 35.0,
@@ -1221,6 +1230,11 @@ with st.sidebar:
         if "child_count" in case_dict: st.session_state["child_count_select_direct"] = case_dict["child_count"]
         if "housing_region" in case_dict:
             st.session_state["housing_region_select"] = case_dict["housing_region"]
+        # 구버전 저장 사례에는 현재 주거지역이 없을 수 있으므로 기존 지역값을 우선 승계
+        if "residence_region" not in st.session_state:
+            st.session_state["residence_region"] = case_dict.get(
+                "housing_region", "지역 선택"
+            )
 
         # 가족 계획 데이터가 모두 포함된 사례만 입력 완료 상태로 시작
         st.session_state["family_info_checked"] = all(
@@ -1247,6 +1261,7 @@ with st.sidebar:
         st.markdown("#### 나의 기본 정보")
         st.markdown(f"**나의 이름/별칭:** {st.session_state.get('person_name','')}")
         st.markdown(f"**나의 나이:** {st.session_state.get('person_age','')}세")
+        st.markdown(f"**지역:** {st.session_state.get('residence_region', '미입력')}")
 
         q_self = active_quadrant(st.session_state.get("job_form", ""))
         q_spouse = active_quadrant(st.session_state.get("job_spouse_form", ""))
@@ -1377,17 +1392,25 @@ if not st.session_state.started:
         st.markdown("<div style='height: 14px;'></div>", unsafe_allow_html=True)
         
         with st.form("start_inline_form", clear_on_submit=False):
-            in_col1, in_col2, in_col3 = st.columns([2.0, 1.1, 1.1])
-            
-            with in_col1:
+            name_col, age_col = st.columns([2.0, 1.1])
+
+            with name_col:
                 st.markdown("<div style='font-size: 18px; font-weight: 800; color: #F8FAFC; margin-bottom: 6px; text-align: center;'>이름(별칭)</div>", unsafe_allow_html=True)
                 name = st.text_input("이름(별칭)", placeholder="이름 또는 별칭", key="start_person_name", label_visibility="collapsed")
-                
-            with in_col2:
+
+            with age_col:
                 st.markdown("<div style='font-size: 18px; font-weight: 800; color: #F8FAFC; margin-bottom: 6px; text-align: center;'>나이</div>", unsafe_allow_html=True)
                 age_text = st.text_input("나이", placeholder="예: 38", key="start_person_age_text", max_chars=3, label_visibility="collapsed")
-                
-            with in_col3:
+
+            region_col, start_col = st.columns([2.0, 1.1])
+            with region_col:
+                st.markdown("<div style='font-size: 18px; font-weight: 800; color: #F8FAFC; margin-bottom: 6px; text-align: center;'>지역</div>", unsafe_allow_html=True)
+                residence_region = st.selectbox(
+                    "지역", ["지역 선택"] + KOREA_REGION_OPTIONS,
+                    key="start_person_region", label_visibility="collapsed"
+                )
+
+            with start_col:
                 st.markdown("<div style='font-size: 18px; font-weight: 800; margin-bottom: 6px; text-align: center;'>&nbsp;</div>", unsafe_allow_html=True)
                 submitted = st.form_submit_button("시작", use_container_width=True, type="primary")
 
@@ -1399,11 +1422,12 @@ if not st.session_state.started:
                 age = None
 
             if submitted:
-                if not name.strip() or age is None:
-                    st.warning("이름(별칭)과 나이를 올바르게 입력해 주세요.")
+                if not name.strip() or age is None or residence_region == "지역 선택":
+                    st.warning("이름(별칭), 나이, 지역을 모두 올바르게 입력해 주세요.")
                 else:
                     st.session_state.person_name = name.strip()
                     st.session_state.person_age = int(age)
+                    st.session_state.residence_region = residence_region
                     st.session_state.started = True
                     st.rerun()
             
@@ -3226,7 +3250,7 @@ elif selected_page == "인생의 사계절":
         RETIREMENT_INFLATION_RATE = None
 
         with st.container(key="family-retirement-expander"):
-            with st.expander("가족 구성과 주택", expanded=False):
+            with st.expander("가족 구성과 계획", expanded=False):
                 child_options = ["입력 안 함", "없음", "1명", "2명", "3명", "4명 이상"]
                 prev_c_count = st.session_state.get("child_count", "입력 안 함")
                 if prev_c_count not in child_options:
@@ -3400,12 +3424,18 @@ elif selected_page == "인생의 사계절":
                         ["부산"] if is_representative_case
                         else ["지역 선택"] + list(HOUSING_PRICE_DATA.keys())
                     )
-                    prev_housing_region = st.session_state.get("housing_region", "부산" if is_representative_case else "지역 선택")
+                    default_future_region = st.session_state.get("residence_region", "지역 선택")
+                    if default_future_region not in HOUSING_PRICE_DATA:
+                        default_future_region = "지역 선택"
+                    prev_housing_region = st.session_state.get(
+                        "housing_region",
+                        "부산" if is_representative_case else default_future_region
+                    )
                     if prev_housing_region not in housing_region_options:
                         prev_housing_region = "부산" if is_representative_case else "지역 선택"
 
                     housing_region = st.selectbox(
-                        "주거지역 및 주택구입 예정지역",
+                        "주택구입 예정지역",
                         housing_region_options,
                         index=housing_region_options.index(prev_housing_region),
                         key="housing_region_select"
