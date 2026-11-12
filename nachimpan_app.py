@@ -1784,14 +1784,23 @@ def _open_source_reference(source_id, origin_page, origin_anchor):
         "page": origin_page,
         "anchor": origin_anchor,
     }
-    if source_id == "6050600-01":
-        st.session_state["_source_open_anchor"] = "stats-anchor-retirement-expense"
-    elif source_id == "6050700-01":
-        st.session_state["_source_open_anchor"] = "stats-anchor-loan-payment"
-    elif source_id == "6051300-00":
-        st.session_state["_source_open_anchor"] = "stats-anchor-retirement-milestones"
-    elif source_id == "6051400-00":
-        st.session_state["_source_open_anchor"] = "stats-anchor-household-income-after-retirement"
+    _source_anchor_map = {
+        "6050200-00": "stats-anchor-lifecycle-income",
+        "6050300-00": "stats-anchor-employment-income",
+        "6050400-00": "stats-anchor-marriage-housing",
+        "6050500-00": "stats-anchor-child-rearing",
+        "6050600-01": "stats-anchor-retirement-expense",
+        "6050700-01": "stats-anchor-loan-payment",
+        "6050800-00": "stats-anchor-time-adjustment",
+        "6050900-00": "stats-anchor-income-statistics",
+        "6051000-00": "stats-anchor-marriage-cost",
+        "6051100-00": "stats-anchor-household-events",
+        "6051200-00": "stats-anchor-older-work",
+        "6051300-00": "stats-anchor-retirement-milestones",
+        "6051400-00": "stats-anchor-household-income-after-retirement",
+    }
+    if source_id in _source_anchor_map:
+        st.session_state["_source_open_anchor"] = _source_anchor_map[source_id]
     st.session_state["_pending_nav"] = "통계"
     st.rerun()
 
@@ -4652,25 +4661,39 @@ elif selected_page == "인생의 사계절":
         st.plotly_chart(fig_my_nta, use_container_width=True, config={"displayModeBar": False, "scrollZoom": False, "doubleClick": False, "showAxisDragHandles": False})
 
 
-        # 생애주기 누적 총액: 20세부터 성별 기대수명까지 연령별 연간 금액을 합산
-        lifetime_income_total = float(sum(household_income_curve))
-        lifetime_expense_total = float(sum(household_expense_curve))
-        lifetime_net_total = lifetime_income_total - lifetime_expense_total
+        # 생애주기 누적 총액은 그래프 해석의 혼선을 줄이기 위해 표시하지 않는다.
 
-        st.markdown("#### 생애주기 누적 총액 (20세~기대수명)")
-        total_cols = st.columns(3)
-        total_cols[0].metric("누적 가구소득", f"{lifetime_income_total:,.0f}만 원")
-        total_cols[1].metric("누적 가구지출", f"{lifetime_expense_total:,.0f}만 원")
-        total_cols[2].metric(
-            "누적 소득 − 지출",
-            f"{lifetime_net_total:+,.0f}만 원",
-            "누적 흑자" if lifetime_net_total > 0 else ("누적 적자" if lifetime_net_total < 0 else "균형")
-        )
-        st.caption(
-            f"20세부터 기대수명 연령({life_expectancy}세)에 도달하기 전까지의 연간 가구소득·가구지출을 합산한 모델값입니다. "
-            "은퇴 후 생활비는 입력한 월 금액을 연간 금액으로 환산한 뒤 물가를 반영합니다. "
-            "현재 자산·부채의 잔액이나 자산 매각·상속 등은 이 누적 현금흐름 합계에 포함하지 않습니다."
-        )
+        st.markdown('<div id="chart-stat-report-links" style="scroll-margin-top: 120px;"></div>', unsafe_allow_html=True)
+        st.markdown("**이 재정곡선의 통계 자료실**")
+        st.caption("아래 제목을 누르면 통계탭의 해당 보고서로 이동합니다.")
+        _graph_stat_reports = [
+            ("1. 소득과 소비의 생애주기", "6050200-00"),
+            ("2. 취업과 소득의 변화", "6050300-00"),
+            ("3. 결혼과 주거", "6050400-00"),
+            ("4. 출산과 양육", "6050500-00"),
+            ("5. 노후와 은퇴", "6050600-01"),
+            ("6. 주택대출과 원리금 분리", "6050700-01"),
+            ("7. 동시성과 통시성", "6050800-00"),
+            ("8. 소득 통계", "6050900-00"),
+            ("9. 결혼비용 통계", "6051000-00"),
+            ("10. 빅5 우리집 이벤트", "6051100-00"),
+            ("11. 고령층 근로연령 통계", "6051200-00"),
+            ("통계로 본 대한민국 3대 은퇴 분기점", "6051300-00"),
+            ("우리 가정 생애주기 소득곡선의 통계적 보정", "6051400-00"),
+        ]
+        _report_cols = st.columns(2)
+        for _idx, (_report_title, _report_id) in enumerate(_graph_stat_reports):
+            with _report_cols[_idx % 2]:
+                if st.button(
+                    f"🧭 {_report_title}",
+                    key=f"graph_stat_report_{_report_id}",
+                    use_container_width=True,
+                ):
+                    _open_source_reference(
+                        _report_id,
+                        "인생의 사계절",
+                        "chart-stat-report-links",
+                    )
 
         with st.expander("과거 소득·지출을 현재 기준과 비교하기", expanded=False):
     #############    6.03.05.10.01 | 과거 소득·지출의 시간 기준 환산 안내
@@ -5340,8 +5363,17 @@ elif selected_page == "통계":
 
     _source_labels = {
         "6030200-01": "국가데이터처 「2024년 국민이전계정」",
-        "6050600-01": "국가데이터처 「2024년 가계동향조사」 은퇴 후 연령대별 가계지출",
-        "6050700-01": "국토교통부 「2024년도 주거실태조사 결과」 및 나침반의 표준 대출 상환 가정",
+        "6050200-00": "1. 소득과 소비의 생애주기",
+        "6050300-00": "2. 취업과 소득의 변화",
+        "6050400-00": "3. 결혼과 주거",
+        "6050500-00": "4. 출산과 양육",
+        "6050600-01": "5. 노후와 은퇴",
+        "6050700-01": "6. 주택대출과 원리금 분리",
+        "6050800-00": "7. 동시성과 통시성",
+        "6050900-00": "8. 소득 통계",
+        "6051000-00": "9. 결혼비용 통계",
+        "6051100-00": "10. 빅5 우리집 이벤트",
+        "6051200-00": "11. 고령층 근로연령 통계",
         "6051300-00": "통계로 본 대한민국 3대 은퇴 분기점",
         "6051400-00": "우리 가정 생애주기 소득곡선의 통계적 보정",
     }
@@ -5463,6 +5495,7 @@ OECD 「Pensions at a Glance 2025: Korea」는 2024년 한국의 실질 노동�
     #--------------------------------------------------------
     # 6.05.02.00 | 1. 소득과 소비의 생애주기
     #--------------------------------------------------------
+    st.markdown('<div id="stats-anchor-lifecycle-income" style="scroll-margin-top: 150px;"></div>', unsafe_allow_html=True)
     with st.expander("1. 소득과 소비의 생애주기", expanded=True):
         st.markdown("""
 **국민이전계정(NTA)이 보여주는 생애주기**
@@ -5594,7 +5627,8 @@ OECD 「Pensions at a Glance 2025: Korea」는 2024년 한국의 실질 노동�
     #--------------------------------------------------------
     # 6.05.03.00 | 2. 취업과 소득의 변화
     #--------------------------------------------------------
-    with st.expander("2. 취업과 소득의 변화"):
+    st.markdown('<div id="stats-anchor-employment-income" style="scroll-margin-top: 150px;"></div>', unsafe_allow_html=True)
+    with st.expander("2. 취업과 소득의 변화", expanded=_active_source_id == "6050300-00"):
         st.markdown("""
 연령에 따라 임금소득과 노동소득이 어떻게 달라지는지 살펴보는 영역입니다.
 
@@ -5607,7 +5641,8 @@ OECD 「Pensions at a Glance 2025: Korea」는 2024년 한국의 실질 노동�
     #--------------------------------------------------------
     # 6.05.04.00 | 3. 결혼과 주거
     #--------------------------------------------------------
-    with st.expander("3. 결혼과 주거"):
+    st.markdown('<div id="stats-anchor-marriage-housing" style="scroll-margin-top: 150px;"></div>', unsafe_allow_html=True)
+    with st.expander("3. 결혼과 주거", expanded=_active_source_id == "6050400-00"):
         st.markdown("""
 삶의 큰 전환기에 필요한 주거비와 자금 흐름을 살펴보는 영역입니다.
 
@@ -5643,7 +5678,8 @@ OECD 「Pensions at a Glance 2025: Korea」는 2024년 한국의 실질 노동�
     #--------------------------------------------------------
     # 6.05.05.00 | 4. 출산과 양육
     #--------------------------------------------------------
-    with st.expander("4. 출산과 양육"):
+    st.markdown('<div id="stats-anchor-child-rearing" style="scroll-margin-top: 150px;"></div>', unsafe_allow_html=True)
+    with st.expander("4. 출산과 양육", expanded=_active_source_id == "6050500-00"):
         st.markdown("""
 자녀의 성장 단계에 따라 달라지는 가계 지출과 부모의 경제활동을 살펴보는 영역입니다.
 
@@ -5741,6 +5777,7 @@ OECD 「Pensions at a Glance 2025: Korea」는 2024년 한국의 실질 노동�
     #--------------------------------------------------------
     # 6.05.08.00 | 7. 동시성과 통시성
     #--------------------------------------------------------
+    st.markdown('<div id="stats-anchor-time-adjustment" style="scroll-margin-top: 150px;"></div>', unsafe_allow_html=True)
     with st.expander("7. 동시성과 통시성", expanded=True):
         st.markdown("""
 **왜 시간의 기준을 맞춰야 하는가**
@@ -5873,6 +5910,7 @@ OECD 「Pensions at a Glance 2025: Korea」는 2024년 한국의 실질 노동�
     #--------------------------------------------------------
     # 6.05.09.00 | 8. 소득 통계
     #--------------------------------------------------------
+    st.markdown('<div id="stats-anchor-income-statistics" style="scroll-margin-top: 150px;"></div>', unsafe_allow_html=True)
     with st.expander("8. 소득 통계: 연령별 임금과 연도별 임금지수", expanded=True):
         st.markdown("""
 **1. 연령별 임금 통계 — 같은 해, 서로 다른 연령대의 소득 수준**
@@ -5930,6 +5968,7 @@ OECD 「Pensions at a Glance 2025: Korea」는 2024년 한국의 실질 노동�
     #--------------------------------------------------------
     # 6.05.10.00 | 9. 결혼비용 통계
     #--------------------------------------------------------
+    st.markdown('<div id="stats-anchor-marriage-cost" style="scroll-margin-top: 150px;"></div>', unsafe_allow_html=True)
     with st.expander("9. 결혼비용 통계: 신혼집은 신랑 측 77%, 그 외 비용은 비슷하게 나눠서", expanded=True):
         st.markdown("""
 **결혼비용은 어디에서, 누구의 자금으로 마련될까?**
@@ -6073,6 +6112,7 @@ OECD 「Pensions at a Glance 2025: Korea」는 2024년 한국의 실질 노동�
     #--------------------------------------------------------
     # 6.05.11.00 | 10. 빅5 우리집 이벤트
     #--------------------------------------------------------
+    st.markdown('<div id="stats-anchor-household-events" style="scroll-margin-top: 150px;"></div>', unsafe_allow_html=True)
     with st.expander("10. 빅5 우리집 이벤트", expanded=True):
         st.markdown("""
 **우리 집의 생애주기에서 큰 비용이 발생하는 다섯 가지 사건을 살펴봅니다.**
@@ -6224,6 +6264,7 @@ OECD 「Pensions at a Glance 2025: Korea」는 2024년 한국의 실질 노동�
     #--------------------------------------------------------
     # 6.05.12.00 | 11. 고령층 근로연령 통계
     #--------------------------------------------------------
+    st.markdown('<div id="stats-anchor-older-work" style="scroll-margin-top: 150px;"></div>', unsafe_allow_html=True)
     with st.expander("11. 고령층 근로연령 통계", expanded=True):
         st.markdown("""
 **은퇴를 몇 살로 생각하더라도, 실제 사회에서는 그 이후에도 일하는 사람이 적지 않습니다.** 이 자료는 개인의 은퇴 희망 연령과 사회의 고령층 근로 현실을 비교해 보기 위한 참고 자료입니다.
