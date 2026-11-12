@@ -3528,11 +3528,18 @@ elif selected_page == "인생의 사계절":
         st.markdown("<div style='height: 24px;'></div>", unsafe_allow_html=True)
         st.markdown("### 우리 가정 생애주기 재정곡선")
 
-        # 기본 기준 지역을 '부산'으로 지정하고 현재 선택된 지역 정보 추출
-        selected_region = st.session_state.get("housing_region")
-        if not selected_region or selected_region == "지역 선택":
-            selected_region = "부산"
-            st.session_state["housing_region"] = "부산"
+        # 기존 주거 유지·계획 확정이면 현재 주거지역을 사용하고,
+        # 향후 주택구입 정보를 입력한 경우에는 예정지역을 사용한다.
+        current_region = st.session_state.get("residence_region", "부산")
+        if current_region not in HOUSING_PRICE_DATA:
+            current_region = "부산"
+        current_housing_plan = st.session_state.get("housing_plan", "미정")
+        if current_housing_plan in ["현재 주거 유지", "주거 계획 확정"]:
+            selected_region = current_region
+        else:
+            selected_region = st.session_state.get("housing_region") or current_region
+            if selected_region not in HOUSING_PRICE_DATA:
+                selected_region = current_region
 
         representative_case_id = st.session_state.get("_representative_case_id")
         is_representative_case = representative_case_id in {"case_32_female", "case_45_female"}
@@ -3703,7 +3710,7 @@ elif selected_page == "인생의 사계절":
             housing_start = max(cur_age + 5, 20)
             housing_end = housing_start + 4
 
-        # 6) 사건별 총비용 산출 (기본 부산 기준)
+        # 6) 사건별 총비용 산출 (현재 주거지역 또는 주택구입 예정지역 기준)
         apartment_price_man = region_apt_price
         home_equity_man = home_equity_display
         half_home_equity_man = home_equity_man * 0.5
