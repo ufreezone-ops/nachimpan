@@ -3908,19 +3908,27 @@ elif selected_page == "인생의 사계절":
             return f"{lower}~{lower + 4}세"
 
         def household_size_at_age(age):
-            # 은퇴 시점에는 자녀가 독립한 것으로 보고, 부부 2인(비혼은 1인) 가구로 전환
-            if age >= retire_age:
-                return 2 if marriage_start is not None else 1
-
+            # 가구원 수는 은퇴 시점이 아니라 실제 가족 형성·자녀 독립 시점을 따라간다.
             size = 1
             if marriage_start is not None and age >= marriage_start:
                 size += 1
+
+            # 자녀는 출생 이후 가구원으로 포함하고, 결혼 이벤트가 시작되는 시점부터
+            # 독립한 것으로 간주한다. 이미 만 30세 이상인 자녀는 결혼 여부를 알 수 없으므로
+            # 별도 정보 없이 자동으로 가구에서 제외하지 않는다.
             for child_age_value in existing_child_ages:
                 birth_age = cur_age - child_age_value
-                if age >= birth_age:
+                child_wedding_age = birth_age + 30 if child_age_value < 30 else None
+                if age >= birth_age and (
+                    child_wedding_age is None or age < child_wedding_age
+                ):
                     size += 1
+
             if future_birth_age is not None and age >= future_birth_age:
-                size += 1
+                future_child_wedding_age = future_birth_age + 30
+                if age < future_child_wedding_age:
+                    size += 1
+
             return min(size, 5)
 
         def lookup_household_expense(age, household_size):
