@@ -673,6 +673,19 @@ st.markdown("""
     color: #FFFFFF !important;
 }
 
+/* 탭3 가족 입력 expander: 주황색 배경으로 클릭 영역을 명확히 표시 */
+.st-key-family-retirement-expander [data-testid="stExpander"] summary {
+    background: linear-gradient(135deg, #EA580C 0%, #C2410C 100%) !important;
+    background-color: #EA580C !important;
+    border: 1px solid #EA580C !important;
+    color: #FFFFFF !important;
+}
+.st-key-family-retirement-expander [data-testid="stExpander"] summary:hover {
+    background: #C2410C !important;
+    border-color: #C2410C !important;
+    color: #FFFFFF !important;
+}
+
 [data-testid="stExpander"] summary svg {
     fill: #F8FAFC !important;
 }
@@ -3212,211 +3225,212 @@ elif selected_page == "인생의 사계절":
         RETIREMENT_EXPENSE_DEFAULT_SURVEY = "2024년_제10차_부가조사"
         RETIREMENT_INFLATION_RATE = None
 
-        with st.expander(":orange[가족 구성과 나의 은퇴 시점]", expanded=False):
-            child_options = ["입력 안 함", "없음", "1명", "2명", "3명", "4명 이상"]
-            prev_c_count = st.session_state.get("child_count", "입력 안 함")
-            if prev_c_count not in child_options:
-                prev_c_count = "입력 안 함"
+        with st.container(key="family-retirement-expander"):
+            with st.expander(":orange[가족 구성과 나의 은퇴 시점]", expanded=False):
+                child_options = ["입력 안 함", "없음", "1명", "2명", "3명", "4명 이상"]
+                prev_c_count = st.session_state.get("child_count", "입력 안 함")
+                if prev_c_count not in child_options:
+                    prev_c_count = "입력 안 함"
 
-            child_count = st.selectbox(
-                "자녀 수",
-                child_options,
-                index=child_options.index(prev_c_count),
-                key="child_count_select_direct"
-            )
-
-            with st.container():
-                spouse_age = st.number_input(
-                    "배우자 나이 (없거나 미입력 시 0)",
-                    min_value=0, max_value=120,
-                    value=int(st.session_state.get("spouse_age", 0)),
-                    step=1
+                child_count = st.selectbox(
+                    "자녀 수",
+                    child_options,
+                    index=child_options.index(prev_c_count),
+                    key="child_count_select_direct"
                 )
 
-                child_age1, child_age2, child_age3, child_age4 = 0, 0, 0, 0
-
-                if child_count in ["1명", "2명", "3명", "4명 이상"]:
-                    c1_col, c2_col = st.columns(2)
-                    with c1_col:
-                        child_age1 = st.number_input(
-                            "첫째 자녀 나이",
-                            min_value=0, max_value=100,
-                            value=int(st.session_state.get("child_age", 0)),
-                            step=1
-                        )
-                    with c2_col:
-                        if child_count in ["2명", "3명", "4명 이상"]:
-                            child_age2 = st.number_input(
-                                "둘째 자녀 나이",
-                                min_value=0, max_value=100,
-                                value=int(st.session_state.get("child_age2", 0)),
-                                step=1
-                            )
-                        else:
-                            st.write("")
-
-                if child_count in ["3명", "4명 이상"]:
-                    c3_col, c4_col = st.columns(2)
-                    with c3_col:
-                        child_age3 = st.number_input(
-                            "셋째 자녀 나이",
-                            min_value=0, max_value=100,
-                            value=int(st.session_state.get("child_age3", 0)),
-                            step=1
-                        )
-                    with c4_col:
-                        if child_count == "4명 이상":
-                            child_age4 = st.number_input(
-                                "넷째 자녀 나이",
-                                min_value=0, max_value=100,
-                                value=int(st.session_state.get("child_age4", 0)),
-                                step=1
-                            )
-                        else:
-                            st.write("")
-
-                st.markdown("<div style='height: 8px;'></div>", unsafe_allow_html=True)
-                f_col, m_col = st.columns(2)
-
-                with f_col:
-                    father_age = st.number_input(
-                        "아버지 나이 (선택, 모르면 0)",
+                with st.container():
+                    spouse_age = st.number_input(
+                        "배우자 나이 (없거나 미입력 시 0)",
                         min_value=0, max_value=120,
-                        value=int(st.session_state.get("father_age", 0)),
+                        value=int(st.session_state.get("spouse_age", 0)),
                         step=1
                     )
 
-                with m_col:
-                    mother_age = st.number_input(
-                        "어머니 나이 (선택, 모르면 0)",
-                        min_value=0, max_value=120,
-                        value=int(st.session_state.get("mother_age", 0)),
-                        step=1
-                    )
+                    child_age1, child_age2, child_age3, child_age4 = 0, 0, 0, 0
 
-                st.markdown("<div style='height: 10px;'></div>", unsafe_allow_html=True)
-                st.markdown("#### 앞으로의 가족 계획 (선택)")
+                    if child_count in ["1명", "2명", "3명", "4명 이상"]:
+                        c1_col, c2_col = st.columns(2)
+                        with c1_col:
+                            child_age1 = st.number_input(
+                                "첫째 자녀 나이",
+                                min_value=0, max_value=100,
+                                value=int(st.session_state.get("child_age", 0)),
+                                step=1
+                            )
+                        with c2_col:
+                            if child_count in ["2명", "3명", "4명 이상"]:
+                                child_age2 = st.number_input(
+                                    "둘째 자녀 나이",
+                                    min_value=0, max_value=100,
+                                    value=int(st.session_state.get("child_age2", 0)),
+                                    step=1
+                                )
+                            else:
+                                st.write("")
 
-                p_c1, p_c2, p_c3 = st.columns(3)
+                    if child_count in ["3명", "4명 이상"]:
+                        c3_col, c4_col = st.columns(2)
+                        with c3_col:
+                            child_age3 = st.number_input(
+                                "셋째 자녀 나이",
+                                min_value=0, max_value=100,
+                                value=int(st.session_state.get("child_age3", 0)),
+                                step=1
+                            )
+                        with c4_col:
+                            if child_count == "4명 이상":
+                                child_age4 = st.number_input(
+                                    "넷째 자녀 나이",
+                                    min_value=0, max_value=100,
+                                    value=int(st.session_state.get("child_age4", 0)),
+                                    step=1
+                                )
+                            else:
+                                st.write("")
 
-                with p_c1:
-                    marriage_options = [
-                        "미정", "계획 없음", "결혼 예정", "결혼함",
-                        "1~3년 내 결혼 생각 있음",
-                        "3년 이후 결혼 생각 있음"
-                    ]
-                    marriage_plan = st.selectbox(
-                        "결혼 계획",
-                        marriage_options,
-                        index=marriage_options.index(
-                            st.session_state.get("marriage_plan", "미정")
-                        ) if st.session_state.get("marriage_plan", "미정") in marriage_options else 0
-                    )
+                    st.markdown("<div style='height: 8px;'></div>", unsafe_allow_html=True)
+                    f_col, m_col = st.columns(2)
 
-                    actual_marriage_age = int(
-                        st.session_state.get("actual_marriage_age", 0) or 0
-                    )
-
-                    if marriage_plan == "결혼함":
-                        actual_marriage_age = st.number_input(
-                            "실제 결혼 나이 (선택, 0이면 자동 추정)",
-                            min_value=0,
-                            max_value=max(0, int(cur_age)),
-                            value=min(
-                                max(0, actual_marriage_age),
-                                max(0, int(cur_age))
-                            ),
-                            step=1,
-                            help="실제 결혼 나이를 알고 있다면 입력하세요. 입력하지 않으면 통계와 가족 정보를 바탕으로 추정합니다."
+                    with f_col:
+                        father_age = st.number_input(
+                            "아버지 나이 (선택, 모르면 0)",
+                            min_value=0, max_value=120,
+                            value=int(st.session_state.get("father_age", 0)),
+                            step=1
                         )
 
-                with p_c2:
-                    child_plan_options = [
-                        "미정", "계획 없음", "자녀 계획 있음",
-                        "출산 예정", "추가 자녀 계획 있음", "추가 자녀 계획 없음"
-                    ]
-                    child_plan = st.selectbox(
-                        "출산·자녀 계획",
-                        child_plan_options,
-                        index=child_plan_options.index(
-                            st.session_state.get("child_plan", "미정")
-                        ) if st.session_state.get("child_plan", "미정") in child_plan_options else 0
-                    )
+                    with m_col:
+                        mother_age = st.number_input(
+                            "어머니 나이 (선택, 모르면 0)",
+                            min_value=0, max_value=120,
+                            value=int(st.session_state.get("mother_age", 0)),
+                            step=1
+                        )
 
-                with p_c3:
-                    housing_options = [
-                        "미정", "주택 구입 고려", "현재 주거 유지",
-                        "전세·월세 이동 고려", "주거 계획 확정"
-                    ]
-                    housing_plan = st.selectbox(
-                        "주거 계획",
-                        housing_options,
-                        index=housing_options.index(
-                            st.session_state.get("housing_plan", "미정")
-                        ) if st.session_state.get("housing_plan", "미정") in housing_options else 0
-                    )
+                    st.markdown("<div style='height: 10px;'></div>", unsafe_allow_html=True)
+                    st.markdown("#### 앞으로의 가족 계획 (선택)")
 
-            st.session_state["child_count"] = child_count
-            st.session_state["spouse_age"] = int(spouse_age or 0)
-            st.session_state["child_age"] = int(child_age1 or 0)
-            st.session_state["child_age2"] = int(child_age2 or 0)
-            st.session_state["child_age3"] = int(child_age3 or 0)
-            st.session_state["child_age4"] = int(child_age4 or 0)
-            st.session_state["father_age"] = int(father_age or 0)
-            st.session_state["mother_age"] = int(mother_age or 0)
-            st.session_state["marriage_plan"] = marriage_plan
-            st.session_state["child_plan"] = child_plan
-            st.session_state["housing_plan"] = housing_plan
-            st.session_state["family_info_checked"] = True
+                    p_c1, p_c2, p_c3 = st.columns(3)
 
-            housing_info_needed = (
-                st.session_state.get("family_info_checked", False)
-                and st.session_state.get("housing_plan", "미정")
-                not in ["현재 주거 유지", "주거 계획 확정"]
-            )
+                    with p_c1:
+                        marriage_options = [
+                            "미정", "계획 없음", "결혼 예정", "결혼함",
+                            "1~3년 내 결혼 생각 있음",
+                            "3년 이후 결혼 생각 있음"
+                        ]
+                        marriage_plan = st.selectbox(
+                            "결혼 계획",
+                            marriage_options,
+                            index=marriage_options.index(
+                                st.session_state.get("marriage_plan", "미정")
+                            ) if st.session_state.get("marriage_plan", "미정") in marriage_options else 0
+                        )
 
-            if housing_info_needed:
-                st.markdown("#### 주택가격 산정 기준")
-                is_representative_case = st.session_state.get("_representative_case_id") in {
-                    "case_32_female", "case_45_female"
-                }
-                housing_region_options = (
-                    ["부산"] if is_representative_case
-                    else ["지역 선택"] + list(HOUSING_PRICE_DATA.keys())
+                        actual_marriage_age = int(
+                            st.session_state.get("actual_marriage_age", 0) or 0
+                        )
+
+                        if marriage_plan == "결혼함":
+                            actual_marriage_age = st.number_input(
+                                "실제 결혼 나이 (선택, 0이면 자동 추정)",
+                                min_value=0,
+                                max_value=max(0, int(cur_age)),
+                                value=min(
+                                    max(0, actual_marriage_age),
+                                    max(0, int(cur_age))
+                                ),
+                                step=1,
+                                help="실제 결혼 나이를 알고 있다면 입력하세요. 입력하지 않으면 통계와 가족 정보를 바탕으로 추정합니다."
+                            )
+
+                    with p_c2:
+                        child_plan_options = [
+                            "미정", "계획 없음", "자녀 계획 있음",
+                            "출산 예정", "추가 자녀 계획 있음", "추가 자녀 계획 없음"
+                        ]
+                        child_plan = st.selectbox(
+                            "출산·자녀 계획",
+                            child_plan_options,
+                            index=child_plan_options.index(
+                                st.session_state.get("child_plan", "미정")
+                            ) if st.session_state.get("child_plan", "미정") in child_plan_options else 0
+                        )
+
+                    with p_c3:
+                        housing_options = [
+                            "미정", "주택 구입 고려", "현재 주거 유지",
+                            "전세·월세 이동 고려", "주거 계획 확정"
+                        ]
+                        housing_plan = st.selectbox(
+                            "주거 계획",
+                            housing_options,
+                            index=housing_options.index(
+                                st.session_state.get("housing_plan", "미정")
+                            ) if st.session_state.get("housing_plan", "미정") in housing_options else 0
+                        )
+
+                st.session_state["child_count"] = child_count
+                st.session_state["spouse_age"] = int(spouse_age or 0)
+                st.session_state["child_age"] = int(child_age1 or 0)
+                st.session_state["child_age2"] = int(child_age2 or 0)
+                st.session_state["child_age3"] = int(child_age3 or 0)
+                st.session_state["child_age4"] = int(child_age4 or 0)
+                st.session_state["father_age"] = int(father_age or 0)
+                st.session_state["mother_age"] = int(mother_age or 0)
+                st.session_state["marriage_plan"] = marriage_plan
+                st.session_state["child_plan"] = child_plan
+                st.session_state["housing_plan"] = housing_plan
+                st.session_state["family_info_checked"] = True
+
+                housing_info_needed = (
+                    st.session_state.get("family_info_checked", False)
+                    and st.session_state.get("housing_plan", "미정")
+                    not in ["현재 주거 유지", "주거 계획 확정"]
                 )
-                prev_housing_region = st.session_state.get("housing_region", "부산" if is_representative_case else "지역 선택")
-                if prev_housing_region not in housing_region_options:
-                    prev_housing_region = "부산" if is_representative_case else "지역 선택"
 
-                housing_region = st.selectbox(
-                    "주택 구입 예정 지역",
-                    housing_region_options,
-                    index=housing_region_options.index(prev_housing_region),
-                    key="housing_region_select"
-                )
+                if housing_info_needed:
+                    st.markdown("#### 주택가격 산정 기준")
+                    is_representative_case = st.session_state.get("_representative_case_id") in {
+                        "case_32_female", "case_45_female"
+                    }
+                    housing_region_options = (
+                        ["부산"] if is_representative_case
+                        else ["지역 선택"] + list(HOUSING_PRICE_DATA.keys())
+                    )
+                    prev_housing_region = st.session_state.get("housing_region", "부산" if is_representative_case else "지역 선택")
+                    if prev_housing_region not in housing_region_options:
+                        prev_housing_region = "부산" if is_representative_case else "지역 선택"
 
-                statistical_ltv = REGIONAL_LTV1.get(housing_region, 34.3)
-                housing_ltv = REPRESENTATIVE_MORTGAGE_LTV * 100.0 if is_representative_case else statistical_ltv
-                st.session_state["housing_region"] = housing_region
-                st.session_state["housing_ltv"] = housing_ltv
+                    housing_region = st.selectbox(
+                        "주택 구입 예정 지역",
+                        housing_region_options,
+                        index=housing_region_options.index(prev_housing_region),
+                        key="housing_region_select"
+                    )
 
-                if housing_region != "지역 선택":
-                    if is_representative_case:
-                        st.caption(
-                            f"대표사례 기준: 주택가격 4억 원 · LTV {REPRESENTATIVE_MORTGAGE_LTV * 100:.0f}% "
-                            f"→ 최초 대출 1억 4천만 원 · 자기자금 2억 6천만 원"
-                        )
-                    else:
-                        apartment_median_won = HOUSING_PRICE_DATA[housing_region][3] * 1000
-                        housing_equity_won = apartment_median_won * (1 - housing_ltv / 100)
-                        st.caption(
-                            f"선택 지역: {housing_region} · "
-                            f"아파트 중위가격: {apartment_median_won / 100000000:.2f}억 원 · "
-                            f"통계 LTV1: {housing_ltv:.1f}% · "
-                            f"자기자금 기준: {housing_equity_won / 100000000:.2f}억 원"
-                        )
+                    statistical_ltv = REGIONAL_LTV1.get(housing_region, 34.3)
+                    housing_ltv = REPRESENTATIVE_MORTGAGE_LTV * 100.0 if is_representative_case else statistical_ltv
+                    st.session_state["housing_region"] = housing_region
+                    st.session_state["housing_ltv"] = housing_ltv
 
-                st.caption("주택가격 자료: 한국부동산원 R-ONE · 전국주택가격동향조사 · 2025년 12월 아파트 중위가격")
+                    if housing_region != "지역 선택":
+                        if is_representative_case:
+                            st.caption(
+                                f"대표사례 기준: 주택가격 4억 원 · LTV {REPRESENTATIVE_MORTGAGE_LTV * 100:.0f}% "
+                                f"→ 최초 대출 1억 4천만 원 · 자기자금 2억 6천만 원"
+                            )
+                        else:
+                            apartment_median_won = HOUSING_PRICE_DATA[housing_region][3] * 1000
+                            housing_equity_won = apartment_median_won * (1 - housing_ltv / 100)
+                            st.caption(
+                                f"선택 지역: {housing_region} · "
+                                f"아파트 중위가격: {apartment_median_won / 100000000:.2f}억 원 · "
+                                f"통계 LTV1: {housing_ltv:.1f}% · "
+                                f"자기자금 기준: {housing_equity_won / 100000000:.2f}억 원"
+                            )
+
+                    st.caption("주택가격 자료: 한국부동산원 R-ONE · 전국주택가격동향조사 · 2025년 12월 아파트 중위가격")
 
     #--------------------------------------------------------
 # 6.03.04 | 고급 모드 — 은퇴 시점 가족 미래 나이 카드
@@ -3479,7 +3493,8 @@ elif selected_page == "인생의 사계절":
 #############    6.03.05.01 | 헤더 타이틀 및 기준 지역 안내 카드
         from plotly.subplots import make_subplots
 
-        st.markdown("### 2. 우리 가정 생애주기 재정곡선")
+        st.markdown("<div style='height: 24px;'></div>", unsafe_allow_html=True)
+        st.markdown("### 우리 가정 생애주기 재정곡선")
 
         # 기본 기준 지역을 '부산'으로 지정하고 현재 선택된 지역 정보 추출
         selected_region = st.session_state.get("housing_region")
