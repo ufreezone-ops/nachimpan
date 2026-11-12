@@ -2896,7 +2896,7 @@ elif selected_page == "삶과 생계수단":
 # 6.02.03 | 고급 모드 — 더 생각해보기 4대 질문
 #--------------------------------------------------------
         st.markdown("""
-<div style="margin: 28px 0 26px 0; padding: 4px 2px;">
+<div style="margin: 50px 0 26px 0; padding: 4px 2px;">
 <div style="font-size: 21px; font-weight: 850; color: #F8FAFC; margin-bottom: 6px;">더 생각해보기</div>
 <div style="font-size: 14px; color: #94A3B8; margin-bottom: 18px; line-height: 1.6;">우리가 당연하게 여겨온 것들을 잠시 멈추어 생각해 봅니다.</div>
 <div style="display: flex; flex-direction: column; gap: 14px;">
@@ -3212,7 +3212,7 @@ elif selected_page == "인생의 사계절":
         RETIREMENT_EXPENSE_DEFAULT_SURVEY = "2024년_제10차_부가조사"
         RETIREMENT_INFLATION_RATE = None
 
-        with st.expander("가족 구성과 나의 은퇴 시점", expanded=False):
+        with st.expander(":orange[가족 구성과 나의 은퇴 시점]", expanded=False):
             child_options = ["입력 안 함", "없음", "1명", "2명", "3명", "4명 이상"]
             prev_c_count = st.session_state.get("child_count", "입력 안 함")
             if prev_c_count not in child_options:
