@@ -3523,13 +3523,12 @@ elif selected_page == "인생의 사계절":
         from plotly.subplots import make_subplots
 
         st.markdown("<div style='height: 24px;'></div>", unsafe_allow_html=True)
-        st.markdown('<div id="statistical-household-income-origin" style="scroll-margin-top: 150px;"></div>', unsafe_allow_html=True)
-        with st.container(horizontal=True, vertical_alignment="center", gap=None):
+        with st.container(horizontal=True, vertical_alignment="bottom", gap=None, key="retirement-title-row"):
             st.markdown("### 우리 가정 생애주기 재정곡선")
             if st.button(
                 "🧭",
-                key="source_statistical_household_income",
-                help="은퇴 이후 통계적 가구소득 리포트 보기",
+                key="source_retirement_expense",
+                help="은퇴 이후 통계적 가구소득의 자료와 적용 방식 보기",
                 type="tertiary",
             ):
                 _open_source_reference(
@@ -3537,6 +3536,10 @@ elif selected_page == "인생의 사계절":
                     "인생의 사계절",
                     "statistical-household-income-origin",
                 )
+        st.markdown(
+            '<div id="statistical-household-income-origin"></div>',
+            unsafe_allow_html=True,
+        )
 
         # 기존 주거 유지·계획 확정이면 현재 주거지역을 사용하고,
         # 향후 주택구입 정보를 입력한 경우에는 예정지역을 사용한다.
@@ -4232,6 +4235,21 @@ elif selected_page == "인생의 사계절":
                 errors="coerce",
             )
 
+            # 통계값은 모두 2024년 기준이므로, 은퇴 시작 연도의 물가로 한 번만 환산한다.
+            # 이후 같은 연령구간(특히 60세 이상)에서는 연령이 높아져도 값이 상승하지 않도록
+            # 연령별 미래 CPI를 반복 적용하지 않는다.
+            stat_reference_calendar_year = current_calendar_year + (retire_age - cur_age)
+            stat_reference_cpi_index = macro_index_for_model_year(
+                stat_reference_calendar_year,
+                "cpi_index_2020_100",
+                cpi_forecast_rate,
+            )
+            stat_reference_cpi_factor = (
+                stat_reference_cpi_index / cpi_reference_index
+                if stat_reference_cpi_index is not None and cpi_reference_index
+                else 1.0
+            )
+
             for a in ages_sim:
                 if a < retire_age:
                     continue
@@ -4246,21 +4264,9 @@ elif selected_page == "인생의 사계절":
                 stat_annual_income = float(
                     stat_row["annual_disposable_income_man"]
                 )
-                stat_calendar_year = current_calendar_year + (a - cur_age)
-                stat_cpi_index = macro_index_for_model_year(
-                    stat_calendar_year,
-                    "cpi_index_2020_100",
-                    cpi_forecast_rate,
-                )
-                stat_cpi_factor = (
-                    stat_cpi_index / cpi_reference_index
-                    if stat_cpi_index is not None and cpi_reference_index
-                    else 1.0
-                )
-
                 statistical_income_ages.append(a)
                 statistical_income_values.append(
-                    stat_annual_income * stat_cpi_factor
+                    stat_annual_income * stat_reference_cpi_factor
                 )
                 statistical_income_groups.append(str(stat_row["age_group"]))
         except Exception as stat_income_error:
@@ -4369,19 +4375,14 @@ elif selected_page == "인생의 사계절":
                 font=dict(size=11, color=event["color"], weight="bold")
             )
 
-        # [Row 1] 은퇴 전 우리 가정 소득은 실선, 은퇴 이후 연령대별 통계소득은 점선
-        pre_retirement_points = [
-            (age, income)
-            for age, income in zip(ages_sim, household_income_curve)
-            if age < retire_age
-        ]
+        # [Row 1] 기존 우리 가정 가구소득 곡선은 전 연령 유지하고, 통계 비교선을 별도 추가
         fig_my_nta.add_trace(go.Scatter(
-            x=[point[0] for point in pre_retirement_points],
-            y=[point[1] for point in pre_retirement_points],
+            x=ages_sim,
+            y=household_income_curve,
             mode="lines",
             line=dict(color="#10B981", width=3.4, shape="spline", smoothing=0.8),
             name="가구소득",
-            hovertemplate="나이: %{x}세<br>우리 가정 예상 연간소득: <b>%{y:,.0f}만 원</b><extra></extra>"
+            hovertemplate="나이: %{x}세<br>우리 가정 예상 연간소득(연금 포함): <b>%{y:,.0f}만 원</b><extra></extra>"
         ), row=1, col=1)
 
         if statistical_income_ages:
@@ -4395,7 +4396,7 @@ elif selected_page == "인생의 사계절":
                 hovertemplate=(
                     "나이: %{x}세<br>"
                     "가구주 연령대: %{customdata}<br>"
-                    "연간 평균 처분가능소득(물가 반영): "
+                    "연간 평균 처분가능소득(은퇴 시점 물가 기준): "
                     "<b>%{y:,.0f}만 원</b><extra></extra>"
                 ),
             ), row=1, col=1)
@@ -4538,7 +4539,8 @@ elif selected_page == "인생의 사계절":
         st.plotly_chart(fig_my_nta, use_container_width=True, config={"displayModeBar": False, "scrollZoom": False, "doubleClick": False, "showAxisDragHandles": False})
         st.caption(
             "은퇴 시점 이후 녹색 점선은 우리 가정의 소득 예측이 아니라, "
-            "2024년 대한민국 가구의 연령대별 평균 처분가능소득을 해당 연도 물가로 환산한 통계 비교선입니다. "
+            "2024년 대한민국 가구의 연령대별 평균 처분가능소득을 은퇴 시작 연도의 물가로 한 번 환산한 통계 비교선입니다. "
+            "같은 연령대 안에서는 물가를 매년 누적하지 않으므로 60세 이상 구간은 평평하게 유지됩니다. "
             "아래 순현금흐름과 누적액에는 이 점선을 반영하지 않고, 우리 가정의 입력 소득·연금만 반영합니다."
         )
 
@@ -5342,9 +5344,9 @@ OECD 「Pensions at a Glance 2025: Korea」는 2024년 한국의 실질 노동�
 
 - 은퇴 전까지는 우리 가정의 예상 가구소득을 녹색 실선으로 표시합니다.
 - 은퇴 시점부터는 가구주 연령대별 평균 처분가능소득을 녹색 점선으로 표시합니다.
-- 2024년 통계값을 기준으로, 각 연령이 도달하는 달력연도의 소비자물가지수를 적용해 명목금액으로 환산합니다.
+- 2024년 통계값은 은퇴 시작 연도의 소비자물가지수로 한 번만 환산합니다. 연령이 높아진다는 이유로 같은 연령대 통계값에 미래 물가를 매년 누적하지 않습니다.
 - 공표된 '30세 미만' 구간은 그래프의 20대에 적용합니다.
-- 공표자료에서 60세 이상은 하나의 구간으로 제공되므로, 60~64세와 65세 이상을 임의로 나누지 않고 60세 이후 같은 구간값을 사용합니다.
+- 공표자료에서 60세 이상은 하나의 구간으로 제공되므로, 60~64세와 65세 이상을 임의로 나누지 않고 60세 이후 같은 구간값을 사용합니다. 따라서 60세 이상 점선은 연령이 높아져도 같은 높이를 유지합니다.
 - 이 통계는 해당 연령대의 모든 가구를 대상으로 합니다. 은퇴한 가구만의 평균이 아니며, 계속 일하는 가구도 포함합니다.
 - 공식 통계는 가구주 연령 기준이며, 그래프의 연령축은 인터뷰이 나이입니다. 비교를 위해 인터뷰이 나이를 가구주 연령의 대리값으로 사용하므로, 실제 가구주가 배우자 등 다른 가족인 경우에는 차이가 날 수 있습니다.
 - 연령대별 통계는 가구원 수를 구분하지 않은 전체 가구 평균입니다. 1인·2인·다인가구 등 서로 다른 가구 구성이 함께 포함되어 있습니다.
