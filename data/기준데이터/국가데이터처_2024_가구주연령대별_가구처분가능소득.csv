@@ -1,0 +1,6 @@
+age_min,age_max,age_group,annual_disposable_income_man,reference_year,statistic
+20,29,30세 미만,3838,2024,평균
+30,39,30~39세,5976,2024,평균
+40,49,40~49세,7311,2024,평균
+50,59,50~59세,7476,2024,평균
+60,120,60세 이상,4891,2024,평균
