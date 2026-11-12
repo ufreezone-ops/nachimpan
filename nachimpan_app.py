@@ -4190,12 +4190,6 @@ elif selected_page == "인생의 사계절":
             event_expense = event_expense_by_age.get(a, 0.0) * cpi_relative_to_current
             total_hh_exp = base_exp + event_expense
             household_expense_curve.append(total_hh_exp)
-        st.caption(
-            "통시성 보정 적용: 근로소득은 2011~2025년 실제 임금지수, 지출은 실제 CPI를 사용합니다. "
-            "2026년은 최신 실적연도(2025년) 수준을 기준점으로 두고, 2027년 이후에는 2011~2025년 연평균 복합상승률 "
-            f"(임금 {wage_forecast_rate * 100:.2f}%, 물가 {cpi_forecast_rate * 100:.2f}%)을 미래 가정으로 적용합니다. "
-            "2011년 이전 임금지수는 자료가 없어 임의 추정하지 않습니다."
-        )
 
 #############    6.03.05.08 | 가구 순수지 분리 및 Y축 자동 스케일링
         # MDIS 가계지출에는 이자 등 비소비지출이 포함되므로 이자를 별도 가산하지 않는다.
