@@ -4706,10 +4706,10 @@ div[class*="st-key-graph_stat_report_"] [data-testid="stButton"] button > div {
 
         # 통계 설명은 통계탭에 모으고, 이 화면에는 이동 제목만 둔다.
         _case_stat_links = [
-            ("과거 소득·지출을 현재 기준과 비교하기", "6050600-00"),
-            ("지출 통계 출처 및 산출방법", "6050400-01"),
-            ("부동산 산정 기준 지역", "6050500-01"),
-            ("소득 기준곡선의 출처와 산정 방식", "6050700-00"),
+            ("5. 동시성과 통시성", "6050600-00"),
+            ("3. 노후와 은퇴", "6050400-01"),
+            ("4. 주택대출과 원리금 분리", "6050500-01"),
+            ("6. 소득 통계", "6050700-00"),
         ]
         for _case_stat_title, _case_stat_id in _case_stat_links:
             if st.button(
@@ -4723,6 +4723,35 @@ div[class*="st-key-graph_stat_report_"] [data-testid="stButton"] button > div {
                     "인생의 사계절",
                     "case-stat-detail-links",
                 )
+
+        # 사례별 부동산 적용값은 이 화면에 남기고, 일반 산정 근거만 통계탭에서 확인한다.
+        _case_is_representative = st.session_state.get("_representative_case_id") in {
+            "case_32_female", "case_45_female"
+        }
+        _case_housing_region = st.session_state.get("housing_region")
+        if not _case_housing_region or _case_housing_region == "지역 선택":
+            _case_housing_region = st.session_state.get("residence_region", "지역 선택")
+        if _case_housing_region in HOUSING_PRICE_DATA:
+            if _case_is_representative:
+                _case_house_price_eok = 4.0
+                _case_housing_ltv = REPRESENTATIVE_MORTGAGE_LTV * 100.0
+                _case_equity_eok = 2.6
+            else:
+                _case_house_price_eok = HOUSING_PRICE_DATA[_case_housing_region][3] / 100000
+                _case_housing_ltv = float(st.session_state.get(
+                    "housing_ltv", REGIONAL_LTV1.get(_case_housing_region, 34.3)
+                ))
+                _case_equity_eok = _case_house_price_eok * (1 - _case_housing_ltv / 100.0)
+            st.caption(
+                f"🏠 부동산 적용 기준: {_case_housing_region} · "
+                f"주택가격 {_case_house_price_eok:.2f}억 원 · "
+                f"LTV {_case_housing_ltv:.1f}% · "
+                f"자기자금 {_case_equity_eok:.2f}억 원"
+            )
+            st.caption(
+                "※ 지역별 주택가격과 대출비율의 통계적 산정 근거는 통계탭 "
+                "「4. 주택대출과 원리금 분리」에서 확인할 수 있습니다."
+            )
 
     #--------------------------------------------------------
 # 6.03.06 | 고급 모드 — 3. 세대 계승 생애주기 재정곡선
