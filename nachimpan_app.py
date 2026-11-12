@@ -4305,25 +4305,6 @@ elif selected_page == "인생의 사계절":
 
                 stat_total_hh_inc = stat_self_inc + stat_spouse_inc + annual_other_income
 
-                # 국민연금: 기존 실선과 동일한 가구원별 개시 연령 및 분담 방식
-                if has_future_or_current_spouse:
-                    if a >= national_pension_start_age:
-                        stat_total_hh_inc += annual_pension / 2.0
-                    if sp_a >= national_pension_start_age:
-                        stat_total_hh_inc += annual_pension / 2.0
-                elif a >= national_pension_start_age:
-                    stat_total_hh_inc += annual_pension
-
-                # 국민연금 외 본인·배우자 연금도 기존 실선과 동일한 조건으로 반영
-                if other_self_enabled and a >= other_self_start_age:
-                    stat_total_hh_inc += other_self_annual
-                if (
-                    has_future_or_current_spouse
-                    and other_spouse_enabled
-                    and sp_a >= other_spouse_start_age
-                ):
-                    stat_total_hh_inc += other_spouse_annual
-
                 statistical_adjusted_income_curve.append(stat_total_hh_inc)
             else:
                 statistical_adjusted_income_curve.append(None)
@@ -4510,12 +4491,12 @@ elif selected_page == "인생의 사계절":
             y=statistical_adjusted_income_curve,
             mode="lines",
             line=dict(color="#22C55E", width=3.0, dash="dot", shape="spline", smoothing=0.8),
-            name="통계적 보정 소득",
+            name="통계적 보정 소득 (연금 제외)",
             showlegend=False,
             connectgaps=False,
             hovertemplate=(
                 "나이: %{x}세<br>"
-                "통계적 보정 가구소득(연금 포함): "
+                "통계적 보정 가구소득(연금 제외): "
                 "<b>%{y:,.0f}만 원</b><extra></extra>"
             ),
         ), row=1, col=1)
@@ -5460,7 +5441,7 @@ OECD 「Pensions at a Glance 2025: Korea」는 2024년 한국의 실질 노동�
 ### 그래프의 두 소득선
 
 - **가구소득 실선**은 기존 우리 가정의 예상 소득입니다. 은퇴 시점부터 본인·배우자의 근로·사업소득 중단 조건이 적용되는 기존 계산을 그대로 유지합니다. 국민연금과 입력한 기타연금은 각 수령 개시 연령부터 기존 방식대로 반영합니다.
-- **통계적 보정 점선**은 은퇴 이후에도 기존 직업군별 연령 기준소득 곡선을 연장한 가상 비교선입니다. 현재 입력소득 대비 보정계수, 임금지수, 본인·배우자의 연령 차이와 기존 경력단절 조건 등 나머지 기준은 유지합니다. 여기에 국민연금과 본인·배우자의 기타연금을 실선과 동일한 개시 연령 및 금액 조건으로 더합니다.
+- **통계적 보정 점선**은 은퇴 이후에도 기존 직업군별 연령 기준소득 곡선을 연장한 가상 비교선입니다. 현재 근로·사업소득을 기준으로 한 보정계수, 임금지수, 본인·배우자의 연령 차이와 기존 경력단절 조건은 유지하지만, 인터뷰이가 별도로 입력한 국민연금과 기타연금은 더하지 않습니다.
 - 이 점선은 은퇴 후 실제 취업이나 사업소득을 예측하는 값이 아닙니다. 은퇴 시점에서 근로·사업소득을 자동으로 0으로 만드는 가정을 제거했을 때, 기존 통계적 기준곡선이 어떻게 이어지는지 살펴보는 비교 시나리오입니다.
 
 ### 아래 그래프의 '통계적 보정' 순현금흐름
@@ -5468,7 +5449,7 @@ OECD 「Pensions at a Glance 2025: Korea」는 2024년 한국의 실질 노동�
 아래 그래프에는 기존 '순 현금흐름'과 함께 녹색 점선 '통계적 보정'을 표시합니다. 두 곡선은 지출과 대출 원금상환액을 동일하게 사용하고, **소득 부분만 다르게** 계산합니다.
 
 - 기존 순 현금흐름 = 기존 가구소득 실선 − 가구지출 − 대출 원금상환액
-- 통계적 보정 = 은퇴 후 연장한 통계적 기준소득과 연금 − 동일한 가구지출 − 동일한 대출 원금상환액
+- 통계적 보정 = 은퇴 후 연장한 통계적 기준소득 − 동일한 가구지출 − 동일한 대출 원금상환액
 
 따라서 두 선의 차이는 은퇴 후 소득을 어떤 기준으로 가정하느냐에 따른 차이입니다. 통계적 보정선은 은퇴 연령부터 표시하며, 기존 실선이나 기존 순현금흐름을 대체하지 않습니다.
 
@@ -5476,7 +5457,7 @@ OECD 「Pensions at a Glance 2025: Korea」는 2024년 한국의 실질 노동�
 
 - 직업군별 연령 기준곡선은 앱에 내장된 기준값이며, 현재 소득을 기준으로 한 보정계수를 적용합니다. 개별 인터뷰이의 실제 미래 소득을 보장하거나 예측하는 값은 아닙니다.
 - 임금지수 통시성 보정과 연령별 기준곡선은 기존 모델의 계산 방식을 그대로 사용합니다.
-- 국민연금 및 기타연금은 별도 입력값으로 더합니다. 따라서 연금이 근로·사업소득 기준곡선에 이미 포함된 것으로 간주하지 않습니다.
+- 인터뷰이가 입력한 국민연금과 기타연금은 통계적 보정 점선에서 제외합니다. 개인별 연금 예상액은 기존 가구소득 실선에만 반영합니다.
 - 통계적 보정선은 비교 시나리오입니다. 실제 은퇴 후 취업 여부, 근로시간, 사업 지속 여부, 건강 및 노동시장 상황은 개인마다 다릅니다.
 - 두 순현금흐름의 비교에서는 지출, 생애 이벤트 비용, 대출 원금상환 가정을 동일하게 유지합니다. 소득 가정 외의 차이를 섞지 않기 위한 설계입니다.
 
