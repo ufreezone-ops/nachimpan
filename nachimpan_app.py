@@ -1687,8 +1687,11 @@ div.st-key-retirement-title-row [data-testid="stMarkdownContainer"] {
     display: flex !important;
     align-items: center !important;
 }
-div.st-key-retirement-title-row [data-testid="stMarkdownContainer"] h3 {
+div.st-key-retirement-title-row .retirement-chart-title {
+    display: flex !important;
+    align-items: center !important;
     margin: 0 !important;
+    padding: 0 !important;
     line-height: 1.2 !important;
 }
 
@@ -3752,7 +3755,7 @@ elif selected_page == "우리집 재정곡선":
 
         st.markdown("<div style='height: 24px;'></div>", unsafe_allow_html=True)
         with st.container(horizontal=True, vertical_alignment="center", gap=None, key="retirement-title-row"):
-            st.markdown("### 우리 가정 생애주기 재정곡선")
+            st.markdown('<h3 class="retirement-chart-title">우리 가정 생애주기 재정곡선</h3>', unsafe_allow_html=True)
             with st.popover(
                 "🧭",
                 key="source_retirement_expense",
