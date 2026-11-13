@@ -3062,25 +3062,77 @@ elif selected_page == "인생의 사계절":
         official_income = [0, 0, 0, 0, 0, 3, 10, 18, 28, 27, 28, 38, 35, 39, 36, 26, 21, 14, 7, 2, 0.5, 0]
         official_expense = [4, 5, 18, 20, 22, 15, 19, 18, 22, 20, 19, 23, 20, 24, 26, 23, 23, 25, 16, 11, 7, 5]
         official_deficit = [e - i for e, i in zip(official_expense, official_income)]
-        
+
+        # 적자(양수)와 흑자(음수) 면적을 0선에서 분리하고,
+        # 부호가 바뀌는 지점은 두 곡선의 선형 교차점으로 보정합니다.
+        def _signed_area_segments(values, positive=True):
+            x_out, y_out = [], []
+            for idx in range(len(official_ages) - 1):
+                x0, x1 = official_ages[idx], official_ages[idx + 1]
+                y0, y1 = values[idx], values[idx + 1]
+                segment = None
+
+                if positive:
+                    if y0 >= 0 and y1 >= 0:
+                        segment = ((x0, y0), (x1, y1))
+                    elif y0 >= 0 and y1 < 0:
+                        cross_x = x0 + (x1 - x0) * y0 / (y0 - y1)
+                        segment = ((x0, y0), (cross_x, 0))
+                    elif y0 < 0 and y1 >= 0:
+                        cross_x = x0 + (x1 - x0) * (-y0) / (y1 - y0)
+                        segment = ((cross_x, 0), (x1, y1))
+                else:
+                    if y0 <= 0 and y1 <= 0:
+                        segment = ((x0, y0), (x1, y1))
+                    elif y0 <= 0 and y1 > 0:
+                        cross_x = x0 + (x1 - x0) * (-y0) / (y1 - y0)
+                        segment = ((x0, y0), (cross_x, 0))
+                    elif y0 > 0 and y1 <= 0:
+                        cross_x = x0 + (x1 - x0) * y0 / (y0 - y1)
+                        segment = ((cross_x, 0), (x1, y1))
+
+                if segment is None:
+                    continue
+                (sx0, sy0), (sx1, sy1) = segment
+                if x_out and abs(x_out[-1] - sx0) < 1e-9 and y_out[-1] == sy0:
+                    x_out.append(sx1)
+                    y_out.append(sy1)
+                else:
+                    if x_out:
+                        x_out.append(None)
+                        y_out.append(None)
+                    x_out.extend([sx0, sx1])
+                    y_out.extend([sy0, sy1])
+            return x_out, y_out
+
+        deficit_x, deficit_y = _signed_area_segments(official_deficit, positive=True)
+        surplus_x, surplus_y = _signed_area_segments(official_deficit, positive=False)
+
         fig_official_nta.add_trace(go.Scatter(
-            x=official_ages, y=official_deficit, mode="lines",
-            line=dict(color="rgba(147, 197, 253, 0.0)", width=0),
-            fill='tozeroy', fillcolor='rgba(147, 197, 253, 0.45)',
-            name="생애주기 적자/흑자 (소비 - 노동소득)",
-            hovertemplate="나이: %{x}세<br>적자/흑자 차액: <b>%{y:.1f}조 원</b><extra></extra>"
+            x=deficit_x, y=deficit_y, mode="lines",
+            line=dict(color="rgba(185, 85, 65, 0)", width=0),
+            fill="tozeroy", fillcolor="rgba(185, 85, 65, 0.34)",
+            name="생애주기 적자", legendrank=3,
+            hoverinfo="skip", connectgaps=False,
+        ))
+        fig_official_nta.add_trace(go.Scatter(
+            x=surplus_x, y=surplus_y, mode="lines",
+            line=dict(color="rgba(34, 139, 94, 0)", width=0),
+            fill="tozeroy", fillcolor="rgba(34, 139, 94, 0.34)",
+            name="생애주기 흑자", legendrank=4,
+            hoverinfo="skip", connectgaps=False,
         ))
         fig_official_nta.add_trace(go.Scatter(
             x=official_ages, y=official_expense, mode="lines",
-            line=dict(color="#65A30D", width=3, dash="dash"),
-            name="소비",
-            hovertemplate="나이: %{x}세<br>소비: <b>%{y:.1f}조 원</b><extra></extra>"
+            line=dict(color="#C65D4B", width=3, dash="dash"),
+            name="지출(소비)", legendrank=2,
+            hovertemplate="나이: %{x}세<br>지출(소비): <b>%{y:.1f}조 원</b><extra></extra>"
         ))
         fig_official_nta.add_trace(go.Scatter(
             x=official_ages, y=official_income, mode="lines",
-            line=dict(color="#2563EB", width=3.5),
-            name="노동소득",
-            hovertemplate="나이: %{x}세<br>노동소득: <b>%{y:.1f}조 원</b><extra></extra>"
+            line=dict(color="#22A06B", width=3.5),
+            name="소득(노동소득)", legendrank=1,
+            hovertemplate="나이: %{x}세<br>소득(노동소득): <b>%{y:.1f}조 원</b><extra></extra>"
         ))
         fig_official_nta.add_hline(y=0, line_dash="solid", line_color="#475569", line_width=1.5)
         fig_official_nta.add_vline(x=17, line_dash="dash", line_color="#94A3B8", line_width=1.5)
@@ -3088,9 +3140,9 @@ elif selected_page == "인생의 사계절":
         fig_official_nta.add_annotation(x=8, y=50, text="유년층", showarrow=False, font=dict(size=12, color="#E2E8F0"), bgcolor="rgba(30, 41, 59, 0.8)", bordercolor="#475569")
         fig_official_nta.add_annotation(x=41, y=50, text="노동연령층", showarrow=False, font=dict(size=12, color="#E2E8F0"), bgcolor="rgba(30, 41, 59, 0.8)", bordercolor="#475569")
         fig_official_nta.add_annotation(x=75, y=50, text="노년층", showarrow=False, font=dict(size=12, color="#E2E8F0"), bgcolor="rgba(30, 41, 59, 0.8)", bordercolor="#475569")
-        fig_official_nta.add_annotation(x=12, y=10, text="적자", showarrow=False, font=dict(size=13, color="#93C5FD", weight="bold"))
-        fig_official_nta.add_annotation(x=45, y=-16, text="흑자", showarrow=False, font=dict(size=13, color="#93C5FD", weight="bold"))
-        fig_official_nta.add_annotation(x=73, y=5, text="적자", showarrow=False, font=dict(size=13, color="#93C5FD", weight="bold"))
+        fig_official_nta.add_annotation(x=12, y=9.5, text="적자", showarrow=False, font=dict(size=13, color="#D98A78", weight="bold"))
+        fig_official_nta.add_annotation(x=45, y=-7.8, text="흑자", showarrow=False, font=dict(size=13, color="#62C795", weight="bold"))
+        fig_official_nta.add_annotation(x=73, y=4.5, text="적자", showarrow=False, font=dict(size=13, color="#D98A78", weight="bold"))
 
         fig_official_nta.update_layout(
             height=390,
@@ -3119,7 +3171,8 @@ elif selected_page == "인생의 사계절":
                 y=-0.28,
                 xanchor="center",
                 x=0.5,
-                font=dict(size=12, color="#F1F5F9")
+                font=dict(size=12, color="#F1F5F9"),
+                traceorder="normal"
             ),
             hovermode="x unified"
         )
