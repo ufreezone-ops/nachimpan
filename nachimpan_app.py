@@ -4988,7 +4988,7 @@ div[class*="st-key-open_nta_generational_report"] [data-testid="stButton"] butto
         if not _case_housing_region or _case_housing_region == "지역 선택":
             _case_housing_region = st.session_state.get("residence_region", "지역 선택")
         if _case_housing_region in HOUSING_PRICE_DATA:
-            <div id="case-housing-statistics" style="scroll-margin-top: 120px;"></div>
+            st.markdown('<div id="case-housing-statistics" style="scroll-margin-top: 120px;"></div>', unsafe_allow_html=True)
             _case_housing_stats = HOUSING_PRICE_DATA[_case_housing_region]
             _case_house_median_eok = _case_housing_stats[1] / 100000
             _case_apt_median_eok = _case_housing_stats[3] / 100000
