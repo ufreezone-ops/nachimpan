@@ -4748,6 +4748,7 @@ elif selected_page == "우리집 재정곡선":
             mode="lines",
             line=dict(color="#22C55E", width=3.0, dash="dot", shape="spline", smoothing=0.8),
             name="가구소득(통계보정)",
+            showlegend=False,
             connectgaps=False,
             hovertemplate=(
                 "나이: %{x}세<br>"
@@ -4761,6 +4762,7 @@ elif selected_page == "우리집 재정곡선":
                 x=ages_sim, y=my_income_curve, mode="lines",
                 line=dict(color="rgba(16, 185, 129, 0.40)", width=1.8, dash="dot", shape='spline'),
                 name="본인 단독소득",
+                showlegend=False,
                 hovertemplate="나이: %{x}세<br>본인 단독소득: <b>%{y:,.0f}만 원</b><extra></extra>"
             ), row=1, col=1)
 
@@ -4768,6 +4770,7 @@ elif selected_page == "우리집 재정곡선":
             x=ages_sim, y=household_expense_curve, mode="lines",
             line=dict(color="#F97316", width=3.2, dash="dot", shape='linear'),
             name="가구 지출",
+            showlegend=False,
             hovertemplate="나이: %{x}세<br>연간 가구지출: <b>%{y:,.0f}만 원</b><extra></extra>"
         ), row=1, col=1)
 
@@ -4905,13 +4908,19 @@ elif selected_page == "우리집 재정곡선":
         )
         fig_my_nta.update_yaxes(range=[0, y_top], row=1, col=1)
 
-        # 가구소득은 차트 범례와 분리해 상단 중앙에 배치하고, 기존 범례와 같은 선·글자 스타일로 표현
+        # 상단 4개 범례를 하나의 반응형 영역으로 통일 (가구소득만 안내 팝오버 연결)
         st.markdown("""
         <style>
         div.st-key-household-income-legend-guide-row {
-            display: flex;
-            justify-content: center;
-            margin: 0.15rem 0 0.1rem 0;
+            margin: 0.1rem 0 0.35rem 0;
+        }
+        div.st-key-household-income-legend-guide-row [data-testid="stHorizontalBlock"] {
+            display: flex !important;
+            flex-wrap: wrap !important;
+            align-items: center !important;
+            justify-content: center !important;
+            column-gap: 1.15rem !important;
+            row-gap: 0.35rem !important;
         }
         div.st-key-household-income-legend-guide-row [data-testid="stPopoverButton"],
         div.st-key-household-income-legend-guide-row [data-testid="stPopoverButton"]:hover,
@@ -4931,15 +4940,40 @@ elif selected_page == "우리집 재정곡선":
             font-weight: 400 !important;
             line-height: 1.2 !important;
             margin: 0 !important;
+            white-space: nowrap !important;
+        }
+        div.st-key-household-income-legend-guide-row [data-testid="stPopoverButton"] p::before {
+            content: "";
+            display: inline-block;
+            width: 30px;
+            border-top: 3.4px solid #10B981;
+            margin-right: 7px;
+            vertical-align: middle;
         }
         div.st-key-household-income-legend-guide-row [data-testid="stPopoverButton"] svg {
             display: none !important;
+        }
+        div.st-key-household-income-legend-guide-row .legend-static-item {
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+            color: #F1F5F9;
+            font-size: 11px;
+            font-weight: 400;
+            line-height: 1.2;
+            white-space: nowrap;
+        }
+        div.st-key-household-income-legend-guide-row .legend-static-line {
+            display: inline-block;
+            width: 30px;
+            height: 0;
+            flex: 0 0 30px;
         }
         </style>
         """, unsafe_allow_html=True)
         with st.container(horizontal=True, vertical_alignment="center", gap=None, key="household-income-legend-guide-row"):
             with st.popover(
-                ":green[━━━━] 가구소득",
+                "가구소득",
                 key="household_income_legend_guide",
                 help="가구소득 곡선의 설명과 관련 보고서",
                 type="tertiary",
@@ -4957,6 +4991,20 @@ elif selected_page == "우리집 재정곡선":
                         "우리집 재정곡선",
                         "statistical-household-income-origin",
                     )
+
+            st.markdown(
+                '<div class="legend-static-item"><span class="legend-static-line" style="border-top:3px dotted #22C55E;"></span>가구소득(통계보정)</div>',
+                unsafe_allow_html=True,
+            )
+            if has_future_or_current_spouse and marriage_start is not None and marriage_start < retire_age:
+                st.markdown(
+                    '<div class="legend-static-item"><span class="legend-static-line" style="border-top:1.8px dotted rgba(16,185,129,0.65);"></span>본인 단독소득</div>',
+                    unsafe_allow_html=True,
+                )
+            st.markdown(
+                '<div class="legend-static-item"><span class="legend-static-line" style="border-top:3.2px dotted #F97316;"></span>가구 지출</div>',
+                unsafe_allow_html=True,
+            )
 
         st.plotly_chart(fig_my_nta, use_container_width=True, config={"displayModeBar": False, "scrollZoom": False, "doubleClick": False, "showAxisDragHandles": False})
 
