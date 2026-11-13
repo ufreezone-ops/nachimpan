@@ -4909,14 +4909,16 @@ div[class*="st-key-household_expense_event_"] [data-testid="stButton"] button > 
         col_m3.metric("생애 적자 재진입", "61세")
 
         
-        st.markdown(f"""
-<div style="display: flex; justify-content: center; margin-top: 14px;">
-  <a href="{OFFICIAL_PDF_URL}" target="_blank" style="background:#1E293B; border:1px solid #475569; border-radius:8px; padding:12px 20px; text-decoration:none; color:#38BDF8 !important; font-size:15px; font-weight:700; display:inline-flex; align-items:center; justify-content:center; gap:8px; white-space: nowrap;">
-    <span style="font-size:18px;">📄</span>
-    <span style="color:#38BDF8 !important; white-space: nowrap;">2024년 국민이전계정 보도자료</span>
-  </a>
-</div>
-""", unsafe_allow_html=True)
+        if st.button(
+            "📄 16. 세대 계승 생애주기 재정곡선 리포트 보기",
+            key="open_nta_generational_report",
+            use_container_width=True,
+        ):
+            _open_source_reference(
+                "6051700-00",
+                "인생의 사계절",
+                "source-anchor-nta-generational",
+            )
         st.markdown("<div style='height: 20px;'></div>", unsafe_allow_html=True)
 
 #--------------------------------------------------------
