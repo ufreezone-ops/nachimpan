@@ -4921,25 +4921,37 @@ elif selected_page == "우리집 재정곡선":
             grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
             width: 100% !important;
             align-items: center !important;
-            justify-items: start !important;
+            justify-items: center !important;
             column-gap: 0.5rem !important;
             row-gap: 0.55rem !important;
             margin: 0.1rem 0 0.35rem 0 !important;
+            position: relative !important;
+            z-index: 5 !important;
+            transform: translateY(42px) !important;
         }
         div.st-key-household-income-legend-guide-row[data-testid="stHorizontalBlock"] > div {
             width: 100% !important;
             min-width: 0 !important;
             display: flex !important;
-            justify-content: flex-start !important;
+            justify-content: center !important;
             align-items: center !important;
         }
         div.st-key-household-income-legend-guide-row [data-testid="stPopover"],
-        div.st-key-household-income-legend-guide-row [data-testid="stPopover"] > div,
-        div.st-key-household-income-legend-guide-row [data-testid="stPopoverButton"] {
+        div.st-key-household-income-legend-guide-row [data-testid="stPopover"] > div {
             width: 100% !important;
             display: flex !important;
-            justify-content: flex-start !important;
+            justify-content: center !important;
             align-items: center !important;
+        }
+        div.st-key-household-income-legend-guide-row [data-testid="stPopoverButton"] {
+            width: auto !important;
+            display: flex !important;
+            justify-content: center !important;
+            align-items: center !important;
+        }
+        div.st-key-household-income-legend-guide-row [data-testid="stTooltipHoverTarget"] {
+            width: auto !important;
+            justify-content: center !important;
         }
         div.st-key-household-income-legend-guide-row [data-testid="stPopoverButton"],
         div.st-key-household-income-legend-guide-row [data-testid="stPopoverButton"]:hover,
