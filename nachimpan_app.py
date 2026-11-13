@@ -4783,7 +4783,7 @@ div[class*="st-key-case_housing_stat_"] [data-testid="stButton"] button > div {
                 )
                 with st.container(horizontal=True, vertical_alignment="center", gap=None):
                     if st.button(
-                        "통계표",
+                        "17개 시·도 주택종합·아파트 중위가격표 보기",
                         key="open_housing_price_stats_table",
                         help="17개 시·도 주택종합·아파트 중위가격 표 보기",
                         type="tertiary",
