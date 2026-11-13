@@ -3247,8 +3247,8 @@ elif selected_page == "인생의 사계절":
                     "source-anchor-nta-basic",
                 )
 
-        if cur_age <= 27: cur_season, s_icon, s_color, s_desc = "봄 (준비기)", "🌱", "#4ADE80", "부모님의 부양으로 배우고 성장하는 계절"
-        elif 28 <= cur_age <= 49: cur_season, s_icon, s_color, s_desc = "여름 (성장기)", "☀️", "#F59E0B", "성실하게 일하여 가정을 일구고 경제적 기반을 만드는 계절"
+        if cur_age <= 27: cur_season, s_icon, s_color, s_desc = "봄 (준비기)", "🌱", "#4ADE80", "배우고 성장하며, 부모와 사회의 지원 속에서 삶의 기반을 준비하는 시기"
+        elif 28 <= cur_age <= 49: cur_season, s_icon, s_color, s_desc = "여름 (성장기)", "☀️", "#F59E0B", "경제활동을 통해 스스로의 생계를 책임지고, 가정을 일구며 경제적 기반을 만드는 시기"
         elif 50 <= cur_age <= 69: cur_season, s_icon, s_color, s_desc = "가을 (결실기)", "🍂", "#FB923C", "자녀의 독립과 노후를 준비하고, 노동의 결실을 삶의 여유로 바꾸는 계절"
         else: cur_season, s_icon, s_color, s_desc = "겨울 (음미기)", "❄️", "#38BDF8", "생계를 위한 노동의 비중을 줄이고, 살아온 삶의 열매를 누리는 계절"
 
@@ -3331,8 +3331,8 @@ elif selected_page == "인생의 사계절":
             badge_html = "<div style='min-height:22px; margin-bottom:4px;'><span style='background:#EA580C; color:#FFFFFF; font-size:11.5px; font-weight:800; padding:2px 7px; border-radius:4px;'>지금 나의 계절</span></div>" if is_current else "<div style='min-height:22px; margin-bottom:4px;'></div>"
             return f'<div class="soft-card" style="text-align:center; min-height:205px; {card_border} padding:14px 10px; margin:0;">{badge_html}<div style="font-size:28px;">{icon}</div><div style="font-size:16.5px; font-weight:800; color:#F8FAFC; margin:4px 0;">{title}</div><div style="font-size:13px; color:#94A3B8;">{age_range}</div><div style="font-size:13px; color:#CBD5E1; margin-top:8px; line-height:1.4;">{desc}</div></div>'
 
-        card_spring = get_season_card_ui("spring", "🌱", "봄 (준비기)", "0세 ~ 27세", "부모님의 부양으로 배우고 성장하는 계절")
-        card_summer = get_season_card_ui("summer", "☀️", "여름 (성장기)", "28세 ~ 49세", "성실하게 일하고 가정을 일구며 경제적 기반을 만드는 계절")
+        card_spring = get_season_card_ui("spring", "🌱", "봄 (준비기)", "0세 ~ 27세", "배우고 성장하며, 부모와 사회의 지원 속에서 삶의 기반을 준비하는 시기")
+        card_summer = get_season_card_ui("summer", "☀️", "여름 (성장기)", "28세 ~ 49세", "경제활동을 통해 스스로의 생계를 책임지고, 가정을 일구며 경제적 기반을 만드는 시기")
         card_autumn = get_season_card_ui("autumn", "🍂", "가을 (결실기)", "50세 ~ 69세", "자녀의 독립과 노후를 준비하고, 노동의 결실을 삶의 여유로 바꾸는 계절")
         card_winter = get_season_card_ui("winter", "❄️", "겨울 (음미기)", "70세 이후", "생계를 위한 노동의 비중을 줄이고, 살아온 삶의 열매를 누리는 계절")
 
@@ -3357,9 +3357,6 @@ elif selected_page == "인생의 사계절":
                 st.rerun()
 
 
-#########################################################
-# 6.05 | Tab 5 — AI 시선
-#########################################################
 #########################################################
 # 6.04 | Tab 4 — 우리집 재정곡선
 #########################################################
@@ -5077,6 +5074,9 @@ div[class*="st-key-open_nta_generational_report"] [data-testid="stButton"] butto
 
 
 
+#########################################################
+# 6.05 | Tab 5 — AI 시선
+#########################################################
 elif selected_page == "AI 시선":
     is_adv = st.session_state.get("advanced_mode", False)
     summary = current_financial_summary()
