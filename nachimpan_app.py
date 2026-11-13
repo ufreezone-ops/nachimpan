@@ -5055,6 +5055,7 @@ div[class*="st-key-open_nta_generational_report"] [data-testid="stButton"] butto
                             "우리집 재정곡선",
                             "case-housing-statistics",
                         )
+            st.markdown('<div id="case-housing-report-links" style="scroll-margin-top: 120px;"></div>', unsafe_allow_html=True)
             _housing_report_links = [
                 ("4. 주택대출과 원리금 분리", "6050500-01"),
                 ("14. 부동산 적용 기준과 지역별 산정방법", "6051500-00"),
@@ -5068,7 +5069,7 @@ div[class*="st-key-open_nta_generational_report"] [data-testid="stButton"] butto
                     _open_source_reference(
                         _housing_report_id,
                         "우리집 재정곡선",
-                        "case-stat-detail-links",
+                        "case-housing-report-links",
                     )
 
 
