@@ -4962,6 +4962,7 @@ div[class*="st-key-open_nta_generational_report"] [data-testid="stButton"] butto
                 )
 
         # 위쪽 보고서와 중복되지 않는 추가 보고서도 번호순으로 표시한다.
+        st.markdown('<div id="case-stat-detail-links" style="scroll-margin-top: 120px;"></div>', unsafe_allow_html=True)
         _case_stat_links = [
             ("12. 과거 소득·지출을 현재 기준과 비교하는 방법", "6051300-00"),
             ("13. 지출 통계 출처 및 산출방법", "6051400-00"),
@@ -4987,6 +4988,7 @@ div[class*="st-key-open_nta_generational_report"] [data-testid="stButton"] butto
         if not _case_housing_region or _case_housing_region == "지역 선택":
             _case_housing_region = st.session_state.get("residence_region", "지역 선택")
         if _case_housing_region in HOUSING_PRICE_DATA:
+            <div id="case-housing-statistics" style="scroll-margin-top: 120px;"></div>
             _case_housing_stats = HOUSING_PRICE_DATA[_case_housing_region]
             _case_house_median_eok = _case_housing_stats[1] / 100000
             _case_apt_median_eok = _case_housing_stats[3] / 100000
@@ -5051,7 +5053,7 @@ div[class*="st-key-open_nta_generational_report"] [data-testid="stButton"] butto
                         _open_source_reference(
                             "6051500-00",
                             "우리집 재정곡선",
-                            "chart-stat-report-links",
+                            "case-housing-statistics",
                         )
             _housing_report_links = [
                 ("4. 주택대출과 원리금 분리", "6050500-01"),
