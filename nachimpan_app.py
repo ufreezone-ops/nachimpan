@@ -4670,8 +4670,49 @@ elif selected_page == "인생의 사계절":
 
         st.plotly_chart(fig_my_nta, use_container_width=True, config={"displayModeBar": False, "scrollZoom": False, "doubleClick": False, "showAxisDragHandles": False})
 
-
         # 생애주기 누적 총액은 그래프 해석의 혼선을 줄이기 위해 표시하지 않는다.
+
+        st.markdown('<div id="household-major-events" style="scroll-margin-top: 120px;"></div>', unsafe_allow_html=True)
+        with st.container(border=True):
+            st.markdown("**가구소득 주요 이벤트**")
+            st.caption("출산·육아에 따른 경력 변화와 은퇴 이후의 근로소득 단절을 살펴봅니다.")
+            _income_event_reports = [
+                ("여성의 출산·육아와 경력단절", "6051800-00"),
+                ("은퇴와 수입 단절", "6051900-00"),
+            ]
+            for _event_title, _event_id in _income_event_reports:
+                if st.button(
+                    f"🧭 {_event_title}",
+                    key=f"household_income_event_{_event_id}",
+                    use_container_width=True,
+                ):
+                    _open_source_reference(
+                        _event_id,
+                        "인생의 사계절",
+                        "household-major-events",
+                    )
+
+            st.markdown("---")
+            st.markdown("**가구지출 주요 이벤트**")
+            st.caption("재정곡선에 표시되는 빅5 생애사건과 각각의 비용 산출 근거입니다.")
+            _expense_event_reports = [
+                ("나의 결혼", "6052000-00"),
+                ("출산과 육아", "6052100-00"),
+                ("주택구입", "6052200-00"),
+                ("자녀 대학", "6052300-00"),
+                ("자녀 결혼", "6052400-00"),
+            ]
+            for _event_title, _event_id in _expense_event_reports:
+                if st.button(
+                    f"🧭 {_event_title}",
+                    key=f"household_expense_event_{_event_id}",
+                    use_container_width=True,
+                ):
+                    _open_source_reference(
+                        _event_id,
+                        "인생의 사계절",
+                        "household-major-events",
+                    )
 
         st.markdown('<div id="chart-stat-report-links" style="scroll-margin-top: 120px;"></div>', unsafe_allow_html=True)
         st.markdown("**이 재정곡선의 통계 자료실**")
@@ -4827,47 +4868,7 @@ div[class*="st-key-case_housing_stat_"] [data-testid="stButton"] button > div {
                         "case-stat-detail-links",
                     )
 
-        st.markdown('<div id="household-major-events" style="scroll-margin-top: 120px;"></div>', unsafe_allow_html=True)
-        with st.container(border=True):
-            st.markdown("**가구소득 주요 이벤트**")
-            st.caption("출산·육아에 따른 경력 변화와 은퇴 이후의 근로소득 단절을 살펴봅니다.")
-            _income_event_reports = [
-                ("여성의 출산·육아와 경력단절", "6051800-00"),
-                ("은퇴와 수입 단절", "6051900-00"),
-            ]
-            for _event_title, _event_id in _income_event_reports:
-                if st.button(
-                    f"🧭 {_event_title}",
-                    key=f"household_income_event_{_event_id}",
-                    use_container_width=True,
-                ):
-                    _open_source_reference(
-                        _event_id,
-                        "인생의 사계절",
-                        "household-major-events",
-                    )
 
-            st.markdown("---")
-            st.markdown("**가구지출 주요 이벤트**")
-            st.caption("재정곡선에 표시되는 빅5 생애사건과 각각의 비용 산출 근거입니다.")
-            _expense_event_reports = [
-                ("나의 결혼", "6052000-00"),
-                ("출산과 육아", "6052100-00"),
-                ("주택구입", "6052200-00"),
-                ("자녀 대학", "6052300-00"),
-                ("자녀 결혼", "6052400-00"),
-            ]
-            for _event_title, _event_id in _expense_event_reports:
-                if st.button(
-                    f"🧭 {_event_title}",
-                    key=f"household_expense_event_{_event_id}",
-                    use_container_width=True,
-                ):
-                    _open_source_reference(
-                        _event_id,
-                        "인생의 사계절",
-                        "household-major-events",
-                    )
 
 
     #--------------------------------------------------------
