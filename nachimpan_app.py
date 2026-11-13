@@ -4827,37 +4827,6 @@ div[class*="st-key-case_housing_stat_"] [data-testid="stButton"] button > div {
                         "case-stat-detail-links",
                     )
 
-    #--------------------------------------------------------
-# 6.03.06 | 고급 모드 — 3. 세대 계승 생애주기 재정곡선
-#--------------------------------------------------------
-        st.markdown("### 세대 계승 생애주기 재정곡선")
-
-        # [출처 ID: 6051700-00]
-        st.markdown(
-            '<div id="source-anchor-nta-generational"></div>',
-            unsafe_allow_html=True
-        )
-
-        with st.container(horizontal=True, vertical_alignment="center", gap=None):
-            st.caption(
-                "※ 국가데이터처 「2024년 국민이전계정」"
-                "(2026. 9. 17. 발표) 기준 · 전 국민 1인당 평균 지표"
-            )
-            if st.button(
-                "🧭",
-                key="source_nta_generational",
-                type="tertiary",
-            ):
-                _open_source_reference(
-                    "6051700-00",
-                    "인생의 사계절",
-                    "source-anchor-nta-generational",
-                )
-        col_m1, col_m2, col_m3 = st.columns(3)
-        col_m1.metric("생애 흑자 진입", "28세")
-        col_m2.metric("최대 흑자 정점", "45세", "연 1,932만 원")
-        col_m3.metric("생애 적자 재진입", "61세")
-
         st.markdown('<div id="household-major-events" style="scroll-margin-top: 120px;"></div>', unsafe_allow_html=True)
         with st.container(border=True):
             st.markdown("**가구소득 주요 이벤트**")
@@ -4899,6 +4868,38 @@ div[class*="st-key-case_housing_stat_"] [data-testid="stButton"] button > div {
                         "인생의 사계절",
                         "household-major-events",
                     )
+
+
+    #--------------------------------------------------------
+# 6.03.06 | 고급 모드 — 3. 세대 계승 생애주기 재정곡선
+#--------------------------------------------------------
+        st.markdown("### 세대 계승 생애주기 재정곡선")
+
+        # [출처 ID: 6051700-00]
+        st.markdown(
+            '<div id="source-anchor-nta-generational"></div>',
+            unsafe_allow_html=True
+        )
+
+        with st.container(horizontal=True, vertical_alignment="center", gap=None):
+            st.caption(
+                "※ 국가데이터처 「2024년 국민이전계정」"
+                "(2026. 9. 17. 발표) 기준 · 전 국민 1인당 평균 지표"
+            )
+            if st.button(
+                "🧭",
+                key="source_nta_generational",
+                type="tertiary",
+            ):
+                _open_source_reference(
+                    "6051700-00",
+                    "인생의 사계절",
+                    "source-anchor-nta-generational",
+                )
+        col_m1, col_m2, col_m3 = st.columns(3)
+        col_m1.metric("생애 흑자 진입", "28세")
+        col_m2.metric("최대 흑자 정점", "45세", "연 1,932만 원")
+        col_m3.metric("생애 적자 재진입", "61세")
 
         fig_official_nta = build_official_nta_chart()
         st.plotly_chart(fig_official_nta, use_container_width=True, config={"displayModeBar": False, "scrollZoom": False, "doubleClick": False, "showAxisDragHandles": False})
