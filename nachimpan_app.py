@@ -4911,16 +4911,31 @@ elif selected_page == "우리집 재정곡선":
         # 상단 4개 범례를 하나의 반응형 영역으로 통일 (가구소득만 안내 팝오버 연결)
         st.markdown("""
         <style>
-        div.st-key-household-income-legend-guide-row {
-            margin: 0.1rem 0 0.35rem 0;
-        }
-        div.st-key-household-income-legend-guide-row [data-testid="stHorizontalBlock"] {
-            display: flex !important;
-            flex-wrap: wrap !important;
+        /* 범례 전체를 하나의 균등한 그리드로 배치 */
+        div.st-key-household-income-legend-guide-row[data-testid="stHorizontalBlock"] {
+            display: grid !important;
+            grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+            width: 100% !important;
             align-items: center !important;
+            justify-items: center !important;
+            column-gap: 0.5rem !important;
+            row-gap: 0.55rem !important;
+            margin: 0.1rem 0 0.35rem 0 !important;
+        }
+        div.st-key-household-income-legend-guide-row[data-testid="stHorizontalBlock"] > div {
+            width: 100% !important;
+            min-width: 0 !important;
+            display: flex !important;
             justify-content: center !important;
-            column-gap: 1.15rem !important;
-            row-gap: 0.35rem !important;
+            align-items: center !important;
+        }
+        div.st-key-household-income-legend-guide-row [data-testid="stPopover"],
+        div.st-key-household-income-legend-guide-row [data-testid="stPopover"] > div,
+        div.st-key-household-income-legend-guide-row [data-testid="stPopoverButton"] {
+            width: 100% !important;
+            display: flex !important;
+            justify-content: center !important;
+            align-items: center !important;
         }
         div.st-key-household-income-legend-guide-row [data-testid="stPopoverButton"],
         div.st-key-household-income-legend-guide-row [data-testid="stPopoverButton"]:hover,
@@ -4933,6 +4948,12 @@ elif selected_page == "우리집 재정곡선":
             outline: none !important;
             padding: 0 !important;
             min-height: 0 !important;
+        }
+        div.st-key-household-income-legend-guide-row [data-testid="stPopoverButton"] > div {
+            justify-content: center !important;
+        }
+        div.st-key-household-income-legend-guide-row [data-testid="stPopoverButton"] [aria-hidden="true"] {
+            display: none !important;
         }
         div.st-key-household-income-legend-guide-row [data-testid="stPopoverButton"] p {
             color: #F1F5F9 !important;
@@ -4956,6 +4977,7 @@ elif selected_page == "우리집 재정곡선":
         div.st-key-household-income-legend-guide-row .legend-static-item {
             display: inline-flex;
             align-items: center;
+            justify-content: center;
             gap: 7px;
             color: #F1F5F9;
             font-size: 11px;
@@ -4968,6 +4990,13 @@ elif selected_page == "우리집 재정곡선":
             width: 30px;
             height: 0;
             flex: 0 0 30px;
+        }
+        @media (max-width: 640px) {
+            div.st-key-household-income-legend-guide-row[data-testid="stHorizontalBlock"] {
+                grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+                column-gap: 0.25rem !important;
+                row-gap: 0.65rem !important;
+            }
         }
         </style>
         """, unsafe_allow_html=True)
