@@ -3274,14 +3274,116 @@ elif selected_page == "인생의 사계절":
         _, next_col = st.columns([5, 1])
         with next_col:
             if st.button("다음 →", key="basic_seasons_next", use_container_width=True, type="primary"):
-                st.session_state["_pending_nav"] = "AI 시선"
+                st.session_state["_pending_nav"] = "우리집 재정곡선"
                 st.rerun()
 
     else:
         st.caption("내 인생의 사계절과 우리가족  \n대한민국 통계자료로 비춰봅니다")
 
+    #--------------------------------------------------------
+# 6.03.03 | 고급 모드 — 2. 세대 계승 생애주기 재정곡선
 #--------------------------------------------------------
-# 6.03.03 | 고급 모드 — 1. 가족 구성원 나이 및 주택가격 기준 통계
+        st.markdown("### 세대 계승 생애주기 재정곡선")
+
+        fig_official_nta = build_official_nta_chart()
+        st.plotly_chart(fig_official_nta, use_container_width=True, config={"displayModeBar": False, "scrollZoom": False, "doubleClick": False, "showAxisDragHandles": False})
+
+        st.caption(
+            "※ 국가데이터처 「2024년 국민이전계정」(2026. 9. 17. 발표)"
+        )
+
+        if st.button(
+            "🧭 16. 세대 계승 생애주기 재정곡선 리포트 보기",
+            key="open_nta_generational_report",
+            use_container_width=True,
+        ):
+            _open_source_reference(
+                "6051700-00",
+                "인생의 사계절",
+                "source-anchor-nta-generational",
+            )
+
+        # [출처 ID: 6051700-00]
+        st.markdown(
+            '<div id="source-anchor-nta-generational"></div>',
+            unsafe_allow_html=True
+        )
+        col_m1, col_m2, col_m3 = st.columns(3)
+        col_m1.metric("생애 흑자 진입", "28세")
+        col_m2.metric("최대 흑자 정점", "45세", "연 1,932만 원")
+        col_m3.metric("생애 적자 재진입", "61세")
+
+        
+        st.markdown("<div style='height: 20px;'></div>", unsafe_allow_html=True)
+
+#--------------------------------------------------------
+# 6.03.04 | 고급 모드 — 3. 인생의 사계절 카드
+#--------------------------------------------------------
+        st.markdown("### 인생의 사계절")
+        if cur_age <= 27: cur_season = "spring"
+        elif 28 <= cur_age <= 49: cur_season = "summer"
+        elif 50 <= cur_age <= 69: cur_season = "autumn"
+        else: cur_season = "winter"
+
+        def get_season_card_ui(season_key, icon, title, age_range, desc):
+            is_current = (cur_season == season_key)
+            card_border = "border: 2px solid #EA580C; background: rgba(234, 88, 12, 0.14);" if is_current else "border: 1px solid #334155; background: rgba(21, 30, 47, 0.7);"
+            badge_html = "<div style='min-height:22px; margin-bottom:4px;'><span style='background:#EA580C; color:#FFFFFF; font-size:11.5px; font-weight:800; padding:2px 7px; border-radius:4px;'>지금 나의 계절</span></div>" if is_current else "<div style='min-height:22px; margin-bottom:4px;'></div>"
+            return f'<div class="soft-card" style="text-align:center; min-height:205px; {card_border} padding:14px 10px; margin:0;">{badge_html}<div style="font-size:28px;">{icon}</div><div style="font-size:16.5px; font-weight:800; color:#F8FAFC; margin:4px 0;">{title}</div><div style="font-size:13px; color:#94A3B8;">{age_range}</div><div style="font-size:13px; color:#CBD5E1; margin-top:8px; line-height:1.4;">{desc}</div></div>'
+
+        card_spring = get_season_card_ui("spring", "🌱", "봄 (준비기)", "0세 ~ 27세", "부모님의 부양으로 배우고 성장하는 계절")
+        card_summer = get_season_card_ui("summer", "☀️", "여름 (성장기)", "28세 ~ 49세", "성실하게 일하고 가정을 일구며 경제적 기반을 만드는 계절")
+        card_autumn = get_season_card_ui("autumn", "🍂", "가을 (결실기)", "50세 ~ 69세", "자녀의 독립과 노후를 준비하고, 노동의 결실을 삶의 여유로 바꾸는 계절")
+        card_winter = get_season_card_ui("winter", "❄️", "겨울 (음미기)", "70세 이후", "생계를 위한 노동의 비중을 줄이고, 살아온 삶의 열매를 누리는 계절")
+
+        s_col1, s_col2, s_col3, s_col4 = st.columns(4)
+        with s_col1: st.markdown(card_spring, unsafe_allow_html=True)
+        with s_col2: st.markdown(card_summer, unsafe_allow_html=True)
+        with s_col3: st.markdown(card_autumn, unsafe_allow_html=True)
+        with s_col4: st.markdown(card_winter, unsafe_allow_html=True)
+
+        st.markdown(f"""
+<div style="background: rgba(30, 41, 59, 0.6); border: 1px solid #334155; border-radius: 12px; padding: 18px 20px; margin: 16px 0 24px 0;">
+<div style="font-size: 15px; color: #F8FAFC; line-height: 1.6; word-break: keep-all;">
+💡 <b>산책로의 질문</b><br>은퇴 후 기대수명까지 약 <b>{winter_years}년</b>이 남아 있습니다. (국가데이터처 {user_gender.split()[1]} 기대수명 {life_expectancy}세 기준)<br>
+<span style="color: #94A3B8;">이 긴 시간 동안 매달 무거운 물통을 지고 눈길을 걸을 것인가, 방 안에서 따뜻하게 흘러나오는 파이프라인을 맞이할 것인가는 <b>운명이 아니라 선택입니다.</span>
+</div></div>
+""", unsafe_allow_html=True)
+
+        _, next_col = st.columns([5, 1])
+        with next_col:
+            if st.button("다음 →", key="seasons_next", use_container_width=True, type="primary"):
+                st.session_state["_pending_nav"] = "AI 시선"
+                st.rerun()
+
+
+#########################################################
+# 6.05 | Tab 5 — AI 시선
+#########################################################
+elif selected_page == "우리집 재정곡선":
+    if st.session_state.pop("_scroll_to_top_once", False):
+        st.components.v1.html("<script>try { window.parent.scrollTo({top: 0, behavior: 'instant'}); } catch(e) {}</script>", height=0)
+
+    is_adv = st.session_state.get("advanced_mode", False)
+    cur_age = int(st.session_state.get("person_age", 35) or 35)
+    user_gender = st.session_state.get("gender", "🙋‍♂️ 남성")
+    is_female = ("여성" in user_gender)
+    life_expectancy = 87 if is_female else 81
+    retire_val = st.session_state.get("retirement_age")
+    retire_age = int(retire_val) if retire_val is not None else 60
+    retire_age = max(cur_age, min(retire_age, 90))
+    years_left = max(0, retire_age - cur_age)
+    winter_years = max(0, life_expectancy - retire_age)
+    winter_months = winter_years * 12
+
+    if not is_adv:
+        st.caption("우리집 재정곡선과 가족의 미래를 살펴보려면 고급 모드로 전환해 주세요.")
+    else:
+        st.markdown("## 우리집 재정곡선")
+        st.caption("우리 가족의 현재 조건과 생애 이벤트를 바탕으로 미래의 소득과 지출을 살펴봅니다.")
+
+#--------------------------------------------------------
+# 6.04.01 | 고급 모드 — 1. 가족 구성원 나이 및 주택가격 기준 통계
 #--------------------------------------------------------
         HOUSING_PRICE_SOURCE = {
             "기관": "한국부동산원",
@@ -3579,7 +3681,7 @@ elif selected_page == "인생의 사계절":
                     st.caption("주택가격 자료: 한국부동산원 R-ONE · 전국주택가격동향조사 · 2025년 12월 아파트 중위가격")
 
     #--------------------------------------------------------
-# 6.03.04 | 고급 모드 — 은퇴 시점 가족 미래 나이 카드
+# 6.04.02 | 고급 모드 — 은퇴 시점 가족 미래 나이 카드
 #--------------------------------------------------------
         people = [("나", cur_age)]
         if getv("spouse_age", 0) > 0: people.append(("배우자", int(getv("spouse_age"))))
@@ -3628,10 +3730,10 @@ elif selected_page == "인생의 사계절":
 """, unsafe_allow_html=True)
 
 #--------------------------------------------------------
-# 6.03.05 | 고급 모드 — 2. 우리 가정 생애주기 재정곡선
+# 6.04.03 | 고급 모드 — 2. 우리 가정 생애주기 재정곡선
 #--------------------------------------------------------
         
-#############    6.03.05.01 | 헤더 타이틀 및 기준 지역 안내 카드
+#############    6.04.03.01 | 헤더 타이틀 및 기준 지역 안내 카드
         from plotly.subplots import make_subplots
 
         st.markdown("<div style='height: 24px;'></div>", unsafe_allow_html=True)
@@ -3645,7 +3747,7 @@ elif selected_page == "인생의 사계절":
             ):
                 _open_source_reference(
                     "6051200-00",
-                    "인생의 사계절",
+                    "우리집 재정곡선",
                     "statistical-household-income-origin",
                 )
         st.markdown(
@@ -3679,7 +3781,7 @@ elif selected_page == "인생의 사계절":
             else region_apt_price * (1.0 - selected_ltv / 100.0)
         )
 
-#############    6.03.05.02 | 기본 재무·연금 파라미터 수집 및 정제
+#############    6.04.03.02 | 기본 재무·연금 파라미터 수집 및 정제
         cur_age = int(st.session_state.get("person_age", 35) or 35)
         user_gender = st.session_state.get("gender", "🙋‍♂️ 남성")
         is_female = ("여성" in user_gender)
@@ -3740,7 +3842,7 @@ elif selected_page == "인생의 사계절":
         c_plan = st.session_state.get("child_plan", "미정")
         h_plan = st.session_state.get("housing_plan", "미정")
 
-#############    6.03.05.03 | 가족 타임라인 결정 엔진
+#############    6.04.03.03 | 가족 타임라인 결정 엔진
         marriage_start = None
         if m_plan == "계획 없음":
             marriage_start = None
@@ -3770,7 +3872,7 @@ elif selected_page == "인생의 사계절":
                 sim_marry_age = 32 if is_female else 34
                 marriage_start = max(cur_age + 2, sim_marry_age)
 
-#############    6.03.05.04 | 배우자 프로필 및 직업군 기준곡선 매핑
+#############    6.04.03.04 | 배우자 프로필 및 직업군 기준곡선 매핑
         has_future_or_current_spouse = (m_plan == "결혼함") or (marriage_start is not None)
         if spouse_job_raw and spouse_job_raw != "해당 없음":
             spouse_job = spouse_job_raw
@@ -3781,7 +3883,7 @@ elif selected_page == "인생의 사계절":
         spouse_age_diff = (spouse_age_input - cur_age) if spouse_age_input > 0 else 0
         retire_age = int(st.session_state.get("retirement_age", 60) or 60)
 
-#############    6.03.05.05 | 5대 생애 이벤트 총비용 및 기간 산출
+#############    6.04.03.05 | 5대 생애 이벤트 총비용 및 기간 산출
         raw_c_count = st.session_state.get("child_count", "입력 안 함")
         existing_child_ages = []
         if raw_c_count == "1명":
@@ -3951,7 +4053,7 @@ elif selected_page == "인생의 사계절":
                 for a in range(max(20, event["start"]), min(life_expectancy, event["end"])):
                     event_expense_by_age[a] += annual_addition
 
-#############    6.03.05.06 | 기준곡선 보간(Interpolation) 및 감쇄 엔진
+#############    6.04.03.06 | 기준곡선 보간(Interpolation) 및 감쇄 엔진
         ages_base = [20, 25, 30, 35, 40, 45, 50, 55, 60, 65, 70, 75]
         employee_base = [180, 270, 350, 420, 460, 469, 445, 360, 280, 210, 160, 120]
         self_employed_base = [130, 210, 290, 350, 390, 410, 420, 400, 350, 290, 230, 170]
@@ -4012,7 +4114,7 @@ elif selected_page == "인생의 사계절":
         else:
             spouse_scale = self_scale if (spouse_base is not None) else 0.0
 
-#############    6.03.05.06.01 | MDIS 가구 지출 통계 매핑 및 현재 지출 보정
+#############    6.04.03.06.01 | MDIS 가구 지출 통계 매핑 및 현재 지출 보정
         def household_age_band(age):
             if age >= 80:
                 return "80세 이상"
@@ -4286,7 +4388,7 @@ elif selected_page == "인생의 사계절":
         else:
             expense_scale_ratio = 1.0
 
-        #############    6.03.05.07 | 연령별 소득·지출 흐름 시뮬레이션 루프
+        #############    6.04.03.07 | 연령별 소득·지출 흐름 시뮬레이션 루프
         ages_sim = list(range(20, life_expectancy))
         my_income_curve = []
         household_income_curve = []
@@ -4481,7 +4583,7 @@ elif selected_page == "인생의 사계절":
         # 별도 가구처분가능소득 자료는 사용하지 않는다.
         # 기존 직업군별 연령 기준곡선을 은퇴 이후까지 연장한 비교 시나리오를 사용한다.
 
-#############    6.03.05.08 | 가구 순수지 분리 및 Y축 자동 스케일링
+#############    6.04.03.08 | 가구 순수지 분리 및 Y축 자동 스케일링
         # 대출 원금상환액은 가구지출에 이미 포함했으므로 여기서 중복 차감하지 않는다.
         net_flow = [
             i - e
@@ -4533,7 +4635,7 @@ elif selected_page == "인생의 사계절":
             row_heights=[0.55, 0.45]
         )
 
-#############    6.03.05.09 | 이벤트 버블 마커 Trace 생성
+#############    6.04.03.09 | 이벤트 버블 마커 Trace 생성
         max_event_total = max((event.get("display_total", event["total"]) for event in event_costs), default=1.0)
 
         for event in event_costs:
@@ -4710,7 +4812,7 @@ elif selected_page == "인생의 사계절":
             bgcolor="rgba(15, 23, 42, 0.8)", bordercolor="rgba(239, 68, 68, 0.5)", borderpad=2
         )
 
-#############    6.03.05.10 | 2단 서브플롯 조립 및 Plotly 렌더링
+#############    6.04.03.10 | 2단 서브플롯 조립 및 Plotly 렌더링
         fig_my_nta.update_layout(
             height=630,
             # 가로보기에서 범례가 플롯 영역과 겹치지 않도록 상단 여백 확보
@@ -4781,7 +4883,7 @@ elif selected_page == "인생의 사계절":
                 ):
                     _open_source_reference(
                         _event_id,
-                        "인생의 사계절",
+                        "우리집 재정곡선",
                         "household-major-events",
                     )
 
@@ -4803,7 +4905,7 @@ elif selected_page == "인생의 사계절":
                 ):
                     _open_source_reference(
                         _event_id,
-                        "인생의 사계절",
+                        "우리집 재정곡선",
                         "household-major-events",
                     )
 
@@ -4855,7 +4957,7 @@ div[class*="st-key-open_nta_generational_report"] [data-testid="stButton"] butto
             ):
                 _open_source_reference(
                     _report_id,
-                    "인생의 사계절",
+                    "우리집 재정곡선",
                     "chart-stat-report-links",
                 )
 
@@ -4873,7 +4975,7 @@ div[class*="st-key-open_nta_generational_report"] [data-testid="stButton"] butto
             ):
                 _open_source_reference(
                     _case_stat_id,
-                    "인생의 사계절",
+                    "우리집 재정곡선",
                     "case-stat-detail-links",
                 )
 
@@ -4948,7 +5050,7 @@ div[class*="st-key-open_nta_generational_report"] [data-testid="stButton"] butto
                     ):
                         _open_source_reference(
                             "6051500-00",
-                            "인생의 사계절",
+                            "우리집 재정곡선",
                             "chart-stat-report-links",
                         )
             _housing_report_links = [
@@ -4963,96 +5065,14 @@ div[class*="st-key-open_nta_generational_report"] [data-testid="stButton"] butto
                 ):
                     _open_source_reference(
                         _housing_report_id,
-                        "인생의 사계절",
+                        "우리집 재정곡선",
                         "case-stat-detail-links",
                     )
 
 
 
 
-    #--------------------------------------------------------
-# 6.03.06 | 고급 모드 — 3. 세대 계승 생애주기 재정곡선
-#--------------------------------------------------------
-        st.markdown("### 세대 계승 생애주기 재정곡선")
 
-        fig_official_nta = build_official_nta_chart()
-        st.plotly_chart(fig_official_nta, use_container_width=True, config={"displayModeBar": False, "scrollZoom": False, "doubleClick": False, "showAxisDragHandles": False})
-
-        st.caption(
-            "※ 국가데이터처 「2024년 국민이전계정」(2026. 9. 17. 발표)"
-        )
-
-        if st.button(
-            "🧭 16. 세대 계승 생애주기 재정곡선 리포트 보기",
-            key="open_nta_generational_report",
-            use_container_width=True,
-        ):
-            _open_source_reference(
-                "6051700-00",
-                "인생의 사계절",
-                "source-anchor-nta-generational",
-            )
-
-        # [출처 ID: 6051700-00]
-        st.markdown(
-            '<div id="source-anchor-nta-generational"></div>',
-            unsafe_allow_html=True
-        )
-        col_m1, col_m2, col_m3 = st.columns(3)
-        col_m1.metric("생애 흑자 진입", "28세")
-        col_m2.metric("최대 흑자 정점", "45세", "연 1,932만 원")
-        col_m3.metric("생애 적자 재진입", "61세")
-
-        
-        st.markdown("<div style='height: 20px;'></div>", unsafe_allow_html=True)
-
-#--------------------------------------------------------
-# 6.03.07 | 고급 모드 — 4. 인생의 사계절 카드
-#--------------------------------------------------------
-        st.markdown("### 4. 인생의 사계절")
-        if cur_age <= 27: cur_season = "spring"
-        elif 28 <= cur_age <= 49: cur_season = "summer"
-        elif 50 <= cur_age <= 69: cur_season = "autumn"
-        else: cur_season = "winter"
-
-        def get_season_card_ui(season_key, icon, title, age_range, desc):
-            is_current = (cur_season == season_key)
-            card_border = "border: 2px solid #EA580C; background: rgba(234, 88, 12, 0.14);" if is_current else "border: 1px solid #334155; background: rgba(21, 30, 47, 0.7);"
-            badge_html = "<div style='min-height:22px; margin-bottom:4px;'><span style='background:#EA580C; color:#FFFFFF; font-size:11.5px; font-weight:800; padding:2px 7px; border-radius:4px;'>지금 나의 계절</span></div>" if is_current else "<div style='min-height:22px; margin-bottom:4px;'></div>"
-            return f'<div class="soft-card" style="text-align:center; min-height:205px; {card_border} padding:14px 10px; margin:0;">{badge_html}<div style="font-size:28px;">{icon}</div><div style="font-size:16.5px; font-weight:800; color:#F8FAFC; margin:4px 0;">{title}</div><div style="font-size:13px; color:#94A3B8;">{age_range}</div><div style="font-size:13px; color:#CBD5E1; margin-top:8px; line-height:1.4;">{desc}</div></div>'
-
-        card_spring = get_season_card_ui("spring", "🌱", "봄 (준비기)", "0세 ~ 27세", "부모님의 부양으로 배우고 성장하는 계절")
-        card_summer = get_season_card_ui("summer", "☀️", "여름 (성장기)", "28세 ~ 49세", "성실하게 일하고 가정을 일구며 경제적 기반을 만드는 계절")
-        card_autumn = get_season_card_ui("autumn", "🍂", "가을 (결실기)", "50세 ~ 69세", "자녀의 독립과 노후를 준비하고, 노동의 결실을 삶의 여유로 바꾸는 계절")
-        card_winter = get_season_card_ui("winter", "❄️", "겨울 (음미기)", "70세 이후", "생계를 위한 노동의 비중을 줄이고, 살아온 삶의 열매를 누리는 계절")
-
-        s_col1, s_col2, s_col3, s_col4 = st.columns(4)
-        with s_col1: st.markdown(card_spring, unsafe_allow_html=True)
-        with s_col2: st.markdown(card_summer, unsafe_allow_html=True)
-        with s_col3: st.markdown(card_autumn, unsafe_allow_html=True)
-        with s_col4: st.markdown(card_winter, unsafe_allow_html=True)
-
-        st.markdown(f"""
-<div style="background: rgba(30, 41, 59, 0.6); border: 1px solid #334155; border-radius: 12px; padding: 18px 20px; margin: 16px 0 24px 0;">
-<div style="font-size: 15px; color: #F8FAFC; line-height: 1.6; word-break: keep-all;">
-💡 <b>산책로의 질문</b><br>은퇴 후 기대수명까지 약 <b>{winter_years}년</b>이 남아 있습니다. (국가데이터처 {user_gender.split()[1]} 기대수명 {life_expectancy}세 기준)<br>
-<span style="color: #94A3B8;">이 긴 시간 동안 매달 무거운 물통을 지고 눈길을 걸을 것인가, 방 안에서 따뜻하게 흘러나오는 파이프라인을 맞이할 것인가는 <b>운명이 아니라 선택입니다.</span>
-</div></div>
-""", unsafe_allow_html=True)
-
-        _, next_col = st.columns([5, 1])
-        with next_col:
-            if st.button("다음 →", key="seasons_next", use_container_width=True, type="primary"):
-                st.session_state["_pending_nav"] = "AI 시선"
-                st.rerun()
-
-
-#########################################################
-# 6.04 | Tab 4 — AI 시선
-#########################################################
-elif selected_page == "우리집 재정곡선":
-    # 새 탭은 전체 분류와 콘텐츠 구성이 확정될 때까지 빈 화면으로 둔다.
-    pass
 
 elif selected_page == "AI 시선":
     is_adv = st.session_state.get("advanced_mode", False)
@@ -5374,7 +5394,7 @@ elif selected_page == "AI 시선":
 
 
 #########################################################
-# 6.05 | Tab 5 — 통계 자료실
+# 6.06 | Tab 6 — 통계 자료실
 #########################################################
 elif selected_page == "통계":
     #--------------------------------------------------------
