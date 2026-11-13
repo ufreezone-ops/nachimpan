@@ -4824,7 +4824,7 @@ div[class*="st-key-case_housing_stat_"] [data-testid="stButton"] button > div {
 #--------------------------------------------------------
         st.markdown("### 세대 계승 생애주기 재정곡선")
 
-        # [출처 ID 재사용: 6030200-01]
+        # [출처 ID: 6051700-00]
         st.markdown(
             '<div id="source-anchor-nta-generational"></div>',
             unsafe_allow_html=True
@@ -5288,7 +5288,6 @@ elif selected_page == "통계":
 
     _source_labels = {
         "6030200-01": "국가데이터처 「2024년 국민이전계정」",
-        "6051700-00": "16. 세대 계승 생애주기 재정곡선",
         "6050200-00": "1. 소득과 소비의 생애주기",
         "6050300-00": "2. 결혼과 주거",
         "6050400-01": "3. 노후와 은퇴",
@@ -5304,6 +5303,7 @@ elif selected_page == "통계":
         "6051400-00": "13. 지출 통계 출처 및 산출방법",
         "6051500-00": "14. 부동산 적용 기준과 지역별 산정방법",
         "6051600-00": "15. 소득 기준곡선의 출처와 산정 방식",
+        "6051700-00": "16. 세대 계승 생애주기 재정곡선",
     }
     if _active_source_id in _source_labels:
         with st.container(key="source-return-bar"):
