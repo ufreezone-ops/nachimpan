@@ -251,6 +251,10 @@ footer {
 .st-key-retirement-title-row h3 a[aria-label="Link to heading"] {
     display: none !important;
 }
+/* 제목 옆 나침반 팝오버의 기본 아래 화살표만 숨김 */
+.st-key-source_retirement_expense [data-testid="stPopoverButton"] [data-testid="stIconMaterial"] {
+    display: none !important;
+}
 /* 제목과 나침반을 같은 기준선에 배치 */
 .st-key-retirement-title-row [data-testid="stHorizontalBlock"] {
     align-items: baseline !important;
@@ -4917,7 +4921,7 @@ elif selected_page == "우리집 재정곡선":
             grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
             width: 100% !important;
             align-items: center !important;
-            justify-items: center !important;
+            justify-items: start !important;
             column-gap: 0.5rem !important;
             row-gap: 0.55rem !important;
             margin: 0.1rem 0 0.35rem 0 !important;
@@ -4926,7 +4930,7 @@ elif selected_page == "우리집 재정곡선":
             width: 100% !important;
             min-width: 0 !important;
             display: flex !important;
-            justify-content: center !important;
+            justify-content: flex-start !important;
             align-items: center !important;
         }
         div.st-key-household-income-legend-guide-row [data-testid="stPopover"],
@@ -4934,7 +4938,7 @@ elif selected_page == "우리집 재정곡선":
         div.st-key-household-income-legend-guide-row [data-testid="stPopoverButton"] {
             width: 100% !important;
             display: flex !important;
-            justify-content: center !important;
+            justify-content: flex-start !important;
             align-items: center !important;
         }
         div.st-key-household-income-legend-guide-row [data-testid="stPopoverButton"],
@@ -4991,11 +4995,17 @@ elif selected_page == "우리집 재정곡선":
             height: 0;
             flex: 0 0 30px;
         }
-        @media (max-width: 640px) {
+        /* 터치 기기(아이폰 등)는 2열, 마우스/트랙패드 PC는 4열 */
+        @media (pointer: coarse) {
             div.st-key-household-income-legend-guide-row[data-testid="stHorizontalBlock"] {
                 grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
                 column-gap: 0.25rem !important;
                 row-gap: 0.65rem !important;
+            }
+        }
+        @media (pointer: fine) {
+            div.st-key-household-income-legend-guide-row[data-testid="stHorizontalBlock"] {
+                grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
             }
         }
         </style>
