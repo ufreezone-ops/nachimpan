@@ -3739,18 +3739,13 @@ elif selected_page == "우리집 재정곡선":
         st.markdown("<div style='height: 24px;'></div>", unsafe_allow_html=True)
         with st.container(horizontal=True, vertical_alignment="bottom", gap=None, key="retirement-title-row"):
             st.markdown("### 우리 가정 생애주기 재정곡선")
-            if st.button(
+            with st.popover(
                 "🧭",
                 key="source_retirement_expense",
                 help="이 재정곡선을 이해하는 안내와 통계 자료",
                 type="tertiary",
+                width="content",
             ):
-                st.session_state["_chart_title_guide_open"] = not st.session_state.get(
-                    "_chart_title_guide_open", False
-                )
-
-        if st.session_state.get("_chart_title_guide_open", False):
-            with st.container(key="chart-title-guide-menu"):
                 st.caption("재정곡선 이해하기")
                 _chart_guide_reports = [
                     ("11. 소득곡선의 통계적 보정", "6051200-00"),
