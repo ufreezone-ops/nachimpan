@@ -4890,7 +4890,7 @@ div[class*="st-key-open_nta_generational_report"] [data-testid="stButton"] butto
         )
 
         if st.button(
-            "16. 세대 계승 생애주기 재정곡선 리포트 보기",
+            "🧭 16. 세대 계승 생애주기 재정곡선 리포트 보기",
             key="open_nta_generational_report",
             use_container_width=True,
         ):
