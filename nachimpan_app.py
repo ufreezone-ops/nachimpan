@@ -1676,6 +1676,22 @@ div.st-key-main_nav_button_5 button:hover p {
 #--------------------------------------------------------
 st.markdown("""
 <style>
+/* 재정곡선 제목과 나침반: 각 요소의 실제 콘텐츠를 수직 중앙에 정렬 */
+div.st-key-retirement-title-row {
+    align-items: center !important;
+}
+div.st-key-retirement-title-row > div {
+    align-self: center !important;
+}
+div.st-key-retirement-title-row [data-testid="stMarkdownContainer"] {
+    display: flex !important;
+    align-items: center !important;
+}
+div.st-key-retirement-title-row [data-testid="stMarkdownContainer"] h3 {
+    margin: 0 !important;
+    line-height: 1.2 !important;
+}
+
 /* 재정곡선 제목 나침반: 아이콘만 남기고 팝오버 트리거 외형 제거 */
 div.st-key-source_retirement_expense {
     width: auto !important;
