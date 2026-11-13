@@ -4884,8 +4884,13 @@ div[class*="st-key-open_nta_generational_report"] [data-testid="stButton"] butto
         fig_official_nta = build_official_nta_chart()
         st.plotly_chart(fig_official_nta, use_container_width=True, config={"displayModeBar": False, "scrollZoom": False, "doubleClick": False, "showAxisDragHandles": False})
 
+        st.caption(
+            "※ 국가데이터처 「2024년 국민이전계정」"
+            "(2026. 9. 17. 발표) 기준 · 전 국민 1인당 평균 지표"
+        )
+
         if st.button(
-            "🧭 16. 세대 계승 생애주기 재정곡선 리포트 보기",
+            "16. 세대 계승 생애주기 재정곡선 리포트 보기",
             key="open_nta_generational_report",
             use_container_width=True,
         ):
@@ -4900,22 +4905,6 @@ div[class*="st-key-open_nta_generational_report"] [data-testid="stButton"] butto
             '<div id="source-anchor-nta-generational"></div>',
             unsafe_allow_html=True
         )
-
-        with st.container(horizontal=True, vertical_alignment="center", gap=None):
-            st.caption(
-                "※ 국가데이터처 「2024년 국민이전계정」"
-                "(2026. 9. 17. 발표) 기준 · 전 국민 1인당 평균 지표"
-            )
-            if st.button(
-                "🧭",
-                key="source_nta_generational",
-                type="tertiary",
-            ):
-                _open_source_reference(
-                    "6051700-00",
-                    "인생의 사계절",
-                    "source-anchor-nta-generational",
-                )
         col_m1, col_m2, col_m3 = st.columns(3)
         col_m1.metric("생애 흑자 진입", "28세")
         col_m2.metric("최대 흑자 정점", "45세", "연 1,932만 원")
