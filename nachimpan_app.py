@@ -4672,7 +4672,6 @@ elif selected_page == "인생의 사계절":
             ("1. 소득과 소비의 생애주기", "6050200-00"),
             ("2. 결혼과 주거", "6050300-00"),
             ("3. 노후와 은퇴", "6050400-01"),
-            ("4. 주택대출과 원리금 분리", "6050500-01"),
             ("5. 동시성과 통시성", "6050600-00"),
             ("6. 소득 통계", "6050700-00"),
             ("7. 결혼비용 통계", "6050800-00"),
@@ -4683,9 +4682,30 @@ elif selected_page == "인생의 사계절":
         ]
         st.markdown("""
 <style>
+/* 자료실 링크는 PC에서 2열, 모바일에서 1열로 표시해 번호 순서를 유지한다. */
+div[class*="st-key-graph_stat_reports_grid"] [data-testid="stHorizontalBlock"],
+div[class*="st-key-case_stat_details_grid"] [data-testid="stHorizontalBlock"],
+div[class*="st-key-case_housing_stats_grid"] [data-testid="stHorizontalBlock"] {
+    display: grid !important;
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 0 1rem !important;
+}
+div[class*="st-key-graph_stat_reports_grid"] [data-testid="column"],
+div[class*="st-key-case_stat_details_grid"] [data-testid="column"],
+div[class*="st-key-case_housing_stats_grid"] [data-testid="column"] {
+    display: contents !important;
+}
+@media (max-width: 640px) {
+    div[class*="st-key-graph_stat_reports_grid"] [data-testid="stHorizontalBlock"],
+    div[class*="st-key-case_stat_details_grid"] [data-testid="stHorizontalBlock"],
+    div[class*="st-key-case_housing_stats_grid"] [data-testid="stHorizontalBlock"] {
+        grid-template-columns: minmax(0, 1fr) !important;
+    }
+}
 div[class*="st-key-graph_stat_report_"] [data-testid="stButton"] button,
 div[class*="st-key-case_stat_detail_"] [data-testid="stButton"] button,
 div[class*="st-key-case_housing_stat_"] [data-testid="stButton"] button {
+    width: 100% !important;
     justify-content: flex-start !important;
     text-align: left !important;
 }
@@ -4698,39 +4718,41 @@ div[class*="st-key-case_housing_stat_"] [data-testid="stButton"] button > div {
 }
 </style>
 """, unsafe_allow_html=True)
-        _report_cols = st.columns(2)
-        for _idx, (_report_title, _report_id) in enumerate(_graph_stat_reports):
-            with _report_cols[_idx % 2]:
-                if st.button(
-                    f"🧭 {_report_title}",
-                    key=f"graph_stat_report_{_report_id}",
-                    use_container_width=True,
-                ):
-                    _open_source_reference(
-                        _report_id,
-                        "인생의 사계절",
-                        "chart-stat-report-links",
-                    )
+        with st.container(key="graph_stat_reports_grid"):
+            _report_cols = st.columns(2)
+            for _idx, (_report_title, _report_id) in enumerate(_graph_stat_reports):
+                with _report_cols[_idx % 2]:
+                    if st.button(
+                        f"🧭 {_report_title}",
+                        key=f"graph_stat_report_{_report_id}",
+                        use_container_width=True,
+                    ):
+                        _open_source_reference(
+                            _report_id,
+                            "인생의 사계절",
+                            "chart-stat-report-links",
+                        )
 
-        # 위쪽 1~11번과 중복되지 않는 추가 보고서만 번호순으로 배치한다.
+        # 위쪽 보고서와 중복되지 않는 추가 보고서도 번호순으로 표시한다.
         _case_stat_links = [
             ("12. 과거 소득·지출을 현재 기준과 비교하는 방법", "6051300-00"),
             ("13. 지출 통계 출처 및 산출방법", "6051400-00"),
             ("15. 소득 기준곡선의 출처와 산정 방식", "6051600-00"),
         ]
-        _case_stat_cols = st.columns(2)
-        for _idx, (_case_stat_title, _case_stat_id) in enumerate(_case_stat_links):
-            with _case_stat_cols[_idx % 2]:
-                if st.button(
-                    f"🧭 {_case_stat_title}",
-                    key=f"case_stat_detail_{_case_stat_id}",
-                    use_container_width=True,
-                ):
-                    _open_source_reference(
-                        _case_stat_id,
-                        "인생의 사계절",
-                        "case-stat-detail-links",
-                    )
+        with st.container(key="case_stat_details_grid"):
+            _case_stat_cols = st.columns(2)
+            for _idx, (_case_stat_title, _case_stat_id) in enumerate(_case_stat_links):
+                with _case_stat_cols[_idx % 2]:
+                    if st.button(
+                        f"🧭 {_case_stat_title}",
+                        key=f"case_stat_detail_{_case_stat_id}",
+                        use_container_width=True,
+                    ):
+                        _open_source_reference(
+                            _case_stat_id,
+                            "인생의 사계절",
+                            "case-stat-detail-links",
+                        )
 
         # 사례별 부동산 적용값은 테두리 영역에 남기고, 일반 산정 근거는 통계탭에 둔다.
         _case_is_representative = st.session_state.get("_representative_case_id") in {
@@ -4761,19 +4783,20 @@ div[class*="st-key-case_housing_stat_"] [data-testid="stButton"] button > div {
                 ("4. 주택대출과 원리금 분리", "6050500-01"),
                 ("14. 부동산 적용 기준과 지역별 산정방법", "6051500-00"),
             ]
-            _housing_report_cols = st.columns(2)
-            for _idx, (_housing_report_title, _housing_report_id) in enumerate(_housing_report_links):
-                with _housing_report_cols[_idx % 2]:
-                    if st.button(
-                        f"🧭 {_housing_report_title}",
-                        key=f"case_housing_stat_{_housing_report_id}",
-                        use_container_width=True,
-                    ):
-                        _open_source_reference(
-                            _housing_report_id,
-                            "인생의 사계절",
-                            "case-stat-detail-links",
-                        )
+            with st.container(key="case_housing_stats_grid"):
+                _housing_report_cols = st.columns(2)
+                for _idx, (_housing_report_title, _housing_report_id) in enumerate(_housing_report_links):
+                    with _housing_report_cols[_idx % 2]:
+                        if st.button(
+                            f"🧭 {_housing_report_title}",
+                            key=f"case_housing_stat_{_housing_report_id}",
+                            use_container_width=True,
+                        ):
+                            _open_source_reference(
+                                _housing_report_id,
+                                "인생의 사계절",
+                                "case-stat-detail-links",
+                            )
 
     #--------------------------------------------------------
 # 6.03.06 | 고급 모드 — 3. 세대 계승 생애주기 재정곡선
