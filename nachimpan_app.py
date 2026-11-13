@@ -3735,7 +3735,7 @@ elif selected_page == "우리집 재정곡선":
         from plotly.subplots import make_subplots
 
         st.markdown("<div style='height: 24px;'></div>", unsafe_allow_html=True)
-        with st.container(horizontal=True, vertical_alignment="bottom", gap=None, key="retirement-title-row"):
+        with st.container(horizontal=True, vertical_alignment="center", gap=None, key="retirement-title-row"):
             st.markdown("### 우리 가정 생애주기 재정곡선")
             with st.popover(
                 "🧭",
