@@ -3094,7 +3094,7 @@ elif selected_page == "인생의 사계절":
                 if segment is None:
                     continue
                 (sx0, sy0), (sx1, sy1) = segment
-                if x_out and abs(x_out[-1] - sx0) < 1e-9 and y_out[-1] == sy0:
+                if x_out and x_out[-1] is not None and abs(x_out[-1] - sx0) < 1e-9 and y_out[-1] == sy0:
                     x_out.append(sx1)
                     y_out.append(sy1)
                 else:
