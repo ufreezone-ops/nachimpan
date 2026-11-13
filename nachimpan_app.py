@@ -4735,7 +4735,8 @@ div[class*="st-key-graph_stat_report_"] [data-testid="stButton"] button,
 div[class*="st-key-case_stat_detail_"] [data-testid="stButton"] button,
 div[class*="st-key-case_housing_stat_"] [data-testid="stButton"] button,
 div[class*="st-key-household_income_event_"] [data-testid="stButton"] button,
-div[class*="st-key-household_expense_event_"] [data-testid="stButton"] button {
+div[class*="st-key-household_expense_event_"] [data-testid="stButton"] button,
+div[class*="st-key-open_nta_generational_report"] [data-testid="stButton"] button {
     width: 100% !important;
     justify-content: flex-start !important;
     text-align: left !important;
@@ -4744,7 +4745,8 @@ div[class*="st-key-graph_stat_report_"] [data-testid="stButton"] button > div,
 div[class*="st-key-case_stat_detail_"] [data-testid="stButton"] button > div,
 div[class*="st-key-case_housing_stat_"] [data-testid="stButton"] button > div,
 div[class*="st-key-household_income_event_"] [data-testid="stButton"] button > div,
-div[class*="st-key-household_expense_event_"] [data-testid="stButton"] button > div {
+div[class*="st-key-household_expense_event_"] [data-testid="stButton"] button > div,
+div[class*="st-key-open_nta_generational_report"] [data-testid="stButton"] button > div {
     width: 100% !important;
     justify-content: flex-start !important;
     text-align: left !important;
@@ -4883,7 +4885,7 @@ div[class*="st-key-household_expense_event_"] [data-testid="stButton"] button > 
         st.plotly_chart(fig_official_nta, use_container_width=True, config={"displayModeBar": False, "scrollZoom": False, "doubleClick": False, "showAxisDragHandles": False})
 
         if st.button(
-            "📄 16. 세대 계승 생애주기 재정곡선 리포트 보기",
+            "🧭 16. 세대 계승 생애주기 재정곡선 리포트 보기",
             key="open_nta_generational_report",
             use_container_width=True,
         ):
