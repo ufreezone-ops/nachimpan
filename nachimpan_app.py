@@ -4782,13 +4782,20 @@ div[class*="st-key-case_housing_stat_"] [data-testid="stButton"] button > div {
                     f"- {_case_apt_median_eok:.2f}억 원 (아파트)"
                 )
                 with st.container(horizontal=True, vertical_alignment="center", gap=None):
+                    if st.button(
+                        "통계표",
+                        key="open_housing_price_stats_table",
+                        help="17개 시·도 주택종합·아파트 중위가격 표 보기",
+                        type="tertiary",
+                    ):
+                        _show_housing_price_stats_dialog()
                     st.caption(
                         "※ 한국부동산원 전국주택가격동향조사 · 2025년 12월 기준. 지역별 시장가격"
                     )
                     if st.button(
                         "🧭",
                         key="source_housing_price_stats",
-                        help="지역별 주택가격 통계 출처 및 전체 자료 보기",
+                        help="지역별 주택가격 통계 출처 보기",
                         type="tertiary",
                     ):
                         _open_source_reference(
@@ -4796,14 +4803,6 @@ div[class*="st-key-case_housing_stat_"] [data-testid="stButton"] button > div {
                             "인생의 사계절",
                             "chart-stat-report-links",
                         )
-                        st.rerun()
-                    if st.button(
-                        "표 보기",
-                        key="open_housing_price_stats_table",
-                        help="17개 시·도 주택종합·아파트 중위가격 표 보기",
-                        type="tertiary",
-                    ):
-                        _show_housing_price_stats_dialog()
             _housing_report_links = [
                 ("4. 주택대출과 원리금 분리", "6050500-01"),
                 ("14. 부동산 적용 기준과 지역별 산정방법", "6051500-00"),
