@@ -1730,6 +1730,26 @@ div.st-key-source_retirement_expense [data-testid="stPopoverButton"] svg {
     display: none !important;
 }
 
+/* 아이폰 세로 화면: 제목과 나침반이 반드시 한 줄에 머물도록 */
+@media (max-width: 600px) and (orientation: portrait) and (pointer: coarse) {
+    .st-key-retirement-title-row [data-testid="stHorizontalBlock"] {
+        flex-wrap: nowrap !important;
+    }
+    .st-key-retirement-title-row [data-testid="stElementContainer"]:has(h3) {
+        flex: 0 1 auto !important;
+        width: auto !important;
+        min-width: 0 !important;
+    }
+    .st-key-retirement-title-row h3 {
+        white-space: nowrap !important;
+        font-size: 1.3rem !important;
+    }
+    .st-key-retirement-title-row .st-key-source_retirement_expense {
+        flex: 0 0 auto !important;
+        min-width: max-content !important;
+    }
+}
+
 /* 대출 설명: 기존 입력 라벨 크기의 청색 텍스트만 남기고 버튼 외형 제거 */
 div.st-key-expense-panel [data-testid="stPopoverButton"],
 div.st-key-expense-panel [data-testid="stPopoverButton"]:hover,
