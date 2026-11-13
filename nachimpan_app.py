@@ -4882,6 +4882,17 @@ div[class*="st-key-household_expense_event_"] [data-testid="stButton"] button > 
         fig_official_nta = build_official_nta_chart()
         st.plotly_chart(fig_official_nta, use_container_width=True, config={"displayModeBar": False, "scrollZoom": False, "doubleClick": False, "showAxisDragHandles": False})
 
+        if st.button(
+            "📄 16. 세대 계승 생애주기 재정곡선 리포트 보기",
+            key="open_nta_generational_report",
+            use_container_width=True,
+        ):
+            _open_source_reference(
+                "6051700-00",
+                "인생의 사계절",
+                "source-anchor-nta-generational",
+            )
+
         # [출처 ID: 6051700-00]
         st.markdown(
             '<div id="source-anchor-nta-generational"></div>',
@@ -4909,16 +4920,6 @@ div[class*="st-key-household_expense_event_"] [data-testid="stButton"] button > 
         col_m3.metric("생애 적자 재진입", "61세")
 
         
-        if st.button(
-            "📄 16. 세대 계승 생애주기 재정곡선 리포트 보기",
-            key="open_nta_generational_report",
-            use_container_width=True,
-        ):
-            _open_source_reference(
-                "6051700-00",
-                "인생의 사계절",
-                "source-anchor-nta-generational",
-            )
         st.markdown("<div style='height: 20px;'></div>", unsafe_allow_html=True)
 
 #--------------------------------------------------------
