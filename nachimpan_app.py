@@ -1442,7 +1442,7 @@ if not st.session_state.started:
 #########################################################
 
 #########################################################
-# 5.01 | 상단 5개 메뉴 네비게이션 바
+# 5.01 | 상단 6개 메뉴 네비게이션 바
 #########################################################
 
 #--------------------------------------------------------
@@ -1454,6 +1454,7 @@ nav_options = [
     "우리집 가계부",
     "삶과 생계수단",
     "인생의 사계절",
+    "우리집 재정곡선",
     "AI 시선",
     "통계"
 ]
@@ -1729,12 +1730,14 @@ div.st-key-expense-panel [data-testid="stPopoverButton"]:hover p {
 with st.container(key="main_navigation_shell"):
     with st.container(key="main_navigation", horizontal=True, wrap=False, gap=None):
         for _i, _page in enumerate(nav_options):
+            _nav_label = "🧭" if _page == "통계" else _page
             st.button(
-                _page,
+                _nav_label,
                 key=f"main_nav_button_{_i}",
                 type="primary" if _page == _active_nav else "secondary",
                 on_click=_set_active_navigation,
                 args=(_page,),
+                help="통계 자료실" if _page == "통계" else None,
             )
 
 selected_page = st.session_state["active_navigation_default"]
@@ -5009,6 +5012,10 @@ div[class*="st-key-open_nta_generational_report"] [data-testid="stButton"] butto
 #########################################################
 # 6.04 | Tab 4 — AI 시선
 #########################################################
+elif selected_page == "우리집 재정곡선":
+    # 새 탭은 전체 분류와 콘텐츠 구성이 확정될 때까지 빈 화면으로 둔다.
+    pass
+
 elif selected_page == "AI 시선":
     is_adv = st.session_state.get("advanced_mode", False)
     summary = current_financial_summary()
