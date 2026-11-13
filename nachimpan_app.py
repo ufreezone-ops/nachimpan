@@ -1676,22 +1676,23 @@ div.st-key-main_nav_button_5 button:hover p {
 #--------------------------------------------------------
 st.markdown("""
 <style>
-/* 은퇴 제목: 기존 제목 크기·굵기를 유지하고 버튼 외형은 완전히 제거 */
+/* 재정곡선 제목 나침반: 아이콘만 남기고 팝오버 트리거 외형 제거 */
 div.st-key-source_retirement_expense {
-    width: 100% !important;
-    flex: 1 1 auto !important;
-    margin: 0 !important;
+    width: auto !important;
+    flex: 0 0 auto !important;
+    margin: 0 0 0 0.35rem !important;
+    align-self: center !important;
 }
-div.st-key-source_retirement_expense [data-testid="stButton"] button,
-div.st-key-source_retirement_expense [data-testid="stButton"] button:hover,
-div.st-key-source_retirement_expense [data-testid="stButton"] button:focus,
-div.st-key-source_retirement_expense [data-testid="stButton"] button:focus-visible,
-div.st-key-source_retirement_expense [data-testid="stButton"] button:active {
+div.st-key-source_retirement_expense [data-testid="stPopoverButton"],
+div.st-key-source_retirement_expense [data-testid="stPopoverButton"]:hover,
+div.st-key-source_retirement_expense [data-testid="stPopoverButton"]:focus,
+div.st-key-source_retirement_expense [data-testid="stPopoverButton"]:focus-visible,
+div.st-key-source_retirement_expense [data-testid="stPopoverButton"]:active {
     width: auto !important;
     min-width: 0 !important;
     min-height: 0 !important;
     height: auto !important;
-    padding: 0 !important;
+    padding: 0.08rem 0.12rem !important;
     margin: 0 !important;
     border: 0 !important;
     outline: 0 !important;
@@ -1702,24 +1703,21 @@ div.st-key-source_retirement_expense [data-testid="stButton"] button:active {
     border-radius: 0 !important;
     color: #38BDF8 !important;
     -webkit-text-fill-color: #38BDF8 !important;
-    font-size: 1.75rem !important;
+    font-size: 2.15rem !important;
     font-weight: 700 !important;
-    line-height: 1.25 !important;
-    justify-content: flex-start !important;
+    line-height: 1 !important;
+    justify-content: center !important;
     text-decoration: none !important;
 }
-div.st-key-source_retirement_expense [data-testid="stButton"] button p {
+div.st-key-source_retirement_expense [data-testid="stPopoverButton"] p {
     margin: 0 !important;
-    font-size: 1.75rem !important;
-    font-weight: 700 !important;
-    line-height: 1.25 !important;
+    font-size: 2.15rem !important;
+    line-height: 1 !important;
     color: #38BDF8 !important;
     -webkit-text-fill-color: #38BDF8 !important;
 }
-div.st-key-source_retirement_expense [data-testid="stButton"] button:hover p {
-    color: #38BDF8 !important;
-    -webkit-text-fill-color: #38BDF8 !important;
-    text-decoration: none !important;
+div.st-key-source_retirement_expense [data-testid="stPopoverButton"] svg:last-child {
+    display: none !important;
 }
 
 /* 대출 설명: 기존 입력 라벨 크기의 청색 텍스트만 남기고 버튼 외형 제거 */
@@ -3744,7 +3742,7 @@ elif selected_page == "우리집 재정곡선":
                 key="source_retirement_expense",
                 help="이 재정곡선을 이해하는 안내와 통계 자료",
                 type="tertiary",
-                width="content",
+                width="medium",
             ):
                 st.caption("재정곡선 이해하기")
                 _chart_guide_reports = [
