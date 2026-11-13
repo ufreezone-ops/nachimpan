@@ -1703,6 +1703,7 @@ div.st-key-source_retirement_expense [data-testid="stPopoverButton"]:active {
     height: auto !important;
     padding: 0.08rem 0.12rem !important;
     margin: 0 !important;
+    transform: translateY(6.6px) !important;
     border: 0 !important;
     outline: 0 !important;
     background: transparent !important;
