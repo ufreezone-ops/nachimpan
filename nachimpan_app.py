@@ -4838,7 +4838,6 @@ div[class*="st-key-case_housing_stat_"] [data-testid="stButton"] button > div {
             if st.button(
                 "🧭",
                 key="source_nta_generational",
-                help="세대 계승 생애주기 재정곡선 통계 리포트 보기",
                 type="tertiary",
             ):
                 _open_source_reference(
