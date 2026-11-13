@@ -4927,14 +4927,24 @@ elif selected_page == "우리집 재정곡선":
             margin: 0.1rem 0 0.35rem 0 !important;
             position: relative !important;
             z-index: 5 !important;
-            transform: translateY(42px) !important;
+            transform: translateY(54px) !important;
         }
         div.st-key-household-income-legend-guide-row[data-testid="stHorizontalBlock"] > div {
             width: 100% !important;
             min-width: 0 !important;
+            margin: 0 !important;
+            padding: 0 !important;
             display: flex !important;
             justify-content: center !important;
             align-items: center !important;
+        }
+        /* 정적 범례의 Streamlit Markdown 기본 여백을 제거해 팝오버와 높이를 통일 */
+        div.st-key-household-income-legend-guide-row .stElementContainer,
+        div.st-key-household-income-legend-guide-row .stMarkdown,
+        div.st-key-household-income-legend-guide-row [data-testid="stMarkdownContainer"],
+        div.st-key-household-income-legend-guide-row .legend-static-item {
+            margin: 0 !important;
+            padding: 0 !important;
         }
         div.st-key-household-income-legend-guide-row [data-testid="stPopover"],
         div.st-key-household-income-legend-guide-row [data-testid="stPopover"] > div {
