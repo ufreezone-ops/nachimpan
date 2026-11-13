@@ -3061,7 +3061,7 @@ elif selected_page == "인생의 사계절":
         official_ages = [0, 5, 10, 14, 17, 20, 24, 28, 32, 36, 40, 44, 48, 52, 56, 60, 61, 65, 70, 75, 80, 85]
         official_income = [0, 0, 0, 0, 0, 3, 10, 18, 28, 27, 28, 38, 35, 39, 36, 26, 21, 14, 7, 2, 0.5, 0]
         official_expense = [4, 5, 18, 20, 22, 15, 19, 18, 22, 20, 19, 23, 20, 24, 26, 23, 23, 25, 16, 11, 7, 5]
-        official_deficit = [e - i for e, i in zip(official_expense, official_income)]
+        official_net_balance = [i - e for e, i in zip(official_expense, official_income)]
 
         # 적자(양수)와 흑자(음수) 면적을 0선에서 분리하고,
         # 부호가 바뀌는 지점은 두 곡선의 선형 교차점으로 보정합니다.
@@ -3105,8 +3105,8 @@ elif selected_page == "인생의 사계절":
                     y_out.extend([sy0, sy1])
             return x_out, y_out
 
-        deficit_x, deficit_y = _signed_area_segments(official_deficit, positive=True)
-        surplus_x, surplus_y = _signed_area_segments(official_deficit, positive=False)
+        surplus_x, surplus_y = _signed_area_segments(official_net_balance, positive=True)
+        deficit_x, deficit_y = _signed_area_segments(official_net_balance, positive=False)
 
         fig_official_nta.add_trace(go.Scatter(
             x=deficit_x, y=deficit_y, mode="lines",
@@ -3140,9 +3140,9 @@ elif selected_page == "인생의 사계절":
         fig_official_nta.add_annotation(x=8, y=50, text="유년층", showarrow=False, font=dict(size=12, color="#E2E8F0"), bgcolor="rgba(30, 41, 59, 0.8)", bordercolor="#475569")
         fig_official_nta.add_annotation(x=41, y=50, text="노동연령층", showarrow=False, font=dict(size=12, color="#E2E8F0"), bgcolor="rgba(30, 41, 59, 0.8)", bordercolor="#475569")
         fig_official_nta.add_annotation(x=75, y=50, text="노년층", showarrow=False, font=dict(size=12, color="#E2E8F0"), bgcolor="rgba(30, 41, 59, 0.8)", bordercolor="#475569")
-        fig_official_nta.add_annotation(x=12, y=9.5, text="적자", showarrow=False, font=dict(size=13, color="#D98A78", weight="bold"))
-        fig_official_nta.add_annotation(x=45, y=-7.8, text="흑자", showarrow=False, font=dict(size=13, color="#62C795", weight="bold"))
-        fig_official_nta.add_annotation(x=73, y=4.5, text="적자", showarrow=False, font=dict(size=13, color="#D98A78", weight="bold"))
+        fig_official_nta.add_annotation(x=12, y=-9.5, text="적자", showarrow=False, font=dict(size=13, color="#D98A78", weight="bold"))
+        fig_official_nta.add_annotation(x=45, y=7.8, text="흑자", showarrow=False, font=dict(size=13, color="#62C795", weight="bold"))
+        fig_official_nta.add_annotation(x=73, y=-4.5, text="적자", showarrow=False, font=dict(size=13, color="#D98A78", weight="bold"))
 
         fig_official_nta.update_layout(
             height=390,
@@ -4938,8 +4938,7 @@ div[class*="st-key-open_nta_generational_report"] [data-testid="stButton"] butto
         st.plotly_chart(fig_official_nta, use_container_width=True, config={"displayModeBar": False, "scrollZoom": False, "doubleClick": False, "showAxisDragHandles": False})
 
         st.caption(
-            "※ 국가데이터처 「2024년 국민이전계정」"
-            "(2026. 9. 17. 발표) 기준 · 전 국민 1인당 평균 지표"
+            "※ 국가데이터처 「2024년 국민이전계정」(2026. 9. 17. 발표)"
         )
 
         if st.button(
