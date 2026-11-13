@@ -4950,18 +4950,18 @@ elif selected_page == "우리집 재정곡선":
         div.st-key-household-income-legend-guide-row [data-testid="stPopover"] > div {
             width: 100% !important;
             display: flex !important;
-            justify-content: center !important;
+            justify-content: flex-end !important;
             align-items: center !important;
         }
         div.st-key-household-income-legend-guide-row [data-testid="stPopoverButton"] {
-            width: auto !important;
+            width: 100% !important;
             display: flex !important;
-            justify-content: center !important;
+            justify-content: flex-end !important;
             align-items: center !important;
         }
         div.st-key-household-income-legend-guide-row [data-testid="stTooltipHoverTarget"] {
-            width: auto !important;
-            justify-content: center !important;
+            width: 100% !important;
+            justify-content: flex-end !important;
         }
         div.st-key-household-income-legend-guide-row [data-testid="stPopoverButton"],
         div.st-key-household-income-legend-guide-row [data-testid="stPopoverButton"]:hover,
@@ -4976,7 +4976,7 @@ elif selected_page == "우리집 재정곡선":
             min-height: 0 !important;
         }
         div.st-key-household-income-legend-guide-row [data-testid="stPopoverButton"] > div {
-            justify-content: center !important;
+            justify-content: flex-end !important;
         }
         div.st-key-household-income-legend-guide-row [data-testid="stPopoverButton"] [aria-hidden="true"] {
             display: none !important;
@@ -5002,8 +5002,9 @@ elif selected_page == "우리집 재정곡선":
         }
         div.st-key-household-income-legend-guide-row .legend-static-item {
             display: inline-flex;
+            width: 100%;
             align-items: center;
-            justify-content: center;
+            justify-content: flex-end;
             gap: 7px;
             color: #F1F5F9;
             font-size: 11px;
