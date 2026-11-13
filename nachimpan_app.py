@@ -4905,10 +4905,41 @@ elif selected_page == "우리집 재정곡선":
         )
         fig_my_nta.update_yaxes(range=[0, y_top], row=1, col=1)
 
-        # 첫 번째 범례 항목: 가구소득 설명을 먼저 보여주고, 보고서를 선택한 경우에만 이동
+        # 가구소득은 차트 범례와 분리해 상단 중앙에 배치하고, 기존 범례와 같은 선·글자 스타일로 표현
+        st.markdown("""
+        <style>
+        div.st-key-household-income-legend-guide-row {
+            display: flex;
+            justify-content: center;
+            margin: 0.15rem 0 0.1rem 0;
+        }
+        div.st-key-household-income-legend-guide-row [data-testid="stPopoverButton"],
+        div.st-key-household-income-legend-guide-row [data-testid="stPopoverButton"]:hover,
+        div.st-key-household-income-legend-guide-row [data-testid="stPopoverButton"]:focus,
+        div.st-key-household-income-legend-guide-row [data-testid="stPopoverButton"]:focus-visible,
+        div.st-key-household-income-legend-guide-row [data-testid="stPopoverButton"]:active {
+            background: transparent !important;
+            border: 0 !important;
+            box-shadow: none !important;
+            outline: none !important;
+            padding: 0 !important;
+            min-height: 0 !important;
+        }
+        div.st-key-household-income-legend-guide-row [data-testid="stPopoverButton"] p {
+            color: #F1F5F9 !important;
+            font-size: 11px !important;
+            font-weight: 400 !important;
+            line-height: 1.2 !important;
+            margin: 0 !important;
+        }
+        div.st-key-household-income-legend-guide-row [data-testid="stPopoverButton"] svg {
+            display: none !important;
+        }
+        </style>
+        """, unsafe_allow_html=True)
         with st.container(horizontal=True, vertical_alignment="center", gap=None, key="household-income-legend-guide-row"):
             with st.popover(
-                "━ 가구소득",
+                ":green[━━━━] 가구소득",
                 key="household_income_legend_guide",
                 help="가구소득 곡선의 설명과 관련 보고서",
                 type="tertiary",
