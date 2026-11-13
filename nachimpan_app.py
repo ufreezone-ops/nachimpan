@@ -4737,6 +4737,7 @@ elif selected_page == "우리집 재정곡선":
             mode="lines",
             line=dict(color="#10B981", width=3.4, shape="spline", smoothing=0.8),
             name="가구소득",
+            showlegend=False,  # 범례 대신 아래 클릭형 안내 항목으로 표시
             hovertemplate="나이: %{x}세<br>우리 가정 예상 연간소득(연금 포함): <b>%{y:,.0f}만 원</b><extra></extra>"
         ), row=1, col=1)
 
@@ -4903,6 +4904,28 @@ elif selected_page == "우리집 재정곡선":
             fixedrange=True
         )
         fig_my_nta.update_yaxes(range=[0, y_top], row=1, col=1)
+
+        # 첫 번째 범례 항목: 가구소득 설명을 먼저 보여주고, 보고서를 선택한 경우에만 이동
+        with st.container(horizontal=True, vertical_alignment="center", gap=None, key="household-income-legend-guide-row"):
+            with st.popover(
+                "━ 가구소득",
+                key="household_income_legend_guide",
+                help="가구소득 곡선의 설명과 관련 보고서",
+                type="tertiary",
+                width="content",
+            ):
+                st.markdown("**가구소득**")
+                st.caption("우리 가정의 예상 소득곡선은 어떻게 만들어졌을까요?")
+                if st.button(
+                    "11. 우리 가정 생애주기 소득곡선의 통계적 보정",
+                    key="household_income_legend_report_6051200",
+                    use_container_width=True,
+                ):
+                    _open_source_reference(
+                        "6051200-00",
+                        "우리집 재정곡선",
+                        "statistical-household-income-origin",
+                    )
 
         st.plotly_chart(fig_my_nta, use_container_width=True, config={"displayModeBar": False, "scrollZoom": False, "doubleClick": False, "showAxisDragHandles": False})
 
