@@ -4734,14 +4734,18 @@ elif selected_page == "인생의 사계절":
 /* 통계 자료실 링크는 단일 세로 목록으로 표시해 PC·모바일 순서를 동일하게 유지한다. */
 div[class*="st-key-graph_stat_report_"] [data-testid="stButton"] button,
 div[class*="st-key-case_stat_detail_"] [data-testid="stButton"] button,
-div[class*="st-key-case_housing_stat_"] [data-testid="stButton"] button {
+div[class*="st-key-case_housing_stat_"] [data-testid="stButton"] button,
+div[class*="st-key-household_income_event_"] [data-testid="stButton"] button,
+div[class*="st-key-household_expense_event_"] [data-testid="stButton"] button {
     width: 100% !important;
     justify-content: flex-start !important;
     text-align: left !important;
 }
 div[class*="st-key-graph_stat_report_"] [data-testid="stButton"] button > div,
 div[class*="st-key-case_stat_detail_"] [data-testid="stButton"] button > div,
-div[class*="st-key-case_housing_stat_"] [data-testid="stButton"] button > div {
+div[class*="st-key-case_housing_stat_"] [data-testid="stButton"] button > div,
+div[class*="st-key-household_income_event_"] [data-testid="stButton"] button > div,
+div[class*="st-key-household_expense_event_"] [data-testid="stButton"] button > div {
     width: 100% !important;
     justify-content: flex-start !important;
     text-align: left !important;
