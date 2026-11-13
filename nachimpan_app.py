@@ -1630,6 +1630,44 @@ st.markdown("""
     font-weight: 800 !important;
     box-shadow: 0 0 0 1px #5EEAD4 !important;
 }
+
+/* 여섯 번째 나침반은 탭 버튼이 아닌 독립 아이콘처럼 표시 */
+div.st-key-main_nav_button_5 {
+    flex: 0 0 42px !important;
+    width: 42px !important;
+    min-width: 42px !important;
+}
+div.st-key-main_nav_button_5 button,
+div.st-key-main_nav_button_5 button:hover,
+div.st-key-main_nav_button_5 button:focus,
+div.st-key-main_nav_button_5 button:focus-visible,
+div.st-key-main_nav_button_5 button:active,
+div.st-key-main_nav_button_5 button[kind="primary"],
+div.st-key-main_nav_button_5 button[kind="secondary"] {
+    box-sizing: border-box !important;
+    width: 42px !important;
+    min-width: 42px !important;
+    height: 46px !important;
+    min-height: 46px !important;
+    padding: 0 !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    outline: 0 !important;
+    background: transparent !important;
+    background-color: transparent !important;
+    box-shadow: none !important;
+    color: #FFFFFF !important;
+}
+div.st-key-main_nav_button_5 button p {
+    margin: 0 !important;
+    font-size: 27px !important;
+    line-height: 1 !important;
+    font-weight: 400 !important;
+}
+div.st-key-main_nav_button_5 button:hover p {
+    filter: brightness(1.25);
+}
+
 </style>
 """, unsafe_allow_html=True)
 
