@@ -1742,7 +1742,7 @@ div.st-key-source_retirement_expense [data-testid="stPopoverButton"] svg {
     }
     .st-key-retirement-title-row h3 {
         white-space: nowrap !important;
-        font-size: 1.5rem !important;
+        font-size: 1.55rem !important;
     }
     .st-key-retirement-title-row .st-key-source_retirement_expense {
         flex: 0 0 auto !important;
