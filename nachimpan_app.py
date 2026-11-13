@@ -3742,7 +3742,7 @@ elif selected_page == "우리집 재정곡선":
                 key="source_retirement_expense",
                 help="이 재정곡선을 이해하는 안내와 통계 자료",
                 type="tertiary",
-                width="medium",
+                width="content",
             ):
                 st.caption("재정곡선 이해하기")
                 _chart_guide_reports = [
