@@ -4729,7 +4729,7 @@ div[class*="st-key-case_housing_stat_"] [data-testid="stButton"] button > div {
                     "case-stat-detail-links",
                 )
 
-        # 사례별 부동산 적용값은 테두리 영역에 남기고, 일반 산정 근거는 통계탭에 둔다.
+        # 대표사례의 가정값과 인터뷰이가 선택한 지역의 통계 중위가격을 구분해 표시한다.
         _case_is_representative = st.session_state.get("_representative_case_id") in {
             "case_32_female", "case_45_female"
         }
@@ -4737,23 +4737,27 @@ div[class*="st-key-case_housing_stat_"] [data-testid="stButton"] button > div {
         if not _case_housing_region or _case_housing_region == "지역 선택":
             _case_housing_region = st.session_state.get("residence_region", "지역 선택")
         if _case_housing_region in HOUSING_PRICE_DATA:
-            if _case_is_representative:
-                _case_house_price_eok = 4.0
-                _case_housing_ltv = REPRESENTATIVE_MORTGAGE_LTV * 100.0
-                _case_equity_eok = 2.6
-            else:
-                _case_house_price_eok = HOUSING_PRICE_DATA[_case_housing_region][3] / 100000
-                _case_housing_ltv = float(st.session_state.get(
-                    "housing_ltv", REGIONAL_LTV1.get(_case_housing_region, 34.3)
-                ))
-                _case_equity_eok = _case_house_price_eok * (1 - _case_housing_ltv / 100.0)
+            _case_housing_stats = HOUSING_PRICE_DATA[_case_housing_region]
+            _case_house_median_eok = _case_housing_stats[1] / 100000
+            _case_apt_median_eok = _case_housing_stats[3] / 100000
             with st.container(border=True):
                 st.markdown("**🏠 부동산 적용 기준**")
+                if _case_is_representative:
+                    _case_house_price_eok = 4.0
+                    _case_housing_ltv = REPRESENTATIVE_MORTGAGE_LTV * 100.0
+                    _case_equity_eok = 2.6
+                    st.markdown("**대표사례에 적용한 가정**")
+                    st.caption(
+                        f"주택가격 {_case_house_price_eok:.2f}억 원 · "
+                        f"LTV {_case_housing_ltv:.1f}% · 자기자금 {_case_equity_eok:.2f}억 원"
+                    )
+                    st.caption("※ 대표사례의 재정곡선을 계산하기 위해 설정한 가정값입니다.")
+                st.markdown(f"**{_case_housing_region} 지역의 주택가격 통계 중위값**")
                 st.caption(
-                    f"{_case_housing_region} · 주택가격 {_case_house_price_eok:.2f}억 원 · "
-                    f"LTV {_case_housing_ltv:.1f}% · 자기자금 {_case_equity_eok:.2f}억 원"
+                    f"주택종합 중위가격 {_case_house_median_eok:.2f}억 원 · "
+                    f"아파트 중위가격 {_case_apt_median_eok:.2f}억 원"
                 )
-                st.caption("※ 사례에 적용한 지역·주택가격·대출비율입니다. 일반 통계 산정 근거는 아래 자료실에서 확인할 수 있습니다.")
+                st.caption("※ 한국부동산원 전국주택가격동향조사 · 2025년 12월 기준. 지역별 시장가격을 비교하기 위한 통계값이며, 대표사례의 가정 주택가격과는 별개입니다.")
             _housing_report_links = [
                 ("4. 주택대출과 원리금 분리", "6050500-01"),
                 ("14. 부동산 적용 기준과 지역별 산정방법", "6051500-00"),
