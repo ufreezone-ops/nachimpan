@@ -3353,12 +3353,15 @@ elif selected_page == "인생의 사계절":
         _, next_col = st.columns([5, 1])
         with next_col:
             if st.button("다음 →", key="seasons_next", use_container_width=True, type="primary"):
-                st.session_state["_pending_nav"] = "AI 시선"
+                st.session_state["_pending_nav"] = "우리집 재정곡선"
                 st.rerun()
 
 
 #########################################################
 # 6.05 | Tab 5 — AI 시선
+#########################################################
+#########################################################
+# 6.04 | Tab 4 — 우리집 재정곡선
 #########################################################
 elif selected_page == "우리집 재정곡선":
     if st.session_state.pop("_scroll_to_top_once", False):
@@ -5081,7 +5084,7 @@ elif selected_page == "AI 시선":
     person_age = st.session_state.get("person_age", 35)
 
 #--------------------------------------------------------
-# 6.04.01 | 기본 모드 — AI 자동 성찰문 생성 및 표시
+# 6.05.01 | 기본 모드 — AI 자동 성찰문 생성 및 표시
 #--------------------------------------------------------
     if not is_adv:
     
@@ -5113,7 +5116,7 @@ elif selected_page == "AI 시선":
         st.markdown("<div style='height: 20px;'></div>", unsafe_allow_html=True)
 
 #--------------------------------------------------------
-# 6.04.02 | 기본 모드 — 고급 모드 초대장 카드
+# 6.05.02 | 기본 모드 — 고급 모드 초대장 카드
 #--------------------------------------------------------
         st.markdown("""
 <div style="background: radial-gradient(circle at top, #1e293b 0%, #0b1120 100%); border: 1.5px solid #F59E0B; border-radius: 16px; padding: 24px 22px; text-align: center; box-shadow: 0 4px 18px rgba(245, 158, 11, 0.2); margin: 16px 0;">
@@ -5132,11 +5135,11 @@ elif selected_page == "AI 시선":
             st.rerun()
 
     else:
-        # [고급 모드] 모든 마이크로 모듈(6.04.01 ~ 6.04.07) 완전 탑재
+        # [고급 모드] 모든 마이크로 모듈(6.05.01 ~ 6.05.07) 완전 탑재
         st.caption("AI는 평가자가 아닌, 내가 작성한 삶의 숫자를 객관적인 거울처럼 비춰주는 성찰 파트너입니다.")
 
 #--------------------------------------------------------
-# 6.04.03 | 고급 모드 — 재무 및 가족 생애 데이터 프롬프트 구성
+# 6.05.03 | 고급 모드 — 재무 및 가족 생애 데이터 프롬프트 구성
 #--------------------------------------------------------
         sib_names = [f"{it['label']}({it.get('age',0)}세)" for it in st.session_state.get("sibling_items", []) if it.get("age", 0) > 0]
         retire_age = st.session_state.get("retirement_age", 60)
@@ -5190,7 +5193,7 @@ elif selected_page == "AI 시선":
 본업을 충실히 유지하면서, 시간과 노동력에만 매이지 않고 시스템과 자산에서 흘러나오는 '파이프라인'을 장기적으로 준비해야 하는 이유를 객관적인 관점에서 정중히 제안하세요."""
 
 #--------------------------------------------------------
-# 6.04.04 | 고급 모드 — AI 분석 원칙·톤(맛) 설정 패널
+# 6.05.04 | 고급 모드 — AI 분석 원칙·톤(맛) 설정 패널
 #--------------------------------------------------------
         current_taste_val = st.session_state.get("pills_ai_taste", "🧭 보통맛 (정직한 거울)")
         short_taste_tag = "☕ 순한맛" if "순한맛" in current_taste_val else ("🌶️ 매운맛" if "매운맛" in current_taste_val else "🧭 보통맛")
@@ -5265,7 +5268,7 @@ elif selected_page == "AI 시선":
 은퇴 후 약 {winter_years}년은 국가데이터처 {user_gender.split()[1]} 기대수명({life_expectancy}세)에 기초한 계산상 가정으로 취급하세요. 현재 경력 단계와 순자산을 연결해 설명하되, 실제 현금 보유액이나 유동성 자료가 없다면 유동성 준비 상태를 평가하지 마세요. 결혼, 자녀, 주거 계획 등 확인되지 않은 미래 사건을 전제로 삼지 말고, 정중하고 담백하게 서술하세요."""
 
 #--------------------------------------------------------
-# 6.04.05 | 고급 모드 — Gemini AI 리포트 생성 버튼
+# 6.05.05 | 고급 모드 — Gemini AI 리포트 생성 버튼
 #--------------------------------------------------------
         if st.button("⚡ AI 리포트 생성", type="primary", use_container_width=True):
             st.session_state.ai_summary = summary
@@ -5276,7 +5279,7 @@ elif selected_page == "AI 시선":
             st.rerun()
 
 #--------------------------------------------------------
-# 6.04.06 | 고급 모드 — AI 리포트 표시 및 카카오톡 전송용 리포트
+# 6.05.06 | 고급 모드 — AI 리포트 표시 및 카카오톡 전송용 리포트
 #--------------------------------------------------------
         if st.session_state.get("ai_summary") and st.session_state.get("ai_comment"):
             s = st.session_state.ai_summary
@@ -5360,7 +5363,7 @@ elif selected_page == "AI 시선":
         st.markdown("<div style='height: 20px;'></div>", unsafe_allow_html=True)
 
 #--------------------------------------------------------
-# 6.04.07 | 고급 모드 — 📋 AI 질의용 재무제표 expander
+# 6.05.07 | 고급 모드 — 📋 AI 질의용 재무제표 expander
 #--------------------------------------------------------
         with st.expander("📋 AI 질의용 재무제표"):
             st.markdown("<div style='font-size: 13.5px; color: #94A3B8; margin-bottom: 8px;'>프롬프트 지시문 없이, 내가 입력한 재무제표와 가족 생애 통계만 정리된 텍스트입니다. ChatGPT 등에 복사해서 자유롭게 추가 상담을 진행할 수 있습니다.</div>", unsafe_allow_html=True)
@@ -5398,7 +5401,7 @@ elif selected_page == "AI 시선":
 #########################################################
 elif selected_page == "통계":
     #--------------------------------------------------------
-    # 6.05.01.00 | 출처 자료 표시 및 원위치 복귀
+    # 6.06.01.00 | 출처 자료 표시 및 원위치 복귀
     #--------------------------------------------------------
     st.markdown("""
     <style>
@@ -5495,7 +5498,7 @@ elif selected_page == "통계":
     st.caption("내 삶의 숫자를 사회 전체의 흐름과 나란히 놓고 살펴보는 자료실입니다. 통계는 정답이 아니라, 내 생각의 경계를 넓히는 참고선입니다.")
 
     #--------------------------------------------------------
-    # 6.05.02.00 | 1. 소득과 소비의 생애주기
+    # 6.06.02.00 | 1. 소득과 소비의 생애주기
     #--------------------------------------------------------
     st.markdown('<div id="stats-anchor-lifecycle-income" style="scroll-margin-top: 150px;"></div>', unsafe_allow_html=True)
     with st.expander("1. 소득과 소비의 생애주기", expanded=True):
@@ -5627,7 +5630,7 @@ elif selected_page == "통계":
             st.info("국민이전계정 누적 노동잉여 기준데이터 파일을 찾지 못했습니다. data/기준데이터 파일을 확인해 주세요.")
 
     #--------------------------------------------------------
-    # 6.05.03.00 | 2. 결혼과 주거
+    # 6.06.03.00 | 2. 결혼과 주거
     #--------------------------------------------------------
     st.markdown('<div id="stats-anchor-marriage-housing" style="scroll-margin-top: 150px;"></div>', unsafe_allow_html=True)
     with st.expander("2. 결혼과 주거", expanded=_active_source_id == "6050300-00"):
@@ -5664,7 +5667,7 @@ elif selected_page == "통계":
 자료: [국무조정실 「2024년 청년의 삶 실태조사 결과 발표」](https://www.opm.go.kr/opm/news/press-release.do?articleNo=158583&mode=view)
 """)
     #--------------------------------------------------------
-    # 6.05.04.00 | 3. 노후와 은퇴
+    # 6.06.04.00 | 3. 노후와 은퇴
     #--------------------------------------------------------
     st.markdown(
         '<div id="stats-anchor-retirement-expense" style="scroll-margin-top: 150px;"></div>',
@@ -5713,7 +5716,7 @@ elif selected_page == "통계":
                     st.info("산출 방법 파일을 현재 앱에서 찾을 수 없습니다.")
 
     #--------------------------------------------------------
-    # 6.05.05.00 | 4. 주택대출과 원리금 분리
+    # 6.06.05.00 | 4. 주택대출과 원리금 분리
     #--------------------------------------------------------
     st.markdown(
         '<div id="stats-anchor-loan-payment" style="scroll-margin-top: 150px;"></div>',
@@ -5749,7 +5752,7 @@ elif selected_page == "통계":
 자료: [국토교통부 「2024년도 주거실태조사 결과」(2025.11.17.)](https://www.molit.go.kr/USR/NEWS/dtl.jsp?id=95091415&lcmspage=2)
 """)
     #--------------------------------------------------------
-    # 6.05.06.00 | 5. 동시성과 통시성
+    # 6.06.06.00 | 5. 동시성과 통시성
     #--------------------------------------------------------
     st.markdown('<div id="stats-anchor-time-adjustment" style="scroll-margin-top: 150px;"></div>', unsafe_allow_html=True)
     with st.expander("5. 동시성과 통시성", expanded=True):
@@ -5878,7 +5881,7 @@ elif selected_page == "통계":
 """)
 
     #--------------------------------------------------------
-    # 6.05.07.00 | 6. 소득 통계
+    # 6.06.07.00 | 6. 소득 통계
     #--------------------------------------------------------
     st.markdown('<div id="stats-anchor-income-statistics" style="scroll-margin-top: 150px;"></div>', unsafe_allow_html=True)
     with st.expander("6. 소득 통계: 연령별 임금과 연도별 임금지수", expanded=True):
@@ -5936,7 +5939,7 @@ elif selected_page == "통계":
 """)
 
     #--------------------------------------------------------
-    # 6.05.08.00 | 7. 결혼비용 통계
+    # 6.06.08.00 | 7. 결혼비용 통계
     #--------------------------------------------------------
     st.markdown('<div id="stats-anchor-marriage-cost" style="scroll-margin-top: 150px;"></div>', unsafe_allow_html=True)
     with st.expander("7. 결혼비용 통계: 신혼집은 신랑 측 77%, 그 외 비용은 비슷하게 나눠서", expanded=True):
@@ -6081,7 +6084,7 @@ elif selected_page == "통계":
 
     #--------------------------------------------------------
     #--------------------------------------------------------
-    # 6.05.09.00 | 8. 빅5 우리집 이벤트 개요
+    # 6.06.09.00 | 8. 빅5 우리집 이벤트 개요
     #--------------------------------------------------------
     st.markdown('<div id="stats-anchor-household-events" style="scroll-margin-top: 150px;"></div>', unsafe_allow_html=True)
     with st.expander("8. 빅5 우리집 이벤트", expanded=_active_source_id == "6050900-00"):
@@ -6105,7 +6108,7 @@ elif selected_page == "통계":
 
 각 사건의 통계 근거, 비용 산식, 중복 조정과 모델 가정은 아래 개별 리포트에서 확인할 수 있습니다.
 """)
-    # 6.05.10.00 | 9. 고령층 근로연령 통계
+    # 6.06.10.00 | 9. 고령층 근로연령 통계
     #--------------------------------------------------------
     st.markdown('<div id="stats-anchor-older-work" style="scroll-margin-top: 150px;"></div>', unsafe_allow_html=True)
     with st.expander("9. 고령층 근로연령 통계", expanded=True):
@@ -6180,7 +6183,7 @@ elif selected_page == "통계":
 """)
 
     #--------------------------------------------------------
-    # 6.05.11.00 | 10. 통계로 본 대한민국 3대 은퇴 분기점
+    # 6.06.11.00 | 10. 통계로 본 대한민국 3대 은퇴 분기점
     #--------------------------------------------------------
     st.markdown('<div id="stats-anchor-retirement-milestones" style="scroll-margin-top: 150px;"></div>', unsafe_allow_html=True)
     with st.expander(
@@ -6229,7 +6232,7 @@ OECD 「Pensions at a Glance 2025: Korea」는 2024년 한국의 실질 노동�
 """, unsafe_allow_html=True)
 
     #--------------------------------------------------------
-    # 6.05.12.00 | 11. 우리 가정 생애주기 소득곡선의 통계적 보정
+    # 6.06.12.00 | 11. 우리 가정 생애주기 소득곡선의 통계적 보정
     #--------------------------------------------------------
     st.markdown('<div id="stats-anchor-household-income-after-retirement" style="scroll-margin-top: 150px;"></div>', unsafe_allow_html=True)
     with st.expander(
@@ -6270,7 +6273,7 @@ OECD 「Pensions at a Glance 2025: Korea」는 2024년 한국의 실질 노동�
 """, unsafe_allow_html=True)
 
     #--------------------------------------------------------
-    # 6.05.13.00 | 12. 과거 소득·지출을 현재 기준과 비교하는 방법
+    # 6.06.13.00 | 12. 과거 소득·지출을 현재 기준과 비교하는 방법
     #--------------------------------------------------------
     st.markdown('<div id="stats-anchor-historical-comparison" style="scroll-margin-top: 150px;"></div>', unsafe_allow_html=True)
     with st.expander("12. 과거 소득·지출을 현재 기준과 비교하는 방법", expanded=_active_source_id == "6051300-00"):
@@ -6292,7 +6295,7 @@ OECD 「Pensions at a Glance 2025: Korea」는 2024년 한국의 실질 노동�
 """)
 
     #--------------------------------------------------------
-    # 6.05.14.00 | 13. 지출 통계 출처 및 산출방법
+    # 6.06.14.00 | 13. 지출 통계 출처 및 산출방법
     #--------------------------------------------------------
     st.markdown('<div id="stats-anchor-spending-method" style="scroll-margin-top: 150px;"></div>', unsafe_allow_html=True)
     with st.expander("13. 지출 통계 출처 및 산출방법", expanded=_active_source_id == "6051400-00"):
@@ -6328,7 +6331,7 @@ OECD 「Pensions at a Glance 2025: Korea」는 2024년 한국의 실질 노동�
                     st.info("산출 방법 파일을 현재 앱에서 찾을 수 없습니다.")
 
     #--------------------------------------------------------
-    # 6.05.15.00 | 14. 부동산 적용 기준과 지역별 산정방법
+    # 6.06.15.00 | 14. 부동산 적용 기준과 지역별 산정방법
     #--------------------------------------------------------
     st.markdown('<div id="stats-anchor-housing-method" style="scroll-margin-top: 150px;"></div>', unsafe_allow_html=True)
     with st.expander("14. 부동산 적용 기준과 지역별 산정방법", expanded=_active_source_id == "6051500-00"):
@@ -6373,7 +6376,7 @@ OECD 「Pensions at a Glance 2025: Korea」는 2024년 한국의 실질 노동�
 """)
 
     #--------------------------------------------------------
-    # 6.05.16.00 | 15. 소득 기준곡선의 출처와 산정 방식
+    # 6.06.16.00 | 15. 소득 기준곡선의 출처와 산정 방식
     #--------------------------------------------------------
     st.markdown('<div id="stats-anchor-income-curve-method" style="scroll-margin-top: 150px;"></div>', unsafe_allow_html=True)
     with st.expander("15. 소득 기준곡선의 출처와 산정 방식", expanded=_active_source_id == "6051600-00"):
@@ -6402,7 +6405,7 @@ OECD 「Pensions at a Glance 2025: Korea」는 2024년 한국의 실질 노동�
 """)
 
     #--------------------------------------------------------
-    # 6.05.17.00 | 16. 세대 계승 생애주기 재정곡선
+    # 6.06.17.00 | 16. 세대 계승 생애주기 재정곡선
     #--------------------------------------------------------
     st.markdown('<div id="stats-anchor-nta-generational" style="scroll-margin-top: 150px;"></div>', unsafe_allow_html=True)
     with st.expander("16. 세대 계승 생애주기 재정곡선", expanded=_active_source_id == "6051700-00"):
@@ -6436,7 +6439,7 @@ OECD 「Pensions at a Glance 2025: Korea」는 2024년 한국의 실질 노동�
 """)
 
     #--------------------------------------------------------
-    # 6.05.18.00 | 17. 여성의 출산·육아와 경력단절
+    # 6.06.18.00 | 17. 여성의 출산·육아와 경력단절
     #--------------------------------------------------------
     st.markdown('<div id="stats-anchor-career-break" style="scroll-margin-top: 150px;"></div>', unsafe_allow_html=True)
     with st.expander("17. 여성의 출산·육아와 경력단절", expanded=_active_source_id == "6051800-00"):
@@ -6471,7 +6474,7 @@ OECD 「Pensions at a Glance 2025: Korea」는 2024년 한국의 실질 노동�
 """)
 
     #--------------------------------------------------------
-    # 6.05.19.00 | 18. 은퇴와 수입 단절
+    # 6.06.19.00 | 18. 은퇴와 수입 단절
     #--------------------------------------------------------
     st.markdown('<div id="stats-anchor-retirement-income-stop" style="scroll-margin-top: 150px;"></div>', unsafe_allow_html=True)
     with st.expander("18. 은퇴와 수입 단절", expanded=_active_source_id == "6051900-00"):
@@ -6505,7 +6508,7 @@ OECD 「Pensions at a Glance 2025: Korea」는 2024년 한국의 실질 노동�
 """)
 
     #--------------------------------------------------------
-    # 6.05.20.00 | 19. 나의 결혼
+    # 6.06.20.00 | 19. 나의 결혼
     #--------------------------------------------------------
     st.markdown('<div id="stats-anchor-event-own-marriage" style="scroll-margin-top: 150px;"></div>', unsafe_allow_html=True)
     with st.expander("19. 나의 결혼", expanded=_active_source_id == "6052000-00"):
@@ -6534,7 +6537,7 @@ OECD 「Pensions at a Glance 2025: Korea」는 2024년 한국의 실질 노동�
 """)
 
     #--------------------------------------------------------
-    # 6.05.21.00 | 20. 출산과 육아
+    # 6.06.21.00 | 20. 출산과 육아
     #--------------------------------------------------------
     st.markdown('<div id="stats-anchor-event-childcare" style="scroll-margin-top: 150px;"></div>', unsafe_allow_html=True)
     with st.expander("20. 출산과 육아", expanded=_active_source_id == "6052100-00"):
@@ -6567,7 +6570,7 @@ OECD 「Pensions at a Glance 2025: Korea」는 2024년 한국의 실질 노동�
 """)
 
     #--------------------------------------------------------
-    # 6.05.22.00 | 21. 주택구입
+    # 6.06.22.00 | 21. 주택구입
     #--------------------------------------------------------
     st.markdown('<div id="stats-anchor-event-housing" style="scroll-margin-top: 150px;"></div>', unsafe_allow_html=True)
     with st.expander("21. 주택구입", expanded=_active_source_id == "6052200-00"):
@@ -6605,7 +6608,7 @@ OECD 「Pensions at a Glance 2025: Korea」는 2024년 한국의 실질 노동�
 """)
 
     #--------------------------------------------------------
-    # 6.05.23.00 | 22. 자녀 대학
+    # 6.06.23.00 | 22. 자녀 대학
     #--------------------------------------------------------
     st.markdown('<div id="stats-anchor-event-college" style="scroll-margin-top: 150px;"></div>', unsafe_allow_html=True)
     with st.expander("22. 자녀 대학", expanded=_active_source_id == "6052300-00"):
@@ -6648,7 +6651,7 @@ OECD 「Pensions at a Glance 2025: Korea」는 2024년 한국의 실질 노동�
 """)
 
     #--------------------------------------------------------
-    # 6.05.24.00 | 23. 자녀 결혼
+    # 6.06.24.00 | 23. 자녀 결혼
     #--------------------------------------------------------
     st.markdown('<div id="stats-anchor-event-child-marriage" style="scroll-margin-top: 150px;"></div>', unsafe_allow_html=True)
     with st.expander("23. 자녀 결혼", expanded=_active_source_id == "6052400-00"):
