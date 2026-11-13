@@ -3207,9 +3207,9 @@ elif selected_page == "인생의 사계절":
                 )
 
         if cur_age <= 27: cur_season, s_icon, s_color, s_desc = "봄 (준비기)", "🌱", "#4ADE80", "부모님의 부양으로 배우고 성장하는 계절"
-        elif 28 <= cur_age <= 45: cur_season, s_icon, s_color, s_desc = "여름 (성장기)", "☀️", "#F59E0B", "성실하게 일하여 가정을 일구고 최대 흑자를 만드는 계절"
-        elif 46 <= cur_age <= 60: cur_season, s_icon, s_color, s_desc = "가을 (결실기)", "🍂", "#FB923C", "자녀 독립과 함께 다가올 겨울을 준비할 골든타임"
-        else: cur_season, s_icon, s_color, s_desc = "겨울 (음미기)", "❄️", "#38BDF8", "근로소득이 멈추고 삶의 열매를 누리는 계절"
+        elif 28 <= cur_age <= 49: cur_season, s_icon, s_color, s_desc = "여름 (성장기)", "☀️", "#F59E0B", "성실하게 일하여 가정을 일구고 경제적 기반을 만드는 계절"
+        elif 50 <= cur_age <= 69: cur_season, s_icon, s_color, s_desc = "가을 (결실기)", "🍂", "#FB923C", "자녀의 독립과 노후를 준비하고, 노동의 결실을 삶의 여유로 바꾸는 계절"
+        else: cur_season, s_icon, s_color, s_desc = "겨울 (음미기)", "❄️", "#38BDF8", "생계를 위한 노동의 비중을 줄이고, 살아온 삶의 열매를 누리는 계절"
 
         st.markdown(f"""
 <div style="background: rgba(30, 41, 59, 0.55); border: 2px solid {s_color}; border-radius: 14px; padding: 22px 24px; margin: 16px 0 24px 0; text-align: center;">
@@ -4970,8 +4970,8 @@ div[class*="st-key-open_nta_generational_report"] [data-testid="stButton"] butto
 #--------------------------------------------------------
         st.markdown("### 4. 인생의 사계절")
         if cur_age <= 27: cur_season = "spring"
-        elif 28 <= cur_age <= 45: cur_season = "summer"
-        elif 46 <= cur_age < retire_age: cur_season = "autumn"
+        elif 28 <= cur_age <= 49: cur_season = "summer"
+        elif 50 <= cur_age <= 69: cur_season = "autumn"
         else: cur_season = "winter"
 
         def get_season_card_ui(season_key, icon, title, age_range, desc):
@@ -4981,9 +4981,9 @@ div[class*="st-key-open_nta_generational_report"] [data-testid="stButton"] butto
             return f'<div class="soft-card" style="text-align:center; min-height:205px; {card_border} padding:14px 10px; margin:0;">{badge_html}<div style="font-size:28px;">{icon}</div><div style="font-size:16.5px; font-weight:800; color:#F8FAFC; margin:4px 0;">{title}</div><div style="font-size:13px; color:#94A3B8;">{age_range}</div><div style="font-size:13px; color:#CBD5E1; margin-top:8px; line-height:1.4;">{desc}</div></div>'
 
         card_spring = get_season_card_ui("spring", "🌱", "봄 (준비기)", "0세 ~ 27세", "부모님의 부양으로 배우고 성장하는 계절")
-        card_summer = get_season_card_ui("summer", "☀️", "여름 (성장기)", "28세 ~ 45세", "성실하게 일하여 가정을 일구고 최대 흑자를 만드는 계절")
-        card_autumn = get_season_card_ui("autumn", "🍂", "가을 (결실기)", f"46세 ~ {retire_age}세", "자녀 독립과 함께 다가올 겨울을 준비할 골든타임")
-        card_winter = get_season_card_ui("winter", "❄️", "겨울 (음미기)", f"{retire_age}세 ~ {life_expectancy}세", f"근로소득이 멈추고 삶의 열매를 누리는 계절")
+        card_summer = get_season_card_ui("summer", "☀️", "여름 (성장기)", "28세 ~ 49세", "성실하게 일하고 가정을 일구며 경제적 기반을 만드는 계절")
+        card_autumn = get_season_card_ui("autumn", "🍂", "가을 (결실기)", "50세 ~ 69세", "자녀의 독립과 노후를 준비하고, 노동의 결실을 삶의 여유로 바꾸는 계절")
+        card_winter = get_season_card_ui("winter", "❄️", "겨울 (음미기)", "70세 이후", "생계를 위한 노동의 비중을 줄이고, 살아온 삶의 열매를 누리는 계절")
 
         s_col1, s_col2, s_col3, s_col4 = st.columns(4)
         with s_col1: st.markdown(card_spring, unsafe_allow_html=True)
@@ -4994,8 +4994,8 @@ div[class*="st-key-open_nta_generational_report"] [data-testid="stButton"] butto
         st.markdown(f"""
 <div style="background: rgba(30, 41, 59, 0.6); border: 1px solid #334155; border-radius: 12px; padding: 18px 20px; margin: 16px 0 24px 0;">
 <div style="font-size: 15px; color: #F8FAFC; line-height: 1.6; word-break: keep-all;">
-💡 <b>산책로의 질문</b><br>은퇴 후 내가 맞이할 겨울은 <b>약 {winter_years}년 </b>입니다. (국가데이터처 {user_gender.split()[1]} 기대수명 {life_expectancy}세 기준)<br>
-<span style="color: #94A3B8;">이 긴 겨울 동안 매달 무거운 물통을 지고 눈길을 걸을 것인가, 방 안에서 따뜻하게 흘러나오는 파이프라인을 맞이할 것인가는 <b>운명이 아니라 선택입니다.</span>
+💡 <b>산책로의 질문</b><br>은퇴 후 기대수명까지 약 <b>{winter_years}년</b>이 남아 있습니다. (국가데이터처 {user_gender.split()[1]} 기대수명 {life_expectancy}세 기준)<br>
+<span style="color: #94A3B8;">이 긴 시간 동안 매달 무거운 물통을 지고 눈길을 걸을 것인가, 방 안에서 따뜻하게 흘러나오는 파이프라인을 맞이할 것인가는 <b>운명이 아니라 선택입니다.</span>
 </div></div>
 """, unsafe_allow_html=True)
 
