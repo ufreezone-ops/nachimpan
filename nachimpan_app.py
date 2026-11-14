@@ -5034,13 +5034,20 @@ elif selected_page == "우리집 재정곡선":
                 row-gap: 0.65rem !important;
             }
         }
-        /* 보고서 팝오버 안의 버튼은 PC·모바일 모두 좌측 정렬 */
-        div.st-key-household-income-legend-guide-row [data-testid="stPopoverBody"] [data-testid="stButton"] button,
-        div.st-key-household-income-legend-guide-row [data-testid="stPopoverBody"] [data-testid="stButton"] button > div {
+        /* 팝오버 내용은 별도 레이어로 렌더링되므로 버튼 고유 key로 직접 지정 */
+        div[class*="st-key-household_income_legend_report_"] [data-testid="stButton"] button,
+        div[class*="st-key-household_expense_legend_report_"] [data-testid="stButton"] button,
+        div[class*="st-key-statistical_income_legend_report_"] [data-testid="stButton"] button,
+        div[class*="st-key-household_income_legend_report_"] [data-testid="stButton"] button > div,
+        div[class*="st-key-household_expense_legend_report_"] [data-testid="stButton"] button > div,
+        div[class*="st-key-statistical_income_legend_report_"] [data-testid="stButton"] button > div {
+            width: 100% !important;
             justify-content: flex-start !important;
             text-align: left !important;
         }
-        div.st-key-household-income-legend-guide-row [data-testid="stPopoverBody"] [data-testid="stButton"] button p {
+        div[class*="st-key-household_income_legend_report_"] [data-testid="stButton"] button p,
+        div[class*="st-key-household_expense_legend_report_"] [data-testid="stButton"] button p,
+        div[class*="st-key-statistical_income_legend_report_"] [data-testid="stButton"] button p {
             width: 100% !important;
             text-align: left !important;
         }
