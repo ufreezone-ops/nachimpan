@@ -47,57 +47,78 @@ export default function(component) {
     let graphElement = null;
     let clickHandler = null;
     let annotationClickHandler = null;
+    let clickContainer = null;
+    let containerClickHandler = null;
 
     function detach() {
         if (graphElement && typeof graphElement.removeListener === "function") {
             if (clickHandler) graphElement.removeListener("plotly_click", clickHandler);
             if (annotationClickHandler) graphElement.removeListener("plotly_clickannotation", annotationClickHandler);
         }
+        if (clickContainer && containerClickHandler) {
+            clickContainer.removeEventListener("click", containerClickHandler, true);
+        }
         graphElement = null;
         clickHandler = null;
         annotationClickHandler = null;
+        clickContainer = null;
+        containerClickHandler = null;
     }
 
     function attach() {
-        const nextGraph = document.querySelector(
-            ".st-key-life_cycle_finance_chart .js-plotly-plot"
-        );
-        if (!nextGraph || typeof nextGraph.on !== "function" || nextGraph === graphElement) {
-            return;
-        }
+        const graphSelector = (data && data.graph_selector) ||
+            ".st-key-life_cycle_finance_chart .js-plotly-plot";
+        const nextGraph = document.querySelector(graphSelector);
+        const nextContainer = (data && data.click_anywhere && data.container_selector)
+            ? document.querySelector(data.container_selector)
+            : null;
+        const graphReady = nextGraph && typeof nextGraph.on === "function";
+        const graphChanged = graphReady && nextGraph !== graphElement;
+        const containerChanged = nextContainer && nextContainer !== clickContainer;
+        if (!graphChanged && !containerChanged) return;
 
         detach();
-        graphElement = nextGraph;
-        setStateValue("bridge_status", "그래프 연결됨");
-        clickHandler = function(eventData) {
-            const points = (eventData && eventData.points) || [];
-            const pointNames = points.map((point) =>
-                (point.data && point.data.name) ||
-                (point.fullData && point.fullData.name) ||
-                "(이름 없음)"
-            );
-            setTriggerValue("click_probe", pointNames.join(", ") || "클릭 이벤트 수신, 데이터 점 없음");
-
-            for (const point of points) {
-                const eventName =
+        if (graphReady) {
+            graphElement = nextGraph;
+            setStateValue("bridge_status", "그래프 연결됨");
+            clickHandler = function(eventData) {
+                const points = (eventData && eventData.points) || [];
+                const pointNames = points.map((point) =>
                     (point.data && point.data.name) ||
-                    (point.fullData && point.fullData.name);
-                if (eventName && targetNames.has(eventName)) {
-                    setTriggerValue("clicked_event", eventName);
-                    break;
-                }
-            }
-        };
-        graphElement.on("plotly_click", clickHandler);
+                    (point.fullData && point.fullData.name) ||
+                    "(이름 없음)"
+                );
+                setTriggerValue("click_probe", pointNames.join(", ") || "클릭 이벤트 수신, 데이터 점 없음");
 
-        annotationClickHandler = function(eventData) {
-            const annotation = (eventData && (eventData.annotation || eventData.fullAnnotation)) || {};
-            const annotationText = String(annotation.text || "");
-            if (annotationText.startsWith("은퇴 (")) {
-                setTriggerValue("clicked_retirement_annotation", annotationText);
-            }
-        };
-        graphElement.on("plotly_clickannotation", annotationClickHandler);
+                for (const point of points) {
+                    const eventName =
+                        (point.data && point.data.name) ||
+                        (point.fullData && point.fullData.name);
+                    if (eventName && targetNames.has(eventName)) {
+                        setTriggerValue("clicked_event", eventName);
+                        break;
+                    }
+                }
+            };
+            graphElement.on("plotly_click", clickHandler);
+
+            annotationClickHandler = function(eventData) {
+                const annotation = (eventData && (eventData.annotation || eventData.fullAnnotation)) || {};
+                const annotationText = String(annotation.text || "");
+                if (annotationText.startsWith("은퇴 (")) {
+                    setTriggerValue("clicked_retirement_annotation", annotationText);
+                }
+            };
+            graphElement.on("plotly_clickannotation", annotationClickHandler);
+        }
+
+        if (nextContainer) {
+            clickContainer = nextContainer;
+            containerClickHandler = function() {
+                setTriggerValue("clicked_cumulative_chart", "open");
+            };
+            clickContainer.addEventListener("click", containerClickHandler, true);
+        }
     }
 
     const observer = new MutationObserver(attach);
@@ -6017,6 +6038,7 @@ elif selected_page == "통계":
 
 자료: [국가데이터처 「2024년 국민이전계정」 보도자료](https://mods.go.kr/board.es?act=view&bid=11898&list_no=447028&mid=a10301130100)
 """)
+        st.markdown('<div id="nta-cumulative-chart-origin" style="scroll-margin-top: 150px;"></div>', unsafe_allow_html=True)
         st.markdown("""
 **생애주기 흑자·적자를 누적해서 보면**
 
@@ -6113,8 +6135,59 @@ elif selected_page == "통계":
             st.plotly_chart(
                 fig_nta_cumulative,
                 use_container_width=True,
+                key="nta_cumulative_chart",
                 config={"displayModeBar": False, "scrollZoom": False},
             )
+
+            # 차트 전체 영역을 하나의 통계자료 연결 요소로 사용
+            _nta_cumulative_click_bridge = _EVENT_BUBBLE_CLICK_BRIDGE(
+                data={
+                    "graph_selector": ".st-key-nta_cumulative_chart .js-plotly-plot",
+                    "container_selector": ".st-key-nta_cumulative_chart",
+                    "click_anywhere": True,
+                    "target_names": [],
+                },
+                key="nta_cumulative_chart_click_bridge",
+                on_bridge_status_change=lambda: None,
+                on_click_probe_change=lambda: None,
+                on_clicked_event_change=lambda: None,
+                on_clicked_retirement_annotation_change=lambda: None,
+                on_clicked_cumulative_chart_change=lambda: None,
+            )
+            if _nta_cumulative_click_bridge.clicked_cumulative_chart:
+                st.session_state["_nta_cumulative_report_open"] = True
+
+            if st.session_state.get("_nta_cumulative_report_open", False):
+                @st.dialog("관련 통계자료")
+                def _show_nta_cumulative_reports():
+                    st.caption("이 차트의 해석과 산출 근거를 함께 살펴볼 수 있는 자료입니다.")
+                    _nta_cumulative_reports = [
+                        ("1. 소득과 소비의 생애주기", "6050200-00"),
+                        ("11. 우리 가정 생애주기 소득곡선의 통계적 보정", "6051200-00"),
+                        ("13. 지출 통계 출처 및 산출방법", "6051400-00"),
+                    ]
+                    for _report_title, _report_id in _nta_cumulative_reports:
+                        if st.button(
+                            f"🧭 {_report_title}",
+                            key=f"nta_cumulative_report_{_report_id}",
+                            use_container_width=True,
+                        ):
+                            st.session_state["_nta_cumulative_report_open"] = False
+                            _open_source_reference(
+                                _report_id,
+                                "통계",
+                                "nta-cumulative-chart-origin",
+                            )
+                            st.rerun()
+                    if st.button(
+                        "닫기",
+                        key="nta_cumulative_report_close",
+                        use_container_width=True,
+                    ):
+                        st.session_state["_nta_cumulative_report_open"] = False
+                        st.rerun()
+
+                _show_nta_cumulative_reports()
 
             st.markdown("""
 - **0세 기준:** 출생부터 85세 이상까지 누적 노동잉여는 계속 마이너스이며, 마지막 85세 이상 구간에서는 약 **-8억 588만 원**입니다. 노동소득이 없는 유년기의 소비가 생애 초기에 큰 누적 적자로 쌓이기 때문입니다.
