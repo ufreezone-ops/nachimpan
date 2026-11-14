@@ -2850,8 +2850,7 @@ if selected_page == "우리집 가계부":
                 xanchor="center",
                 x=0.5
             ),
-            hovermode="x unified",
-            clickmode="event+select",
+            hovermode="x unified"
         )
 
         st.plotly_chart(
@@ -4906,7 +4905,8 @@ elif selected_page == "우리집 재정곡선":
                 x=0.5,
                 font=dict(size=11, color="#F1F5F9")
             ),
-            hovermode="x unified"
+            hovermode="x unified",
+            clickmode="event+select",
         )
 
         # X축: 20세부터 성별 기대수명까지 10년 단위 정렬
