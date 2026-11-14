@@ -280,7 +280,9 @@ footer {
 .st-key-life_cycle_finance_chart {
     margin-top: -0.75rem !important;
 }
-/* 누적 생애주기 차트 전체를 클릭 가능한 영역으로 안내 */
+/* 생애주기 재정곡선과 누적 생애주기 차트의 전체 클릭 영역 안내 */
+.st-key-life_cycle_finance_chart,
+.st-key-life_cycle_finance_chart *,
 .st-key-nta_cumulative_chart,
 .st-key-nta_cumulative_chart * {
     cursor: pointer !important;
@@ -5323,6 +5325,55 @@ elif selected_page == "우리집 재정곡선":
             key="life_cycle_finance_chart",
             config={"displayModeBar": False, "scrollZoom": False, "doubleClick": False, "showAxisDragHandles": False},
         )
+
+        # 차트 전체 영역 클릭 시 관련 통계자료 목록 열기
+        _life_cycle_finance_click_bridge = _EVENT_BUBBLE_CLICK_BRIDGE(
+            data={
+                "graph_selector": ".st-key-life_cycle_finance_chart .js-plotly-plot",
+                "click_anywhere": True,
+                "target_names": [],
+            },
+            key="life_cycle_finance_chart_click_bridge",
+            on_bridge_status_change=lambda: None,
+            on_click_probe_change=lambda: None,
+            on_clicked_event_change=lambda: None,
+            on_clicked_retirement_annotation_change=lambda: None,
+            on_clicked_cumulative_chart_change=lambda: None,
+        )
+        if _life_cycle_finance_click_bridge.clicked_cumulative_chart:
+            st.session_state["_life_cycle_finance_report_open"] = True
+
+        if st.session_state.get("_life_cycle_finance_report_open", False):
+            @st.dialog("관련 통계자료")
+            def _show_life_cycle_finance_reports():
+                st.caption("이 차트의 해석과 산출 근거를 함께 살펴볼 수 있는 자료입니다.")
+                _life_cycle_finance_reports = [
+                    ("1. 소득과 소비의 생애주기", "6050200-00"),
+                    ("11. 우리 가정 생애주기 소득곡선의 통계적 보정", "6051200-00"),
+                    ("13. 지출 통계 출처 및 산출방법", "6051400-00"),
+                ]
+                for _report_title, _report_id in _life_cycle_finance_reports:
+                    if st.button(
+                        f"🧭 {_report_title}",
+                        key=f"life_cycle_finance_report_{_report_id}",
+                        use_container_width=True,
+                    ):
+                        st.session_state["_life_cycle_finance_report_open"] = False
+                        _open_source_reference(
+                            _report_id,
+                            "통계",
+                            "life-cycle-finance-chart-origin",
+                        )
+                        st.rerun()
+                if st.button(
+                    "닫기",
+                    key="life_cycle_finance_report_close",
+                    use_container_width=True,
+                ):
+                    st.session_state["_life_cycle_finance_report_open"] = False
+                    st.rerun()
+
+            _show_life_cycle_finance_reports()
 
         # 빅5 생애 사건 버블의 Plotly 클릭 이벤트 감지
         _event_click_bridge = _EVENT_BUBBLE_CLICK_BRIDGE(
