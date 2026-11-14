@@ -5034,6 +5034,14 @@ elif selected_page == "우리집 재정곡선":
                 row-gap: 0.65rem !important;
             }
         }
+        @media (pointer: coarse) and (orientation: landscape) {
+            /* 아이폰 가로보기: PC처럼 4개 범례를 한 줄로 배치 */
+            div.st-key-household-income-legend-guide-row[data-testid="stHorizontalBlock"] {
+                grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+                column-gap: 0.5rem !important;
+                row-gap: 0 !important;
+            }
+        }
         /* 팝오버 내용은 별도 레이어로 렌더링되므로 버튼 고유 key로 직접 지정 */
         div[class*="st-key-household_income_legend_report_"] [data-testid="stButton"] button,
         div[class*="st-key-household_expense_legend_report_"] [data-testid="stButton"] button,
