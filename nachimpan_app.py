@@ -5014,7 +5014,8 @@ elif selected_page == "우리집 재정곡선":
             justify-items: stretch !important;
             column-gap: 0.5rem !important;
             row-gap: 0.55rem !important;
-            margin: 0 0 0.35rem 0 !important;
+            margin: -2.4rem 0 0.35rem 0 !important;
+            transform: translateY(54px) !important;
             position: relative !important;
             z-index: 5 !important;
         }
