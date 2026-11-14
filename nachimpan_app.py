@@ -5193,16 +5193,7 @@ elif selected_page == "우리집 재정곡선":
                             "household-income-legend-guide-origin",
                         )
 
-        _life_cycle_chart_state = st.plotly_chart(
-            fig_my_nta,
-            use_container_width=True,
-            key="life_cycle_finance_chart",
-            on_select="rerun",
-            selection_mode="points",
-            config={"displayModeBar": False, "scrollZoom": False, "doubleClick": False, "showAxisDragHandles": False},
-        )
-
-        # 첫 번째 이벤트 버블의 선택 Trace 번호로 대상을 판별해 보고서 창을 표시
+        # 첫 번째 이벤트 버블의 선택 결과는 콜백에서 앱 본문 실행 전에 처리
         _event_bubble_report_map = {
             "나의 결혼": ("19. 나의 결혼", "6052000-00"),
             "출산·육아": ("20. 출산과 육아", "6052100-00"),
@@ -5211,19 +5202,33 @@ elif selected_page == "우리집 재정곡선":
             "자녀 결혼": ("23. 자녀 결혼", "6052400-00"),
         }
 
-        _selected_event_points = _life_cycle_chart_state.selection.points
-        _click_target_is_selected = any(
-            point.get("curve_number") == first_clickable_event_trace_index
-            for point in _selected_event_points
-        )
+        def _handle_event_bubble_selection():
+            _chart_event = st.session_state.get("life_cycle_finance_chart")
+            _selected_points = (
+                _chart_event.selection.points
+                if _chart_event is not None
+                else []
+            )
+            _click_target_is_selected = any(
+                point.get("curve_number") == first_clickable_event_trace_index
+                for point in _selected_points
+            )
 
-        if _click_target_is_selected and first_clickable_event_name in _event_bubble_report_map:
-            if st.session_state.get("_event_bubble_last_selection") != first_clickable_event_name:
+            if _click_target_is_selected and first_clickable_event_name in _event_bubble_report_map:
                 st.session_state["_event_bubble_last_selection"] = first_clickable_event_name
                 st.session_state["_event_bubble_report_open"] = True
-        elif not _click_target_is_selected:
-            # 선택 해제 후 다시 누르면 보고서 창을 다시 열 수 있도록 상태 초기화
-            st.session_state.pop("_event_bubble_last_selection", None)
+            else:
+                # 다른 점을 선택하거나 선택을 해제하면 이전 사건 선택을 초기화
+                st.session_state.pop("_event_bubble_last_selection", None)
+
+        st.plotly_chart(
+            fig_my_nta,
+            use_container_width=True,
+            key="life_cycle_finance_chart",
+            on_select=_handle_event_bubble_selection,
+            selection_mode="points",
+            config={"displayModeBar": False, "scrollZoom": False, "doubleClick": False, "showAxisDragHandles": False},
+        )
 
         if st.session_state.get("_event_bubble_report_open", False):
             _active_event_name = st.session_state.get("_event_bubble_last_selection")
