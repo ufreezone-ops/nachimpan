@@ -44,43 +44,32 @@ _EVENT_BUBBLE_CLICK_BRIDGE = st.components.v2.component(
 export default function(component) {
     const { data, setStateValue, setTriggerValue } = component;
     const targetNames = new Set((data && data.target_names) || []);
+    const clickAnywhere = Boolean(data && data.click_anywhere);
+    const containerSelector = (data && data.container_selector) || "";
     let graphElement = null;
     let clickHandler = null;
     let annotationClickHandler = null;
-    let clickContainer = null;
-    let containerClickHandler = null;
+    let documentClickHandler = null;
+    let clickSequence = 0;
 
-    function detach() {
+    function detachGraph() {
         if (graphElement && typeof graphElement.removeListener === "function") {
             if (clickHandler) graphElement.removeListener("plotly_click", clickHandler);
             if (annotationClickHandler) graphElement.removeListener("plotly_clickannotation", annotationClickHandler);
         }
-        if (clickContainer && containerClickHandler) {
-            clickContainer.removeEventListener("click", containerClickHandler, true);
-        }
         graphElement = null;
         clickHandler = null;
         annotationClickHandler = null;
-        clickContainer = null;
-        containerClickHandler = null;
     }
 
     function attach() {
         const graphSelector = (data && data.graph_selector) ||
             ".st-key-life_cycle_finance_chart .js-plotly-plot";
         const nextGraph = document.querySelector(graphSelector);
-        const nextContainer = (data && data.click_anywhere && data.container_selector)
-            ? document.querySelector(data.container_selector)
-            : null;
-        const graphReady = nextGraph && typeof nextGraph.on === "function";
-        const graphChanged = graphReady && nextGraph !== graphElement;
-        const containerChanged = nextContainer && nextContainer !== clickContainer;
-        if (!graphChanged && !containerChanged) return;
-
-        detach();
-        if (graphReady) {
+        if (nextGraph && typeof nextGraph.on === "function" && nextGraph !== graphElement) {
+            detachGraph();
             graphElement = nextGraph;
-            setStateValue("bridge_status", "그래프 연결됨");
+            if (clickAnywhere) setStateValue("bridge_status", "차트 클릭 감지 연결됨");
             clickHandler = function(eventData) {
                 const points = (eventData && eventData.points) || [];
                 const pointNames = points.map((point) =>
@@ -89,7 +78,6 @@ export default function(component) {
                     "(이름 없음)"
                 );
                 setTriggerValue("click_probe", pointNames.join(", ") || "클릭 이벤트 수신, 데이터 점 없음");
-
                 for (const point of points) {
                     const eventName =
                         (point.data && point.data.name) ||
@@ -112,12 +100,25 @@ export default function(component) {
             graphElement.on("plotly_clickannotation", annotationClickHandler);
         }
 
-        if (nextContainer) {
-            clickContainer = nextContainer;
-            containerClickHandler = function() {
-                setTriggerValue("clicked_cumulative_chart", "open");
+        if (clickAnywhere && containerSelector &&
+            document.querySelector(containerSelector) && !documentClickHandler) {
+            documentClickHandler = function(event) {
+                const rawTarget = event.target;
+                const target = rawTarget && rawTarget.nodeType === 1
+                    ? rawTarget
+                    : (rawTarget && rawTarget.parentElement);
+                if (!target || typeof target.closest !== "function") return;
+                if (target.closest(containerSelector)) {
+                    clickSequence += 1;
+                    setTriggerValue(
+                        "clicked_cumulative_chart",
+                        String(Date.now()) + "-" + String(clickSequence)
+                    );
+                }
             };
-            clickContainer.addEventListener("click", containerClickHandler, true);
+            // 캡처 단계에서 받아 Plotly 내부 요소나 범례 클릭에도 동일하게 반응
+            document.addEventListener("click", documentClickHandler, true);
+            setStateValue("bridge_status", "차트 전체 클릭 영역 연결됨");
         }
     }
 
@@ -127,11 +128,14 @@ export default function(component) {
 
     return () => {
         observer.disconnect();
-        detach();
+        detachGraph();
+        if (documentClickHandler) {
+            document.removeEventListener("click", documentClickHandler, true);
+        }
+        documentClickHandler = null;
     };
 }
-""",
-)
+"""
 
 #########################################################
 # 1.02 | 전역 통합 테마 디자인 시스템 CSS
