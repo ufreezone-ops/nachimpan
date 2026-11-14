@@ -5259,14 +5259,10 @@ elif selected_page == "우리집 재정곡선":
             config={"displayModeBar": False, "scrollZoom": False, "doubleClick": False, "showAxisDragHandles": False},
         )
 
-        # 첫 번째 이벤트 버블의 Plotly 클릭 이벤트만 감지
+        # 빅5 생애 사건 버블의 Plotly 클릭 이벤트 감지
         _event_click_bridge = _EVENT_BUBBLE_CLICK_BRIDGE(
             data={
-                "target_names": (
-                    [first_clickable_event_name]
-                    if first_clickable_event_name in _event_bubble_report_map
-                    else []
-                )
+                "target_names": list(_event_bubble_report_map.keys())
             },
             key="event_bubble_click_bridge",
             on_bridge_status_change=lambda: None,
