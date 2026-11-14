@@ -4779,7 +4779,10 @@ elif selected_page == "우리집 재정곡선":
                 )
             ), row=1, col=1)
 
-            if first_clickable_event_name is None:
+            if (
+                first_clickable_event_name is None
+                and event["name"] in ("나의 결혼", "출산·육아", "주택구입", "자녀 대학", "자녀 결혼")
+            ):
                 first_clickable_event_name = event["name"]
 
             # 이벤트 타이틀: 버블 중심에서 반지름의 절반만큼 안쪽으로 배치
