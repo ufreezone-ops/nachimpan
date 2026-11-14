@@ -5005,6 +5005,11 @@ elif selected_page == "우리집 재정곡선":
         <div id="statistical-household-income-origin"></div>
         <div id="household-income-legend-guide-origin" style="scroll-margin-top: 120px;"></div>
         <style>
+        /* 제목과 범례 사이의 빈 anchor 블록이 만드는 기본 세로 간격 한 칸을 축소 */
+        div[data-testid="stElementContainer"]:has(#statistical-household-income-origin) {
+            margin-top: -8px !important;
+            margin-bottom: -8px !important;
+        }
         /* PC 4열, 터치 기기 2x2: 각 항목의 기준 폭과 우측 정렬을 통일 */
         div.st-key-household-income-legend-guide-row[data-testid="stHorizontalBlock"] {
             display: grid !important;
