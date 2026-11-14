@@ -46,13 +46,16 @@ export default function(component) {
     const targetNames = new Set((data && data.target_names) || []);
     let graphElement = null;
     let clickHandler = null;
+    let annotationClickHandler = null;
 
     function detach() {
-        if (graphElement && clickHandler && typeof graphElement.removeListener === "function") {
-            graphElement.removeListener("plotly_click", clickHandler);
+        if (graphElement && typeof graphElement.removeListener === "function") {
+            if (clickHandler) graphElement.removeListener("plotly_click", clickHandler);
+            if (annotationClickHandler) graphElement.removeListener("plotly_clickannotation", annotationClickHandler);
         }
         graphElement = null;
         clickHandler = null;
+        annotationClickHandler = null;
     }
 
     function attach() {
@@ -86,6 +89,15 @@ export default function(component) {
             }
         };
         graphElement.on("plotly_click", clickHandler);
+
+        annotationClickHandler = function(eventData) {
+            const annotation = (eventData && (eventData.annotation || eventData.fullAnnotation)) || {};
+            const annotationText = String(annotation.text || "");
+            if (annotationText.startsWith("은퇴 (")) {
+                setTriggerValue("clicked_retirement_annotation", annotationText);
+            }
+        };
+        graphElement.on("plotly_clickannotation", annotationClickHandler);
     }
 
     const observer = new MutationObserver(attach);
@@ -4906,7 +4918,9 @@ elif selected_page == "우리집 재정곡선":
             showarrow=False,
             font=dict(size=11, color=retire_line_color, weight="bold"),
             bgcolor="rgba(15, 23, 42, 0.9)",
-            bordercolor=retire_line_color, borderwidth=1.2, borderpad=3
+            bordercolor=retire_line_color, borderwidth=1.2, borderpad=3,
+            captureevents=True,
+            hovertext="은퇴 관련 통계 리포트 보기"
         )
 
         # [Row 2] 0선 기준선 및 가구 순수지 영역 (20세~기대수명)
@@ -5306,7 +5320,11 @@ elif selected_page == "우리집 재정곡선":
             on_bridge_status_change=lambda: None,
             on_click_probe_change=lambda: None,
             on_clicked_event_change=lambda: None,
+            on_clicked_retirement_annotation_change=lambda: None,
         )
+        if _event_click_bridge.clicked_retirement_annotation:
+            st.session_state["_retirement_annotation_report_open"] = True
+
         if _event_click_bridge.clicked_event in _event_bubble_report_map:
             st.session_state["_event_bubble_last_selection"] = _event_click_bridge.clicked_event
             st.session_state["_event_bubble_report_open"] = True
@@ -5335,6 +5353,33 @@ elif selected_page == "우리집 재정곡선":
                         st.rerun()
 
                 _show_event_bubble_report()
+
+        if st.session_state.get("_retirement_annotation_report_open", False):
+            @st.dialog("은퇴 관련 통계 자료")
+            def _show_retirement_annotation_reports():
+                st.caption("은퇴 시점과 관련된 통계 리포트입니다.")
+                _retirement_annotation_reports = [
+                    ("18. 은퇴와 수입 단절", "6051900-00"),
+                    ("9. 고령층 근로연령 통계", "6051000-00"),
+                    ("10. 통계로 본 대한민국 3대 은퇴 분기점", "6051100-00"),
+                ]
+                for _report_title, _report_id in _retirement_annotation_reports:
+                    if st.button(
+                        f"🧭 {_report_title}",
+                        key=f"retirement_annotation_report_{_report_id}",
+                        use_container_width=True,
+                    ):
+                        st.session_state["_retirement_annotation_report_open"] = False
+                        _open_source_reference(
+                            _report_id,
+                            "우리집 재정곡선",
+                            "life-cycle-finance-chart-origin",
+                        )
+                if st.button("닫기", key="retirement_annotation_report_close", use_container_width=True):
+                    st.session_state["_retirement_annotation_report_open"] = False
+                    st.rerun()
+
+            _show_retirement_annotation_reports()
 
         # 생애주기 누적 총액은 그래프 해석의 혼선을 줄이기 위해 표시하지 않는다.
 
