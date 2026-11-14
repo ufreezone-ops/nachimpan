@@ -2850,7 +2850,8 @@ if selected_page == "우리집 가계부":
                 xanchor="center",
                 x=0.5
             ),
-            hovermode="x unified"
+            hovermode="x unified",
+            clickmode="event+select",
         )
 
         st.plotly_chart(
@@ -4682,6 +4683,8 @@ elif selected_page == "우리집 재정곡선":
 
 #############    6.04.03.09 | 이벤트 버블 마커 Trace 생성
         max_event_total = max((event.get("display_total", event["total"]) for event in event_costs), default=1.0)
+        # 첫 번째로 표시되는 생애 사건 버블만 클릭 연결 실험 대상으로 지정
+        first_clickable_event_added = False
 
         for event in event_costs:
             event_mid_age = event.get("center", (event["start"] + event["end"] - 1) / 2.0)
@@ -4718,6 +4721,24 @@ elif selected_page == "우리집 재정곡선":
                     "<extra></extra>"
                 )
             ), row=1, col=1)
+
+            # 첫 번째 표시 버블에만 투명 클릭 레이어를 겹쳐 PC 클릭·모바일 터치를 시험
+            if not first_clickable_event_added:
+                fig_my_nta.add_trace(go.Scatter(
+                    x=[event_mid_age],
+                    y=[event_y],
+                    mode="markers",
+                    marker=dict(
+                        size=max(marker_size, 34),
+                        color="rgba(0, 0, 0, 0.01)",
+                        line=dict(width=0),
+                    ),
+                    customdata=[event["name"]],
+                    name="_event_bubble_click_target",
+                    showlegend=False,
+                    hoverinfo="skip",
+                ), row=1, col=1)
+                first_clickable_event_added = True
 
             # 이벤트 타이틀: 버블 중심에서 반지름의 절반만큼 안쪽으로 배치
             title_shift = marker_size * 0.25
@@ -5168,7 +5189,57 @@ elif selected_page == "우리집 재정곡선":
                             "household-income-legend-guide-origin",
                         )
 
-        st.plotly_chart(fig_my_nta, use_container_width=True, config={"displayModeBar": False, "scrollZoom": False, "doubleClick": False, "showAxisDragHandles": False})
+        _life_cycle_chart_state = st.plotly_chart(
+            fig_my_nta,
+            use_container_width=True,
+            key="life_cycle_finance_chart",
+            on_select="rerun",
+            selection_mode="points",
+            config={"displayModeBar": False, "scrollZoom": False, "doubleClick": False, "showAxisDragHandles": False},
+        )
+
+        # 첫 번째 이벤트 버블 클릭 시 해당 사건의 보고서 목록을 대화상자로 표시
+        _event_bubble_report_map = {
+            "나의 결혼": ("19. 나의 결혼", "6052000-00"),
+            "출산·육아": ("20. 출산과 육아", "6052100-00"),
+            "주택구입": ("21. 주택구입", "6052200-00"),
+            "자녀 대학": ("22. 자녀 대학", "6052300-00"),
+            "자녀 결혼": ("23. 자녀 결혼", "6052400-00"),
+        }
+        _selected_event_points = _life_cycle_chart_state.selection.points
+        if _selected_event_points:
+            _selected_event_name = _selected_event_points[-1].get("customdata")
+            if isinstance(_selected_event_name, (list, tuple)) and _selected_event_name:
+                _selected_event_name = _selected_event_name[0]
+            if _selected_event_name in _event_bubble_report_map:
+                _previous_event_selection = st.session_state.get("_event_bubble_last_selection")
+                if _selected_event_name != _previous_event_selection:
+                    st.session_state["_event_bubble_last_selection"] = _selected_event_name
+                    st.session_state["_event_bubble_report_open"] = True
+
+        if st.session_state.get("_event_bubble_report_open", False):
+            _active_event_name = st.session_state.get("_event_bubble_last_selection")
+            _active_event_report = _event_bubble_report_map.get(_active_event_name)
+            if _active_event_report:
+                @st.dialog("생애 사건 관련 자료")
+                def _show_event_bubble_report():
+                    st.markdown(f"**{_active_event_name}**")
+                    st.caption("이 그래프 요소의 산출 근거를 확인할 수 있습니다.")
+                    if st.button(
+                        f"🧭 {_active_event_report[0]}",
+                        key="event_bubble_report_open_source",
+                        use_container_width=True,
+                    ):
+                        _open_source_reference(
+                            _active_event_report[1],
+                            "우리집 재정곡선",
+                            "household-major-events",
+                        )
+                    if st.button("닫기", key="event_bubble_report_close", use_container_width=True):
+                        st.session_state["_event_bubble_report_open"] = False
+                        st.rerun()
+
+                _show_event_bubble_report()
 
         # 생애주기 누적 총액은 그래프 해석의 혼선을 줄이기 위해 표시하지 않는다.
 
