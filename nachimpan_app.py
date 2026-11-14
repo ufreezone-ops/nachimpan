@@ -135,7 +135,8 @@ export default function(component) {
         documentClickHandler = null;
     };
 }
-"""
+""",
+)
 
 #########################################################
 # 1.02 | 전역 통합 테마 디자인 시스템 CSS
