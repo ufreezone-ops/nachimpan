@@ -243,11 +243,15 @@ footer {
     width: max-content !important;
     min-width: 0 !important;
 }
-.st-key-event_bubble_report_open_source [data-testid="stButton"] button {
+.st-key-event-bubble-report-dialog [data-testid="stButton"] button {
     justify-content: flex-start !important;
     text-align: left !important;
 }
-.st-key-event_bubble_report_open_source [data-testid="stButton"] button p {
+.st-key-event-bubble-report-dialog [data-testid="stButton"] button > div {
+    width: 100% !important;
+    justify-content: flex-start !important;
+}
+.st-key-event-bubble-report-dialog [data-testid="stButton"] button p {
     width: 100% !important;
     text-align: left !important;
 }
@@ -5294,16 +5298,17 @@ elif selected_page == "우리집 재정곡선":
                 def _show_event_bubble_report():
                     st.markdown(f"**{_active_event_name}**")
                     st.caption("이 그래프 요소의 산출 근거를 확인할 수 있습니다.")
-                    if st.button(
-                        f"🧭 {_active_event_report[0]}",
-                        key="event_bubble_report_open_source",
-                        use_container_width=True,
-                    ):
-                        _open_source_reference(
-                            _active_event_report[1],
-                            "우리집 재정곡선",
-                            "life-cycle-finance-chart-origin",
-                        )
+                    with st.container(key="event-bubble-report-dialog"):
+                        if st.button(
+                            f"🧭 {_active_event_report[0]}",
+                            key="event_bubble_report_open_source",
+                            use_container_width=True,
+                        ):
+                            _open_source_reference(
+                                _active_event_report[1],
+                                "우리집 재정곡선",
+                                "life-cycle-finance-chart-origin",
+                            )
                     if st.button("닫기", key="event_bubble_report_close", use_container_width=True):
                         st.session_state["_event_bubble_report_open"] = False
                         st.rerun()
