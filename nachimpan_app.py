@@ -3879,6 +3879,25 @@ elif selected_page == "우리집 재정곡선":
                             "statistical-household-income-origin",
                         )
 
+                st.divider()
+                st.caption("은퇴 점선 관련 통계")
+                _retirement_guide_reports = [
+                    ("18. 은퇴와 수입 단절", "6051900-00"),
+                    ("9. 고령층 근로연령 통계", "6051000-00"),
+                    ("10. 통계로 본 대한민국 3대 은퇴 분기점", "6051100-00"),
+                ]
+                for _guide_title, _guide_id in _retirement_guide_reports:
+                    if st.button(
+                        _guide_title,
+                        key=f"chart_retirement_guide_{_guide_id}",
+                        use_container_width=True,
+                    ):
+                        _open_source_reference(
+                            _guide_id,
+                            "우리집 재정곡선",
+                            "statistical-household-income-origin",
+                        )
+
         # 기존 주거 유지·계획 확정이면 현재 주거지역을 사용하고,
         # 향후 주택구입 정보를 입력한 경우에는 예정지역을 사용한다.
         current_region = st.session_state.get("residence_region", "부산")
