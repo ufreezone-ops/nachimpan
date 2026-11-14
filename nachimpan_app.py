@@ -4751,12 +4751,12 @@ elif selected_page == "우리집 재정곡선":
             y=statistical_adjusted_income_curve,
             mode="lines",
             line=dict(color="#22C55E", width=3.0, dash="dot", shape="spline", smoothing=0.8),
-            name="가구소득(통계보정)",
+            name="통계소득",
             showlegend=False,
             connectgaps=False,
             hovertemplate=(
                 "나이: %{x}세<br>"
-                "통계적 보정 가구소득(연금 제외): "
+                "통계소득(연금 제외): "
                 "<b>%{y:,.0f}만 원</b><extra></extra>"
             ),
         ), row=1, col=1)
@@ -4765,15 +4765,15 @@ elif selected_page == "우리집 재정곡선":
             fig_my_nta.add_trace(go.Scatter(
                 x=ages_sim, y=my_income_curve, mode="lines",
                 line=dict(color="rgba(16, 185, 129, 0.40)", width=1.8, dash="dot", shape='spline'),
-                name="본인 단독소득",
+                name="본인소득",
                 showlegend=False,
-                hovertemplate="나이: %{x}세<br>본인 단독소득: <b>%{y:,.0f}만 원</b><extra></extra>"
+                hovertemplate="나이: %{x}세<br>본인소득: <b>%{y:,.0f}만 원</b><extra></extra>"
             ), row=1, col=1)
 
         fig_my_nta.add_trace(go.Scatter(
             x=ages_sim, y=household_expense_curve, mode="lines",
             line=dict(color="#F97316", width=3.2, dash="dot", shape='linear'),
-            name="가구 지출",
+            name="가구지출",
             showlegend=False,
             hovertemplate="나이: %{x}세<br>연간 가구지출: <b>%{y:,.0f}만 원</b><extra></extra>"
         ), row=1, col=1)
@@ -5055,16 +5055,16 @@ elif selected_page == "우리집 재정곡선":
                     )
 
             st.markdown(
-                '<div class="legend-static-item"><span class="legend-static-line" style="border-top:3px dotted #22C55E;"></span>가구소득(통계보정)</div>',
+                '<div class="legend-static-item"><span class="legend-static-line" style="border-top:3.2px dotted #F97316;"></span>가구지출</div>',
                 unsafe_allow_html=True,
             )
             if has_future_or_current_spouse and marriage_start is not None and marriage_start < retire_age:
                 st.markdown(
-                    '<div class="legend-static-item"><span class="legend-static-line" style="border-top:1.8px dotted rgba(16,185,129,0.65);"></span>본인 단독소득</div>',
+                    '<div class="legend-static-item"><span class="legend-static-line" style="border-top:1.8px dotted rgba(16,185,129,0.65);"></span>본인소득</div>',
                     unsafe_allow_html=True,
                 )
             st.markdown(
-                '<div class="legend-static-item"><span class="legend-static-line" style="border-top:3.2px dotted #F97316;"></span>가구 지출</div>',
+                '<div class="legend-static-item"><span class="legend-static-line" style="border-top:3px dotted #22C55E;"></span>통계소득</div>',
                 unsafe_allow_html=True,
             )
 
