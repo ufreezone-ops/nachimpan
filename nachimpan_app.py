@@ -280,6 +280,12 @@ footer {
 .st-key-life_cycle_finance_chart {
     margin-top: -0.75rem !important;
 }
+/* 누적 생애주기 차트 전체를 클릭 가능한 영역으로 안내 */
+.st-key-nta_cumulative_chart,
+.st-key-nta_cumulative_chart * {
+    cursor: pointer !important;
+    touch-action: manipulation;
+}
 .st-key-event-bubble-report-dialog [data-testid="stButton"] button,
 .st-key-retirement-annotation-report-list [data-testid="stButton"] button {
     justify-content: flex-start !important;
