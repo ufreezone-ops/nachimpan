@@ -243,6 +243,10 @@ footer {
     width: max-content !important;
     min-width: 0 !important;
 }
+/* 생애주기 재정곡선: 제목·범례와 차트 사이의 불필요한 위쪽 간격 축소 */
+.st-key-life_cycle_finance_chart {
+    margin-top: -0.75rem !important;
+}
 .st-key-event-bubble-report-dialog [data-testid="stButton"] button {
     justify-content: flex-start !important;
     text-align: left !important;
@@ -5265,10 +5269,6 @@ elif selected_page == "우리집 재정곡선":
             "자녀 결혼": ("23. 자녀 결혼", "6052400-00"),
         }
 
-        st.markdown(
-            '<div id="life-cycle-finance-chart-origin" style="scroll-margin-top: 120px;"></div>',
-            unsafe_allow_html=True,
-        )
         st.plotly_chart(
             fig_my_nta,
             use_container_width=True,
@@ -7153,6 +7153,10 @@ if _restore_anchor or _open_anchor:
         try {{
             const doc = window.parent.document;
             let target = doc.getElementById("{_scroll_target_id}");
+            if ("{_scroll_target_id}" === "life-cycle-finance-chart-origin") {{
+                target = doc.querySelector(".st-key-life_cycle_finance_chart");
+                if (target) target.style.scrollMarginTop = "110px";
+            }}
             if (!target && "{_scroll_target_id}" === "loan-payment-label-origin") {{
                 const labels = Array.from(
                     doc.querySelectorAll('[data-testid="stWidgetLabel"]')
