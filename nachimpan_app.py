@@ -5365,7 +5365,7 @@ elif selected_page == "우리집 재정곡선":
                             st.session_state["_life_cycle_finance_report_open"] = False
                             _open_source_reference(
                                 _report_id,
-                                "인생의 사계절",
+                                "우리집 재정곡선",
                                 "life-cycle-finance-chart-origin",
                             )
                             st.rerun()
