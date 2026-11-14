@@ -4905,7 +4905,7 @@ elif selected_page == "우리집 재정곡선":
                 x=0.5,
                 font=dict(size=11, color="#F1F5F9")
             ),
-            hovermode="x unified",
+            hovermode=False,
             clickmode="event+select",
         )
 
