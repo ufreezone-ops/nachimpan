@@ -4684,6 +4684,8 @@ elif selected_page == "우리집 재정곡선":
         max_event_total = max((event.get("display_total", event["total"]) for event in event_costs), default=1.0)
         # 첫 번째로 표시되는 생애 사건 버블만 클릭 연결 실험 대상으로 지정
         first_clickable_event_added = False
+        first_clickable_event_trace_index = None
+        first_clickable_event_name = None
 
         for event in event_costs:
             event_mid_age = event.get("center", (event["start"] + event["end"] - 1) / 2.0)
@@ -4723,6 +4725,8 @@ elif selected_page == "우리집 재정곡선":
 
             # 첫 번째 표시 버블에만 투명 클릭 레이어를 겹쳐 PC 클릭·모바일 터치를 시험
             if not first_clickable_event_added:
+                first_clickable_event_trace_index = len(fig_my_nta.data)
+                first_clickable_event_name = event["name"]
                 fig_my_nta.add_trace(go.Scatter(
                     x=[event_mid_age],
                     y=[event_y],
@@ -5198,7 +5202,7 @@ elif selected_page == "우리집 재정곡선":
             config={"displayModeBar": False, "scrollZoom": False, "doubleClick": False, "showAxisDragHandles": False},
         )
 
-        # 첫 번째 이벤트 버블 클릭 시 해당 사건의 보고서 목록을 대화상자로 표시
+        # 첫 번째 이벤트 버블의 선택 Trace 번호로 대상을 판별해 보고서 창을 표시
         _event_bubble_report_map = {
             "나의 결혼": ("19. 나의 결혼", "6052000-00"),
             "출산·육아": ("20. 출산과 육아", "6052100-00"),
@@ -5206,16 +5210,20 @@ elif selected_page == "우리집 재정곡선":
             "자녀 대학": ("22. 자녀 대학", "6052300-00"),
             "자녀 결혼": ("23. 자녀 결혼", "6052400-00"),
         }
+
         _selected_event_points = _life_cycle_chart_state.selection.points
-        if _selected_event_points:
-            _selected_event_name = _selected_event_points[-1].get("customdata")
-            if isinstance(_selected_event_name, (list, tuple)) and _selected_event_name:
-                _selected_event_name = _selected_event_name[0]
-            if _selected_event_name in _event_bubble_report_map:
-                _previous_event_selection = st.session_state.get("_event_bubble_last_selection")
-                if _selected_event_name != _previous_event_selection:
-                    st.session_state["_event_bubble_last_selection"] = _selected_event_name
-                    st.session_state["_event_bubble_report_open"] = True
+        _click_target_is_selected = any(
+            point.get("curve_number") == first_clickable_event_trace_index
+            for point in _selected_event_points
+        )
+
+        if _click_target_is_selected and first_clickable_event_name in _event_bubble_report_map:
+            if st.session_state.get("_event_bubble_last_selection") != first_clickable_event_name:
+                st.session_state["_event_bubble_last_selection"] = first_clickable_event_name
+                st.session_state["_event_bubble_report_open"] = True
+        elif not _click_target_is_selected:
+            # 선택 해제 후 다시 누르면 보고서 창을 다시 열 수 있도록 상태 초기화
+            st.session_state.pop("_event_bubble_last_selection", None)
 
         if st.session_state.get("_event_bubble_report_open", False):
             _active_event_name = st.session_state.get("_event_bubble_last_selection")
