@@ -5014,7 +5014,9 @@ elif selected_page == "우리집 재정곡선":
                 y=0.35,
                 xanchor="center",
                 x=0.5,
-                font=dict(size=11, color="#F1F5F9")
+                font=dict(size=11, color="#F1F5F9"),
+                itemclick=False,
+                itemdoubleclick=False,
             ),
             hovermode="closest",
             clickmode="event",
@@ -6137,8 +6139,6 @@ elif selected_page == "통계":
                     y=1.02,
                     xanchor="left",
                     x=0,
-                    itemclick=False,
-                    itemdoubleclick=False,
                 ),
             )
             st.plotly_chart(
