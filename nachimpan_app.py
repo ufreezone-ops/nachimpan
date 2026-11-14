@@ -259,15 +259,18 @@ footer {
 .st-key-life_cycle_finance_chart {
     margin-top: -0.75rem !important;
 }
-.st-key-event-bubble-report-dialog [data-testid="stButton"] button {
+.st-key-event-bubble-report-dialog [data-testid="stButton"] button,
+.st-key-retirement-annotation-report-list [data-testid="stButton"] button {
     justify-content: flex-start !important;
     text-align: left !important;
 }
-.st-key-event-bubble-report-dialog [data-testid="stButton"] button > div {
+.st-key-event-bubble-report-dialog [data-testid="stButton"] button > div,
+.st-key-retirement-annotation-report-list [data-testid="stButton"] button > div {
     width: 100% !important;
     justify-content: flex-start !important;
 }
-.st-key-event-bubble-report-dialog [data-testid="stButton"] button p {
+.st-key-event-bubble-report-dialog [data-testid="stButton"] button p,
+.st-key-retirement-annotation-report-list [data-testid="stButton"] button p {
     width: 100% !important;
     text-align: left !important;
 }
@@ -5344,18 +5347,19 @@ elif selected_page == "우리집 재정곡선":
                     ("9. 고령층 근로연령 통계", "6051000-00"),
                     ("10. 통계로 본 대한민국 3대 은퇴 분기점", "6051100-00"),
                 ]
-                for _report_title, _report_id in _retirement_annotation_reports:
-                    if st.button(
-                        f"🧭 {_report_title}",
-                        key=f"retirement_annotation_report_{_report_id}",
-                        use_container_width=True,
-                    ):
-                        st.session_state["_retirement_annotation_report_open"] = False
-                        _open_source_reference(
-                            _report_id,
-                            "우리집 재정곡선",
-                            "life-cycle-finance-chart-origin",
-                        )
+                with st.container(key="retirement-annotation-report-list"):
+                    for _report_title, _report_id in _retirement_annotation_reports:
+                        if st.button(
+                            f"🧭 {_report_title}",
+                            key=f"retirement_annotation_report_{_report_id}",
+                            use_container_width=True,
+                        ):
+                            st.session_state["_retirement_annotation_report_open"] = False
+                            _open_source_reference(
+                                _report_id,
+                                "우리집 재정곡선",
+                                "life-cycle-finance-chart-origin",
+                            )
                 if st.button("닫기", key="retirement_annotation_report_close", use_container_width=True):
                     st.session_state["_retirement_annotation_report_open"] = False
                     st.rerun()
