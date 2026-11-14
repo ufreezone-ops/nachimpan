@@ -5002,6 +5002,10 @@ elif selected_page == "우리집 재정곡선":
         div.st-key-household_expense_legend_guide [data-testid="stPopoverButton"] p::before {
             border-top: 3.2px dotted #F97316 !important;
         }
+        /* 본인소득은 차트의 반투명 청록색 점선을 그대로 표현 */
+        div.st-key-personal_income_legend_guide [data-testid="stPopoverButton"] p::before {
+            border-top: 2px dotted rgba(16, 185, 129, 0.40) !important;
+        }
         div.st-key-statistical_income_legend_guide [data-testid="stPopoverButton"] p::before {
             border-top: 3px dotted #22C55E !important;
         }
@@ -5030,23 +5034,33 @@ elif selected_page == "우리집 재정곡선":
                 row-gap: 0.65rem !important;
             }
         }
+        /* 보고서 팝오버 안의 버튼은 PC·모바일 모두 좌측 정렬 */
+        div.st-key-household-income-legend-guide-row [data-testid="stPopoverBody"] [data-testid="stButton"] button,
+        div.st-key-household-income-legend-guide-row [data-testid="stPopoverBody"] [data-testid="stButton"] button > div {
+            justify-content: flex-start !important;
+            text-align: left !important;
+        }
+        div.st-key-household-income-legend-guide-row [data-testid="stPopoverBody"] [data-testid="stButton"] button p {
+            width: 100% !important;
+            text-align: left !important;
+        }
         @media (pointer: coarse) {
-            /* 아이폰: 2x2 배치는 유지하고 각 항목 내부 텍스트·선만 좌측 정렬 */
+            /* 아이폰: 2x2 배치는 유지하고 각 범례 항목 내부를 중앙 정렬 */
             div.st-key-household-income-legend-guide-row > div,
             div.st-key-household-income-legend-guide-row [data-testid="stPopover"],
             div.st-key-household-income-legend-guide-row [data-testid="stPopover"] > div,
             div.st-key-household-income-legend-guide-row [data-testid="stPopoverButton"],
             div.st-key-household-income-legend-guide-row [data-testid="stPopoverButton"] > div,
             div.st-key-household-income-legend-guide-row [data-testid="stTooltipHoverTarget"] {
-                justify-content: flex-start !important;
-                text-align: left !important;
+                justify-content: center !important;
+                text-align: center !important;
             }
             div.st-key-household-income-legend-guide-row .legend-static-item {
-                justify-content: flex-start !important;
-                text-align: left !important;
+                justify-content: center !important;
+                text-align: center !important;
             }
             div.st-key-household-income-legend-guide-row [data-testid="stPopoverButton"] p {
-                text-align: left !important;
+                text-align: center !important;
             }
         }
         @media (pointer: fine) {
