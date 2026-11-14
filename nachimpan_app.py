@@ -243,6 +243,15 @@ footer {
     width: max-content !important;
     min-width: 0 !important;
 }
+.st-key-event_bubble_report_open_source [data-testid="stButton"] button {
+    justify-content: flex-start !important;
+    text-align: left !important;
+}
+.st-key-event_bubble_report_open_source [data-testid="stButton"] button p {
+    width: 100% !important;
+    text-align: left !important;
+}
+
 .loan-payment-label-text {
     display: inline-block;
     margin: 0 !important;
@@ -5252,6 +5261,10 @@ elif selected_page == "우리집 재정곡선":
             "자녀 결혼": ("23. 자녀 결혼", "6052400-00"),
         }
 
+        st.markdown(
+            '<div id="life-cycle-finance-chart-origin" style="scroll-margin-top: 120px;"></div>',
+            unsafe_allow_html=True,
+        )
         st.plotly_chart(
             fig_my_nta,
             use_container_width=True,
@@ -5268,15 +5281,6 @@ elif selected_page == "우리집 재정곡선":
             on_bridge_status_change=lambda: None,
             on_click_probe_change=lambda: None,
             on_clicked_event_change=lambda: None,
-        )
-        st.caption(
-            "클릭 연결 진단: "
-            + str(_event_click_bridge.bridge_status or "그래프 연결 대기 중")
-            + (
-                " · 최근 감지: " + str(_event_click_bridge.click_probe)
-                if _event_click_bridge.click_probe
-                else ""
-            )
         )
         if _event_click_bridge.clicked_event in _event_bubble_report_map:
             st.session_state["_event_bubble_last_selection"] = _event_click_bridge.clicked_event
@@ -5298,7 +5302,7 @@ elif selected_page == "우리집 재정곡선":
                         _open_source_reference(
                             _active_event_report[1],
                             "우리집 재정곡선",
-                            "household-major-events",
+                            "life-cycle-finance-chart-origin",
                         )
                     if st.button("닫기", key="event_bubble_report_close", use_container_width=True):
                         st.session_state["_event_bubble_report_open"] = False
