@@ -5030,6 +5030,25 @@ elif selected_page == "우리집 재정곡선":
                 row-gap: 0.65rem !important;
             }
         }
+        @media (pointer: coarse) {
+            /* 아이폰: 2x2 배치는 유지하고 각 항목 내부 텍스트·선만 좌측 정렬 */
+            div.st-key-household-income-legend-guide-row > div,
+            div.st-key-household-income-legend-guide-row [data-testid="stPopover"],
+            div.st-key-household-income-legend-guide-row [data-testid="stPopover"] > div,
+            div.st-key-household-income-legend-guide-row [data-testid="stPopoverButton"],
+            div.st-key-household-income-legend-guide-row [data-testid="stPopoverButton"] > div,
+            div.st-key-household-income-legend-guide-row [data-testid="stTooltipHoverTarget"] {
+                justify-content: flex-start !important;
+                text-align: left !important;
+            }
+            div.st-key-household-income-legend-guide-row .legend-static-item {
+                justify-content: flex-start !important;
+                text-align: left !important;
+            }
+            div.st-key-household-income-legend-guide-row [data-testid="stPopoverButton"] p {
+                text-align: left !important;
+            }
+        }
         @media (pointer: fine) {
             div.st-key-household-income-legend-guide-row[data-testid="stHorizontalBlock"] {
                 grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
@@ -5084,10 +5103,15 @@ elif selected_page == "우리집 재정곡선":
                             "household-income-legend-guide-origin",
                         )
 
-            st.markdown(
-                '<div class="legend-static-item"><span class="legend-static-line" style="border-top:1.8px dotted rgba(16,185,129,0.65);"></span>본인소득</div>',
-                unsafe_allow_html=True,
-            )
+            with st.popover(
+                "본인소득",
+                key="personal_income_legend_guide",
+                help="본인소득 곡선의 설명",
+                type="tertiary",
+                width="content",
+            ):
+                st.markdown("**본인소득**")
+                st.caption("인터뷰이가 입력한 본인 명의의 근로·사업·기타 소득 흐름입니다. 가구 전체 소득과 구분하여 본인의 경제적 독립성과 소득 변화를 살펴봅니다.")
 
             with st.popover(
                 "통계소득",
