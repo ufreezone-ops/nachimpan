@@ -288,16 +288,19 @@ footer {
     cursor: pointer !important;
     touch-action: manipulation;
 }
+.st-key-life-cycle-finance-report-dialog [data-testid="stButton"] button,
 .st-key-event-bubble-report-dialog [data-testid="stButton"] button,
 .st-key-retirement-annotation-report-list [data-testid="stButton"] button {
     justify-content: flex-start !important;
     text-align: left !important;
 }
+.st-key-life-cycle-finance-report-dialog [data-testid="stButton"] button > div,
 .st-key-event-bubble-report-dialog [data-testid="stButton"] button > div,
 .st-key-retirement-annotation-report-list [data-testid="stButton"] button > div {
     width: 100% !important;
     justify-content: flex-start !important;
 }
+.st-key-life-cycle-finance-report-dialog [data-testid="stButton"] button p,
 .st-key-event-bubble-report-dialog [data-testid="stButton"] button p,
 .st-key-retirement-annotation-report-list [data-testid="stButton"] button p {
     width: 100% !important;
@@ -5346,32 +5349,33 @@ elif selected_page == "우리집 재정곡선":
         if st.session_state.get("_life_cycle_finance_report_open", False):
             @st.dialog("관련 통계자료")
             def _show_life_cycle_finance_reports():
-                st.caption("이 차트의 해석과 산출 근거를 함께 살펴볼 수 있는 자료입니다.")
-                _life_cycle_finance_reports = [
-                    ("1. 소득과 소비의 생애주기", "6050200-00"),
-                    ("11. 우리 가정 생애주기 소득곡선의 통계적 보정", "6051200-00"),
-                    ("13. 지출 통계 출처 및 산출방법", "6051400-00"),
-                ]
-                for _report_title, _report_id in _life_cycle_finance_reports:
+                with st.container(key="life-cycle-finance-report-dialog"):
+                    st.caption("이 차트의 해석과 산출 근거를 함께 살펴볼 수 있는 자료입니다.")
+                    _life_cycle_finance_reports = [
+                        ("1. 소득과 소비의 생애주기", "6050200-00"),
+                        ("11. 우리 가정 생애주기 소득곡선의 통계적 보정", "6051200-00"),
+                        ("13. 지출 통계 출처 및 산출방법", "6051400-00"),
+                    ]
+                    for _report_title, _report_id in _life_cycle_finance_reports:
+                        if st.button(
+                            f"🧭 {_report_title}",
+                            key=f"life_cycle_finance_report_{_report_id}",
+                            use_container_width=True,
+                        ):
+                            st.session_state["_life_cycle_finance_report_open"] = False
+                            _open_source_reference(
+                                _report_id,
+                                "통계",
+                                "life-cycle-finance-chart-origin",
+                            )
+                            st.rerun()
                     if st.button(
-                        f"🧭 {_report_title}",
-                        key=f"life_cycle_finance_report_{_report_id}",
+                        "닫기",
+                        key="life_cycle_finance_report_close",
                         use_container_width=True,
                     ):
                         st.session_state["_life_cycle_finance_report_open"] = False
-                        _open_source_reference(
-                            _report_id,
-                            "통계",
-                            "life-cycle-finance-chart-origin",
-                        )
                         st.rerun()
-                if st.button(
-                    "닫기",
-                    key="life_cycle_finance_report_close",
-                    use_container_width=True,
-                ):
-                    st.session_state["_life_cycle_finance_report_open"] = False
-                    st.rerun()
 
             _show_life_cycle_finance_reports()
 
