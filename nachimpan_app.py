@@ -42,7 +42,7 @@ _EVENT_BUBBLE_CLICK_BRIDGE = st.components.v2.component(
     isolate_styles=False,
     js=r"""
 export default function(component) {
-    const { data, setTriggerValue } = component;
+    const { data, setStateValue, setTriggerValue } = component;
     const targetNames = new Set((data && data.target_names) || []);
     let graphElement = null;
     let clickHandler = null;
@@ -65,8 +65,16 @@ export default function(component) {
 
         detach();
         graphElement = nextGraph;
+        setStateValue("bridge_status", "그래프 연결됨");
         clickHandler = function(eventData) {
             const points = (eventData && eventData.points) || [];
+            const pointNames = points.map((point) =>
+                (point.data && point.data.name) ||
+                (point.fullData && point.fullData.name) ||
+                "(이름 없음)"
+            );
+            setTriggerValue("click_probe", pointNames.join(", ") || "클릭 이벤트 수신, 데이터 점 없음");
+
             for (const point of points) {
                 const eventName =
                     (point.data && point.data.name) ||
@@ -4951,7 +4959,7 @@ elif selected_page == "우리집 재정곡선":
                 x=0.5,
                 font=dict(size=11, color="#F1F5F9")
             ),
-            hovermode=False,
+            hovermode="closest",
             clickmode="event",
         )
 
@@ -5261,7 +5269,18 @@ elif selected_page == "우리집 재정곡선":
                 )
             },
             key="event_bubble_click_bridge",
+            on_bridge_status_change=lambda: None,
+            on_click_probe_change=lambda: None,
             on_clicked_event_change=lambda: None,
+        )
+        st.caption(
+            "클릭 연결 진단: "
+            + str(_event_click_bridge.bridge_status or "그래프 연결 대기 중")
+            + (
+                " · 최근 감지: " + str(_event_click_bridge.click_probe)
+                if _event_click_bridge.click_probe
+                else ""
+            )
         )
         if _event_click_bridge.clicked_event in _event_bubble_report_map:
             st.session_state["_event_bubble_last_selection"] = _event_click_bridge.clicked_event
