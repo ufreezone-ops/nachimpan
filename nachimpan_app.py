@@ -25,6 +25,64 @@ import numpy as np
 import plotly.graph_objects as go
 
 #--------------------------------------------------------
+# 1.01.01.01 | Plotly 클릭 이벤트를 Streamlit으로 전달하는 브리지
+#--------------------------------------------------------
+_EVENT_BUBBLE_CLICK_BRIDGE = st.components.v2.component(
+    name="nachimpan_event_bubble_click_bridge",
+    isolate_styles=False,
+    js=r"""
+export default function(component) {
+    const { data, setTriggerValue } = component;
+    const targetNames = new Set((data && data.target_names) || []);
+    let graphElement = null;
+    let clickHandler = null;
+
+    function detach() {
+        if (graphElement && clickHandler && typeof graphElement.removeListener === "function") {
+            graphElement.removeListener("plotly_click", clickHandler);
+        }
+        graphElement = null;
+        clickHandler = null;
+    }
+
+    function attach() {
+        const nextGraph = document.querySelector(
+            ".st-key-life_cycle_finance_chart .js-plotly-plot"
+        );
+        if (!nextGraph || typeof nextGraph.on !== "function" || nextGraph === graphElement) {
+            return;
+        }
+
+        detach();
+        graphElement = nextGraph;
+        clickHandler = function(eventData) {
+            const points = (eventData && eventData.points) || [];
+            for (const point of points) {
+                const eventName =
+                    (point.data && point.data.name) ||
+                    (point.fullData && point.fullData.name);
+                if (eventName && targetNames.has(eventName)) {
+                    setTriggerValue("clicked_event", eventName);
+                    break;
+                }
+            }
+        };
+        graphElement.on("plotly_click", clickHandler);
+    }
+
+    const observer = new MutationObserver(attach);
+    observer.observe(document.body, { childList: true, subtree: true });
+    attach();
+
+    return () => {
+        observer.disconnect();
+        detach();
+    };
+}
+""",
+)
+
+#--------------------------------------------------------
 # 1.01.02 | Streamlit 기본 페이지 및 레이아웃 설정
 #--------------------------------------------------------
 st.set_page_config(
@@ -4682,9 +4740,7 @@ elif selected_page == "우리집 재정곡선":
 
 #############    6.04.03.09 | 이벤트 버블 마커 Trace 생성
         max_event_total = max((event.get("display_total", event["total"]) for event in event_costs), default=1.0)
-        # 첫 번째로 표시되는 생애 사건 버블만 클릭 연결 실험 대상으로 지정
-        first_clickable_event_added = False
-        first_clickable_event_trace_index = None
+        # 첫 번째 표시 버블을 클릭 연결 대상으로 지정
         first_clickable_event_name = None
 
         for event in event_costs:
@@ -4723,25 +4779,8 @@ elif selected_page == "우리집 재정곡선":
                 )
             ), row=1, col=1)
 
-            # 첫 번째 표시 버블에만 투명 클릭 레이어를 겹쳐 PC 클릭·모바일 터치를 시험
-            if not first_clickable_event_added:
-                first_clickable_event_trace_index = len(fig_my_nta.data)
+            if first_clickable_event_name is None:
                 first_clickable_event_name = event["name"]
-                fig_my_nta.add_trace(go.Scatter(
-                    x=[event_mid_age],
-                    y=[event_y],
-                    mode="markers",
-                    marker=dict(
-                        size=max(marker_size, 34),
-                        color="rgba(0, 0, 0, 0.01)",
-                        line=dict(width=0),
-                    ),
-                    customdata=[event["name"]],
-                    name="_event_bubble_click_target",
-                    showlegend=False,
-                    hoverinfo="skip",
-                ), row=1, col=1)
-                first_clickable_event_added = True
 
             # 이벤트 타이틀: 버블 중심에서 반지름의 절반만큼 안쪽으로 배치
             title_shift = marker_size * 0.25
@@ -4910,7 +4949,7 @@ elif selected_page == "우리집 재정곡선":
                 font=dict(size=11, color="#F1F5F9")
             ),
             hovermode=False,
-            clickmode="event+select",
+            clickmode="event",
         )
 
         # X축: 20세부터 성별 기대수명까지 10년 단위 정렬
@@ -5193,7 +5232,7 @@ elif selected_page == "우리집 재정곡선":
                             "household-income-legend-guide-origin",
                         )
 
-        # 첫 번째 이벤트 버블의 선택 결과는 콜백에서 앱 본문 실행 전에 처리
+        # 생애 사건별 통계 보고서 연결 정보
         _event_bubble_report_map = {
             "나의 결혼": ("19. 나의 결혼", "6052000-00"),
             "출산·육아": ("20. 출산과 육아", "6052100-00"),
@@ -5202,33 +5241,28 @@ elif selected_page == "우리집 재정곡선":
             "자녀 결혼": ("23. 자녀 결혼", "6052400-00"),
         }
 
-        def _handle_event_bubble_selection():
-            _chart_event = st.session_state.get("life_cycle_finance_chart")
-            _selected_points = (
-                _chart_event.selection.points
-                if _chart_event is not None
-                else []
-            )
-            _click_target_is_selected = any(
-                point.get("curve_number") == first_clickable_event_trace_index
-                for point in _selected_points
-            )
-
-            if _click_target_is_selected and first_clickable_event_name in _event_bubble_report_map:
-                st.session_state["_event_bubble_last_selection"] = first_clickable_event_name
-                st.session_state["_event_bubble_report_open"] = True
-            else:
-                # 다른 점을 선택하거나 선택을 해제하면 이전 사건 선택을 초기화
-                st.session_state.pop("_event_bubble_last_selection", None)
-
         st.plotly_chart(
             fig_my_nta,
             use_container_width=True,
             key="life_cycle_finance_chart",
-            on_select=_handle_event_bubble_selection,
-            selection_mode="points",
             config={"displayModeBar": False, "scrollZoom": False, "doubleClick": False, "showAxisDragHandles": False},
         )
+
+        # 첫 번째 이벤트 버블의 Plotly 클릭 이벤트만 감지
+        _event_click_bridge = _EVENT_BUBBLE_CLICK_BRIDGE(
+            data={
+                "target_names": (
+                    [first_clickable_event_name]
+                    if first_clickable_event_name in _event_bubble_report_map
+                    else []
+                )
+            },
+            key="event_bubble_click_bridge",
+            on_clicked_event_change=lambda: None,
+        )
+        if _event_click_bridge.clicked_event in _event_bubble_report_map:
+            st.session_state["_event_bubble_last_selection"] = _event_click_bridge.clicked_event
+            st.session_state["_event_bubble_report_open"] = True
 
         if st.session_state.get("_event_bubble_report_open", False):
             _active_event_name = st.session_state.get("_event_bubble_last_selection")
