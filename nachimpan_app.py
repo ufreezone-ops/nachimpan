@@ -6137,6 +6137,8 @@ elif selected_page == "통계":
                     y=1.02,
                     xanchor="left",
                     x=0,
+                    itemclick=False,
+                    itemdoubleclick=False,
                 ),
             )
             st.plotly_chart(
