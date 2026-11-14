@@ -3878,10 +3878,6 @@ elif selected_page == "우리집 재정곡선":
                             "우리집 재정곡선",
                             "statistical-household-income-origin",
                         )
-        st.markdown(
-            '<div id="statistical-household-income-origin"></div>',
-            unsafe_allow_html=True,
-        )
 
         # 기존 주거 유지·계획 확정이면 현재 주거지역을 사용하고,
         # 향후 주택구입 정보를 입력한 경우에는 예정지역을 사용한다.
@@ -5005,8 +5001,9 @@ elif selected_page == "우리집 재정곡선":
         fig_my_nta.update_yaxes(range=[0, y_top], row=1, col=1)
 
         # 상단 4개 범례: 보고서 연결과 반응형 정렬
-        st.markdown('<div id="household-income-legend-guide-origin" style="scroll-margin-top: 120px;"></div>', unsafe_allow_html=True)
         st.markdown("""
+        <div id="statistical-household-income-origin"></div>
+        <div id="household-income-legend-guide-origin" style="scroll-margin-top: 120px;"></div>
         <style>
         /* PC 4열, 터치 기기 2x2: 각 항목의 기준 폭과 우측 정렬을 통일 */
         div.st-key-household-income-legend-guide-row[data-testid="stHorizontalBlock"] {
@@ -5017,10 +5014,9 @@ elif selected_page == "우리집 재정곡선":
             justify-items: stretch !important;
             column-gap: 0.5rem !important;
             row-gap: 0.55rem !important;
-            margin: -2.4rem 0 0.35rem 0 !important;
+            margin: 0 0 0.35rem 0 !important;
             position: relative !important;
             z-index: 5 !important;
-            transform: translateY(54px) !important;
         }
         div.st-key-household-income-legend-guide-row[data-testid="stHorizontalBlock"] > div {
             width: 100% !important;
