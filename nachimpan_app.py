@@ -2519,7 +2519,6 @@ if selected_page == "우리집 가계부":
                         key="source_retirement_expense_guide",
                         help="은퇴 후 생활비를 이해하는 통계 자료",
                         type="tertiary",
-                        width="medium",
                     ):
                         st.caption("은퇴 후 생활비와 지출 기준을 살펴보는 자료입니다.")
                         _retirement_expense_reports = [
