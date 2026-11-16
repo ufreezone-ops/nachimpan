@@ -5346,7 +5346,7 @@ elif selected_page == "우리집 재정곡선":
             data={
                 "graph_selector": ".st-key-life_cycle_finance_chart .js-plotly-plot",
                 "click_anywhere": True,
-                "target_names": [],
+                "target_names": list(_event_bubble_report_map.keys()),
             },
             key="life_cycle_finance_chart_click_bridge",
             on_bridge_status_change=lambda: None,
@@ -5357,6 +5357,13 @@ elif selected_page == "우리집 재정곡선":
         )
         if _life_cycle_finance_click_bridge.clicked_cumulative_chart:
             st.session_state["_life_cycle_finance_report_open"] = True
+
+        if _life_cycle_finance_click_bridge.clicked_retirement_annotation:
+            st.session_state["_retirement_annotation_report_open"] = True
+
+        if _life_cycle_finance_click_bridge.clicked_event in _event_bubble_report_map:
+            st.session_state["_event_bubble_last_selection"] = _life_cycle_finance_click_bridge.clicked_event
+            st.session_state["_event_bubble_report_open"] = True
 
         if st.session_state.get("_life_cycle_finance_report_open", False):
             @st.dialog("관련 통계자료")
@@ -5391,23 +5398,7 @@ elif selected_page == "우리집 재정곡선":
 
             _show_life_cycle_finance_reports()
 
-        # 빅5 생애 사건 버블의 Plotly 클릭 이벤트 감지
-        _event_click_bridge = _EVENT_BUBBLE_CLICK_BRIDGE(
-            data={
-                "target_names": list(_event_bubble_report_map.keys())
-            },
-            key="event_bubble_click_bridge",
-            on_bridge_status_change=lambda: None,
-            on_click_probe_change=lambda: None,
-            on_clicked_event_change=lambda: None,
-            on_clicked_retirement_annotation_change=lambda: None,
-        )
-        if _event_click_bridge.clicked_retirement_annotation:
-            st.session_state["_retirement_annotation_report_open"] = True
-
-        if _event_click_bridge.clicked_event in _event_bubble_report_map:
-            st.session_state["_event_bubble_last_selection"] = _event_click_bridge.clicked_event
-            st.session_state["_event_bubble_report_open"] = True
+        # 일반 차트 클릭과 생애 사건 버블 클릭은 단일 브리지에서 구분한다.
 
         if st.session_state.get("_event_bubble_report_open", False):
             _active_event_name = st.session_state.get("_event_bubble_last_selection")
