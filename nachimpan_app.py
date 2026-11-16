@@ -2050,6 +2050,47 @@ def _restore_source_return():
     st.session_state.pop("_source_open_anchor", None)
 
 
+ _HOUSING_METHOD_REPORT_MD = """
+**지역별 대표 주택가격**
+
+나침반은 한국부동산원 R-ONE 「전국주택가격동향조사」의 2025년 12월 지역별 주택가격 통계를 참고합니다. 지역별 가격 수준을 비교할 수 있도록 **주택종합과 아파트의 중위가격**을 함께 제시합니다. 실제 주택구입 기준에는 지역별 **아파트 중위가격**을 사용합니다.
+
+| 지역 | 주택종합 | 아파트 |
+|---|---:|---:|
+| 서울 | 7.31억 원 | 9.58억 원 |
+| 부산 | 2.49억 원 | 2.82억 원 |
+| 대구 | 2.46억 원 | 2.54억 원 |
+| 인천 | 2.71억 원 | 3.34억 원 |
+| 광주 | 2.09억 원 | 2.22억 원 |
+| 대전 | 2.71억 원 | 2.97억 원 |
+| 울산 | 2.58억 원 | 2.59억 원 |
+| 세종 | 5.05억 원 | 5.33억 원 |
+| 경기 | 3.88억 원 | 4.54억 원 |
+| 강원 | 1.39억 원 | 1.59억 원 |
+| 충북 | 1.47억 원 | 1.67억 원 |
+| 충남 | 1.49억 원 | 1.77억 원 |
+| 전북 | 1.16억 원 | 1.48억 원 |
+| 전남 | 1.07억 원 | 1.43억 원 |
+| 경북 | 1.17억 원 | 1.40억 원 |
+| 경남 | 1.55억 원 | 1.75억 원 |
+| 제주 | 2.23억 원 | 2.45억 원 |
+
+**대출비율(LTV) 기준**
+
+2024년 주거실태조사에서 금융기관 대출 이용 가구의 구입가격 대비 대출 비율은 수도권·광역시 등 34.3%, 도지역 41.8%입니다. 부산은 광역시에 해당하므로 기본값 34.3%를 적용합니다.
+
+**대표사례의 별도 단순화**
+
+대표사례는 지역 통계값을 그대로 쓰지 않고 주택가격 4억 원을 가정합니다. LTV는 약 35%로 단순화해 대출 1억 4천만 원, 자기자금 2억 6천만 원으로 표시합니다. 그 외 사례는 선택 지역의 아파트 중위가격과 지역별 LTV 기준을 사용합니다.
+
+주의: 지역별 가격은 특정 가구가 실제로 구입할 주택의 가격이 아닙니다. 주택유형·면적·연식·입지에 따라 실제 거래가격은 달라집니다. 평균·중위가격은 지역 간 가격 수준 비교용이며, 미래 주택가격 상승률을 직접 나타내는 지표는 아닙니다.
+
+자료:
+- 한국부동산원 R-ONE 「전국주택가격동향조사」, 2025년 12월. [통계정보](https://www.reb.or.kr/reb/cm/cntnts/cntntsView.do?cntntsId=1033&mi=10333&statId=S234820263)
+- 국토교통부 「2024년도 주거실태조사 결과」. [보도자료](https://www.molit.go.kr/USR/NEWS/dtl.jsp?id=95091415&lcmspage=2)
+""" 
+
+
 @st.dialog("🏠 부동산 적용 기준", width="large")
 def _show_housing_price_stats_dialog():
     _case_housing_region = st.session_state.get("housing_region")
@@ -2074,10 +2115,17 @@ def _show_housing_price_stats_dialog():
             text-align: left !important;
         }
         </style>
-        <div id="housing-dialog-return-anchor"></div>
         """,
         unsafe_allow_html=True,
     )
+
+    if st.session_state.get("_housing_dialog_view", "summary") == "method":
+        st.markdown(_HOUSING_METHOD_REPORT_MD)
+        if st.button("← 부동산 적용 기준으로 돌아가기", key="housing_method_back"):
+            st.session_state["_housing_dialog_view"] = "summary"
+            st.rerun()
+        return
+
     if _case_is_representative:
         st.markdown("**기본사례 예시**")
         st.markdown(
@@ -2107,12 +2155,8 @@ def _show_housing_price_stats_dialog():
         key="source_housing_price_stats",
         use_container_width=False,
     ):
-        st.session_state["_housing_price_dialog_open"] = False
-        _open_source_reference(
-            "6051500-00",
-            "우리집 재정곡선",
-            "housing-dialog-return-anchor",
-        )
+        st.session_state["_housing_dialog_view"] = "method"
+        st.rerun()
 
     if st.button(
         "닫기",
@@ -6893,45 +6937,7 @@ OECD 「Pensions at a Glance 2025: Korea」는 2024년 한국의 실질 노동�
     #--------------------------------------------------------
     st.markdown('<div id="stats-anchor-housing-method" style="scroll-margin-top: 150px;"></div>', unsafe_allow_html=True)
     with st.expander("14. 부동산 적용 기준과 지역별 산정방법", expanded=_active_source_id == "6051500-00"):
-        st.markdown("""
-**지역별 대표 주택가격**
-
-나침반은 한국부동산원 R-ONE 「전국주택가격동향조사」의 2025년 12월 지역별 주택가격 통계를 참고합니다. 지역별 가격 수준을 비교할 수 있도록 **주택종합과 아파트의 중위가격**을 함께 제시합니다. 실제 주택구입 기준에는 지역별 **아파트 중위가격**을 사용합니다.
-
-| 지역 | 주택종합 | 아파트 |
-|---|---:|---:|
-| 서울 | 7.31억 원 | 9.58억 원 |
-| 부산 | 2.49억 원 | 2.82억 원 |
-| 대구 | 2.46억 원 | 2.54억 원 |
-| 인천 | 2.71억 원 | 3.34억 원 |
-| 광주 | 2.09억 원 | 2.22억 원 |
-| 대전 | 2.71억 원 | 2.97억 원 |
-| 울산 | 2.58억 원 | 2.59억 원 |
-| 세종 | 5.05억 원 | 5.33억 원 |
-| 경기 | 3.88억 원 | 4.54억 원 |
-| 강원 | 1.39억 원 | 1.59억 원 |
-| 충북 | 1.47억 원 | 1.67억 원 |
-| 충남 | 1.49억 원 | 1.77억 원 |
-| 전북 | 1.16억 원 | 1.48억 원 |
-| 전남 | 1.07억 원 | 1.43억 원 |
-| 경북 | 1.17억 원 | 1.40억 원 |
-| 경남 | 1.55억 원 | 1.75억 원 |
-| 제주 | 2.23억 원 | 2.45억 원 |
-
-**대출비율(LTV) 기준**
-
-2024년 주거실태조사에서 금융기관 대출 이용 가구의 구입가격 대비 대출 비율은 수도권·광역시 등 34.3%, 도지역 41.8%입니다. 부산은 광역시에 해당하므로 기본값 34.3%를 적용합니다.
-
-**대표사례의 별도 단순화**
-
-대표사례는 지역 통계값을 그대로 쓰지 않고 주택가격 4억 원을 가정합니다. LTV는 약 35%로 단순화해 대출 1억 4천만 원, 자기자금 2억 6천만 원으로 표시합니다. 그 외 사례는 선택 지역의 아파트 중위가격과 지역별 LTV 기준을 사용합니다.
-
-주의: 지역별 가격은 특정 가구가 실제로 구입할 주택의 가격이 아닙니다. 주택유형·면적·연식·입지에 따라 실제 거래가격은 달라집니다. 평균·중위가격은 지역 간 가격 수준 비교용이며, 미래 주택가격 상승률을 직접 나타내는 지표는 아닙니다.
-
-자료:
-- 한국부동산원 R-ONE 「전국주택가격동향조사」, 2025년 12월. [통계정보](https://www.reb.or.kr/reb/cm/cntnts/cntntsView.do?cntntsId=1033&mi=10333&statId=S234820263)
-- 국토교통부 「2024년도 주거실태조사 결과」. [보도자료](https://www.molit.go.kr/USR/NEWS/dtl.jsp?id=95091415&lcmspage=2)
-""")
+        st.markdown(_HOUSING_METHOD_REPORT_MD)
 
     #--------------------------------------------------------
     # 6.06.16.00 | 15. 소득 기준곡선의 출처와 산정 방식
