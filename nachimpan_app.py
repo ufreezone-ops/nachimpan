@@ -8907,3 +8907,44 @@ st.markdown("""
 }
 </style>
 """, unsafe_allow_html=True)
+
+
+# 연결 역 글자색은 검정, 다음 보고서 버튼의 바깥 요소를 중앙 배치
+st.markdown("""
+<style>
+/* 현재 역의 '연결' 글자만 검정색으로 고정 */
+.st-key-retirement-connection-platform .retirement-station-current > strong {
+    color: #222222 !important;
+    -webkit-text-fill-color: #222222 !important;
+}
+
+/* DOM상 각 버튼은 독립 stElementContainer(width=fit-content)이므로
+   바깥 요소를 전체 폭으로 확장한 뒤 그 안에서 캡슐을 중앙 배치 */
+.st-key-retirement-connection-platform > [data-testid="stElementContainer"][class*="st-key-retirement_connection_next_"] {
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+}
+.st-key-retirement-connection-platform > [data-testid="stElementContainer"][class*="st-key-retirement_connection_next_"] > [data-testid="stButton"] {
+    display: flex !important;
+    justify-content: center !important;
+    width: auto !important;
+    max-width: 100% !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+}
+.st-key-retirement-connection-platform > [data-testid="stElementContainer"][class*="st-key-retirement_connection_next_"] button {
+    margin-left: auto !important;
+    margin-right: auto !important;
+}
+.st-key-retirement-connection-platform > [data-testid="stElementContainer"][class*="st-key-retirement_connection_next_"] [data-testid="stMarkdownContainer"],
+.st-key-retirement-connection-platform > [data-testid="stElementContainer"][class*="st-key-retirement_connection_next_"] [data-testid="stMarkdownContainer"] p {
+    text-align: center !important;
+    justify-content: center !important;
+}
+</style>
+""", unsafe_allow_html=True)
