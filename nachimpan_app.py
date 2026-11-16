@@ -2050,7 +2050,7 @@ def _restore_source_return():
     st.session_state.pop("_source_open_anchor", None)
 
 
- _HOUSING_METHOD_REPORT_MD = """
+_HOUSING_METHOD_REPORT_MD = """
 **지역별 대표 주택가격**
 
 나침반은 한국부동산원 R-ONE 「전국주택가격동향조사」의 2025년 12월 지역별 주택가격 통계를 참고합니다. 지역별 가격 수준을 비교할 수 있도록 **주택종합과 아파트의 중위가격**을 함께 제시합니다. 실제 주택구입 기준에는 지역별 **아파트 중위가격**을 사용합니다.
@@ -2164,6 +2164,7 @@ def _show_housing_price_stats_dialog():
         use_container_width=False,
     ):
         st.session_state["_housing_price_dialog_open"] = False
+        st.session_state["_housing_dialog_view"] = "summary"
         st.rerun()
 
 
@@ -5622,6 +5623,7 @@ elif selected_page == "우리집 재정곡선":
                 use_container_width=True,
                 help="기본사례 가정값과 지역별 주택가격 통계 보기",
             ):
+                st.session_state["_housing_dialog_view"] = "summary"
                 st.session_state["_housing_price_dialog_open"] = True
 
             # 팝업이 열린 상태에서는 전체 앱이 다시 실행되어도 매번 호출한다.
