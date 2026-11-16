@@ -2202,17 +2202,6 @@ def _render_retirement_explorer_report(source_id):
 
 자료: 국가데이터처 「가계동향조사(2019~2024년 구분류)」 2024년 연간자료, MDIS 제공 공공용 마이크로데이터.
 """)
-        with st.expander("산출 방법과 원자료 변수 보기"):
-            _readme_path = (
-                Path(__file__).resolve().parent
-                / "data" / "기준데이터"
-                / "국가데이터처_2024_가계동향조사_가구주연령대별가구원수별가계지출_가중중위값_README.md"
-            )
-            if _readme_path.exists():
-                st.markdown(_readme_path.read_text(encoding="utf-8"))
-            else:
-                st.info("산출 방법 파일을 현재 앱에서 찾을 수 없습니다.")
-
     elif source_id == "6051400-00":
         st.markdown("""
 나침반의 우리 가정 생애주기 지출곡선은 국가데이터처 MDIS의 2024년 가계동향조사 연간자료를 이용합니다. 가구주 연령대와 가구원 수별로 가계지출의 **가중중위값**을 산출해 연령별 기준값으로 사용합니다.
@@ -2233,17 +2222,6 @@ def _render_retirement_explorer_report(source_id):
 
 이 통계값은 특정 개인의 미래 지출 예측이 아닙니다. 주거 형태·건강·돌봄·지역·생활 방식에 따라 실제 지출은 달라질 수 있습니다.
 """)
-        with st.expander("원자료 변수와 산출 절차 보기"):
-            _readme_path = (
-                Path(__file__).resolve().parent
-                / "data" / "기준데이터"
-                / "국가데이터처_2024_가계동향조사_가구주연령대별가구원수별가계지출_가중중위값_README.md"
-            )
-            if _readme_path.exists():
-                st.markdown(_readme_path.read_text(encoding="utf-8"))
-            else:
-                st.info("산출 방법 파일을 현재 앱에서 찾을 수 없습니다.")
-
     elif source_id == "6051300-00":
         st.markdown("""
 과거의 소득과 지출을 당시 명목금액만으로 현재 값과 나란히 놓으면 화폐가치의 변화를 놓치게 됩니다. 나침반은 과거 연령의 소득 기준값에 당시 임금지수를 적용해 과거 명목소득을 추정하고, 같은 연도의 지출 기준값에는 소비자물가지수(CPI)를 적용해 과거 명목지출을 추정합니다. 소득에는 임금지수, 지출에는 CPI를 각각 사용하며 서로 바꾸어 적용하지 않습니다.
@@ -2265,9 +2243,50 @@ def _render_retirement_explorer_report(source_id):
         st.info("선택한 자료를 찾을 수 없습니다.")
 
 
-@st.dialog("관련 통계자료", width="large")
-def _show_retirement_report_explorer():
-    """방문한 자료가 누적되고, 각 방문 지점으로 돌아갈 수 있는 보고서 탐색 팝업."""
+@st.dialog("보고서", width="large")
+def _show_retirement_report_dialog():
+    """보고서 본문만 보여주는 읽기 화면."""
+    _report_index = [
+        ("1. 소득과 소비의 생애주기", "6050200-00", "R01"),
+        ("2. 결혼과 주거", "6050300-00", "R02"),
+        ("3. 노후와 은퇴", "6050400-01", "R03"),
+        ("4. 주택대출과 원리금 분리", "6050500-01", "R04"),
+        ("5. 동시성과 통시성", "6050600-00", "R05"),
+        ("6. 소득 통계", "6050700-00", "R06"),
+        ("7. 결혼비용 통계", "6050800-00", "R07"),
+        ("8. 빅5 우리집 이벤트", "6050900-00", "R08"),
+        ("9. 고령층 근로연령 통계", "6051000-00", "R09"),
+        ("10. 대한민국 3대 은퇴 분기점", "6051100-00", "R10"),
+        ("11. 우리 가정 소득곡선의 통계적 보정", "6051200-00", "R11"),
+        ("12. 과거 소득·지출을 현재 기준과 비교하는 방법", "6051300-00", "R12"),
+        ("13. 지출 통계 출처 및 산출방법", "6051400-00", "R13"),
+        ("14. 부동산 적용 기준과 지역별 산정방법", "6051500-00", "R14"),
+        ("15. 소득 기준곡선의 출처와 산정 방식", "6051600-00", "R15"),
+        ("16. 세대 계승 생애주기 재정곡선", "6051700-00", "R16"),
+        ("17. 여성의 출산·육아와 경력단절", "6051800-00", "R17"),
+        ("18. 은퇴와 수입 단절", "6051900-00", "R18"),
+        ("19. 나의 결혼", "6052000-00", "R19"),
+        ("20. 출산과 육아", "6052100-00", "R20"),
+        ("21. 주택구입", "6052200-00", "R21"),
+        ("22. 자녀 대학", "6052300-00", "R22"),
+        ("23. 자녀 결혼", "6052400-00", "R23"),
+    ]
+    _report_titles = {source_id: title for title, source_id, _ in _report_index}
+    _source_id = st.session_state.get("_retirement_explorer_source_id")
+    if not _source_id:
+        return
+
+    st.markdown(f"## {_report_titles.get(_source_id, '보고서')}")
+    _render_retirement_explorer_report(_source_id)
+    st.divider()
+    if st.button("연결", key="retirement_report_open_connection", use_container_width=True, type="primary"):
+        st.session_state["_retirement_connection_open"] = True
+        st.rerun()
+
+
+@st.dialog("연결", width="large")
+def _show_retirement_connection_dialog():
+    """2호선 녹색 톤의 자료 이동 플랫폼."""
     _report_index = [
         ("1. 소득과 소비의 생애주기", "6050200-00", "R01"),
         ("2. 결혼과 주거", "6050300-00", "R02"),
@@ -2296,18 +2315,16 @@ def _show_retirement_report_explorer():
     _report_titles = {source_id: title for title, source_id, _ in _report_index}
     _available_by_code = {code: (title, source_id) for title, source_id, code in _report_index}
     _code_by_source = {source_id: code for title, source_id, code in _report_index}
-
     _history = list(st.session_state.get("_retirement_explorer_history", []))
     _source_id = st.session_state.get("_retirement_explorer_source_id")
+    if not _source_id:
+        return
     if not _history:
-        _source_id = _source_id or "6050400-01"
         _history = [_source_id]
         st.session_state["_retirement_explorer_history"] = list(_history)
-    elif not _source_id or _history[-1] != _source_id:
-        _source_id = _history[-1]
-        st.session_state["_retirement_explorer_source_id"] = _source_id
-
-    _step_number = len(_history)
+    elif _history[-1] != _source_id:
+        _history.append(_source_id)
+        st.session_state["_retirement_explorer_history"] = list(_history)
 
     _association_path = (
         Path(__file__).resolve().parent
@@ -2329,152 +2346,106 @@ def _show_retirement_report_explorer():
         for _row in _association_records:
             if _row.get("id_a") == _current_code:
                 _other_code = _row.get("id_b")
-                _other_title = _row.get("title_b")
             elif _row.get("id_b") == _current_code:
                 _other_code = _row.get("id_a")
-                _other_title = _row.get("title_a")
             else:
                 continue
-            _raw_score = int(_row.get("score", 0) or 0)
+            if _other_code not in _available_by_code:
+                continue
+            _other_source = _available_by_code[_other_code][1]
+            if _other_source == _source_id or _other_source in _history:
+                continue
             _related_rows.append({
                 "code": _other_code,
-                "title": _row.get("title_b") if _row.get("id_a") == _current_code else _row.get("title_a"),
-                "raw_score": _raw_score,
-                "score": min(100, _raw_score * 3),
-                "relation": _row.get("relation", "연결"),
-                "reason": _row.get("reason") or "공통 의미 태그를 바탕으로 살펴볼 수 있는 자료입니다.",
-                "confidence": _row.get("confidence", "중하 — 1차 의미태그 기반"),
+                "title": _available_by_code[_other_code][0],
+                "source_id": _other_source,
+                "raw_score": int(_row.get("score", 0) or 0),
+                "reason": _row.get("reason") or _row.get("relation") or "주제상 연결되는 자료입니다.",
             })
-    _related_rows.sort(key=lambda item: (-item["score"], item["title"] or ""))
+    _related_rows.sort(key=lambda item: (-item["raw_score"], item["title"]))
 
-    st.caption("출발 위치: 우리집 가계부 · 은퇴 후에는?")
-    st.markdown(f"## {_report_titles.get(_source_id, '관련 통계자료')}")
-    st.caption(f"지금까지 {_step_number}개의 자료를 살펴보고 있습니다.")
+    st.markdown(
+        """
+        <style>
+        .st-key-retirement-connection-platform {
+            background: #E8F5EC !important;
+            border: 1px solid #00A84D !important;
+            border-radius: 14px !important;
+            padding: 16px !important;
+        }
+        .st-key-retirement-connection-platform h3,
+        .st-key-retirement-connection-platform h4 {
+            color: #006B35 !important;
+        }
+        .st-key-retirement-connection-platform [data-testid="stButton"] button {
+            border-color: #00A84D !important;
+        }
+        .st-key-retirement-connection-platform [data-testid="stButton"] button[kind="primary"] {
+            background: #00A84D !important;
+            color: white !important;
+        }
+        div[data-testid="stDialog"]:has(.st-key-retirement-connection-platform) [data-testid="stDialogHeader"] {
+            background: #00A84D !important;
+        }
+        div[data-testid="stDialog"]:has(.st-key-retirement-connection-platform) [data-testid="stDialogHeader"] h2 {
+            color: white !important;
+        }
+        </style>
+        """,
+        unsafe_allow_html=True,
+    )
 
-    # 방문 경로 자체가 탐색의 중심이다. 각 항목을 눌러 해당 지점으로 되돌아갈 수 있다.
-    with st.container(border=True):
-        st.markdown("**지금까지 살펴본 자료**")
-        for _index, _visited_id in enumerate(_history):
-            _visited_title = _report_titles.get(_visited_id, _visited_id)
-            _is_current = _index == _step_number - 1
-            _button_label = (
-                f"●  {_index + 1}. {_visited_title}  ·  지금 보고 있는 자료"
-                if _is_current
-                else f"{_index + 1}. {_visited_title}"
-            )
-            if st.button(
-                _button_label,
-                key=f"retirement_explorer_path_{_index}",
-                use_container_width=True,
-                disabled=_is_current,
-                type="primary" if _is_current else "secondary",
-            ):
-                _new_history = _history[:_index + 1]
-                st.session_state["_retirement_explorer_history"] = _new_history
-                st.session_state["_retirement_explorer_source_id"] = _new_history[-1]
-                st.rerun()
+    with st.container(key="retirement-connection-platform", border=True):
+        st.markdown(f"### { _report_titles.get(_source_id, '현재 보고서') }")
+        st.caption("현재 자료를 중심으로 이전 경로와 이어지는 자료를 살펴봅니다.")
 
-    st.divider()
-    _render_retirement_explorer_report(_source_id)
-
-    st.divider()
-    st.markdown("### 함께 살펴보면 좋은 자료")
-    # 팝업 본문까지 현재 연결된 자료만 다음 단계로 연다. 전체 23개 자료의 점수는 아래 목록에서 모두 확인한다.
-    _popup_report_codes = {"R03", "R12", "R13"}
-    _available_related = [
-        item for item in _related_rows
-        if item["code"] in _popup_report_codes
-        and item["code"] in _available_by_code
-        and _available_by_code[item["code"]][1] != _source_id
-    ]
-    _available_related.sort(key=lambda item: (-item["score"], item["title"] or ""))
-
-    if _available_related:
-        _next = _available_related[0]
-        st.caption("연결 재미 지수가 높은 자료")
-        if st.button(
-            f"{_next['title']}  ·  연결 재미 지수 {_next['score']}%",
-            key="retirement_explorer_next",
-            use_container_width=True,
-        ):
-            _next_source = _available_by_code[_next["code"]][1]
-            st.session_state["_retirement_explorer_history"] = list(_history) + [_next_source]
-            st.session_state["_retirement_explorer_source_id"] = _next_source
-            st.rerun()
-
-        _unexpected = _available_related[-1]
-        st.caption("조금 다른 관점에서 살펴보기")
-        if st.button(
-            f"{_unexpected['title']}  ·  연결 재미 지수 {_unexpected['score']}%",
-            key="retirement_explorer_unexpected",
-            use_container_width=True,
-        ):
-            _unexpected_source = _available_by_code[_unexpected["code"]][1]
-            st.session_state["_retirement_explorer_history"] = list(_history) + [_unexpected_source]
-            st.session_state["_retirement_explorer_source_id"] = _unexpected_source
-            st.rerun()
-
-        _random = random.choice(_available_related)
-        if st.button(
-            f"다른 자료 무작위로 둘러보기  ·  {_random['title']} ({_random['score']}%)",
-            key="retirement_explorer_random",
-            use_container_width=True,
-        ):
-            _random_source = _available_by_code[_random["code"]][1]
-            st.session_state["_retirement_explorer_history"] = list(_history) + [_random_source]
-            st.session_state["_retirement_explorer_source_id"] = _random_source
-            st.rerun()
-    else:
-        st.info("현재 자료와 연결할 수 있는 보고서를 준비하고 있습니다.")
-
-    with st.expander("전체 보고서 연결 재미 지수 보기"):
-        if _related_rows:
-            st.caption(
-                "재미를 위한 표시 지수입니다. 기존 1차 연관성 점수에 3을 곱하고 100을 상한으로 표시합니다. "
-                "통계적 확률이나 정확도가 아닙니다."
-            )
-            for _item in _related_rows:
-                st.markdown(
-                    f"- **{_item['title']} · {_item['score']}%**"
-                    f"  \n  {_item['relation']} · {_item['reason']}"
-                )
+        if len(_history) > 1:
+            st.markdown("#### 이전에 왔던 경로")
+            for _index, _visited_id in enumerate(_history[:-1]):
+                _visited_title = _report_titles.get(_visited_id, _visited_id)
+                if st.button(
+                    f"← {_index + 1}. {_visited_title}",
+                    key=f"retirement_connection_history_{_index}",
+                    use_container_width=True,
+                ):
+                    st.session_state["_retirement_explorer_history"] = _history[:_index + 1]
+                    st.session_state["_retirement_explorer_source_id"] = _visited_id
+                    st.session_state["_retirement_connection_open"] = False
+                    st.rerun()
         else:
-            st.info("연관성 자료를 불러오지 못했습니다.")
+            st.caption("이 자료가 첫 방문 자료입니다.")
 
-    st.divider()
-    _back_col, _first_col, _ground_col = st.columns(3)
-    with _back_col:
-        if st.button(
-            "← 이전 자료",
-            key="retirement_explorer_previous",
-            use_container_width=True,
-            disabled=_step_number <= 1,
-        ):
-            _new_history = _history[:-1]
-            st.session_state["_retirement_explorer_history"] = _new_history
-            st.session_state["_retirement_explorer_source_id"] = _new_history[-1]
-            st.rerun()
-    with _first_col:
-        if st.button(
-            "처음 자료로",
-            key="retirement_explorer_first",
-            use_container_width=True,
-            disabled=_step_number <= 1,
-        ):
-            _first_source = _history[0]
-            st.session_state["_retirement_explorer_history"] = [_first_source]
-            st.session_state["_retirement_explorer_source_id"] = _first_source
-            st.rerun()
-    with _ground_col:
-        if st.button(
-            "처음 화면으로",
-            key="retirement_explorer_ground",
-            use_container_width=True,
-        ):
-            st.session_state["_retirement_explorer_open"] = False
-            st.session_state.pop("_retirement_explorer_source_id", None)
-            st.session_state.pop("_retirement_explorer_history", None)
-            st.rerun()
+        st.markdown("#### 앞으로 갈 수 있는 경로")
+        if _related_rows:
+            for _index, _item in enumerate(_related_rows[:3]):
+                st.markdown(f"**{_item['title']}**")
+                st.caption(_item["reason"])
+                if st.button(
+                    f"{_item['title']}로 이동",
+                    key=f"retirement_connection_next_{_index}",
+                    use_container_width=True,
+                    type="primary" if _index == 0 else "secondary",
+                ):
+                    st.session_state["_retirement_explorer_history"] = _history + [_item["source_id"]]
+                    st.session_state["_retirement_explorer_source_id"] = _item["source_id"]
+                    st.session_state["_retirement_connection_open"] = False
+                    st.rerun()
+        else:
+            st.info("현재 자료에서 이어지는 다른 보고서가 아직 준비되지 않았습니다.")
+
+        st.divider()
+        _return_col, _end_col = st.columns(2)
+        with _return_col:
+            if st.button("현재 보고서로 돌아가기", key="retirement_connection_return", use_container_width=True):
+                st.session_state["_retirement_connection_open"] = False
+                st.rerun()
+        with _end_col:
+            if st.button("여행 종료", key="retirement_connection_end", use_container_width=True):
+                st.session_state["_retirement_explorer_open"] = False
+                st.session_state["_retirement_connection_open"] = False
+                st.session_state.pop("_retirement_explorer_source_id", None)
+                st.session_state.pop("_retirement_explorer_history", None)
+                st.rerun()
 
 
 HOUSING_PRICE_SOURCE = {
@@ -2908,6 +2879,7 @@ if selected_page == "우리집 가계부":
                                     use_container_width=True,
                                 ):
                                     st.session_state["_retirement_explorer_open"] = True
+                                    st.session_state["_retirement_connection_open"] = False
                                     st.session_state["_retirement_explorer_source_id"] = _report_id
                                     st.session_state["_retirement_explorer_history"] = [_report_id]
                                     st.rerun()
@@ -7852,7 +7824,10 @@ OECD 「Pensions at a Glance 2025: Korea」는 2024년 한국의 실질 노동�
 # 은퇴 후 생활비 관련 보고서 팝업
 #--------------------------------------------------------
 if st.session_state.get("_retirement_explorer_open", False):
-    _show_retirement_report_explorer()
+    if st.session_state.get("_retirement_connection_open", False):
+        _show_retirement_connection_dialog()
+    else:
+        _show_retirement_report_dialog()
 
 
 #--------------------------------------------------------
