@@ -5626,9 +5626,7 @@ elif selected_page == "우리집 재정곡선":
                 st.session_state["_housing_dialog_view"] = "summary"
                 st.session_state["_housing_price_dialog_open"] = True
 
-            # 팝업이 열린 상태에서는 전체 앱이 다시 실행되어도 매번 호출한다.
-            if st.session_state.get("_housing_price_dialog_open", False):
-                _show_housing_price_stats_dialog()
+            # 팝업 호출은 페이지 레이아웃 컨텍스트 밖의 최상위 영역에서 처리한다.
 
 
 
@@ -7408,6 +7406,14 @@ OECD 「Pensions at a Glance 2025: Korea」는 2024년 한국의 실질 노동�
 
 
     st.caption("※ 이 자료실은 주제별 통계와 출처를 차근차근 확장하기 위한 구성입니다. 출처와 기준이 확인되지 않은 수치는 제시하지 않습니다.")
+
+
+#--------------------------------------------------------
+# 5.01.02 | 부동산 적용 기준 팝업 — 최상위 레이아웃에서 호출
+#--------------------------------------------------------
+# st.dialog는 탭/컬럼/컨테이너 내부가 아닌 최상위 스크립트 영역에서 호출한다.
+if st.session_state.get("_housing_price_dialog_open", False):
+    _show_housing_price_stats_dialog()
 
 
 #--------------------------------------------------------
