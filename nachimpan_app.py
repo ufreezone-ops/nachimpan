@@ -2465,25 +2465,27 @@ def _show_retirement_connection_dialog():
     _related_rows.sort(key=lambda item: (-item["raw_score"], item["title"]))
 
     with st.container(key="retirement-connection-platform", border=True):
-        # 현재 위치: 흰색 역명판 + 녹색 원형 번호
-        _current_number = int(_current_code.replace("R", "")) if _current_code else ""
+        # 이전 역: 연결을 누르기 직전 읽던 보고서
+        _previous_number = int(_current_code.replace("R", "")) if _current_code else ""
+        _previous_title = _report_titles.get(_source_id, "보고서").split(". ", 1)[-1]
         st.markdown(
-            f"<div class='retirement-station-current'>"
-            f"<span class='retirement-station-current-number'>{_current_number}</span>"
-            f"<strong>{_report_titles.get(_source_id, '보고서').split('. ', 1)[-1]}</strong>"
+            f"<div class='retirement-station-previous'>"
+            f"<span class='retirement-station-previous-number'>{_previous_number}</span>"
+            f"<strong>{_previous_title}</strong>"
             f"</div>",
             unsafe_allow_html=True,
         )
 
-        # 이 화면 자체가 '연결' 역
+        # 현재 역: 이 연결창 자체가 '연결' 역
         st.markdown(
-            "<div class='retirement-station-transfer'>"
-            "<span class='retirement-station-transfer-mark'>↔</span>"
+            "<div class='retirement-station-current'>"
+            "<span class='retirement-station-current-number'>🧭</span>"
             "<strong>연결</strong></div>",
             unsafe_allow_html=True,
         )
         st.markdown("<div class='retirement-vertical-arrow'>↓</div>", unsafe_allow_html=True)
 
+        # 다음 역: 이어서 읽을 수 있는 추천 보고서
         if _related_rows:
             _visible_rows = _related_rows[:3]
             for _index, _item in enumerate(_visible_rows):
@@ -8460,6 +8462,80 @@ st.markdown("""
 div[data-testid="stDialog"]:has(.st-key-retirement-connection-platform) [data-testid="stDialogContent"] {
     padding-top: 0.3rem !important;
     padding-bottom: 0.35rem !important;
+}
+</style>
+""", unsafe_allow_html=True)
+
+# 이전 역·현재 연결 역·다음 역의 구분
+st.markdown("""
+<style>
+.retirement-station-previous {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.65rem;
+    width: 100%;
+    min-height: 3.15rem;
+    box-sizing: border-box;
+    padding: 0.45rem 0.8rem;
+    border: 2px solid #159447;
+    border-radius: 999px;
+    background: #159447;
+    color: #ffffff;
+    text-align: center;
+}
+.retirement-station-previous-number {
+    display: inline-flex;
+    flex: 0 0 2.1rem;
+    width: 2.1rem;
+    height: 2.1rem;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background: #ffffff;
+    color: #159447;
+    font-size: 0.9rem;
+    font-weight: 850;
+}
+.retirement-station-previous strong {
+    color: #ffffff;
+    font-size: 1rem;
+    font-weight: 800;
+    line-height: 1.25;
+}
+.retirement-station-current {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.65rem;
+    width: 100%;
+    min-height: 3.15rem;
+    box-sizing: border-box;
+    padding: 0.45rem 0.8rem;
+    border: 3px solid #159447;
+    border-radius: 999px;
+    background: #ffffff;
+    color: #202820;
+    text-align: center;
+}
+.retirement-station-current-number {
+    display: inline-flex;
+    flex: 0 0 2.1rem;
+    width: 2.1rem;
+    height: 2.1rem;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background: #159447;
+    color: #ffffff;
+    font-size: 1.1rem;
+    font-weight: 850;
+}
+.retirement-station-current strong {
+    color: #202820;
+    font-size: 1rem;
+    font-weight: 800;
+    line-height: 1.25;
 }
 </style>
 """, unsafe_allow_html=True)
