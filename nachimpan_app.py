@@ -59,7 +59,7 @@ export default function(component) {
                 if (annotationClickHandler) graphElement.removeListener("plotly_clickannotation", annotationClickHandler);
             }
             if (nativeClickHandler) {
-                graphElement.removeEventListener("click", nativeClickHandler, true);
+                graphElement.removeEventListener("click", nativeClickHandler, false);
             }
         }
         graphElement = null;
@@ -108,7 +108,7 @@ export default function(component) {
         }
 
         if (clickAnywhere) {
-            // Plotly 그래프 DOM 자체의 캡처 단계에서 클릭을 받는다.
+            // Plotly 그래프 DOM의 버블링 단계에서 클릭을 받는다.
             // 문서 전체나 별도 오버레이를 사용하지 않아 차트 바깥 요소와 충돌하지 않는다.
             nativeClickHandler = function(event) {
                 const rawTarget = event.target;
