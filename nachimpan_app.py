@@ -1876,6 +1876,59 @@ div.st-key-source_retirement_expense [data-testid="stPopoverButton"] svg {
     display: none !important;
 }
 
+/* 탭1 '은퇴 후에는?' 제목 옆 나침반: 기존 제목·아이콘 크기는 유지하고 버튼 외형만 제거 */
+div.st-key-retirement-expense-title-row [data-testid="stHorizontalBlock"] {
+    align-items: center !important;
+}
+div.st-key-retirement-expense-title-row > div {
+    align-self: center !important;
+}
+div.st-key-source_retirement_expense_guide {
+    width: auto !important;
+    min-width: 0 !important;
+    max-width: max-content !important;
+    flex: 0 0 auto !important;
+    margin: 0 0 0 0.35rem !important;
+    align-self: center !important;
+}
+div.st-key-source_retirement_expense_guide [data-testid="stPopoverButton"],
+div.st-key-source_retirement_expense_guide [data-testid="stPopoverButton"]:hover,
+div.st-key-source_retirement_expense_guide [data-testid="stPopoverButton"]:focus,
+div.st-key-source_retirement_expense_guide [data-testid="stPopoverButton"]:focus-visible,
+div.st-key-source_retirement_expense_guide [data-testid="stPopoverButton"]:active {
+    width: auto !important;
+    min-width: 0 !important;
+    min-height: 0 !important;
+    height: auto !important;
+    padding: 0.08rem 0.12rem !important;
+    margin: 0 !important;
+    transform: translateY(4.2px) !important;
+    border: 0 !important;
+    outline: 0 !important;
+    background: transparent !important;
+    background-color: transparent !important;
+    background-image: none !important;
+    box-shadow: none !important;
+    border-radius: 0 !important;
+    color: #38BDF8 !important;
+    -webkit-text-fill-color: #38BDF8 !important;
+    font-size: 1.5rem !important;
+    font-weight: 700 !important;
+    line-height: 1 !important;
+    justify-content: center !important;
+    text-decoration: none !important;
+}
+div.st-key-source_retirement_expense_guide [data-testid="stPopoverButton"] p {
+    margin: 0 !important;
+    font-size: 1.5rem !important;
+    line-height: 1 !important;
+    color: #38BDF8 !important;
+    -webkit-text-fill-color: #38BDF8 !important;
+}
+div.st-key-source_retirement_expense_guide [data-testid="stPopoverButton"] svg {
+    display: none !important;
+}
+
 /* 아이폰 세로 화면: 제목과 나침반이 반드시 한 줄에 머물도록 */
 @media (max-width: 600px) and (orientation: portrait) and (pointer: coarse) {
     .st-key-retirement-title-row [data-testid="stHorizontalBlock"] {
@@ -2459,19 +2512,33 @@ if selected_page == "우리집 가계부":
 # 6.01.05 | 고급 모드 — 은퇴 후 가정 입력 패널
 #--------------------------------------------------------
             with st.container(border=True, key="retirement-panel"):
-                with st.container(horizontal=True, vertical_alignment="bottom", gap=None, key="retirement-title-row"):
+                with st.container(horizontal=True, vertical_alignment="center", gap=None, key="retirement-expense-title-row"):
                     st.markdown("### 은퇴 후에는? (만원)")
-                    if st.button(
+                    with st.popover(
                         "🧭",
-                        key="source_retirement_expense",
-                        help="은퇴 후 연령대별 생활비 통계와 적용 방식 보기",
+                        key="source_retirement_expense_guide",
+                        help="은퇴 후 생활비를 이해하는 통계 자료",
                         type="tertiary",
+                        width="medium",
                     ):
-                        _open_source_reference(
-                            "6050400-01",
-                            "우리집 가계부",
-                            "source-anchor-retirement-expense",
-                        )
+                        st.caption("은퇴 후 생활비와 지출 기준을 살펴보는 자료입니다.")
+                        _retirement_expense_reports = [
+                            ("3. 노후와 은퇴", "6050400-01"),
+                            ("13. 지출 통계 출처 및 산출방법", "6051400-00"),
+                            ("12. 과거 소득·지출을 현재 기준과 비교하는 방법", "6051300-00"),
+                        ]
+                        for _report_title, _report_id in _retirement_expense_reports:
+                            if st.button(
+                                _report_title,
+                                key=f"retirement_expense_guide_{_report_id}",
+                                use_container_width=True,
+                            ):
+                                _open_source_reference(
+                                    _report_id,
+                                    "우리집 가계부",
+                                    "source-anchor-retirement-expense",
+                                )
+                                st.rerun()
                 st.markdown(
                     '<div id="source-anchor-retirement-expense"></div>',
                     unsafe_allow_html=True,
