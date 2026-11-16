@@ -2040,24 +2040,68 @@ st.components.v1.html(
             const nav = doc.querySelector(".st-key-main_navigation");
             if (!shell || !nav) return;
 
+            const getScrollTarget = () => {
+                const candidates = [
+                    nav,
+                    nav.querySelector('[data-testid="stHorizontalBlock"]')
+                ].filter(Boolean);
+
+                const scrollable = candidates
+                    .map(el => ({
+                        el,
+                        overflow: Math.max(0, el.scrollWidth - el.clientWidth),
+                        css: window.parent.getComputedStyle(el).overflowX
+                    }))
+                    .filter(x => x.overflow > 3 && (x.css === "auto" || x.css === "scroll"))
+                    .sort((a, b) => b.overflow - a.overflow);
+
+                if (scrollable.length) return scrollable[0].el;
+
+                return candidates
+                    .sort((a, b) =>
+                        (b.scrollWidth - b.clientWidth) -
+                        (a.scrollWidth - a.clientWidth)
+                    )[0];
+            };
+
+            let scrollTarget = null;
+
             const updateNavState = () => {
                 const content = nav.querySelector('[data-testid="stHorizontalBlock"]');
-                const maxScroll = Math.max(0, nav.scrollWidth - nav.clientWidth);
+                const target = getScrollTarget();
+                if (!target) return;
+
+                if (target !== scrollTarget) {
+                    if (scrollTarget) {
+                        scrollTarget.removeEventListener("scroll", updateNavState);
+                    }
+                    scrollTarget = target;
+                    scrollTarget.addEventListener("scroll", updateNavState, { passive: true });
+                }
+
+                const maxScroll = Math.max(0, target.scrollWidth - target.clientWidth);
+                const rawLeft = target.scrollLeft;
+                const direction = window.parent.getComputedStyle(target).direction;
+                const normalizedLeft = direction === "rtl"
+                    ? Math.max(0, maxScroll + rawLeft)
+                    : Math.max(0, rawLeft);
                 const hasOverflow = maxScroll > 3;
+                const atLeft = normalizedLeft <= 3;
+                const atRight = normalizedLeft >= maxScroll - 3;
+
                 nav.classList.toggle("nav-overflowing", hasOverflow);
-                const atLeft = nav.scrollLeft <= 3;
-                const atRight = nav.scrollLeft >= maxScroll - 3;
                 shell.classList.toggle("nav-has-left", hasOverflow && !atLeft);
                 shell.classList.toggle("nav-has-right", hasOverflow && !atRight);
             };
 
             if (!nav.dataset.navScrollStateBound) {
                 nav.addEventListener("scroll", updateNavState, { passive: true });
+                const content = nav.querySelector('[data-testid="stHorizontalBlock"]');
+                if (content) content.addEventListener("scroll", updateNavState, { passive: true });
                 if (window.parent.ResizeObserver) {
                     const observer = new window.parent.ResizeObserver(updateNavState);
                     observer.observe(nav);
                     observer.observe(shell);
-                    const content = nav.querySelector('[data-testid="stHorizontalBlock"]');
                     if (content) observer.observe(content);
                 }
                 window.parent.addEventListener("resize", updateNavState, { passive: true });
