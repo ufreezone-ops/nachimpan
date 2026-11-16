@@ -2465,44 +2465,26 @@ def _show_retirement_connection_dialog():
     _related_rows.sort(key=lambda item: (-item["raw_score"], item["title"]))
 
     with st.container(key="retirement-connection-platform", border=True):
-        _previous_col, _current_col, _end_col = st.columns([1.35, 5, 1])
-        with _previous_col:
-            if st.button("← 보고서", key="retirement_connection_return"):
-                st.session_state["_retirement_connection_open"] = False
-                st.rerun()
-        with _current_col:
-            st.markdown(
-                f"<div class='retirement-current-station'>"
-                f"<span>현재 보고서</span><strong>{_report_titles.get(_source_id, '보고서')}</strong></div>",
-                unsafe_allow_html=True,
-            )
-        with _end_col:
-            if st.button("닫기", key="retirement_connection_end"):
-                st.session_state["_retirement_explorer_open"] = False
-                st.session_state["_retirement_entry_open"] = False
-                st.session_state["_retirement_connection_open"] = False
-                st.session_state.pop("_retirement_explorer_source_id", None)
-                st.session_state.pop("_retirement_explorer_history", None)
-                st.rerun()
+        # 현재 보고서명을 맨 위에 중앙 배치
+        st.markdown(
+            f"<div class='retirement-vertical-current'>"
+            f"({int(_current_code.replace('R', '')) if _current_code else ''}) "
+            f"{_report_titles.get(_source_id, '보고서')}</div>",
+            unsafe_allow_html=True,
+        )
+        st.markdown("<div class='retirement-vertical-connect-label'>연결</div>", unsafe_allow_html=True)
+        st.markdown("<div class='retirement-vertical-arrow'>↓</div>", unsafe_allow_html=True)
 
         if _related_rows:
             _visible_rows = _related_rows[:3]
-            _station_html = '<div class="retirement-station-track">'
-            for _station_index, _station_item in enumerate(_visible_rows):
-                _station_number = _station_item["code"].replace("R", "")
-                _station_html += (
-                    f'<div class="retirement-station-node">'
-                    f'<span class="retirement-station-dot">{_station_number}</span></div>'
-                )
-            _station_html += '</div>'
-            st.markdown(_station_html, unsafe_allow_html=True)
-
-            _station_cols = st.columns(len(_visible_rows), gap="small")
-            for _index, (_station_col, _item) in enumerate(zip(_station_cols, _visible_rows)):
+            for _index, _item in enumerate(_visible_rows):
                 _score = max(0, min(100, int(_item["raw_score"])))
-                with _station_col:
+                _report_number = int(_item["code"].replace("R", ""))
+                _row_label = f"({_report_number}) {_item['title'].split('. ', 1)[-1]} ({_score}%)"
+                _left_spacer, _center_col, _right_spacer = st.columns([1, 8, 1])
+                with _center_col:
                     if st.button(
-                        _item["title"],
+                        _row_label,
                         key=f"retirement_connection_next_{_index}",
                         use_container_width=True,
                         type="primary" if _index == 0 else "secondary",
@@ -2511,12 +2493,19 @@ def _show_retirement_connection_dialog():
                         st.session_state["_retirement_explorer_source_id"] = _item["source_id"]
                         st.session_state["_retirement_connection_open"] = False
                         st.rerun()
-                    st.markdown(
-                        f"<div class='retirement-station-score'>{_score}%</div>",
-                        unsafe_allow_html=True,
-                    )
         else:
             st.info("현재 자료에서 이어지는 다른 보고서가 아직 준비되지 않았습니다.")
+
+        _close_spacer, _close_col = st.columns([7, 1])
+        with _close_col:
+            if st.button("닫기", key="retirement_connection_end"):
+                st.session_state["_retirement_explorer_open"] = False
+                st.session_state["_retirement_entry_open"] = False
+                st.session_state["_retirement_connection_open"] = False
+                st.session_state.pop("_retirement_explorer_source_id", None)
+                st.session_state.pop("_retirement_explorer_history", None)
+                st.rerun()
+
 
 
 HOUSING_PRICE_SOURCE = {
@@ -8246,6 +8235,85 @@ st.markdown("""
 div[data-testid="stDialog"]:has(.st-key-retirement-connection-platform) [data-testid="stDialogContent"] {
     padding-top: 0.35rem !important;
     padding-bottom: 0.45rem !important;
+}
+</style>
+""", unsafe_allow_html=True)
+
+# 연결창을 역 안내판처럼 세로·중앙 정렬
+st.markdown("""
+<style>
+.st-key-retirement-connection-platform {
+    padding: 0.8rem 1rem 0.55rem !important;
+}
+.st-key-retirement-connection-platform [data-testid="stVerticalBlock"] {
+    gap: 0.42rem !important;
+}
+.retirement-vertical-current {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 0.72rem 0.85rem;
+    border: 3px solid #159447;
+    border-radius: 999px;
+    background: #ffffff;
+    color: #173b27;
+    text-align: center;
+    font-size: 1rem;
+    font-weight: 800;
+    line-height: 1.3;
+}
+.retirement-vertical-connect-label {
+    margin-top: 0.15rem;
+    color: #087b3c;
+    text-align: center;
+    font-size: 0.95rem;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+}
+.retirement-vertical-arrow {
+    margin: -0.12rem 0 0.08rem;
+    color: #159447;
+    text-align: center;
+    font-size: 1.7rem;
+    font-weight: 800;
+    line-height: 1;
+}
+.st-key-retirement-connection-platform [data-testid="stHorizontalBlock"] {
+    align-items: center !important;
+    gap: 0.2rem !important;
+}
+.st-key-retirement-connection-platform [data-testid="stButton"] button {
+    min-height: 2.65rem !important;
+    height: auto !important;
+    padding: 0.42rem 0.45rem !important;
+    border: 1.5px solid #159447 !important;
+    border-radius: 999px !important;
+    background: #ffffff !important;
+    color: #17452a !important;
+    font-size: 0.88rem !important;
+    font-weight: 700 !important;
+    line-height: 1.25 !important;
+    white-space: normal !important;
+    box-shadow: none !important;
+}
+.st-key-retirement-connection-platform [data-testid="stButton"] button:hover {
+    background: #e8f5ec !important;
+    border-color: #087b3c !important;
+}
+.st-key-retirement-connection-platform [data-testid="stButton"] button[kind="primary"],
+.st-key-retirement-connection-platform [data-testid="stButton"] button[data-testid="baseButton-primary"] {
+    border: 2px solid #159447 !important;
+    background: #e8f5ec !important;
+    color: #006b35 !important;
+    font-weight: 800 !important;
+}
+.st-key-retirement-connection-platform [data-testid="stButton"]:last-child button {
+    min-height: 2.1rem !important;
+    padding: 0.25rem 0.9rem !important;
+    border-radius: 999px !important;
+}
+div[data-testid="stDialog"]:has(.st-key-retirement-connection-platform) [data-testid="stDialogContent"] {
+    padding-top: 0.3rem !important;
+    padding-bottom: 0.35rem !important;
 }
 </style>
 """, unsafe_allow_html=True)
