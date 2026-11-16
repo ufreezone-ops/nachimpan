@@ -2496,7 +2496,7 @@ def _show_retirement_connection_dialog():
                 _report_title = _item["title"].split(". ", 1)[-1].strip()
                 # 번호와 보고서명을 하나의 버튼 안에 넣어 이전 역과 동일한 캡슐 구조로 표시
                 if st.button(
-                    f"**{_report_number}**　{_report_title} ({_score}%)",
+                    f"**{_report_number}** {_report_title} ({_score}%)",
                     key=f"retirement_connection_next_{_index}",
                     use_container_width=False,
                     type="primary",
