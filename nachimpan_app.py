@@ -2114,6 +2114,200 @@ def _restore_source_return():
     st.session_state.pop("_source_open_anchor", None)
 
 
+def _render_retirement_explorer_report(source_id):
+    """은퇴 생활비 나침반에서 여는 보고서 본문을 팝업 안에 표시한다."""
+    if source_id == "6050400-01":
+        st.markdown("""
+**은퇴 후 생활비는 한 가지 금액으로 고정되지 않습니다.**
+
+나침반은 은퇴 후 자녀가 독립한 가구를 가정하고, 가구주 연령대와 가구원 수에 해당하는 2024년 가계동향조사의 월 가계지출 가중중위값을 기준으로 사용합니다. 부부 가구는 2인, 1인 가구는 1인 기준을 적용하며, 이후 연도의 금액은 소비자물가지수로 환산합니다.
+
+**2024년 연령대별 월 가계지출 가중중위값**
+
+| 가구주 연령 | 1인 가구 | 2인 가구 |
+|---|---:|---:|
+| 60~64세 | 161.83만 원 | 324.27만 원 |
+| 65~69세 | 159.16만 원 | 262.55만 원 |
+| 70~74세 | 124.42만 원 | 221.71만 원 |
+| 75~79세 | 112.79만 원 | 195.72만 원 |
+| 80세 이상 | 101.82만 원 | 161.91만 원 |
+
+**화면의 ‘은퇴 후 월 생활비’ 입력값은 어떻게 쓰이나요?**
+
+화면에 기본 표시되는 270만 원은 은퇴 후 생활비를 생각해 보기 위한 참고 입력값입니다. 실제 생애주기 재정곡선에서는 이 금액을 모든 은퇴 연령에 일괄 적용하지 않습니다. 위 표처럼 해당 연령대와 가구원 수에 맞는 통계값을 연령별로 적용합니다. 통계 파일을 읽지 못하는 경우에만 입력값을 대체 기준으로 사용합니다.
+
+이 값은 특정 개인의 미래 지출 예측이 아닙니다. 2024년 가구 표본의 가중중위값이며, 개인의 주거 형태·건강·돌봄·지역·생활 방식에 따라 실제 지출은 달라질 수 있습니다.
+
+자료: 국가데이터처 「가계동향조사(2019~2024년 구분류)」 2024년 연간자료, MDIS 제공 공공용 마이크로데이터.
+""")
+        with st.expander("산출 방법과 원자료 변수 보기"):
+            _readme_path = (
+                Path(__file__).resolve().parent
+                / "data" / "기준데이터"
+                / "국가데이터처_2024_가계동향조사_가구주연령대별가구원수별가계지출_가중중위값_README.md"
+            )
+            if _readme_path.exists():
+                st.markdown(_readme_path.read_text(encoding="utf-8"))
+            else:
+                st.info("산출 방법 파일을 현재 앱에서 찾을 수 없습니다.")
+
+    elif source_id == "6051400-00":
+        st.markdown("""
+나침반의 우리 가정 생애주기 지출곡선은 국가데이터처 MDIS의 2024년 가계동향조사 연간자료를 이용합니다. 가구주 연령대와 가구원 수별로 가계지출의 **가중중위값**을 산출해 연령별 기준값으로 사용합니다.
+
+**대표사례의 현재 기준값**
+
+2024년 현재 45세·3인 가구의 월 가계지출 가중중위값은 **504.4만 원**입니다. 이 금액은 대표사례의 기준점이며, 실제 곡선에는 인터뷰이가 입력한 현재 지출과 기준값의 차이를 반영한 개인 지출 보정률이 적용됩니다. 예를 들어 보정률이 100%라면 MDIS 기준값을 그대로 사용한다는 뜻입니다.
+
+연령대·가구원 수 조합에 따라 표본 수가 30 미만인 구간이 있습니다. 특히 일부 3·4인 가구의 가중중위값은 표본 변동 가능성이 있으므로 정밀한 예측값이 아닌 참고 기준으로 해석해야 합니다.
+
+**원자료와 산출방법**
+- 조사: 국가데이터처 「가계동향조사(2019~2024년 구분류)」 2024년 연간자료
+- 제공 경로: MDIS 공공용 마이크로데이터
+- 대상: 전체가구, 1인 이상
+- 산출: 가구주 연령대·가구원 수별 가계지출 가중중위값
+- 기준데이터: 국가데이터처_2024_가계동향조사_가구주연령대별가구원수별가계지출_가중중위값.csv
+- 변수·가중치·세부 산출 절차: 같은 폴더의 README 참고
+
+이 통계값은 특정 개인의 미래 지출 예측이 아닙니다. 주거 형태·건강·돌봄·지역·생활 방식에 따라 실제 지출은 달라질 수 있습니다.
+""")
+        with st.expander("원자료 변수와 산출 절차 보기"):
+            _readme_path = (
+                Path(__file__).resolve().parent
+                / "data" / "기준데이터"
+                / "국가데이터처_2024_가계동향조사_가구주연령대별가구원수별가계지출_가중중위값_README.md"
+            )
+            if _readme_path.exists():
+                st.markdown(_readme_path.read_text(encoding="utf-8"))
+            else:
+                st.info("산출 방법 파일을 현재 앱에서 찾을 수 없습니다.")
+
+    elif source_id == "6051300-00":
+        st.markdown("""
+과거의 소득과 지출을 당시 명목금액만으로 현재 값과 나란히 놓으면 화폐가치의 변화를 놓치게 됩니다. 나침반은 과거 연령의 소득 기준값에 당시 임금지수를 적용해 과거 명목소득을 추정하고, 같은 연도의 지출 기준값에는 소비자물가지수(CPI)를 적용해 과거 명목지출을 추정합니다. 소득에는 임금지수, 지출에는 CPI를 각각 사용하며 서로 바꾸어 적용하지 않습니다.
+
+이 비교는 과거 개인·가구의 실제 소득과 지출을 복원한 값이 아닙니다. 2024년 연령별·가구원 수별 기준곡선을 과거 지수로 환산한 비교용 추정치입니다. 임금지수는 2011년 이전과 시계열이 단절되어 있으므로, 그 이전 소득은 동일한 방식으로 연속 환산할 수 없습니다.
+
+| 항목 | 기준연도 | 실제 자료 범위 |
+|---|---:|---:|
+| MDIS 가계지출 기준곡선 | 2024년 | 2024년 조사자료 |
+| 소비자물가지수 | 2020=100 | 1965~2025년 |
+| 임금지수 | 2024=100 | 2011~2025년 |
+
+자료:
+- 국가데이터처 소비자물가 총지수
+- 고용노동부 사업체노동력조사 임금총액
+- 기준데이터: 국가데이터처_소비자물가지수_및_고용노동부_임금지수_1965-2025.csv
+""")
+    else:
+        st.info("선택한 자료를 찾을 수 없습니다.")
+
+
+@st.dialog("관련 통계자료", width="large")
+def _show_retirement_report_explorer():
+    _report_index = [
+        ("3. 노후와 은퇴", "6050400-01"),
+        ("13. 지출 통계 출처 및 산출방법", "6051400-00"),
+        ("12. 과거 소득·지출을 현재 기준과 비교하는 방법", "6051300-00"),
+    ]
+    _report_titles = {report_id: title for title, report_id in _report_index}
+    _source_id = st.session_state.get("_retirement_explorer_source_id", "6050400-01")
+    _history = st.session_state.get("_retirement_explorer_history", [_source_id])
+    if not _history:
+        _history = [_source_id]
+        st.session_state["_retirement_explorer_history"] = _history
+
+    st.caption("은퇴 후 생활비와 관련된 통계 자료를 살펴봅니다.")
+    st.markdown(f"## {_report_titles.get(_source_id, '관련 통계자료')}")
+    _render_retirement_explorer_report(_source_id)
+
+    st.divider()
+    st.markdown("### 함께 살펴보면 좋은 자료")
+    if len(_history) > 1:
+        _previous_id = _history[-2]
+        if st.button(
+            f"← 이전에 보던 자료: {_report_titles.get(_previous_id, _previous_id)}",
+            key="retirement_explorer_previous",
+            use_container_width=True,
+        ):
+            st.session_state["_retirement_explorer_history"] = _history[:-1]
+            st.session_state["_retirement_explorer_source_id"] = _previous_id
+            st.rerun()
+
+    _next_map = {
+        "6050400-01": ("6051400-00", "생활비 통계가 어떤 자료와 기준으로 만들어졌는지 확인해 보세요."),
+        "6051400-00": ("6051300-00", "서로 다른 시점의 금액을 같은 가치 기준으로 비교하는 방법입니다."),
+        "6051300-00": ("6050400-01", "현재 가치로 환산한 지출 기준이 노후 생활비에서 어떻게 쓰이는지 살펴보세요."),
+    }
+    _unexpected_map = {
+        "6050400-01": ("6051300-00", "같은 생활비라도 시점이 달라지면 의미와 구매력이 달라집니다."),
+        "6051400-00": ("6050400-01", "산출 기준을 확인한 뒤 실제 은퇴 연령대의 지출 수준을 살펴보세요."),
+        "6051300-00": ("6051400-00", "금액 환산을 이해한 뒤 지출 통계의 원자료를 확인해 보세요."),
+    }
+
+    _next_id, _next_reason = _next_map[_source_id]
+    st.caption("이어서 살펴볼 자료")
+    if st.button(
+        f"{_report_titles[_next_id]}  ·  {_next_reason}",
+        key="retirement_explorer_next",
+        use_container_width=True,
+    ):
+        _new_history = list(_history)
+        _new_history.append(_next_id)
+        st.session_state["_retirement_explorer_history"] = _new_history
+        st.session_state["_retirement_explorer_source_id"] = _next_id
+        st.rerun()
+
+    _unexpected_id, _unexpected_reason = _unexpected_map[_source_id]
+    st.caption("다른 관점에서 살펴보기")
+    if st.button(
+        f"{_report_titles[_unexpected_id]}  ·  {_unexpected_reason}",
+        key="retirement_explorer_unexpected",
+        use_container_width=True,
+    ):
+        _new_history = list(_history)
+        _new_history.append(_unexpected_id)
+        st.session_state["_retirement_explorer_history"] = _new_history
+        st.session_state["_retirement_explorer_source_id"] = _unexpected_id
+        st.rerun()
+
+    _random_candidates = [report_id for _, report_id in _report_index if report_id != _source_id]
+    _random_id = random.choice(_random_candidates)
+    if st.button(
+        "다른 자료 무작위로 둘러보기",
+        key="retirement_explorer_random",
+        use_container_width=True,
+    ):
+        _new_history = list(_history)
+        _new_history.append(_random_id)
+        st.session_state["_retirement_explorer_history"] = _new_history
+        st.session_state["_retirement_explorer_source_id"] = _random_id
+        st.rerun()
+
+    st.divider()
+    _left, _right = st.columns(2)
+    with _left:
+        if st.button(
+            "처음 출발한 화면으로 돌아가기",
+            key="retirement_explorer_return",
+            use_container_width=True,
+        ):
+            st.session_state["_retirement_explorer_open"] = False
+            st.session_state.pop("_retirement_explorer_source_id", None)
+            st.session_state.pop("_retirement_explorer_history", None)
+            st.rerun()
+    with _right:
+        if st.button(
+            "닫기",
+            key="retirement_explorer_close",
+            use_container_width=True,
+        ):
+            st.session_state["_retirement_explorer_open"] = False
+            st.session_state.pop("_retirement_explorer_source_id", None)
+            st.session_state.pop("_retirement_explorer_history", None)
+            st.rerun()
+
+
 HOUSING_PRICE_SOURCE = {
     "기관": "한국부동산원",
     "서비스": "R-ONE 부동산통계정보",
@@ -2543,11 +2737,9 @@ if selected_page == "우리집 가계부":
                                 key=f"retirement_expense_guide_{_report_id}",
                                 use_container_width=True,
                             ):
-                                _open_source_reference(
-                                    _report_id,
-                                    "우리집 가계부",
-                                    "source-anchor-retirement-expense",
-                                )
+                                st.session_state["_retirement_explorer_open"] = True
+                                st.session_state["_retirement_explorer_source_id"] = _report_id
+                                st.session_state["_retirement_explorer_history"] = [_report_id]
                                 st.rerun()
                 st.markdown(
                     '<div id="source-anchor-retirement-expense"></div>',
@@ -7484,6 +7676,13 @@ OECD 「Pensions at a Glance 2025: Korea」는 2024년 한국의 실질 노동�
 
 
     st.caption("※ 이 자료실은 주제별 통계와 출처를 차근차근 확장하기 위한 구성입니다. 출처와 기준이 확인되지 않은 수치는 제시하지 않습니다.")
+
+
+#--------------------------------------------------------
+# 은퇴 후 생활비 관련 보고서 팝업
+#--------------------------------------------------------
+if st.session_state.get("_retirement_explorer_open", False):
+    _show_retirement_report_explorer()
 
 
 #--------------------------------------------------------
