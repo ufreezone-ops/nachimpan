@@ -1999,8 +1999,6 @@ def _open_source_reference(source_id, origin_page, origin_anchor):
         "page": origin_page,
         "anchor": origin_anchor,
     }
-    if origin_anchor == "housing-dialog-return-anchor":
-        st.session_state["_reopen_housing_price_dialog"] = True
     _source_anchor_map = {
         "6050200-00": "stats-anchor-lifecycle-income",
         "6050300-00": "stats-anchor-marriage-housing",
@@ -5502,17 +5500,6 @@ elif selected_page == "우리집 재정곡선":
                 st.caption(
                     "※ 한국부동산원 전국주택가격동향조사 · 2025년 12월 기준"
                 )
-                st.divider()
-                st.markdown("**17개 시·도 주택종합·아파트 중위가격**")
-                _housing_rows = [
-                    {
-                        "지역": _region,
-                        "주택종합": f"{_values[1] / 100000:.2f}억 원",
-                        "아파트": f"{_values[3] / 100000:.2f}억 원",
-                    }
-                    for _region, _values in HOUSING_PRICE_DATA.items()
-                ]
-                st.table(_housing_rows)
                 st.caption(
                     "지역 간 가격 수준을 비교하기 위한 통계값이며, "
                     "개별 주택의 실제 매매가격이나 미래 가격을 뜻하지 않습니다."
@@ -5986,6 +5973,8 @@ elif selected_page == "통계":
                     st.session_state["_source_restore_anchor"] = (
                         _return_context["anchor"]
                     )
+                    if _return_context["anchor"] == "housing-dialog-return-anchor":
+                        st.session_state["_reopen_housing_price_dialog"] = True
                     st.session_state["_pending_nav"] = (
                         _return_context["page"]
                     )
@@ -6891,27 +6880,27 @@ OECD 「Pensions at a Glance 2025: Korea」는 2024년 한국의 실질 노동�
         st.markdown("""
 **지역별 대표 주택가격**
 
-나침반은 한국부동산원 R-ONE 「전국주택가격동향조사」의 2025년 12월 지역별 주택가격 통계를 참고합니다. 지역 간 가격 수준을 비교하기 위해 주택종합·아파트의 평균 및 중위가격을 구분해 보유하며, 현재 가구의 주택구입 기준에는 **지역별 아파트 중위가격**을 사용합니다.
+나침반은 한국부동산원 R-ONE 「전국주택가격동향조사」의 2025년 12월 지역별 주택가격 통계를 참고합니다. 지역별 가격 수준을 비교할 수 있도록 **주택종합과 아파트의 중위가격**을 함께 제시합니다. 실제 주택구입 기준에는 지역별 **아파트 중위가격**을 사용합니다.
 
-| 지역 | 2025년 12월 아파트 중위가격 |
-|---|---:|
-| 서울 | 9억 5,800만 원 |
-| 부산 | 2억 8,200만 원 |
-| 대구 | 2억 5,350만 원 |
-| 인천 | 3억 3,350만 원 |
-| 광주 | 2억 2,200만 원 |
-| 대전 | 2억 9,650만 원 |
-| 울산 | 2억 5,900만 원 |
-| 세종 | 5억 3,300만 원 |
-| 경기 | 4억 5,400만 원 |
-| 강원 | 1억 5,900만 원 |
-| 충북 | 1억 6,700만 원 |
-| 충남 | 1억 7,700만 원 |
-| 전북 | 1억 4,800만 원 |
-| 전남 | 1억 4,300만 원 |
-| 경북 | 1억 4,000만 원 |
-| 경남 | 1억 7,500만 원 |
-| 제주 | 2억 4,500만 원 |
+| 지역 | 주택종합 중위가격 | 아파트 중위가격 |
+|---|---:|---:|
+| 서울 | 7.31억 원 | 9.58억 원 |
+| 부산 | 2.49억 원 | 2.82억 원 |
+| 대구 | 2.46억 원 | 2.54억 원 |
+| 인천 | 2.71억 원 | 3.34억 원 |
+| 광주 | 2.09억 원 | 2.22억 원 |
+| 대전 | 2.71억 원 | 2.97억 원 |
+| 울산 | 2.58억 원 | 2.59억 원 |
+| 세종 | 5.05억 원 | 5.33억 원 |
+| 경기 | 3.88억 원 | 4.54억 원 |
+| 강원 | 1.39억 원 | 1.59억 원 |
+| 충북 | 1.47억 원 | 1.67억 원 |
+| 충남 | 1.49억 원 | 1.77억 원 |
+| 전북 | 1.16억 원 | 1.48억 원 |
+| 전남 | 1.07억 원 | 1.43억 원 |
+| 경북 | 1.17억 원 | 1.40억 원 |
+| 경남 | 1.55억 원 | 1.75억 원 |
+| 제주 | 2.23억 원 | 2.45억 원 |
 
 **대출비율(LTV) 기준**
 
