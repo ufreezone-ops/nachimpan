@@ -5468,12 +5468,28 @@ elif selected_page == "우리집 재정곡선":
             _case_house_median_eok = _case_housing_stats[1] / 100000
             _case_apt_median_eok = _case_housing_stats[3] / 100000
 
-            @st.dialog("지역별 주택가격 통계", width="large")
+            @st.dialog("🏠 부동산 적용 기준", width="large")
             def _show_housing_price_stats_dialog():
+                if _case_is_representative:
+                    st.markdown("**기본사례 예시**")
+                    st.markdown(
+                        "- 주택가격 4.0억 원\n"
+                        "- 대출금 1.4억 원 (LTV 35%)\n"
+                        "- 자기자금 2.6억 원 (65%)"
+                    )
+                    st.caption("※ 재정곡선을 계산하기 위해 설정한 가정값입니다.")
+                    st.divider()
+
+                st.markdown(f"**{_case_housing_region} 지역의 주택가격 통계 중위값**")
                 st.markdown(
-                    "한국부동산원 R-ONE 「전국주택가격동향조사」의 "
-                    "2025년 12월 지역별 중위가격입니다."
+                    f"- { _case_house_median_eok:.2f}억 원 (주택)\n"
+                    f"- { _case_apt_median_eok:.2f}억 원 (아파트)"
                 )
+                st.caption(
+                    "※ 한국부동산원 전국주택가격동향조사 · 2025년 12월 기준"
+                )
+                st.divider()
+                st.markdown("**17개 시·도 주택종합·아파트 중위가격**")
                 _housing_rows = [
                     {
                         "지역": _region,
@@ -5484,59 +5500,31 @@ elif selected_page == "우리집 재정곡선":
                 ]
                 st.table(_housing_rows)
                 st.caption(
-                    "단위: 억 원. 지역 간 가격 수준을 비교하기 위한 통계값이며, "
+                    "지역 간 가격 수준을 비교하기 위한 통계값이며, "
                     "개별 주택의 실제 매매가격이나 미래 가격을 뜻하지 않습니다."
                 )
                 st.markdown(
                     "[한국부동산원 R-ONE 통계정보]"
                     "(https://www.reb.or.kr/reb/cm/cntnts/cntntsView.do?cntntsId=1033&mi=10333&statId=S234820263)"
                 )
+                if st.button(
+                    "🧭 출처 및 산정방법 자세히 보기",
+                    key="source_housing_price_stats",
+                    use_container_width=True,
+                ):
+                    _open_source_reference(
+                        "6051500-00",
+                        "우리집 재정곡선",
+                        "case-housing-statistics",
+                    )
 
-            with st.container(border=True):
-                st.markdown("**🏠 부동산 적용 기준**")
-                if _case_is_representative:
-                    _housing_basis_cols = st.columns(2, gap="medium")
-                    with _housing_basis_cols[0]:
-                        st.markdown("**기본사례 예시**")
-                        st.markdown(
-                            "**주택가격** 4.0억 원  ·  **대출금** 1.4억 원 (35%)  ·  "
-                            "**자기자금** 2.6억 원 (65%)"
-                        )
-                        st.caption("※ 재정곡선 계산을 위한 가정값")
-                    with _housing_basis_cols[1]:
-                        st.markdown(f"**{_case_housing_region} 지역 주택가격 중위값**")
-                        st.markdown(
-                            f"**주택** {_case_house_median_eok:.2f}억 원  ·  "
-                            f"**아파트** {_case_apt_median_eok:.2f}억 원"
-                        )
-                else:
-                    st.markdown(f"**{_case_housing_region} 지역 주택가격 중위값**")
-                    st.markdown(
-                        f"**주택** {_case_house_median_eok:.2f}억 원  ·  "
-                        f"**아파트** {_case_apt_median_eok:.2f}억 원"
-                    )
-                with st.container(horizontal=True, vertical_alignment="center", gap=None):
-                    if st.button(
-                        "17개 시·도 주택종합·아파트 중위가격표 보기",
-                        key="open_housing_price_stats_table",
-                        help="17개 시·도 주택종합·아파트 중위가격 표 보기",
-                        type="tertiary",
-                    ):
-                        _show_housing_price_stats_dialog()
-                    st.caption(
-                        "※ 한국부동산원 전국주택가격동향조사 · 2025년 12월 기준"
-                    )
-                    if st.button(
-                        "🧭",
-                        key="source_housing_price_stats",
-                        help="지역별 주택가격 통계 출처 보기",
-                        type="tertiary",
-                    ):
-                        _open_source_reference(
-                            "6051500-00",
-                            "우리집 재정곡선",
-                            "case-housing-statistics",
-                        )
+            if st.button(
+                "🏠 부동산 적용 기준",
+                key="open_housing_price_stats_table",
+                use_container_width=True,
+                help="기본사례 가정값과 지역별 주택가격 통계 보기",
+            ):
+                _show_housing_price_stats_dialog()
             st.markdown('<div id="case-housing-report-links" style="scroll-margin-top: 120px;"></div>', unsafe_allow_html=True)
             _housing_report_links = [
                 ("4. 주택대출과 원리금 분리", "6050500-01"),
