@@ -2206,6 +2206,7 @@ def _render_retirement_explorer_report(source_id):
 
 @st.dialog("관련 통계자료", width="large")
 def _show_retirement_report_explorer():
+    """보고서를 단계적으로 탐색하고 방문 경로를 보존하는 팝업."""
     _report_index = [
         ("3. 노후와 은퇴", "6050400-01", "R03"),
         ("13. 지출 통계 출처 및 산출방법", "6051400-00", "R13"),
@@ -2214,11 +2215,18 @@ def _show_retirement_report_explorer():
     _report_titles = {source_id: title for title, source_id, _ in _report_index}
     _available_by_code = {code: (title, source_id) for title, source_id, code in _report_index}
     _code_by_source = {source_id: code for title, source_id, code in _report_index}
-    _source_id = st.session_state.get("_retirement_explorer_source_id", "6050400-01")
-    _history = st.session_state.get("_retirement_explorer_history", [_source_id])
+
+    _history = list(st.session_state.get("_retirement_explorer_history", []))
+    _source_id = st.session_state.get("_retirement_explorer_source_id")
     if not _history:
+        _source_id = _source_id or "6050400-01"
         _history = [_source_id]
-        st.session_state["_retirement_explorer_history"] = _history
+        st.session_state["_retirement_explorer_history"] = list(_history)
+    elif not _source_id or _history[-1] != _source_id:
+        _source_id = _history[-1]
+        st.session_state["_retirement_explorer_source_id"] = _source_id
+
+    _floor_number = len(_history)
 
     _association_path = (
         Path(__file__).resolve().parent
@@ -2257,26 +2265,28 @@ def _show_retirement_report_explorer():
     _related_rows.sort(key=lambda item: (-item["score"], item["title"]))
 
     st.caption("출발 위치: 우리집 가계부 · 은퇴 후에는?")
-    st.caption("현재 보고 있는 자료")
     st.markdown(f"## {_report_titles.get(_source_id, '관련 통계자료')}")
+    st.caption(f"현재 { _floor_number }번째 자료를 살펴보고 있습니다.")
+
+    # 실제 방문한 자료를 순서대로 계속 보여준다. 되돌아가면 현재 위치 뒤의 기록은 잘라낸다.
+    with st.container(border=True):
+        st.markdown("**지금까지 살펴본 자료**")
+        for _step, _visited_id in enumerate(_history, start=1):
+            _visited_title = _report_titles.get(_visited_id, _visited_id)
+            if _step == _floor_number:
+                st.markdown(f"**{_step}. {_visited_title}  ·  현재 보고 있는 자료**")
+            else:
+                st.caption(f"{_step}. {_visited_title}")
+
+    st.divider()
     _render_retirement_explorer_report(_source_id)
 
     st.divider()
     st.markdown("### 함께 살펴보면 좋은 자료")
-    if len(_history) > 1:
-        _previous_id = _history[-2]
-        if st.button(
-            f"← 이전에 보던 자료: {_report_titles.get(_previous_id, _previous_id)}",
-            key="retirement_explorer_previous",
-            use_container_width=True,
-        ):
-            st.session_state["_retirement_explorer_history"] = _history[:-1]
-            st.session_state["_retirement_explorer_source_id"] = _previous_id
-            st.rerun()
-
     _available_related = [
         item for item in _related_rows
-        if item["code"] in _available_by_code and _available_by_code[item["code"]][1] != _source_id
+        if item["code"] in _available_by_code
+        and _available_by_code[item["code"]][1] != _source_id
     ]
     _available_related.sort(key=lambda item: (-item["score"], item["title"]))
 
@@ -2315,6 +2325,8 @@ def _show_retirement_report_explorer():
             st.session_state["_retirement_explorer_history"] = list(_history) + [_random_source]
             st.session_state["_retirement_explorer_source_id"] = _random_source
             st.rerun()
+    else:
+        st.info("현재 자료와 연결할 수 있는 보고서를 준비하고 있습니다.")
 
     with st.expander("전체 보고서 연관성 점수 보기"):
         if _related_rows:
@@ -2332,21 +2344,33 @@ def _show_retirement_report_explorer():
             st.info("연관성 자료를 불러오지 못했습니다. 앱의 연관성 자료 파일을 확인해 주세요.")
 
     st.divider()
-    _left, _right = st.columns(2)
-    with _left:
+    _back_col, _first_col, _ground_col = st.columns(3)
+    with _back_col:
         if st.button(
-            "처음 출발한 화면으로 돌아가기",
-            key="retirement_explorer_return",
+            "← 이전 자료",
+            key="retirement_explorer_previous",
             use_container_width=True,
+            disabled=_floor_number <= 1,
         ):
-            st.session_state["_retirement_explorer_open"] = False
-            st.session_state.pop("_retirement_explorer_source_id", None)
-            st.session_state.pop("_retirement_explorer_history", None)
+            _new_history = _history[:-1]
+            st.session_state["_retirement_explorer_history"] = _new_history
+            st.session_state["_retirement_explorer_source_id"] = _new_history[-1]
             st.rerun()
-    with _right:
+    with _first_col:
         if st.button(
-            "닫기",
-            key="retirement_explorer_close",
+            "처음 자료로",
+            key="retirement_explorer_first",
+            use_container_width=True,
+            disabled=_floor_number <= 1,
+        ):
+            _first_source = _history[0]
+            st.session_state["_retirement_explorer_history"] = [_first_source]
+            st.session_state["_retirement_explorer_source_id"] = _first_source
+            st.rerun()
+    with _ground_col:
+        if st.button(
+            "처음 화면으로",
+            key="retirement_explorer_ground",
             use_container_width=True,
         ):
             st.session_state["_retirement_explorer_open"] = False
