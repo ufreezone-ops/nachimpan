@@ -1876,9 +1876,19 @@ div.st-key-source_retirement_expense [data-testid="stPopoverButton"] svg {
     display: none !important;
 }
 
-/* 탭1 '은퇴 후에는?' 제목 옆 나침반: 기존 제목·아이콘 크기는 유지하고 버튼 외형만 제거 */
+/* 탭1 '은퇴 후에는?' 제목과 나침반: 제목의 불필요한 가로 점유 및 자동 링크 제거 */
 div.st-key-retirement-expense-title-row [data-testid="stHorizontalBlock"] {
     align-items: center !important;
+    gap: 0.12rem !important;
+}
+div.st-key-retirement-expense-title-row [data-testid="stElementContainer"]:has(h3) {
+    width: auto !important;
+    min-width: 0 !important;
+    max-width: max-content !important;
+    flex: 0 1 auto !important;
+}
+div.st-key-retirement-expense-title-row [data-testid="stHeaderActionElements"] {
+    display: none !important;
 }
 div.st-key-retirement-expense-title-row > div {
     align-self: center !important;
@@ -1888,7 +1898,7 @@ div.st-key-source_retirement_expense_guide {
     min-width: 0 !important;
     max-width: max-content !important;
     flex: 0 0 auto !important;
-    margin: 0 0 0 0.35rem !important;
+    margin: 0 0 0 0.08rem !important;
     align-self: center !important;
 }
 div.st-key-source_retirement_expense_guide [data-testid="stPopoverButton"],
@@ -1925,7 +1935,8 @@ div.st-key-source_retirement_expense_guide [data-testid="stPopoverButton"] p {
     color: #38BDF8 !important;
     -webkit-text-fill-color: #38BDF8 !important;
 }
-div.st-key-source_retirement_expense_guide [data-testid="stPopoverButton"] svg {
+div.st-key-source_retirement_expense_guide [data-testid="stPopoverButton"] svg,
+div.st-key-source_retirement_expense_guide [data-testid="stPopoverButton"] [data-testid="stIconMaterial"] {
     display: none !important;
 }
 
