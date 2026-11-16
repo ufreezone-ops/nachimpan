@@ -2494,7 +2494,7 @@ def _show_retirement_connection_dialog():
                 _score = max(0, min(100, int(_item["raw_score"])))
                 _report_number = int(_item["code"].replace("R", ""))
                 _report_title = _item["title"].split(". ", 1)[-1]
-                _badge_col, _button_col = st.columns([1, 8], vertical_alignment="center")
+                _badge_col, _button_col = st.columns([1.2, 8], vertical_alignment="center")
                 with _badge_col:
                     st.markdown(
                         f"<div class='retirement-station-next-number'>{_report_number}</div>",
@@ -8702,6 +8702,83 @@ st.markdown("""
 .st-key-retirement-connection-platform [data-testid="stButton"] button:focus *,
 .st-key-retirement-connection-platform [data-testid="stButton"] button:active * {
     color: #ffffff !important;
+}
+</style>
+""", unsafe_allow_html=True)
+
+
+# 연결 안내판 여백·현재 역 글자색·다음 역 번호 최종 보정
+st.markdown("""
+<style>
+/* 안내판 내부 좌우·상하 여백을 최소화 */
+.st-key-retirement-connection-platform {
+    padding: 0.12rem 0.12rem 0.18rem !important;
+}
+.st-key-retirement-connection-platform [data-testid="stVerticalBlock"] {
+    gap: 0.14rem !important;
+}
+.st-key-retirement-connection-platform [data-testid="stHorizontalBlock"] {
+    gap: 0.16rem !important;
+    align-items: center !important;
+}
+.retirement-station-previous {
+    padding-left: 0.18rem !important;
+    padding-right: 0.18rem !important;
+    gap: 0.3rem !important;
+}
+.retirement-station-current {
+    min-height: 2.15rem !important;
+    padding: 0.08rem 0.18rem !important;
+    border: 2px solid #159447 !important;
+    border-radius: 999px !important;
+    background: #ffffff !important;
+    gap: 0.28rem !important;
+}
+.retirement-station-current > strong {
+    color: #159447 !important;
+    -webkit-text-fill-color: #159447 !important;
+    font-weight: 850 !important;
+}
+.retirement-station-current-compass {
+    color: #159447 !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    background: transparent !important;
+    border: 0 !important;
+}
+
+/* 다음 보고서 번호: 이전 보고서의 번호 원과 동일한 흰 원·녹색 숫자 */
+.retirement-station-next-number {
+    display: inline-flex !important;
+    flex: 0 0 1.05rem !important;
+    width: 1.05rem !important;
+    min-width: 1.05rem !important;
+    height: 1.05rem !important;
+    margin: 0 auto !important;
+    padding: 0 !important;
+    align-items: center !important;
+    justify-content: center !important;
+    box-sizing: border-box !important;
+    border: 0 !important;
+    border-radius: 50% !important;
+    background: #ffffff !important;
+    color: #159447 !important;
+    font-size: 0.62rem !important;
+    line-height: 1 !important;
+    font-weight: 850 !important;
+}
+
+/* 다음 보고서 버튼의 좌우 내부 여백과 기본 글자색 고정 */
+.st-key-retirement-connection-platform [data-testid="stButton"] button {
+    padding: 0.24rem 0.18rem !important;
+    min-height: 2.2rem !important;
+}
+.st-key-retirement-connection-platform [data-testid="stButton"] button [data-testid="stMarkdownContainer"],
+.st-key-retirement-connection-platform [data-testid="stButton"] button [data-testid="stMarkdownContainer"] p {
+    margin: 0 !important;
+    padding: 0 !important;
+    color: #ffffff !important;
+    -webkit-text-fill-color: #ffffff !important;
 }
 </style>
 """, unsafe_allow_html=True)
