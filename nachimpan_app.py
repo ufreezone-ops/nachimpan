@@ -2030,6 +2030,70 @@ def _open_source_reference(source_id, origin_page, origin_anchor):
     st.rerun()
 
 
+@st.dialog("🏠 부동산 적용 기준", width="large")
+def _show_housing_price_stats_dialog():
+    _case_housing_region = st.session_state.get("housing_region")
+    if not _case_housing_region or _case_housing_region == "지역 선택":
+        _case_housing_region = st.session_state.get("residence_region", "지역 선택")
+    if _case_housing_region not in HOUSING_PRICE_DATA:
+        st.info("선택한 지역의 주택가격 통계를 찾을 수 없습니다.")
+        return
+
+    _case_housing_stats = HOUSING_PRICE_DATA[_case_housing_region]
+    _case_house_median_eok = _case_housing_stats[1] / 100000
+    _case_apt_median_eok = _case_housing_stats[3] / 100000
+    _case_is_representative = st.session_state.get("_representative_case_id") in {
+        "case_32_female", "case_45_female"
+    }
+
+    st.markdown(
+        """
+        <style>
+        div[data-testid="stDialog"] [data-testid="stDialogHeader"] h2 {
+            width: 100%;
+            text-align: left !important;
+        }
+        </style>
+        <div id="housing-dialog-return-anchor"></div>
+        """,
+        unsafe_allow_html=True,
+    )
+    if _case_is_representative:
+        st.markdown("**기본사례 예시**")
+        st.markdown(
+            "- 주택가격 4.0억 원\n"
+            "- 대출금 1.4억 원 (LTV 35%)\n"
+            "- 자기자금 2.6억 원 (65%)"
+        )
+        st.caption("※ 재정곡선을 계산하기 위해 설정한 가정값입니다.")
+        st.divider()
+
+    st.markdown(f"**{_case_housing_region} 지역의 주택가격 통계 중위값**")
+    st.markdown(
+        f"- {_case_house_median_eok:.2f}억 원 (주택)\n"
+        f"- {_case_apt_median_eok:.2f}억 원 (아파트)"
+    )
+    st.caption("※ 한국부동산원 전국주택가격동향조사 · 2025년 12월 기준")
+    st.caption(
+        "지역 간 가격 수준을 비교하기 위한 통계값이며, "
+        "개별 주택의 실제 매매가격이나 미래 가격을 뜻하지 않습니다."
+    )
+    st.markdown(
+        "[한국부동산원 R-ONE 통계정보]"
+        "(https://www.reb.or.kr/reb/cm/cntnts/cntntsView.do?cntntsId=1033&mi=10333&statId=S234820263)"
+    )
+    if st.button(
+        "🧭 출처 및 산정방법 자세히 보기",
+        key="source_housing_price_stats",
+        use_container_width=False,
+    ):
+        _open_source_reference(
+            "6051500-00",
+            "우리집 재정곡선",
+            "housing-dialog-return-anchor",
+        )
+
+
 @st.dialog("통계 비교선", width="large")
 def _show_income_wage_stats_dialog():
     st.markdown(
@@ -5468,57 +5532,6 @@ elif selected_page == "우리집 재정곡선":
             _case_house_median_eok = _case_housing_stats[1] / 100000
             _case_apt_median_eok = _case_housing_stats[3] / 100000
 
-            @st.dialog("🏠 부동산 적용 기준", width="large")
-            def _show_housing_price_stats_dialog():
-                st.markdown(
-                    """
-                    <style>
-                    div[data-testid="stDialog"] [data-testid="stDialogHeader"] h2 {
-                        width: 100%;
-                        text-align: left !important;
-                    }
-                    </style>
-                    <div id="housing-dialog-return-anchor"></div>
-                    """,
-                    unsafe_allow_html=True,
-                )
-                if _case_is_representative:
-                    st.markdown("**기본사례 예시**")
-                    st.markdown(
-                        "- 주택가격 4.0억 원\n"
-                        "- 대출금 1.4억 원 (LTV 35%)\n"
-                        "- 자기자금 2.6억 원 (65%)"
-                    )
-                    st.caption("※ 재정곡선을 계산하기 위해 설정한 가정값입니다.")
-                    st.divider()
-
-                st.markdown(f"**{_case_housing_region} 지역의 주택가격 통계 중위값**")
-                st.markdown(
-                    f"- { _case_house_median_eok:.2f}억 원 (주택)\n"
-                    f"- { _case_apt_median_eok:.2f}억 원 (아파트)"
-                )
-                st.caption(
-                    "※ 한국부동산원 전국주택가격동향조사 · 2025년 12월 기준"
-                )
-                st.caption(
-                    "지역 간 가격 수준을 비교하기 위한 통계값이며, "
-                    "개별 주택의 실제 매매가격이나 미래 가격을 뜻하지 않습니다."
-                )
-                st.markdown(
-                    "[한국부동산원 R-ONE 통계정보]"
-                    "(https://www.reb.or.kr/reb/cm/cntnts/cntntsView.do?cntntsId=1033&mi=10333&statId=S234820263)"
-                )
-                if st.button(
-                    "🧭 출처 및 산정방법 자세히 보기",
-                    key="source_housing_price_stats",
-                    use_container_width=False,
-                ):
-                    _open_source_reference(
-                        "6051500-00",
-                        "우리집 재정곡선",
-                        "housing-dialog-return-anchor",
-                    )
-
             st.markdown(
                 """
                 <style>
@@ -5537,24 +5550,6 @@ elif selected_page == "우리집 재정곡선":
                 help="기본사례 가정값과 지역별 주택가격 통계 보기",
             ):
                 _show_housing_price_stats_dialog()
-            elif st.session_state.pop("_reopen_housing_price_dialog", False):
-                _show_housing_price_stats_dialog()
-            st.markdown('<div id="case-housing-report-links" style="scroll-margin-top: 120px;"></div>', unsafe_allow_html=True)
-            _housing_report_links = [
-                ("4. 주택대출과 원리금 분리", "6050500-01"),
-                ("14. 부동산 적용 기준과 지역별 산정방법", "6051500-00"),
-            ]
-            for _housing_report_title, _housing_report_id in _housing_report_links:
-                if st.button(
-                    f"🧭 {_housing_report_title}",
-                    key=f"case_housing_stat_{_housing_report_id}",
-                    use_container_width=True,
-                ):
-                    _open_source_reference(
-                        _housing_report_id,
-                        "우리집 재정곡선",
-                        "case-housing-report-links",
-                    )
 
 
 
@@ -7225,6 +7220,14 @@ OECD 「Pensions at a Glance 2025: Korea」는 2024년 한국의 실질 노동�
 """)
 
     st.caption("※ 이 자료실은 주제별 통계와 출처를 차근차근 확장하기 위한 구성입니다. 출처와 기준이 확인되지 않은 수치는 제시하지 않습니다.")
+
+
+# 출처 자료실에서 돌아온 경우, 원래 페이지의 부동산 팝업을 다시 연다.
+if (
+    selected_page == "우리집 재정곡선"
+    and st.session_state.pop("_reopen_housing_price_dialog", False)
+):
+    _show_housing_price_stats_dialog()
 
 
 #--------------------------------------------------------
