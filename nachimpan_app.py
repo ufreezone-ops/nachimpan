@@ -518,6 +518,41 @@ div.st-key-retirement-source-details button:hover {
 </style>
 """, unsafe_allow_html=True)
 
+# 연결 플랫폼은 최초로 열리는 순간부터 2호선 녹색 테마를 적용한다.
+# 전역 CSS로 선언해 dialog 내부 첫 렌더링 시점에 스타일이 늦게 붙는 현상을 방지한다.
+st.markdown("""
+<style>
+.st-key-retirement-connection-platform {
+    background: #E8F5EC !important;
+    background-color: #E8F5EC !important;
+    border: 1px solid #00A84D !important;
+    border-radius: 14px !important;
+    padding: 16px !important;
+}
+.st-key-retirement-connection-platform h3,
+.st-key-retirement-connection-platform h4 {
+    color: #006B35 !important;
+}
+.st-key-retirement-connection-platform [data-testid="stButton"] button {
+    border-color: #00A84D !important;
+}
+.st-key-retirement-connection-platform [data-testid="stButton"] button[kind="primary"] {
+    background: #00A84D !important;
+    background-color: #00A84D !important;
+    color: #FFFFFF !important;
+    -webkit-text-fill-color: #FFFFFF !important;
+}
+div[data-testid="stDialog"]:has(.st-key-retirement-connection-platform) [data-testid="stDialogHeader"] {
+    background: #00A84D !important;
+    background-color: #00A84D !important;
+}
+div[data-testid="stDialog"]:has(.st-key-retirement-connection-platform) [data-testid="stDialogHeader"] h2 {
+    color: #FFFFFF !important;
+    -webkit-text-fill-color: #FFFFFF !important;
+}
+</style>
+""", unsafe_allow_html=True)
+
 #--------------------------------------------------------
 # 1.02.02 | 전역 색상 디자인 토큰 및 가독성 폰트 설정
 #--------------------------------------------------------
@@ -2363,37 +2398,6 @@ def _show_retirement_connection_dialog():
                 "reason": _row.get("reason") or _row.get("relation") or "주제상 연결되는 자료입니다.",
             })
     _related_rows.sort(key=lambda item: (-item["raw_score"], item["title"]))
-
-    st.markdown(
-        """
-        <style>
-        .st-key-retirement-connection-platform {
-            background: #E8F5EC !important;
-            border: 1px solid #00A84D !important;
-            border-radius: 14px !important;
-            padding: 16px !important;
-        }
-        .st-key-retirement-connection-platform h3,
-        .st-key-retirement-connection-platform h4 {
-            color: #006B35 !important;
-        }
-        .st-key-retirement-connection-platform [data-testid="stButton"] button {
-            border-color: #00A84D !important;
-        }
-        .st-key-retirement-connection-platform [data-testid="stButton"] button[kind="primary"] {
-            background: #00A84D !important;
-            color: white !important;
-        }
-        div[data-testid="stDialog"]:has(.st-key-retirement-connection-platform) [data-testid="stDialogHeader"] {
-            background: #00A84D !important;
-        }
-        div[data-testid="stDialog"]:has(.st-key-retirement-connection-platform) [data-testid="stDialogHeader"] h2 {
-            color: white !important;
-        }
-        </style>
-        """,
-        unsafe_allow_html=True,
-    )
 
     with st.container(key="retirement-connection-platform", border=True):
         st.markdown(f"### { _report_titles.get(_source_id, '현재 보고서') }")
