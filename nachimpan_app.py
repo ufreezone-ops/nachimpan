@@ -1813,6 +1813,19 @@ div.st-key-loan-payment-source-guide [data-testid="stPopoverButton"] svg,
 div.st-key-loan-payment-source-guide [data-testid="stPopoverButton"] [data-testid="stIconMaterial"] {
     display: none !important;
 }
+/* 대출 원리금 출처로 이동하는 동작은 연결 의미의 녹색 버튼 */
+.st-key-loan_payment_source_open [data-testid="stButton"] button {
+    background: #00A84D !important;
+    background-color: #00A84D !important;
+    border-color: #00A84D !important;
+    color: #FFFFFF !important;
+    -webkit-text-fill-color: #FFFFFF !important;
+}
+.st-key-loan_payment_source_open [data-testid="stButton"] button:hover {
+    background: #008F42 !important;
+    background-color: #008F42 !important;
+    border-color: #008F42 !important;
+}
 
 /* 탭1 '은퇴 후에는?' 제목과 나침반: 제목의 불필요한 가로 점유 및 자동 링크 제거 */
 div.st-key-retirement-expense-title-row [data-testid="stHorizontalBlock"] {
