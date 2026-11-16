@@ -3748,7 +3748,7 @@ elif selected_page == "우리집 재정곡선":
 
         # (전역 선언으로 이동됨)
 
-        RETIREMENT_EXPENSE_SOURCE        RETIREMENT_EXPENSE_SOURCE = {
+        RETIREMENT_EXPENSE_SOURCE = {
             "기관": "국민연금공단 국민연금연구원",
             "조사명": "국민노후보장패널조사(KReIS)",
             "승인통계번호": "제322001호",
