@@ -2217,7 +2217,8 @@ def _show_retirement_report_explorer():
         _history = [_source_id]
         st.session_state["_retirement_explorer_history"] = _history
 
-    st.caption("은퇴 후 생활비와 관련된 통계 자료를 살펴봅니다.")
+    st.caption("출발 위치: 우리집 가계부 · 은퇴 후에는?")
+    st.caption("현재 보고 있는 자료")
     st.markdown(f"## {_report_titles.get(_source_id, '관련 통계자료')}")
     _render_retirement_explorer_report(_source_id)
 
