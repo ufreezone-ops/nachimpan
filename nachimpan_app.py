@@ -2267,6 +2267,39 @@ def _render_retirement_explorer_report(source_id):
 - 고용노동부 사업체노동력조사 임금총액
 - 기준데이터: 국가데이터처_소비자물가지수_및_고용노동부_임금지수_1965-2025.csv
 """)
+    elif source_id == "6052200-00":
+        st.markdown("""
+**주택구입은 소비가 아니라 자산을 취득하는 사건입니다.** 따라서 일반 생활비와 구분해 주택가격, 대출, 자기자금의 흐름을 살펴봅니다.
+
+**생애최초 아파트 구입자의 자금 구성**
+
+2024년 주거실태조사 원자료를 분석한 10,607가구의 생애최초 아파트 취득 사례에서 자기자금·금융기관 융자·부모 및 친지 지원의 구성을 연령별로 확인했습니다.
+
+| 취득 연령 | 표본수 | 자기자금 | 금융기관 융자 | 부모·친지 지원 |
+|---|---:|---:|---:|---:|
+| 25~29세 | 556 | 54.28% | 30.01% | 15.15% |
+| 30~34세 | 1,868 | 59.91% | 31.13% | 8.43% |
+| 35~39세 | 2,261 | 65.29% | 28.54% | 5.79% |
+| 40~44세 | 1,813 | 71.07% | 24.86% | 3.91% |
+| 45~49세 | 1,273 | 75.15% | 22.26% | 2.44% |
+
+여기서 금융기관 융자 비율은 조사에서 확인한 네 가지 자금 출처 중 금융기관 융자액의 비중입니다. 주택담보대출만을 분리한 규제상 LTV와는 다른 개념입니다.
+
+**나침반의 적용 방식**
+
+- 주택가격은 선택한 지역의 아파트 중위가격을 기준으로 삼습니다. 대표사례는 별도로 설정한 기본 가정값을 사용할 수 있습니다.
+- 대출비율(LTV)을 적용해 자기자금 부담을 계산합니다.
+- 주택구입 이벤트는 **4년에 걸쳐 분산**합니다.
+- 자기자금은 자산 취득 성격이므로 일반 가계지출과 중복 차감하지 않고 별도 이벤트로 표시합니다.
+
+조사 표본의 자금 구성은 과거 취득 가구의 평균적 조달 구조입니다. 특정 가구가 미래에 실제로 대출받을 비율이나 구입할 주택가격을 보장하지 않습니다.
+
+**자료 출처 및 가공 파일**
+
+- 국토교통부 「2024년도 주거실태조사 결과」. [보도자료](https://www.molit.go.kr/USR/NEWS/dtl.jsp?id=95091415&lcmspage=2)
+- [가공 CSV — 생애최초 주택 구입자금 구성](https://github.com/ufreezone-ops/nachimpan/blob/dev/data/기준데이터/국토교통부_2024_주거실태조사_생애최초주택_구입자금구성.csv)
+- [분석 README](https://github.com/ufreezone-ops/nachimpan/blob/dev/data/기준데이터/국토교통부_2024_주거실태조사_생애최초주택_구입자금구성_README.md)
+""")
     else:
         st.info("선택한 자료를 찾을 수 없습니다.")
 
@@ -2431,11 +2464,17 @@ def _show_retirement_connection_dialog():
     _related_rows.sort(key=lambda item: (-item["raw_score"], item["title"]))
 
     with st.container(key="retirement-connection-platform", border=True):
-        _previous_col, _spacer_col, _end_col = st.columns([1.2, 5, 1])
+        _previous_col, _current_col, _end_col = st.columns([1.35, 5, 1])
         with _previous_col:
-            if st.button("← 이전", key="retirement_connection_return"):
+            if st.button("← 보고서", key="retirement_connection_return"):
                 st.session_state["_retirement_connection_open"] = False
                 st.rerun()
+        with _current_col:
+            st.markdown(
+                f"<div style='padding-top:0.42rem; color:#006B35; font-weight:700;'>"
+                f"현재 보고서 · {_report_titles.get(_source_id, '보고서')}</div>",
+                unsafe_allow_html=True,
+            )
         with _end_col:
             if st.button("종료", key="retirement_connection_end"):
                 st.session_state["_retirement_explorer_open"] = False
@@ -2445,34 +2484,29 @@ def _show_retirement_connection_dialog():
                 st.session_state.pop("_retirement_explorer_history", None)
                 st.rerun()
 
-        st.markdown(f"### {_report_titles.get(_source_id, '현재 보고서')}")
-        st.caption("현재 보고서와 이어지는 자료입니다. 관심이 가는 주제를 선택해 살펴보세요.")
+        st.caption("이어서 살펴볼 수 있는 자료")
 
         if _related_rows:
             for _index, _item in enumerate(_related_rows[:3]):
                 _score = max(0, min(100, int(_item["raw_score"])))
-                _title_col, _score_col = st.columns([5, 1.5])
+                _title_col, _score_col = st.columns([5.5, 1.5], vertical_alignment="center")
                 with _title_col:
-                    st.markdown(f"**{_item['title']}**")
+                    if st.button(
+                        _item["title"],
+                        key=f"retirement_connection_next_{_index}",
+                        use_container_width=True,
+                        type="primary" if _index == 0 else "secondary",
+                    ):
+                        st.session_state["_retirement_explorer_history"] = _history + [_item["source_id"]]
+                        st.session_state["_retirement_explorer_source_id"] = _item["source_id"]
+                        st.session_state["_retirement_connection_open"] = False
+                        st.rerun()
                 with _score_col:
                     st.markdown(
                         f"<div style='text-align:right; color:#006B35; font-weight:800; white-space:nowrap;'>"
-                        f"재미지수 {_score}%</div>",
+                        f"{_score}%</div>",
                         unsafe_allow_html=True,
                     )
-                st.caption(_item["reason"])
-                if st.button(
-                    f"{_item['title']} 살펴보기",
-                    key=f"retirement_connection_next_{_index}",
-                    use_container_width=True,
-                    type="primary" if _index == 0 else "secondary",
-                ):
-                    st.session_state["_retirement_explorer_history"] = _history + [_item["source_id"]]
-                    st.session_state["_retirement_explorer_source_id"] = _item["source_id"]
-                    st.session_state["_retirement_connection_open"] = False
-                    st.rerun()
-                if _index < min(len(_related_rows), 3) - 1:
-                    st.divider()
         else:
             st.info("현재 자료에서 이어지는 다른 보고서가 아직 준비되지 않았습니다.")
 
@@ -8045,6 +8079,47 @@ div.st-key-loan-payment-title-row div.st-key-loan-payment-source-guide [data-tes
 }
 div.st-key-loan-payment-title-row > div {
     align-self: center !important;
+}
+</style>
+""", unsafe_allow_html=True)
+
+# 나침반 아이콘과 연결창의 최종 미세 조정
+st.markdown("""
+<style>
+/* 두 나침반 모두 현재 위치에서 아이콘 높이의 약 1/10만큼 위로 */
+div.st-key-loan-payment-title-row div.st-key-loan-payment-source-guide [data-testid="stButton"] button,
+div.st-key-loan-payment-title-row div.st-key-loan-payment-source-guide [data-testid="stButton"] button:hover,
+div.st-key-loan-payment-title-row div.st-key-loan-payment-source-guide [data-testid="stButton"] button:focus,
+div.st-key-loan-payment-title-row div.st-key-loan-payment-source-guide [data-testid="stButton"] button:focus-visible,
+div.st-key-loan-payment-title-row div.st-key-loan-payment-source-guide [data-testid="stButton"] button:active,
+div.st-key-retirement-expense-title-row div.st-key-source_retirement_expense_guide [data-testid="stButton"] button,
+div.st-key-retirement-expense-title-row div.st-key-source_retirement_expense_guide [data-testid="stButton"] button:hover,
+div.st-key-retirement-expense-title-row div.st-key-source_retirement_expense_guide [data-testid="stButton"] button:focus,
+div.st-key-retirement-expense-title-row div.st-key-source_retirement_expense_guide [data-testid="stButton"] button:focus-visible,
+div.st-key-retirement-expense-title-row div.st-key-source_retirement_expense_guide [data-testid="stButton"] button:active {
+    transform: translateY(6px) !important;
+}
+
+/* 연결창의 세로 여백과 목록 간격을 줄여 한 화면에 간결하게 표시 */
+.st-key-retirement-connection-platform {
+    padding: 8px !important;
+}
+.st-key-retirement-connection-platform [data-testid="stVerticalBlock"] {
+    gap: 0.35rem !important;
+}
+.st-key-retirement-connection-platform [data-testid="stButton"] button {
+    min-height: 2.35rem !important;
+    height: auto !important;
+    padding: 0.35rem 0.65rem !important;
+    line-height: 1.2 !important;
+}
+.st-key-retirement-connection-platform [data-testid="stCaptionContainer"] {
+    margin-top: 0 !important;
+    margin-bottom: 0 !important;
+}
+div[data-testid="stDialog"]:has(.st-key-retirement-connection-platform) [data-testid="stDialogContent"] {
+    padding-top: 0.35rem !important;
+    padding-bottom: 0.45rem !important;
 }
 </style>
 """, unsafe_allow_html=True)
