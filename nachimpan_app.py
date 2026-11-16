@@ -1999,6 +1999,8 @@ def _open_source_reference(source_id, origin_page, origin_anchor):
         "page": origin_page,
         "anchor": origin_anchor,
     }
+    if origin_anchor == "housing-dialog-return-anchor":
+        st.session_state["_reopen_housing_price_dialog"] = True
     _source_anchor_map = {
         "6050200-00": "stats-anchor-lifecycle-income",
         "6050300-00": "stats-anchor-marriage-housing",
@@ -5470,6 +5472,18 @@ elif selected_page == "우리집 재정곡선":
 
             @st.dialog("🏠 부동산 적용 기준", width="large")
             def _show_housing_price_stats_dialog():
+                st.markdown(
+                    """
+                    <style>
+                    div[data-testid="stDialog"] [data-testid="stDialogHeader"] h2 {
+                        width: 100%;
+                        text-align: left !important;
+                    }
+                    </style>
+                    <div id="housing-dialog-return-anchor"></div>
+                    """,
+                    unsafe_allow_html=True,
+                )
                 if _case_is_representative:
                     st.markdown("**기본사례 예시**")
                     st.markdown(
@@ -5510,20 +5524,33 @@ elif selected_page == "우리집 재정곡선":
                 if st.button(
                     "🧭 출처 및 산정방법 자세히 보기",
                     key="source_housing_price_stats",
-                    use_container_width=True,
+                    use_container_width=False,
                 ):
                     _open_source_reference(
                         "6051500-00",
                         "우리집 재정곡선",
-                        "case-housing-statistics",
+                        "housing-dialog-return-anchor",
                     )
 
+            st.markdown(
+                """
+                <style>
+                .st-key-open_housing_price_stats_table button {
+                    justify-content: flex-start !important;
+                    text-align: left !important;
+                }
+                </style>
+                """,
+                unsafe_allow_html=True,
+            )
             if st.button(
                 "🏠 부동산 적용 기준",
                 key="open_housing_price_stats_table",
                 use_container_width=True,
                 help="기본사례 가정값과 지역별 주택가격 통계 보기",
             ):
+                _show_housing_price_stats_dialog()
+            elif st.session_state.pop("_reopen_housing_price_dialog", False):
                 _show_housing_price_stats_dialog()
             st.markdown('<div id="case-housing-report-links" style="scroll-margin-top: 120px;"></div>', unsafe_allow_html=True)
             _housing_report_links = [
