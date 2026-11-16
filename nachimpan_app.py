@@ -2493,7 +2493,7 @@ def _show_retirement_connection_dialog():
             for _index, _item in enumerate(_visible_rows):
                 _score = max(0, min(100, int(_item["raw_score"])))
                 _report_number = int(_item["code"].replace("R", ""))
-                _report_title = _item["title"].split(". ", 1)[-1]
+                _report_title = _item["title"].split(". ", 1)[-1].strip()
                 # 번호와 보고서명을 하나의 버튼 안에 넣어 이전 역과 동일한 캡슐 구조로 표시
                 if st.button(
                     f"**{_report_number}**　{_report_title} ({_score}%)",
