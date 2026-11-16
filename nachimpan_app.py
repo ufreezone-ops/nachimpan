@@ -2465,46 +2465,60 @@ def _show_retirement_connection_dialog():
     _related_rows.sort(key=lambda item: (-item["raw_score"], item["title"]))
 
     with st.container(key="retirement-connection-platform", border=True):
-        # 이전 역: 연결을 누르기 직전 읽던 보고서
+        # 이전 역 → 현재 연결 위치를 한 줄로 배치
         _previous_number = int(_current_code.replace("R", "")) if _current_code else ""
         _previous_title = _report_titles.get(_source_id, "보고서").split(". ", 1)[-1]
-        st.markdown(
-            f"<div class='retirement-station-previous'>"
-            f"<span class='retirement-station-previous-number'>{_previous_number}</span>"
-            f"<strong>{_previous_title}</strong>"
-            f"</div>",
-            unsafe_allow_html=True,
-        )
+        _route_previous, _route_arrow, _route_current = st.columns([1.15, 0.18, 0.85], gap="small", vertical_alignment="center")
+        with _route_previous:
+            st.markdown(
+                f"<div class='retirement-station-previous'>"
+                f"<span class='retirement-station-previous-number'>{_previous_number}</span>"
+                f"<strong>{_previous_title}</strong>"
+                f"</div>",
+                unsafe_allow_html=True,
+            )
+        with _route_arrow:
+            st.markdown("<div class='retirement-route-arrow'>→</div>", unsafe_allow_html=True)
+        with _route_current:
+            st.markdown(
+                "<div class='retirement-station-current'>"
+                "<span class='retirement-station-current-compass'>🧭</span>"
+                "<strong>연결</strong></div>",
+                unsafe_allow_html=True,
+            )
 
-        st.markdown("<div class='retirement-vertical-arrow'>↓</div>", unsafe_allow_html=True)
-
-        # 현재 역: 이 연결창 자체가 '연결' 역
-        st.markdown(
-            "<div class='retirement-station-current'>"
-            "<span class='retirement-station-current-compass'>🧭</span>"
-            "<strong>연결</strong></div>",
-            unsafe_allow_html=True,
-        )
-        st.markdown("<div class='retirement-vertical-arrow'>↓</div>", unsafe_allow_html=True)
-
-        # 다음 역: 이어서 읽을 수 있는 추천 보고서
+        # 현재 위치에서 세 갈래로 분기하는 다음 역
         if _related_rows:
             _visible_rows = _related_rows[:3]
-            for _index, _item in enumerate(_visible_rows):
-                _score = max(0, min(100, int(_item["raw_score"])))
-                _report_number = int(_item["code"].replace("R", ""))
-                _report_title = _item["title"].split(". ", 1)[-1].strip()
-                # 번호와 보고서명을 하나의 버튼 안에 넣어 이전 역과 동일한 캡슐 구조로 표시
-                if st.button(
-                    f"**{_report_number}** {_report_title} ({_score}%)",
-                    key=f"retirement_connection_next_{_index}",
-                    use_container_width=False,
-                    type="primary",
-                ):
-                    st.session_state["_retirement_explorer_history"] = _history + [_item["source_id"]]
-                    st.session_state["_retirement_explorer_source_id"] = _item["source_id"]
-                    st.session_state["_retirement_connection_open"] = False
-                    st.rerun()
+            st.markdown("<div class='retirement-route-branch-heading'>다음 역 선택</div>", unsafe_allow_html=True)
+            _branch_columns = st.columns([0.10, 0.90], gap="small", vertical_alignment="center")
+            with _branch_columns[0]:
+                st.markdown(
+                    "<div class='retirement-route-branch-rail' aria-hidden='true'>"
+                    "<svg viewBox='0 0 28 180' preserveAspectRatio='none'>"
+                    "<path d='M5 30 V150 M5 30 H27 M5 90 H27 M5 150 H27' "
+                    "fill='none' stroke='#159447' stroke-width='2.5' stroke-linecap='round'/>"
+                    "<circle cx='5' cy='30' r='3.5' fill='#159447'/>"
+                    "<circle cx='5' cy='90' r='3.5' fill='#159447'/>"
+                    "<circle cx='5' cy='150' r='3.5' fill='#159447'/>"
+                    "</svg></div>",
+                    unsafe_allow_html=True,
+                )
+            with _branch_columns[1]:
+                for _index, _item in enumerate(_visible_rows):
+                    _score = max(0, min(100, int(_item["raw_score"])))
+                    _report_number = int(_item["code"].replace("R", ""))
+                    _report_title = _item["title"].split(". ", 1)[-1].strip()
+                    if st.button(
+                        f"**{_report_number}** {_report_title} ({_score}%)",
+                        key=f"retirement_connection_next_{_index}",
+                        use_container_width=True,
+                        type="primary",
+                    ):
+                        st.session_state["_retirement_explorer_history"] = _history + [_item["source_id"]]
+                        st.session_state["_retirement_explorer_source_id"] = _item["source_id"]
+                        st.session_state["_retirement_connection_open"] = False
+                        st.rerun()
         else:
             st.info("현재 자료에서 이어지는 다른 보고서가 아직 준비되지 않았습니다.")
 
@@ -8978,6 +8992,139 @@ st.markdown("""
     display: flex !important;
     justify-content: center !important;
     width: 100% !important;
+}
+</style>
+""", unsafe_allow_html=True)
+
+
+# 보고서 연결 안내판: 수평 이동 경로와 세 갈래 분기
+st.markdown("""
+<style>
+.st-key-retirement-connection-platform > [data-testid="stVerticalBlock"] {
+    gap: 0.55rem !important;
+}
+.st-key-retirement-connection-platform [data-testid="stHorizontalBlock"] {
+    align-items: center !important;
+    gap: 0.35rem !important;
+}
+.st-key-retirement-connection-platform .retirement-station-previous,
+.st-key-retirement-connection-platform .retirement-station-current {
+    width: 100% !important;
+    min-width: 0 !important;
+    min-height: 3.1rem !important;
+    box-sizing: border-box !important;
+    padding: 0.35rem 0.45rem !important;
+}
+.st-key-retirement-connection-platform .retirement-station-previous {
+    justify-content: center !important;
+    gap: 0.35rem !important;
+}
+.st-key-retirement-connection-platform .retirement-station-previous strong {
+    min-width: 0 !important;
+    text-align: center !important;
+    line-height: 1.25 !important;
+    overflow-wrap: anywhere !important;
+}
+.st-key-retirement-connection-platform .retirement-station-current {
+    justify-content: center !important;
+    gap: 0.28rem !important;
+}
+.st-key-retirement-connection-platform .retirement-route-arrow {
+    color: #159447 !important;
+    font-size: 1.5rem !important;
+    font-weight: 900 !important;
+    text-align: center !important;
+    line-height: 1 !important;
+}
+.st-key-retirement-connection-platform .retirement-route-branch-heading {
+    margin: 0.2rem 0 0.05rem !important;
+    color: #28734e !important;
+    font-size: 0.78rem !important;
+    font-weight: 800 !important;
+    text-align: center !important;
+}
+.st-key-retirement-connection-platform .retirement-route-branch-rail {
+    width: 100% !important;
+    height: 100% !important;
+    min-height: 9.5rem !important;
+    display: flex !important;
+    align-items: stretch !important;
+    justify-content: center !important;
+}
+.st-key-retirement-connection-platform .retirement-route-branch-rail svg {
+    display: block !important;
+    width: 100% !important;
+    height: 100% !important;
+    min-height: 9.5rem !important;
+}
+.st-key-retirement-connection-platform [class*="st-key-retirement_connection_next_"] {
+    width: 100% !important;
+}
+.st-key-retirement-connection-platform [class*="st-key-retirement_connection_next_"] [data-testid="stButton"],
+.st-key-retirement-connection-platform [class*="st-key-retirement_connection_next_"] button {
+    width: 100% !important;
+    max-width: 100% !important;
+}
+.st-key-retirement-connection-platform [class*="st-key-retirement_connection_next_"] button {
+    min-height: 3.05rem !important;
+    height: auto !important;
+    padding: 0.42rem 0.65rem !important;
+    border-radius: 1rem !important;
+    white-space: normal !important;
+}
+.st-key-retirement-connection-platform [class*="st-key-retirement_connection_next_"] button [data-testid="stMarkdownContainer"],
+.st-key-retirement-connection-platform [class*="st-key-retirement_connection_next_"] button [data-testid="stMarkdownContainer"] p {
+    width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    text-align: center !important;
+    white-space: normal !important;
+    overflow-wrap: anywhere !important;
+    line-height: 1.35 !important;
+}
+.st-key-retirement-connection-platform [class*="st-key-retirement_connection_next_"] button strong {
+    display: inline-flex !important;
+    width: 1.05rem !important;
+    min-width: 1.05rem !important;
+    height: 1.05rem !important;
+    margin-right: 0.25rem !important;
+    align-items: center !important;
+    justify-content: center !important;
+    vertical-align: middle !important;
+    border-radius: 50% !important;
+    background: #ffffff !important;
+    color: #159447 !important;
+    font-size: 0.62rem !important;
+    line-height: 1 !important;
+}
+@media (max-width: 640px) {
+    .st-key-retirement-connection-platform {
+        padding-left: 0.25rem !important;
+        padding-right: 0.25rem !important;
+    }
+    .st-key-retirement-connection-platform .retirement-station-previous,
+    .st-key-retirement-connection-platform .retirement-station-current {
+        min-height: 3.25rem !important;
+        padding: 0.3rem 0.25rem !important;
+    }
+    .st-key-retirement-connection-platform .retirement-station-previous {
+        gap: 0.22rem !important;
+    }
+    .st-key-retirement-connection-platform .retirement-station-previous-number {
+        flex-basis: 1.05rem !important;
+        width: 1.05rem !important;
+        min-width: 1.05rem !important;
+        height: 1.05rem !important;
+    }
+    .st-key-retirement-connection-platform .retirement-station-previous strong {
+        font-size: 0.78rem !important;
+    }
+    .st-key-retirement-connection-platform .retirement-station-current strong {
+        font-size: 0.88rem !important;
+    }
+    .st-key-retirement-connection-platform .retirement-route-arrow {
+        font-size: 1.15rem !important;
+    }
 }
 </style>
 """, unsafe_allow_html=True)
