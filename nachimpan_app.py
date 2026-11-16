@@ -2156,7 +2156,33 @@ def _restore_source_return():
 
 def _render_retirement_explorer_report(source_id):
     """은퇴 생활비 나침반에서 여는 보고서 본문을 팝업 안에 표시한다."""
-    if source_id == "6050400-01":
+    if source_id == "6050500-01":
+        st.markdown("""
+**주택 구입자금과 대출 상환의 기준**
+
+- **LTV1:** 금융기관 대출액 ÷ 주택 구입가격. 2024년 주거실태조사에서 대출 이용 가구 기준 전국 37.2%, 수도권 34.3%, 광역시 등 34.3%, 도지역 41.8%입니다.
+- 부산은 '광역시 등'에 해당하므로 대표사례의 기본 LTV1은 34.3%입니다. 4억 원 주택이면 약 1억 3,720만 원이며, 대표사례에서는 천만 원 단위로 반올림해 1억 4천만 원(적용 LTV 약 35%)으로 단순화합니다.
+- 이 비율은 대출 이용 가구의 조사상 평균이며, 특정 연도 신규 구입자의 대출 실행비율이나 모든 가구의 평균과는 다릅니다.
+
+**나침반의 표준 상환 가정**
+
+- 상환 방식: 원리금 균등상환
+- 대출 기간: 30년
+- 연 이자율: 4% (대표 시뮬레이션 가정)
+- 1억 4천만 원 대출의 월 상환액: 약 66.8만 원(화면 표시는 약 67만 원)
+
+**원리금은 서로 다른 흐름으로 처리합니다.**
+
+- 이자: 가계지출에 포함되는 비용. MDIS 가계지출 기준에도 이자 등 비소비지출이 포함되므로 통계 기준곡선에 별도로 더하지 않습니다.
+- 원금: 소비지출이 아니라 부채 감소입니다. 다만 실제 현금 유출이므로 나침반의 가구지출 곡선에 원금상환액을 포함하고, 순현금흐름에서는 가구지출에 포함된 금액을 별도로 다시 차감하지 않습니다.
+- 대표사례의 45세 여성은 39세에 대출을 시작해 6년간 상환한 것으로 가정합니다. 현재 추정 잔액은 약 1억 2,362만 원이며, 다음 회차 기준 월 이자는 약 41.2만 원, 원금은 약 25.6만 원입니다.
+- 32세 여성은 현재 주택·대출이 없는 상태로 두고, 39세 주택 구입 시점부터 같은 대출모형을 적용합니다.
+
+주의: 실제 대출계약의 금리·만기·상환방식과 다를 수 있는 교육용 표준 가정입니다. LTV1 또한 조사 평균이므로 개별 가구의 실제 대출을 뜻하지 않습니다.
+
+자료: [국토교통부 「2024년도 주거실태조사 결과」(2025.11.17.)](https://www.molit.go.kr/USR/NEWS/dtl.jsp?id=95091415&lcmspage=2)
+""")
+    elif source_id == "6050400-01":
         st.markdown("""
 **은퇴 후 생활비는 한 가지 금액으로 고정되지 않습니다.**
 
@@ -2795,11 +2821,12 @@ if selected_page == "우리집 가계부":
                                         type="primary",
                                         use_container_width=True,
                                     ):
-                                        _open_source_reference(
-                                            "6050500-01",
-                                            "우리집 가계부",
-                                            "loan-payment-label-origin",
-                                        )
+                                        st.session_state["_retirement_explorer_open"] = True
+                                        st.session_state["_retirement_entry_open"] = False
+                                        st.session_state["_retirement_connection_open"] = False
+                                        st.session_state["_retirement_explorer_source_id"] = "6050500-01"
+                                        st.session_state["_retirement_explorer_history"] = ["6050500-01"]
+                                        st.rerun()
                             st.markdown(
                                 '<div id="loan-payment-label-origin"></div>',
                                 unsafe_allow_html=True,
