@@ -424,6 +424,20 @@ div.st-key-source_retirement_expense_guide [data-testid="stButton"] button p {
 # 전역 CSS로 선언해 dialog 내부 첫 렌더링 시점에 스타일이 늦게 붙는 현상을 방지한다.
 st.markdown("""
 <style>
+.st-key-retirement_report_open_connection [data-testid="stButton"] button {
+    background: #00A84D !important;
+    background-color: #00A84D !important;
+    border: 1px solid #00A84D !important;
+    color: #FFFFFF !important;
+    -webkit-text-fill-color: #FFFFFF !important;
+}
+.st-key-retirement_report_open_connection [data-testid="stButton"] button:hover {
+    background: #008F42 !important;
+    background-color: #008F42 !important;
+    border-color: #008F42 !important;
+    color: #FFFFFF !important;
+    -webkit-text-fill-color: #FFFFFF !important;
+}
 .st-key-retirement-connection-platform {
     background: #E8F5EC !important;
     background-color: #E8F5EC !important;
@@ -2319,7 +2333,7 @@ def _show_retirement_report_dialog():
     st.markdown(f"## {_report_titles.get(_source_id, '보고서')}")
     _render_retirement_explorer_report(_source_id)
     st.divider()
-    if st.button("연결", key="retirement_report_open_connection", use_container_width=True, type="primary"):
+    if st.button("연결", key="retirement_report_open_connection", use_container_width=True, type="secondary"):
         st.session_state["_retirement_connection_open"] = True
         st.rerun()
 
@@ -2808,25 +2822,20 @@ if selected_page == "우리집 가계부":
                                     '<span class="loan-payment-label-text">대출 원리금 월상환액(원금+이자)</span>',
                                     unsafe_allow_html=True,
                                 )
-                                with st.popover(
+                                if st.button(
                                     "🧭",
                                     key="loan-payment-source-guide",
-                                    help="대출 원리금 산출 기준과 적용 방식 보기",
+                                    help="대출 원리금의 산출 기준과 적용 방식 보기",
                                     type="tertiary",
                                 ):
-                                    st.caption("대출 원리금의 산출 기준과 적용 방식을 확인합니다.")
-                                    if st.button(
-                                        "산출 기준 보기",
-                                        key="loan_payment_source_open",
-                                        type="primary",
-                                        use_container_width=True,
-                                    ):
-                                        st.session_state["_retirement_explorer_open"] = True
-                                        st.session_state["_retirement_entry_open"] = False
-                                        st.session_state["_retirement_connection_open"] = False
-                                        st.session_state["_retirement_explorer_source_id"] = "6050500-01"
-                                        st.session_state["_retirement_explorer_history"] = ["6050500-01"]
-                                        st.rerun()
+                                    # 중간 팝오버를 거치지 않고 보고서를 바로 연다.
+                                    # 팝오버와 보고서가 겹쳐 보고서를 가리는 현상을 방지한다.
+                                    st.session_state["_retirement_explorer_open"] = True
+                                    st.session_state["_retirement_entry_open"] = False
+                                    st.session_state["_retirement_connection_open"] = False
+                                    st.session_state["_retirement_explorer_source_id"] = "6050500-01"
+                                    st.session_state["_retirement_explorer_history"] = ["6050500-01"]
+                                    st.rerun()
                             st.markdown(
                                 '<div id="loan-payment-label-origin"></div>',
                                 unsafe_allow_html=True,
