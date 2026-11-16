@@ -7978,3 +7978,74 @@ div.st-key-retirement-expense-title-row > div {
 }
 </style>
 """, unsafe_allow_html=True)
+
+# 대출 원리금 나침반: 현재 일반 버튼 구조에 맞춘 최종 스타일
+st.markdown("""
+<style>
+div.st-key-loan-payment-title-row [data-testid="stHorizontalBlock"] {
+    align-items: center !important;
+    gap: 0.12rem !important;
+}
+div.st-key-loan-payment-title-row div.st-key-loan-payment-source-guide,
+div.st-key-loan-payment-title-row div.st-key-loan-payment-source-guide [data-testid="stElementContainer"],
+div.st-key-loan-payment-title-row div.st-key-loan-payment-source-guide [data-testid="stButton"],
+div.st-key-loan-payment-title-row div.st-key-loan-payment-source-guide .stButton {
+    width: auto !important;
+    min-width: 0 !important;
+    max-width: max-content !important;
+    min-height: 0 !important;
+    height: auto !important;
+    flex: 0 0 auto !important;
+    margin: 0 0 0 0.08rem !important;
+    padding: 0 !important;
+    border: 0 !important;
+    outline: 0 !important;
+    border-radius: 0 !important;
+    background: transparent !important;
+    background-color: transparent !important;
+    background-image: none !important;
+    box-shadow: none !important;
+}
+div.st-key-loan-payment-title-row div.st-key-loan-payment-source-guide [data-testid="stButton"] button,
+div.st-key-loan-payment-title-row div.st-key-loan-payment-source-guide [data-testid="stButton"] button:hover,
+div.st-key-loan-payment-title-row div.st-key-loan-payment-source-guide [data-testid="stButton"] button:focus,
+div.st-key-loan-payment-title-row div.st-key-loan-payment-source-guide [data-testid="stButton"] button:focus-visible,
+div.st-key-loan-payment-title-row div.st-key-loan-payment-source-guide [data-testid="stButton"] button:active {
+    width: auto !important;
+    min-width: 0 !important;
+    max-width: max-content !important;
+    min-height: 0 !important;
+    height: auto !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    transform: translateY(9px) !important;
+    border: 0 !important;
+    outline: 0 !important;
+    border-radius: 0 !important;
+    background: transparent !important;
+    background-color: transparent !important;
+    background-image: none !important;
+    box-shadow: none !important;
+    color: #38BDF8 !important;
+    -webkit-text-fill-color: #38BDF8 !important;
+    font-size: 1.8rem !important;
+    font-weight: 700 !important;
+    line-height: 1 !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+}
+div.st-key-loan-payment-title-row div.st-key-loan-payment-source-guide [data-testid="stButton"] button p {
+    margin: 0 !important;
+    padding: 0 !important;
+    color: #38BDF8 !important;
+    -webkit-text-fill-color: #38BDF8 !important;
+    font-size: 1.8rem !important;
+    line-height: 1 !important;
+}
+div.st-key-loan-payment-title-row > div {
+    align-self: center !important;
+}
+</style>
+""", unsafe_allow_html=True)
+
