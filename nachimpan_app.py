@@ -2281,6 +2281,156 @@ def _show_retirement_entry_dialog():
     ]
 
     with st.container(key="retirement-connection-platform", border=True):
+        st.markdown("### 어떤 자료부터 살펴볼까요?")
+        st.caption("은퇴 후 생활비와 지출 기준을 이해하는 데 도움이 되는 자료입니다.")
+
+        for _index, (_title, _report_id) in enumerate(_entry_reports):
+            if st.button(
+                _title,
+                key=f"retirement_entry_report_{_report_id}",
+                use_container_width=True,
+                type="primary" if _index == 0 else "secondary",
+            ):
+                st.session_state["_retirement_entry_open"] = False
+                st.session_state["_retirement_connection_open"] = False
+                st.session_state["_retirement_explorer_source_id"] = _report_id
+                st.session_state["_retirement_explorer_history"] = [_report_id]
+                st.rerun()
+
+        st.divider()
+        if st.button("종료", key="retirement_entry_end", use_container_width=True):
+            st.session_state["_retirement_explorer_open"] = False
+            st.session_state["_retirement_entry_open"] = False
+            st.session_state["_retirement_connection_open"] = False
+            st.session_state.pop("_retirement_explorer_source_id", None)
+            st.session_state.pop("_retirement_explorer_history", None)
+            st.rerun()
+
+
+@st.dialog("보고서", width="large")
+def _show_retirement_report_dialog():
+    """보고서 본문만 보여주는 읽기 화면."""
+    _report_index = [
+        ("1. 소득과 소비의 생애주기", "6050200-00", "R01"),
+        ("2. 결혼과 주거", "6050300-00", "R02"),
+        ("3. 노후와 은퇴", "6050400-01", "R03"),
+        ("4. 주택대출과 원리금 분리", "6050500-01", "R04"),
+        ("5. 동시성과 통시성", "6050600-00", "R05"),
+        ("6. 소득 통계", "6050700-00", "R06"),
+        ("7. 결혼비용 통계", "6050800-00", "R07"),
+        ("8. 빅5 우리집 이벤트", "6050900-00", "R08"),
+        ("9. 고령층 근로연령 통계", "6051000-00", "R09"),
+        ("10. 대한민국 3대 은퇴 분기점", "6051100-00", "R10"),
+        ("11. 우리 가정 소득곡선의 통계적 보정", "6051200-00", "R11"),
+        ("12. 과거 소득·지출을 현재 기준과 비교하는 방법", "6051300-00", "R12"),
+        ("13. 지출 통계 출처 및 산출방법", "6051400-00", "R13"),
+        ("14. 부동산 적용 기준과 지역별 산정방법", "6051500-00", "R14"),
+        ("15. 소득 기준곡선의 출처와 산정 방식", "6051600-00", "R15"),
+        ("16. 세대 계승 생애주기 재정곡선", "6051700-00", "R16"),
+        ("17. 여성의 출산·육아와 경력단절", "6051800-00", "R17"),
+        ("18. 은퇴와 수입 단절", "6051900-00", "R18"),
+        ("19. 나의 결혼", "6052000-00", "R19"),
+        ("20. 출산과 육아", "6052100-00", "R20"),
+        ("21. 주택구입", "6052200-00", "R21"),
+        ("22. 자녀 대학", "6052300-00", "R22"),
+        ("23. 자녀 결혼", "6052400-00", "R23"),
+    ]
+    _report_titles = {source_id: title for title, source_id, _ in _report_index}
+    _source_id = st.session_state.get("_retirement_explorer_source_id")
+    if not _source_id:
+        return
+
+    st.markdown(f"## {_report_titles.get(_source_id, '보고서')}")
+    _render_retirement_explorer_report(_source_id)
+    st.divider()
+    _button_spacer, _button_col = st.columns([5, 1])
+    with _button_col:
+        if st.button("연결", key="retirement_report_open_connection", type="secondary"):
+            st.session_state["_retirement_connection_open"] = True
+            st.rerun()
+
+
+@st.dialog("연결", width="large")
+def _show_retirement_connection_dialog():
+    """2호선 녹색 톤의 공통 자료 연결 화면."""
+    _report_index = [
+        ("1. 소득과 소비의 생애주기", "6050200-00", "R01"),
+        ("2. 결혼과 주거", "6050300-00", "R02"),
+        ("3. 노후와 은퇴", "6050400-01", "R03"),
+        ("4. 주택대출과 원리금 분리", "6050500-01", "R04"),
+        ("5. 동시성과 통시성", "6050600-00", "R05"),
+        ("6. 소득 통계", "6050700-00", "R06"),
+        ("7. 결혼비용 통계", "6050800-00", "R07"),
+        ("8. 빅5 우리집 이벤트", "6050900-00", "R08"),
+        ("9. 고령층 근로연령 통계", "6051000-00", "R09"),
+        ("10. 대한민국 3대 은퇴 분기점", "6051100-00", "R10"),
+        ("11. 우리 가정 소득곡선의 통계적 보정", "6051200-00", "R11"),
+        ("12. 과거 소득·지출을 현재 기준과 비교하는 방법", "6051300-00", "R12"),
+        ("13. 지출 통계 출처 및 산출방법", "6051400-00", "R13"),
+        ("14. 부동산 적용 기준과 지역별 산정방법", "6051500-00", "R14"),
+        ("15. 소득 기준곡선의 출처와 산정 방식", "6051600-00", "R15"),
+        ("16. 세대 계승 생애주기 재정곡선", "6051700-00", "R16"),
+        ("17. 여성의 출산·육아와 경력단절", "6051800-00", "R17"),
+        ("18. 은퇴와 수입 단절", "6051900-00", "R18"),
+        ("19. 나의 결혼", "6052000-00", "R19"),
+        ("20. 출산과 육아", "6052100-00", "R20"),
+        ("21. 주택구입", "6052200-00", "R21"),
+        ("22. 자녀 대학", "6052300-00", "R22"),
+        ("23. 자녀 결혼", "6052400-00", "R23"),
+    ]
+    _report_titles = {source_id: title for title, source_id, _ in _report_index}
+    _available_by_code = {code: (title, source_id) for title, source_id, code in _report_index}
+    _code_by_source = {source_id: code for title, source_id, code in _report_index}
+    _history = list(st.session_state.get("_retirement_explorer_history", []))
+    _source_id = st.session_state.get("_retirement_explorer_source_id")
+    if not _source_id:
+        return
+    if not _history:
+        _history = [_source_id]
+        st.session_state["_retirement_explorer_history"] = list(_history)
+    elif _history[-1] != _source_id:
+        _history.append(_source_id)
+        st.session_state["_retirement_explorer_history"] = list(_history)
+
+    _association_path = (
+        Path(__file__).resolve().parent
+        / "data" / "연관성" / "보고서_쌍별연관성_1차.json.zlib.b64"
+    )
+    try:
+        _association_payload = json.loads(
+            zlib.decompress(
+                base64.b64decode(_association_path.read_text(encoding="utf-8"))
+            ).decode("utf-8")
+        )
+        _association_records = _association_payload.get("records", [])
+    except Exception:
+        _association_records = []
+
+    _current_code = _code_by_source.get(_source_id)
+    _related_rows = []
+    if _current_code:
+        for _row in _association_records:
+            if _row.get("id_a") == _current_code:
+                _other_code = _row.get("id_b")
+            elif _row.get("id_b") == _current_code:
+                _other_code = _row.get("id_a")
+            else:
+                continue
+            if _other_code not in _available_by_code:
+                continue
+            _other_source = _available_by_code[_other_code][1]
+            if _other_source == _source_id or _other_source in _history:
+                continue
+            _related_rows.append({
+                "code": _other_code,
+                "title": _available_by_code[_other_code][0],
+                "source_id": _other_source,
+                "raw_score": int(_row.get("score", 0) or 0),
+                "reason": _row.get("reason") or _row.get("relation") or "주제상 연결되는 자료입니다.",
+            })
+    _related_rows.sort(key=lambda item: (-item["raw_score"], item["title"]))
+
+    with st.container(key="retirement-connection-platform", border=True):
         _previous_col, _spacer_col, _end_col = st.columns([1.2, 5, 1])
         with _previous_col:
             if st.button("← 이전", key="retirement_connection_return"):
@@ -2295,7 +2445,7 @@ def _show_retirement_entry_dialog():
                 st.session_state.pop("_retirement_explorer_history", None)
                 st.rerun()
 
-        st.markdown(f"### { _report_titles.get(_source_id, '현재 보고서') }")
+        st.markdown(f"### {_report_titles.get(_source_id, '현재 보고서')}")
         st.caption("현재 보고서와 이어지는 자료입니다. 관심이 가는 주제를 선택해 살펴보세요.")
 
         if _related_rows:
@@ -7758,3 +7908,73 @@ if _restore_anchor or _open_anchor:
     if _restore_anchor:
         st.session_state.pop("_source_return_context", None)
         st.session_state.pop("_active_source_id", None)
+
+ 
+# 나침반 아이콘의 최종 외형 고정 — 전역 스타일보다 높은 우선순위
+st.markdown("""
+<style>
+div.st-key-source_retirement_expense_guide,
+div.st-key-source_retirement_expense_guide [data-testid="stElementContainer"],
+div.st-key-source_retirement_expense_guide [data-testid="stButton"],
+div.st-key-source_retirement_expense_guide .stButton {
+    width: auto !important;
+    min-width: 0 !important;
+    max-width: max-content !important;
+    min-height: 0 !important;
+    height: auto !important;
+    flex: 0 0 auto !important;
+    padding: 0 !important;
+    margin: 0 0 0 0.08rem !important;
+    border: 0 !important;
+    outline: 0 !important;
+    background: transparent !important;
+    background-color: transparent !important;
+    background-image: none !important;
+    box-shadow: none !important;
+}
+div.st-key-source_retirement_expense_guide [data-testid="stButton"] button,
+div.st-key-source_retirement_expense_guide [data-testid="stButton"] button:hover,
+div.st-key-source_retirement_expense_guide [data-testid="stButton"] button:focus,
+div.st-key-source_retirement_expense_guide [data-testid="stButton"] button:focus-visible,
+div.st-key-source_retirement_expense_guide [data-testid="stButton"] button:active {
+    width: auto !important;
+    min-width: 0 !important;
+    max-width: max-content !important;
+    min-height: 0 !important;
+    height: auto !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    transform: translateY(9px) !important;
+    border: 0 !important;
+    outline: 0 !important;
+    border-radius: 0 !important;
+    background: transparent !important;
+    background-color: transparent !important;
+    background-image: none !important;
+    box-shadow: none !important;
+    color: #38BDF8 !important;
+    -webkit-text-fill-color: #38BDF8 !important;
+    font-size: 1.8rem !important;
+    font-weight: 700 !important;
+    line-height: 1 !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+}
+div.st-key-source_retirement_expense_guide [data-testid="stButton"] button p {
+    margin: 0 !important;
+    padding: 0 !important;
+    color: #38BDF8 !important;
+    -webkit-text-fill-color: #38BDF8 !important;
+    font-size: 1.8rem !important;
+    line-height: 1 !important;
+}
+div.st-key-retirement-expense-title-row [data-testid="stHorizontalBlock"] {
+    align-items: center !important;
+    gap: 0.12rem !important;
+}
+div.st-key-retirement-expense-title-row > div {
+    align-self: center !important;
+}
+</style>
+""", unsafe_allow_html=True)
