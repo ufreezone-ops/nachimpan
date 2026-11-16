@@ -50,6 +50,7 @@ export default function(component) {
     let annotationClickHandler = null;
     let nativeClickHandler = null;
     let clickSequence = 0;
+    let clickWasEventBubble = false;
 
     function detach() {
         if (graphElement) {
@@ -84,6 +85,7 @@ export default function(component) {
                         (point.data && point.data.name) ||
                         (point.fullData && point.fullData.name);
                     if (eventName && targetNames.has(eventName)) {
+                        clickWasEventBubble = true;
                         setTriggerValue("clicked_event", eventName);
                         break;
                     }
@@ -94,7 +96,11 @@ export default function(component) {
             annotationClickHandler = function(eventData) {
                 const annotation = (eventData && (eventData.annotation || eventData.fullAnnotation)) || {};
                 const annotationText = String(annotation.text || "");
-                if (annotationText.startsWith("은퇴 (")) {
+                if (targetNames.has(annotationText)) {
+                    clickWasEventBubble = true;
+                    setTriggerValue("clicked_event", annotationText);
+                } else if (annotationText.startsWith("은퇴 (")) {
+                    clickWasEventBubble = true;
                     setTriggerValue("clicked_retirement_annotation", annotationText);
                 }
             };
@@ -110,13 +116,19 @@ export default function(component) {
                     ? rawTarget
                     : (rawTarget && rawTarget.parentElement);
                 if (!target || !graphElement.contains(target)) return;
+                // 전용 생애사건 버블 클릭은 일반 차트 클릭으로 중복 처리하지 않는다.
+                if (clickWasEventBubble) {
+                    clickWasEventBubble = false;
+                    return;
+                }
                 clickSequence += 1;
                 setTriggerValue(
                     "clicked_cumulative_chart",
                     String(Date.now()) + "-" + String(clickSequence)
                 );
             };
-            graphElement.addEventListener("click", nativeClickHandler, true);
+            // Plotly의 전용 클릭 이벤트가 먼저 처리되도록 버블링 단계에서 감지한다.
+            graphElement.addEventListener("click", nativeClickHandler, false);
             setStateValue("bridge_status", "Plotly 차트 DOM 클릭 감지 연결됨");
         }
     }
