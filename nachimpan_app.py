@@ -8866,3 +8866,44 @@ st.markdown("""
 }
 </style>
 """, unsafe_allow_html=True)
+
+
+# 연결창 보고서명 중앙정렬 및 현재 '연결' 역의 녹색 글자색 확정
+st.markdown("""
+<style>
+/* 이전 보고서명 중앙 정렬 */
+.st-key-retirement-connection-platform .retirement-station-previous {
+    justify-content: center !important;
+    text-align: center !important;
+}
+.st-key-retirement-connection-platform .retirement-station-previous strong {
+    text-align: center !important;
+}
+
+/* 현재 연결 역: 컨테이너와 strong 요소에 녹색을 각각 직접 적용 */
+.st-key-retirement-connection-platform .retirement-station-current {
+    justify-content: center !important;
+    text-align: center !important;
+    color: #159447 !important;
+    -webkit-text-fill-color: #159447 !important;
+}
+.st-key-retirement-connection-platform .retirement-station-current > strong,
+.st-key-retirement-connection-platform .retirement-station-current strong {
+    color: #159447 !important;
+    -webkit-text-fill-color: #159447 !important;
+    text-align: center !important;
+}
+
+/* 다음 보고서: 번호와 보고서명을 포함한 버튼 내용 전체 중앙 정렬 */
+.st-key-retirement-connection-platform [data-testid="stButton"] button {
+    justify-content: center !important;
+    text-align: center !important;
+}
+.st-key-retirement-connection-platform [data-testid="stButton"] button [data-testid="stMarkdownContainer"],
+.st-key-retirement-connection-platform [data-testid="stButton"] button [data-testid="stMarkdownContainer"] p {
+    justify-content: center !important;
+    text-align: center !important;
+    width: 100% !important;
+}
+</style>
+""", unsafe_allow_html=True)
