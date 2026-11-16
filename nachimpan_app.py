@@ -5550,6 +5550,9 @@ elif selected_page == "우리집 재정곡선":
                 help="기본사례 가정값과 지역별 주택가격 통계 보기",
             ):
                 _show_housing_price_stats_dialog()
+            elif st.session_state.get("_reopen_housing_price_dialog", False):
+                st.session_state["_reopen_housing_price_dialog"] = False
+                _show_housing_price_stats_dialog()
 
 
 
@@ -5970,6 +5973,13 @@ elif selected_page == "통계":
                     )
                     if _return_context["anchor"] == "housing-dialog-return-anchor":
                         st.session_state["_reopen_housing_price_dialog"] = True
+                    # 복귀 페이지를 네비게이션 상태에 직접 반영한다.
+                    # _pending_nav 처리와 별개로 현재 선택값 자체를 되돌려
+                    # 다음 실행에서 통계 탭에 머무는 상황을 방지한다.
+                    st.session_state["active_navigation_default"] = (
+                        _return_context["page"]
+                    )
+                    st.session_state["active_navigation_key"] = "main_navigation"
                     st.session_state["_pending_nav"] = (
                         _return_context["page"]
                     )
@@ -7220,14 +7230,6 @@ OECD 「Pensions at a Glance 2025: Korea」는 2024년 한국의 실질 노동�
 """)
 
     st.caption("※ 이 자료실은 주제별 통계와 출처를 차근차근 확장하기 위한 구성입니다. 출처와 기준이 확인되지 않은 수치는 제시하지 않습니다.")
-
-
-# 출처 자료실에서 돌아온 경우, 원래 페이지의 부동산 팝업을 다시 연다.
-if (
-    selected_page == "우리집 재정곡선"
-    and st.session_state.pop("_reopen_housing_price_dialog", False)
-):
-    _show_housing_price_stats_dialog()
 
 
 #--------------------------------------------------------
