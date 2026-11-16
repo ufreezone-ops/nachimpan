@@ -16,6 +16,7 @@ from pathlib import Path
 import random
 import json
 import base64
+import zlib
 import requests
 import re
 from datetime import date
@@ -2206,16 +2207,54 @@ def _render_retirement_explorer_report(source_id):
 @st.dialog("관련 통계자료", width="large")
 def _show_retirement_report_explorer():
     _report_index = [
-        ("3. 노후와 은퇴", "6050400-01"),
-        ("13. 지출 통계 출처 및 산출방법", "6051400-00"),
-        ("12. 과거 소득·지출을 현재 기준과 비교하는 방법", "6051300-00"),
+        ("3. 노후와 은퇴", "6050400-01", "R03"),
+        ("13. 지출 통계 출처 및 산출방법", "6051400-00", "R13"),
+        ("12. 과거 소득·지출을 현재 기준과 비교하는 방법", "6051300-00", "R12"),
     ]
-    _report_titles = {report_id: title for title, report_id in _report_index}
+    _report_titles = {source_id: title for title, source_id, _ in _report_index}
+    _available_by_code = {code: (title, source_id) for title, source_id, code in _report_index}
+    _code_by_source = {source_id: code for title, source_id, code in _report_index}
     _source_id = st.session_state.get("_retirement_explorer_source_id", "6050400-01")
     _history = st.session_state.get("_retirement_explorer_history", [_source_id])
     if not _history:
         _history = [_source_id]
         st.session_state["_retirement_explorer_history"] = _history
+
+    _association_path = (
+        Path(__file__).resolve().parent
+        / "data" / "연관성" / "보고서_쌍별연관성_1차.json.zlib.b64"
+    )
+    try:
+        _association_payload = json.loads(
+            zlib.decompress(
+                base64.b64decode(_association_path.read_text(encoding="utf-8"))
+            ).decode("utf-8")
+        )
+        _association_records = _association_payload.get("records", [])
+    except Exception:
+        _association_records = []
+
+    _current_code = _code_by_source.get(_source_id)
+    _related_rows = []
+    if _current_code:
+        for _row in _association_records:
+            if _row.get("id_a") == _current_code:
+                _other_code = _row.get("id_b")
+                _other_title = _row.get("title_b")
+            elif _row.get("id_b") == _current_code:
+                _other_code = _row.get("id_a")
+                _other_title = _row.get("title_a")
+            else:
+                continue
+            _related_rows.append({
+                "code": _other_code,
+                "title": _other_title,
+                "score": int(_row.get("score", 0) or 0),
+                "relation": _row.get("relation", "연결"),
+                "reason": _row.get("reason") or "공통 의미 태그가 적어 주제 간 보완 가능성을 살펴볼 수 있습니다.",
+                "confidence": _row.get("confidence", "중하 — 1차 의미태그 기반"),
+            })
+    _related_rows.sort(key=lambda item: (-item["score"], item["title"]))
 
     st.caption("출발 위치: 우리집 가계부 · 은퇴 후에는?")
     st.caption("현재 보고 있는 자료")
@@ -2235,55 +2274,63 @@ def _show_retirement_report_explorer():
             st.session_state["_retirement_explorer_source_id"] = _previous_id
             st.rerun()
 
-    _next_map = {
-        "6050400-01": ("6051400-00", "생활비 통계가 어떤 자료와 기준으로 만들어졌는지 확인해 보세요."),
-        "6051400-00": ("6051300-00", "서로 다른 시점의 금액을 같은 가치 기준으로 비교하는 방법입니다."),
-        "6051300-00": ("6050400-01", "현재 가치로 환산한 지출 기준이 노후 생활비에서 어떻게 쓰이는지 살펴보세요."),
-    }
-    _unexpected_map = {
-        "6050400-01": ("6051300-00", "같은 생활비라도 시점이 달라지면 의미와 구매력이 달라집니다."),
-        "6051400-00": ("6050400-01", "산출 기준을 확인한 뒤 실제 은퇴 연령대의 지출 수준을 살펴보세요."),
-        "6051300-00": ("6051400-00", "금액 환산을 이해한 뒤 지출 통계의 원자료를 확인해 보세요."),
-    }
+    _available_related = [
+        item for item in _related_rows
+        if item["code"] in _available_by_code and _available_by_code[item["code"]][1] != _source_id
+    ]
+    _available_related.sort(key=lambda item: (-item["score"], item["title"]))
 
-    _next_id, _next_reason = _next_map[_source_id]
-    st.caption("이어서 살펴볼 자료")
-    if st.button(
-        f"{_report_titles[_next_id]}  ·  {_next_reason}",
-        key="retirement_explorer_next",
-        use_container_width=True,
-    ):
-        _new_history = list(_history)
-        _new_history.append(_next_id)
-        st.session_state["_retirement_explorer_history"] = _new_history
-        st.session_state["_retirement_explorer_source_id"] = _next_id
-        st.rerun()
+    if _available_related:
+        _next = _available_related[0]
+        st.caption("연관성이 높은 자료")
+        if st.button(
+            f"{_next['title']}  ·  연관성 {_next['score']}%",
+            key="retirement_explorer_next",
+            use_container_width=True,
+        ):
+            _next_source = _available_by_code[_next["code"]][1]
+            st.session_state["_retirement_explorer_history"] = list(_history) + [_next_source]
+            st.session_state["_retirement_explorer_source_id"] = _next_source
+            st.rerun()
 
-    _unexpected_id, _unexpected_reason = _unexpected_map[_source_id]
-    st.caption("다른 관점에서 살펴보기")
-    if st.button(
-        f"{_report_titles[_unexpected_id]}  ·  {_unexpected_reason}",
-        key="retirement_explorer_unexpected",
-        use_container_width=True,
-    ):
-        _new_history = list(_history)
-        _new_history.append(_unexpected_id)
-        st.session_state["_retirement_explorer_history"] = _new_history
-        st.session_state["_retirement_explorer_source_id"] = _unexpected_id
-        st.rerun()
+        _unexpected = _available_related[-1]
+        st.caption("조금 다른 관점에서 살펴보기")
+        if st.button(
+            f"{_unexpected['title']}  ·  연관성 {_unexpected['score']}%",
+            key="retirement_explorer_unexpected",
+            use_container_width=True,
+        ):
+            _unexpected_source = _available_by_code[_unexpected["code"]][1]
+            st.session_state["_retirement_explorer_history"] = list(_history) + [_unexpected_source]
+            st.session_state["_retirement_explorer_source_id"] = _unexpected_source
+            st.rerun()
 
-    _random_candidates = [report_id for _, report_id in _report_index if report_id != _source_id]
-    _random_id = random.choice(_random_candidates)
-    if st.button(
-        "다른 자료 무작위로 둘러보기",
-        key="retirement_explorer_random",
-        use_container_width=True,
-    ):
-        _new_history = list(_history)
-        _new_history.append(_random_id)
-        st.session_state["_retirement_explorer_history"] = _new_history
-        st.session_state["_retirement_explorer_source_id"] = _random_id
-        st.rerun()
+        _random = random.choice(_available_related)
+        if st.button(
+            f"다른 자료 무작위로 둘러보기  ·  {_random['title']} ({_random['score']}%)",
+            key="retirement_explorer_random",
+            use_container_width=True,
+        ):
+            _random_source = _available_by_code[_random["code"]][1]
+            st.session_state["_retirement_explorer_history"] = list(_history) + [_random_source]
+            st.session_state["_retirement_explorer_source_id"] = _random_source
+            st.rerun()
+
+    with st.expander("전체 보고서 연관성 점수 보기"):
+        if _related_rows:
+            st.caption(
+                "표시된 퍼센트는 확률이나 정확도가 아니라, 1차 의미 태그를 바탕으로 산출한 상대적 연관성 점수입니다."
+            )
+            for _item in _related_rows:
+                st.markdown(
+                    f"- **{_item['title']} · {_item['score']}%**"
+                    f"  
+  {_item['relation']} · {_item['reason']}"
+                )
+            st.caption("분석 기준: 의미 유사도 70% + 태그 중첩도 20% + 사전 정의한 상호보완 관계 10%")
+            st.caption("분석 신뢰도: 중하 — 원문 전체의 문맥 분석이 아닌 1차 의미 태그 기반 시범 점수입니다.")
+        else:
+            st.info("연관성 자료를 불러오지 못했습니다. 앱의 연관성 자료 파일을 확인해 주세요.")
 
     st.divider()
     _left, _right = st.columns(2)
@@ -2720,29 +2767,30 @@ if selected_page == "우리집 가계부":
             with st.container(border=True, key="retirement-panel"):
                 with st.container(horizontal=True, vertical_alignment="center", gap=None, key="retirement-expense-title-row"):
                     st.markdown("### 은퇴 후에는? (만원)")
-                    with st.popover(
-                        "🧭",
-                        key="source_retirement_expense_guide",
-                        help="은퇴 후 생활비를 이해하는 통계 자료",
-                        type="tertiary",
-                    ):
-                        st.caption("은퇴 후 생활비와 지출 기준을 살펴보는 자료입니다.")
-                        _retirement_expense_reports = [
-                            ("3. 노후와 은퇴", "6050400-01"),
-                            ("13. 지출 통계 출처 및 산출방법", "6051400-00"),
-                            ("12. 과거 소득·지출을 현재 기준과 비교하는 방법", "6051300-00"),
-                        ]
-                        for _report_title, _report_id in _retirement_expense_reports:
-                            if st.button(
-                                _report_title,
-                                key=f"retirement_expense_guide_{_report_id}",
-                                use_container_width=True,
-                            ):
-                                st.session_state["_retirement_explorer_open"] = True
-                                st.session_state["_retirement_explorer_source_id"] = _report_id
-                                st.session_state["_retirement_explorer_history"] = [_report_id]
-                                st.rerun()
-                st.markdown(
+                    if not st.session_state.get("_retirement_explorer_open", False):
+                        with st.popover(
+                            "🧭",
+                            key="source_retirement_expense_guide",
+                            help="은퇴 후 생활비를 이해하는 통계 자료",
+                            type="tertiary",
+                        ):
+                            st.caption("은퇴 후 생활비와 지출 기준을 살펴보는 자료입니다.")
+                            _retirement_expense_reports = [
+                                ("3. 노후와 은퇴", "6050400-01"),
+                                ("13. 지출 통계 출처 및 산출방법", "6051400-00"),
+                                ("12. 과거 소득·지출을 현재 기준과 비교하는 방법", "6051300-00"),
+                            ]
+                            for _report_title, _report_id in _retirement_expense_reports:
+                                if st.button(
+                                    _report_title,
+                                    key=f"retirement_expense_guide_{_report_id}",
+                                    use_container_width=True,
+                                ):
+                                    st.session_state["_retirement_explorer_open"] = True
+                                    st.session_state["_retirement_explorer_source_id"] = _report_id
+                                    st.session_state["_retirement_explorer_history"] = [_report_id]
+                                    st.rerun()
+                    st.markdown(
                     '<div id="source-anchor-retirement-expense"></div>',
                     unsafe_allow_html=True,
                 )
