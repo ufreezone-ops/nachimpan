@@ -5495,19 +5495,26 @@ elif selected_page == "우리집 재정곡선":
             with st.container(border=True):
                 st.markdown("**🏠 부동산 적용 기준**")
                 if _case_is_representative:
-                    st.markdown("**기본사례 예시**")
+                    _housing_basis_cols = st.columns(2, gap="medium")
+                    with _housing_basis_cols[0]:
+                        st.markdown("**기본사례 예시**")
+                        st.markdown(
+                            "**주택가격** 4.0억 원  ·  **대출금** 1.4억 원 (35%)  ·  "
+                            "**자기자금** 2.6억 원 (65%)"
+                        )
+                        st.caption("※ 재정곡선 계산을 위한 가정값")
+                    with _housing_basis_cols[1]:
+                        st.markdown(f"**{_case_housing_region} 지역 주택가격 중위값**")
+                        st.markdown(
+                            f"**주택** {_case_house_median_eok:.2f}억 원  ·  "
+                            f"**아파트** {_case_apt_median_eok:.2f}억 원"
+                        )
+                else:
+                    st.markdown(f"**{_case_housing_region} 지역 주택가격 중위값**")
                     st.markdown(
-                        "- 주택가격 4.0억 원\n"
-                        "- 대출금 1.4억 원(LTV 35%)\n"
-                        "- 자기자금 2.6억 원(65%)"
+                        f"**주택** {_case_house_median_eok:.2f}억 원  ·  "
+                        f"**아파트** {_case_apt_median_eok:.2f}억 원"
                     )
-                    st.caption("※ 재정곡선을 계산하기 위해 설정한 가정값입니다.")
-
-                st.markdown(f"**{_case_housing_region} 지역의 주택가격 통계 중위값**")
-                st.markdown(
-                    f"- {_case_house_median_eok:.2f}억 원 (주택)\n"
-                    f"- {_case_apt_median_eok:.2f}억 원 (아파트)"
-                )
                 with st.container(horizontal=True, vertical_alignment="center", gap=None):
                     if st.button(
                         "17개 시·도 주택종합·아파트 중위가격표 보기",
@@ -5517,7 +5524,7 @@ elif selected_page == "우리집 재정곡선":
                     ):
                         _show_housing_price_stats_dialog()
                     st.caption(
-                        "※ 한국부동산원 전국주택가격동향조사 · 2025년 12월 기준. 지역별 시장가격"
+                        "※ 한국부동산원 전국주택가격동향조사 · 2025년 12월 기준"
                     )
                     if st.button(
                         "🧭",
