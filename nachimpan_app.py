@@ -2029,6 +2029,26 @@ def _open_source_reference(source_id, origin_page, origin_anchor):
     st.session_state["_pending_nav"] = "통계"
     st.rerun()
 
+def _restore_source_return():
+    """출처 자료실 복귀 상태를 화면 재실행 전에 복원한다."""
+    _return_context = st.session_state.get("_source_return_context")
+    if not _return_context:
+        return
+
+    if _return_context["anchor"] == "housing-dialog-return-anchor":
+        st.session_state["_housing_price_dialog_open"] = True
+    else:
+        st.session_state["_source_restore_anchor"] = _return_context["anchor"]
+
+    st.session_state["active_navigation_default"] = _return_context["page"]
+    st.session_state["active_navigation_key"] = "main_navigation"
+    st.session_state["_pending_nav"] = _return_context["page"]
+
+    # 복귀 후에는 이전 자료실 상태를 정리한다.
+    st.session_state.pop("_active_source_id", None)
+    st.session_state.pop("_source_return_context", None)
+    st.session_state.pop("_source_open_anchor", None)
+
 
 @st.dialog("🏠 부동산 적용 기준", width="large")
 def _show_housing_price_stats_dialog():
@@ -5969,36 +5989,12 @@ elif selected_page == "통계":
     }
     if _active_source_id in _source_labels:
         with st.container(key="source-return-bar"):
-            if st.button(
+            st.button(
                 "← 이전 위치로 돌아가기",
                 key="source_return_button",
                 use_container_width=False,
-            ):
-                _return_context = st.session_state.get(
-                    "_source_return_context"
-                )
-                if _return_context:
-                    _is_housing_dialog_return = (
-                        _return_context["anchor"] == "housing-dialog-return-anchor"
-                    )
-                    # 팝업 복귀는 페이지 내 스크롤 이동이 아니라 모달 재호출로 처리한다.
-                    if _is_housing_dialog_return:
-                        st.session_state["_housing_price_dialog_open"] = True
-                    else:
-                        st.session_state["_source_restore_anchor"] = (
-                            _return_context["anchor"]
-                        )
-                    # 복귀 페이지를 네비게이션 상태에 직접 반영한다.
-                    # _pending_nav 처리와 별개로 현재 선택값 자체를 되돌려
-                    # 다음 실행에서 통계 탭에 머무는 상황을 방지한다.
-                    st.session_state["active_navigation_default"] = (
-                        _return_context["page"]
-                    )
-                    st.session_state["active_navigation_key"] = "main_navigation"
-                    st.session_state["_pending_nav"] = (
-                        _return_context["page"]
-                    )
-                    st.rerun()
+                on_click=_restore_source_return,
+            )
 
         st.markdown("<div style='height: 42px;'></div>", unsafe_allow_html=True)
         st.caption(f"선택한 출처: {_source_labels[_active_source_id]}")
