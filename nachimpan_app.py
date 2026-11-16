@@ -8948,3 +8948,36 @@ st.markdown("""
 }
 </style>
 """, unsafe_allow_html=True)
+
+
+# 현재 '연결' 캡슐만 글자 길이에 맞춰 폭 축소
+st.markdown("""
+<style>
+.st-key-retirement-connection-platform .retirement-station-current {
+    display: flex !important;
+    width: fit-content !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    margin: 0 auto !important;
+    padding: 0.08rem 0.42rem !important;
+    box-sizing: border-box !important;
+    flex: 0 0 auto !important;
+    align-self: center !important;
+    justify-content: center !important;
+    gap: 0.28rem !important;
+}
+.st-key-retirement-connection-platform [data-testid="stElementContainer"]:has(.retirement-station-current) {
+    display: flex !important;
+    justify-content: center !important;
+    width: 100% !important;
+}
+.st-key-retirement-connection-platform [data-testid="stElementContainer"]:has(.retirement-station-current) [data-testid="stMarkdown"] {
+    width: 100% !important;
+}
+.st-key-retirement-connection-platform [data-testid="stElementContainer"]:has(.retirement-station-current) [data-testid="stMarkdownContainer"] {
+    display: flex !important;
+    justify-content: center !important;
+    width: 100% !important;
+}
+</style>
+""", unsafe_allow_html=True)
