@@ -1980,14 +1980,14 @@ div.st-key-loan-payment-title-row div.st-key-loan-payment-source-guide [data-tes
 div.st-key-loan-payment-title-row div.st-key-loan-payment-source-guide [data-testid="stPopoverButton"]:focus,
 div.st-key-loan-payment-title-row div.st-key-loan-payment-source-guide [data-testid="stPopoverButton"]:focus-visible,
 div.st-key-loan-payment-title-row div.st-key-loan-payment-source-guide [data-testid="stPopoverButton"]:active {
-    transform: translateY(10px) !important;
+    transform: translateY(9px) !important;
 }
 div.st-key-retirement-expense-title-row div.st-key-source_retirement_expense_guide [data-testid="stButton"] button,
 div.st-key-retirement-expense-title-row div.st-key-source_retirement_expense_guide [data-testid="stButton"] button:hover,
 div.st-key-retirement-expense-title-row div.st-key-source_retirement_expense_guide [data-testid="stButton"] button:focus,
 div.st-key-retirement-expense-title-row div.st-key-source_retirement_expense_guide [data-testid="stButton"] button:focus-visible,
 div.st-key-retirement-expense-title-row div.st-key-source_retirement_expense_guide [data-testid="stButton"] button:active {
-    transform: translateY(10px) !important;
+    transform: translateY(9px) !important;
 }
 </style>
 """, unsafe_allow_html=True)
