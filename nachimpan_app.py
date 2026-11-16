@@ -2087,11 +2087,20 @@ def _show_housing_price_stats_dialog():
         key="source_housing_price_stats",
         use_container_width=False,
     ):
+        st.session_state["_housing_price_dialog_open"] = False
         _open_source_reference(
             "6051500-00",
             "우리집 재정곡선",
             "housing-dialog-return-anchor",
         )
+
+    if st.button(
+        "닫기",
+        key="close_housing_price_stats_dialog",
+        use_container_width=False,
+    ):
+        st.session_state["_housing_price_dialog_open"] = False
+        st.rerun()
 
 
 @st.dialog("통계 비교선", width="large")
@@ -5549,9 +5558,10 @@ elif selected_page == "우리집 재정곡선":
                 use_container_width=True,
                 help="기본사례 가정값과 지역별 주택가격 통계 보기",
             ):
-                _show_housing_price_stats_dialog()
-            elif st.session_state.get("_reopen_housing_price_dialog", False):
-                st.session_state["_reopen_housing_price_dialog"] = False
+                st.session_state["_housing_price_dialog_open"] = True
+
+            # 팝업이 열린 상태에서는 전체 앱이 다시 실행되어도 매번 호출한다.
+            if st.session_state.get("_housing_price_dialog_open", False):
                 _show_housing_price_stats_dialog()
 
 
@@ -5973,7 +5983,7 @@ elif selected_page == "통계":
                     )
                     # 팝업 복귀는 페이지 내 스크롤 이동이 아니라 모달 재호출로 처리한다.
                     if _is_housing_dialog_return:
-                        st.session_state["_reopen_housing_price_dialog"] = True
+                        st.session_state["_housing_price_dialog_open"] = True
                     else:
                         st.session_state["_source_restore_anchor"] = (
                             _return_context["anchor"]
