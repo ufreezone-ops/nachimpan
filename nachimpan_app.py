@@ -1973,6 +1973,22 @@ div.st-key-source_retirement_expense_guide [data-testid="stPopoverButton"] [data
     display: none !important;
 }
 
+
+/* 최종 우선순위 보정: 제목 글자 기준선에 맞춰 두 나침반을 아래로 이동 */
+div.st-key-loan-payment-title-row div.st-key-loan-payment-source-guide [data-testid="stPopoverButton"],
+div.st-key-loan-payment-title-row div.st-key-loan-payment-source-guide [data-testid="stPopoverButton"]:hover,
+div.st-key-loan-payment-title-row div.st-key-loan-payment-source-guide [data-testid="stPopoverButton"]:focus,
+div.st-key-loan-payment-title-row div.st-key-loan-payment-source-guide [data-testid="stPopoverButton"]:focus-visible,
+div.st-key-loan-payment-title-row div.st-key-loan-payment-source-guide [data-testid="stPopoverButton"]:active {
+    transform: translateY(10px) !important;
+}
+div.st-key-retirement-expense-title-row div.st-key-source_retirement_expense_guide [data-testid="stButton"] button,
+div.st-key-retirement-expense-title-row div.st-key-source_retirement_expense_guide [data-testid="stButton"] button:hover,
+div.st-key-retirement-expense-title-row div.st-key-source_retirement_expense_guide [data-testid="stButton"] button:focus,
+div.st-key-retirement-expense-title-row div.st-key-source_retirement_expense_guide [data-testid="stButton"] button:focus-visible,
+div.st-key-retirement-expense-title-row div.st-key-source_retirement_expense_guide [data-testid="stButton"] button:active {
+    transform: translateY(10px) !important;
+}
 </style>
 """, unsafe_allow_html=True)
 
