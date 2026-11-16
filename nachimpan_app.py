@@ -1711,7 +1711,7 @@ st.markdown("""
     }
 }
 
-/* PC에서는 실제 메뉴 컨테이너 자체에서 탭 묶음을 중앙 정렬 */
+/* PC: 여유 공간이 있을 때만 중앙 정렬하고, 넘치면 첫 탭부터 스크롤 */
 @media (min-width: 769px) {
     .st-key-main_navigation {
         justify-content: center !important;
@@ -1719,6 +1719,14 @@ st.markdown("""
     }
     .st-key-main_navigation > .stElementContainer {
         flex: 0 0 auto !important;
+    }
+    .st-key-main_navigation.nav-overflowing {
+        justify-content: flex-start !important;
+    }
+    .st-key-main_navigation.nav-overflowing [data-testid="stHorizontalBlock"] {
+        width: max-content !important;
+        min-width: 100% !important;
+        justify-content: flex-start !important;
     }
 }
 
@@ -2031,6 +2039,10 @@ st.components.v1.html(
             if (!shell || !nav) return;
 
             const updateNavState = () => {
+                const content = nav.querySelector('[data-testid="stHorizontalBlock"]');
+                const contentWidth = content ? content.scrollWidth : nav.scrollWidth;
+                const isOverflowing = contentWidth > nav.clientWidth + 2;
+                nav.classList.toggle("nav-overflowing", isOverflowing);
                 const maxScroll = Math.max(0, nav.scrollWidth - nav.clientWidth);
                 shell.classList.toggle("nav-has-left", nav.scrollLeft > 2);
                 shell.classList.toggle("nav-has-right", nav.scrollLeft < maxScroll - 2);
