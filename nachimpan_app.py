@@ -2444,7 +2444,7 @@ def _show_retirement_connection_dialog():
                 st.session_state["_retirement_connection_open"] = False
                 st.rerun()
         with _end_col:
-            if st.button("여행 종료", key="retirement_connection_end", use_container_width=True):
+            if st.button("종료", key="retirement_connection_end", use_container_width=True):
                 st.session_state["_retirement_explorer_open"] = False
                 st.session_state["_retirement_connection_open"] = False
                 st.session_state.pop("_retirement_explorer_source_id", None)
@@ -2864,29 +2864,18 @@ if selected_page == "우리집 가계부":
                 with st.container(horizontal=True, vertical_alignment="center", gap=None, key="retirement-expense-title-row"):
                     st.markdown("### 은퇴 후에는? (만원)")
                     if not st.session_state.get("_retirement_explorer_open", False):
-                        with st.popover(
+                        if st.button(
                             "🧭",
                             key="source_retirement_expense_guide",
-                            help="은퇴 후 생활비를 이해하는 통계 자료",
+                            help="연결된 보고서와 통계 자료 살펴보기",
                             type="tertiary",
                         ):
-                            st.caption("은퇴 후 생활비와 지출 기준을 살펴보는 자료입니다.")
-                            _retirement_expense_reports = [
-                                ("3. 노후와 은퇴", "6050400-01"),
-                                ("13. 지출 통계 출처 및 산출방법", "6051400-00"),
-                                ("12. 과거 소득·지출을 현재 기준과 비교하는 방법", "6051300-00"),
-                            ]
-                            for _report_title, _report_id in _retirement_expense_reports:
-                                if st.button(
-                                    _report_title,
-                                    key=f"retirement_expense_guide_{_report_id}",
-                                    use_container_width=True,
-                                ):
-                                    st.session_state["_retirement_explorer_open"] = True
-                                    st.session_state["_retirement_connection_open"] = False
-                                    st.session_state["_retirement_explorer_source_id"] = _report_id
-                                    st.session_state["_retirement_explorer_history"] = [_report_id]
-                                    st.rerun()
+                            _entry_source_id = "6050400-01"
+                            st.session_state["_retirement_explorer_open"] = True
+                            st.session_state["_retirement_connection_open"] = True
+                            st.session_state["_retirement_explorer_source_id"] = _entry_source_id
+                            st.session_state["_retirement_explorer_history"] = [_entry_source_id]
+                            st.rerun()
                 st.markdown(
                     '<div id="source-anchor-retirement-expense"></div>',
                     unsafe_allow_html=True,
