@@ -5968,11 +5968,16 @@ elif selected_page == "통계":
                     "_source_return_context"
                 )
                 if _return_context:
-                    st.session_state["_source_restore_anchor"] = (
-                        _return_context["anchor"]
+                    _is_housing_dialog_return = (
+                        _return_context["anchor"] == "housing-dialog-return-anchor"
                     )
-                    if _return_context["anchor"] == "housing-dialog-return-anchor":
+                    # 팝업 복귀는 페이지 내 스크롤 이동이 아니라 모달 재호출로 처리한다.
+                    if _is_housing_dialog_return:
                         st.session_state["_reopen_housing_price_dialog"] = True
+                    else:
+                        st.session_state["_source_restore_anchor"] = (
+                            _return_context["anchor"]
+                        )
                     # 복귀 페이지를 네비게이션 상태에 직접 반영한다.
                     # _pending_nav 처리와 별개로 현재 선택값 자체를 되돌려
                     # 다음 실행에서 통계 탭에 머무는 상황을 방지한다.
