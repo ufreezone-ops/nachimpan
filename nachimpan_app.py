@@ -1675,35 +1675,37 @@ st.markdown("""
     flex-wrap: nowrap !important;
 }
 
+/* 좌우 화살표는 PC와 모바일 모두 동일하게 스크롤 상태에 따라 표시 */
+.st-key-main_navigation_shell::before,
+.st-key-main_navigation_shell::after {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    z-index: 20;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    color: #FFFFFF;
+    font-size: 27px;
+    font-weight: 800;
+    line-height: 1;
+    pointer-events: none;
+}
+.st-key-main_navigation_shell.nav-has-left::before {
+    content: "‹";
+    display: flex;
+    left: 0;
+    background: linear-gradient(90deg, #556B2F 42%, rgba(85, 107, 47, 0));
+}
+.st-key-main_navigation_shell.nav-has-right::after {
+    content: "›";
+    display: flex;
+    right: 0;
+    background: linear-gradient(270deg, #556B2F 42%, rgba(85, 107, 47, 0));
+}
+
 @media (max-width: 768px) {
-    .st-key-main_navigation_shell::before,
-    .st-key-main_navigation_shell::after {
-        position: absolute;
-        top: 0;
-        bottom: 0;
-        z-index: 20;
-        display: none;
-        align-items: center;
-        justify-content: center;
-        width: 32px;
-        color: #FFFFFF;
-        font-size: 27px;
-        font-weight: 800;
-        line-height: 1;
-        pointer-events: none;
-    }
-    .st-key-main_navigation_shell.nav-has-left::before {
-        content: "‹";
-        display: flex;
-        left: 0;
-        background: linear-gradient(90deg, #556B2F 42%, rgba(85, 107, 47, 0));
-    }
-    .st-key-main_navigation_shell.nav-has-right::after {
-        content: "›";
-        display: flex;
-        right: 0;
-        background: linear-gradient(270deg, #556B2F 42%, rgba(85, 107, 47, 0));
-    }
     .st-key-main_navigation [data-testid="stHorizontalBlock"] {
         width: max-content !important;
         min-width: 100% !important;
@@ -2040,12 +2042,13 @@ st.components.v1.html(
 
             const updateNavState = () => {
                 const content = nav.querySelector('[data-testid="stHorizontalBlock"]');
-                const contentWidth = content ? content.scrollWidth : nav.scrollWidth;
-                const isOverflowing = contentWidth > nav.clientWidth + 2;
-                nav.classList.toggle("nav-overflowing", isOverflowing);
                 const maxScroll = Math.max(0, nav.scrollWidth - nav.clientWidth);
-                shell.classList.toggle("nav-has-left", nav.scrollLeft > 2);
-                shell.classList.toggle("nav-has-right", nav.scrollLeft < maxScroll - 2);
+                const hasOverflow = maxScroll > 3;
+                nav.classList.toggle("nav-overflowing", hasOverflow);
+                const atLeft = nav.scrollLeft <= 3;
+                const atRight = nav.scrollLeft >= maxScroll - 3;
+                shell.classList.toggle("nav-has-left", hasOverflow && !atLeft);
+                shell.classList.toggle("nav-has-right", hasOverflow && !atRight);
             };
 
             if (!nav.dataset.navScrollStateBound) {
@@ -2054,6 +2057,8 @@ st.components.v1.html(
                     const observer = new window.parent.ResizeObserver(updateNavState);
                     observer.observe(nav);
                     observer.observe(shell);
+                    const content = nav.querySelector('[data-testid="stHorizontalBlock"]');
+                    if (content) observer.observe(content);
                 }
                 window.parent.addEventListener("resize", updateNavState, { passive: true });
                 nav.dataset.navScrollStateBound = "true";
