@@ -207,8 +207,7 @@ footer {
 .st-key-source_retirement_expense,
 .st-key-source_nta_basic,
 .st-key-source_nta_generational,
-.st-key-source_retirement_milestones,
-.st-key-loan_payment_source_link {
+.st-key-source_retirement_milestones {
     width: auto !important;
     min-width: 0 !important;
     max-width: max-content !important;
@@ -218,10 +217,7 @@ footer {
 .st-key-source_retirement_expense [data-testid="stButton"] button,
 .st-key-source_nta_basic [data-testid="stButton"] button,
 .st-key-source_nta_generational [data-testid="stButton"] button,
-.st-key-source_retirement_milestones [data-testid="stButton"] button,
-.st-key-loan_payment_source_link [data-testid="stButton"] button,
-.st-key-expense-panel [data-testid="stPopoverButton"],
-.st-key-expense-panel [data-testid="stPopover"] button {
+.st-key-source_retirement_milestones [data-testid="stButton"] button {
     width: auto !important;
     min-width: 0 !important;
     max-width: max-content !important;
@@ -247,10 +243,7 @@ footer {
 .st-key-source_retirement_expense [data-testid="stButton"] button:hover,
 .st-key-source_nta_basic [data-testid="stButton"] button:hover,
 .st-key-source_nta_generational [data-testid="stButton"] button:hover,
-.st-key-source_retirement_milestones [data-testid="stButton"] button:hover,
-.st-key-loan_payment_source_link [data-testid="stButton"] button:hover,
-.st-key-expense-panel [data-testid="stPopoverButton"]:hover,
-.st-key-expense-panel [data-testid="stPopover"] button:hover {
+.st-key-source_retirement_milestones [data-testid="stButton"] button:hover {
     background: transparent !important;
     background-color: transparent !important;
     background-image: none !important;
@@ -263,31 +256,10 @@ footer {
 .st-key-source_retirement_expense [data-testid="stButton"] button p,
 .st-key-source_nta_basic [data-testid="stButton"] button p,
 .st-key-source_nta_generational [data-testid="stButton"] button p,
-.st-key-source_retirement_milestones [data-testid="stButton"] button p,
-.st-key-loan_payment_source_link [data-testid="stButton"] button p,
-.st-key-expense-panel [data-testid="stPopoverButton"] p,
-.st-key-expense-panel [data-testid="stPopover"] button p {
+.st-key-source_retirement_milestones [data-testid="stButton"] button p {
     font-size: inherit !important;
     line-height: 1 !important;
     margin: 0 !important;
-}
-/* 대출 팝오버는 기존 입력 라벨 크기와 정렬을 유지 */
-.st-key-expense-panel [data-testid="stPopoverButton"],
-.st-key-expense-panel [data-testid="stPopover"] button {
-    font-size: inherit !important;
-    font-weight: 400 !important;
-    line-height: inherit !important;
-    justify-content: flex-start !important;
-}
-/* 대출 라벨과 아이콘을 은퇴 제목 행과 같은 하단 기준선으로 정렬 */
-.st-key-loan-payment-label-row [data-testid="stHorizontalBlock"] {
-    align-items: flex-end !important;
-    column-gap: 0.12rem !important;
-}
-.st-key-loan-payment-label-row [data-testid="stElementContainer"] {
-    flex: 0 0 auto !important;
-    width: max-content !important;
-    min-width: 0 !important;
 }
 /* 생애주기 재정곡선: 제목·범례와 차트 사이의 불필요한 위쪽 간격 축소 */
 .st-key-life_cycle_finance_chart {
@@ -332,154 +304,6 @@ footer {
 .st-key-loan-payment-field [data-testid="stMarkdownContainer"] p {
     margin: 0 !important;
 }
-/* 행 안의 버튼을 은퇴 제목 옆 나침반과 동일한 무테·무배경 형태로 */
-.st-key-loan-payment-label-row [data-testid="stButton"],
-.st-key-loan-payment-label-row [data-testid="stButton"] > div {
-    width: max-content !important;
-    min-width: 0 !important;
-    height: auto !important;
-    min-height: 0 !important;
-    padding: 0 !important;
-    margin: 0 !important;
-    border: 0 !important;
-    background: transparent !important;
-    box-shadow: none !important;
-}
-.st-key-loan-payment-label-row [data-testid="stButton"] button,
-.st-key-loan-payment-label-row [data-testid="stButton"] button:hover,
-.st-key-loan-payment-label-row [data-testid="stButton"] button:focus,
-.st-key-loan-payment-label-row [data-testid="stButton"] button:focus-visible,
-.st-key-loan-payment-label-row [data-testid="stButton"] button:active {
-    appearance: none !important;
-    -webkit-appearance: none !important;
-    width: auto !important;
-    min-width: 0 !important;
-    height: auto !important;
-    min-height: 0 !important;
-    padding: 0 0.12rem !important;
-    margin: 0 !important;
-    border: 0 !important;
-    outline: none !important;
-    background: transparent !important;
-    background-color: transparent !important;
-    background-image: none !important;
-    box-shadow: none !important;
-    border-radius: 0 !important;
-    color: #38BDF8 !important;
-    -webkit-text-fill-color: #38BDF8 !important;
-    font-size: 0.9rem !important;
-    line-height: 1 !important;
-    display: inline-flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-    transform: none !important;
-}
-.st-key-loan-payment-label-row [data-testid="stButton"] button p {
-    margin: 0 !important;
-    padding: 0 !important;
-    font-size: inherit !important;
-    line-height: 1 !important;
-}
-/* 탭1: 제목 앵커 표시는 숨기고 제목 영역을 글자 너비만 사용 */
-.st-key-retirement-title-row [data-testid="stElementContainer"]:has(h3) {
-    flex: 0 0 auto !important;
-    width: max-content !important;
-    min-width: 0 !important;
-}
-.st-key-retirement-title-row h3 {
-    white-space: nowrap !important;
-}
-/* Streamlit이 제목에 자동으로 붙이는 내부 앵커 링크 아이콘 숨김 */
-.st-key-retirement-title-row [data-testid="stHeaderActionElements"],
-.st-key-retirement-title-row h3 a[aria-label="Link to heading"] {
-    display: none !important;
-}
-/* 제목 옆 나침반 팝오버의 기본 아래 화살표만 숨김 */
-.st-key-source_retirement_expense [data-testid="stPopoverButton"] [data-testid="stIconMaterial"] {
-    display: none !important;
-}
-/* 제목과 나침반을 같은 기준선에 배치 */
-.st-key-retirement-title-row [data-testid="stHorizontalBlock"] {
-    align-items: baseline !important;
-    column-gap: 0.15rem !important;
-}
-.st-key-source_retirement_expense {
-    width: auto !important;
-    min-width: 0 !important;
-    max-width: max-content !important;
-    flex: 0 0 auto !important;
-    margin: 0 0 0 0.1rem !important;
-    transform: translateY(0.08rem) !important;
-}
-/* PC: 제목과 아이콘 사이 간격을 현재의 절반으로 */
-@media (min-width: 769px) {
-    .st-key-retirement-title-row [data-testid="stHorizontalBlock"] {
-        column-gap: 0.075rem !important;
-    }
-    .st-key-source_retirement_expense {
-        margin-left: 0.05rem !important;
-    }
-}
-/* 모바일 공통: 실제 아이콘 요소의 왼쪽 여백으로 제목과 간격 확보 */
-@media (max-width: 1024px) and (pointer: coarse) {
-    .st-key-retirement-title-row [data-testid="stHorizontalBlock"] {
-        column-gap: 0 !important;
-    }
-    div.st-key-source_retirement_expense {
-        width: auto !important;
-        min-width: 0 !important;
-        max-width: max-content !important;
-        flex: 0 0 auto !important;
-        margin: 0 !important;
-    }
-    /* 버튼 안에 얇은 공백을 넣어 제목과 나침반 사이를 시각적으로 분리 */
-    .st-key-source_retirement_expense [data-testid="stButton"] button p::before {
-        content: " ";
-        white-space: pre;
-    }
-}
-/* 모바일 세로보기: 제목 중심에 맞춰 아이콘을 아래로 미세 조정 */
-@media (max-width: 600px) and (orientation: portrait) and (pointer: coarse) {
-    .st-key-source_retirement_expense {
-        transform: translateY(0.3rem) !important;
-    }
-}
-/* 모바일 가로보기: 세로보기보다 덜 내려 기준선에 맞춤 */
-@media (orientation: landscape) and (max-height: 500px) and (pointer: coarse) {
-    .st-key-source_retirement_expense {
-        transform: translateY(0.08rem) !important;
-    }
-}
-.st-key-source_retirement_expense [data-testid="stButton"] button,
-.st-key-source_retirement_expense [data-testid="stButton"] button:hover,
-.st-key-source_retirement_expense [data-testid="stButton"] button:focus,
-.st-key-source_retirement_expense [data-testid="stButton"] button:focus-visible,
-.st-key-source_retirement_expense [data-testid="stButton"] button:active {
-    width: auto !important;
-    min-width: 0 !important;
-    min-height: 0 !important;
-    height: auto !important;
-    padding: 0 !important;
-    margin: 0 !important;
-    border: 0 !important;
-    outline: 0 !important;
-    background: transparent !important;
-    background-color: transparent !important;
-    box-shadow: none !important;
-    color: #38BDF8 !important;
-    -webkit-text-fill-color: #38BDF8 !important;
-    font-size: 1.3rem !important;
-    line-height: 1 !important;
-    text-decoration: none !important;
-    justify-content: center !important;
-}
-.st-key-source_retirement_expense [data-testid="stButton"] button p {
-    margin: 0 !important;
-    font-size: 1.3rem !important;
-    line-height: 1 !important;
-    text-decoration: none !important;
-}
-
 /* 통계 자료실의 산출 방법 팝오버 버튼: primary 색상과 명시적 배경 지정 */
 .st-key-retirement-source-details [data-testid="stPopoverButton"],
 .st-key-retirement-source-details [data-testid="stPopover"] button,
@@ -1922,6 +1746,74 @@ div.st-key-source_retirement_expense [data-testid="stPopoverButton"] svg {
     display: none !important;
 }
 
+/* 탭1 대출 원리금: 제목과 나침반을 한 줄에 배치 */
+div.st-key-loan-payment-title-row [data-testid="stHorizontalBlock"] {
+    align-items: center !important;
+    gap: 0.12rem !important;
+}
+div.st-key-loan-payment-title-row [data-testid="stElementContainer"]:has(.loan-payment-label-text) {
+    width: auto !important;
+    min-width: 0 !important;
+    max-width: max-content !important;
+    flex: 0 1 auto !important;
+}
+div.st-key-loan-payment-title-row [data-testid="stHeaderActionElements"] {
+    display: none !important;
+}
+div.st-key-loan-payment-title-row > div {
+    align-self: center !important;
+}
+div.st-key-loan-payment-source-guide {
+    width: auto !important;
+    min-width: 0 !important;
+    max-width: max-content !important;
+    flex: 0 0 auto !important;
+    margin: 0 0 0 0.08rem !important;
+    align-self: center !important;
+    padding: 0 !important;
+    border: 0 !important;
+    background: transparent !important;
+    box-shadow: none !important;
+}
+div.st-key-loan-payment-source-guide [data-testid="stPopoverButton"],
+div.st-key-loan-payment-source-guide [data-testid="stPopoverButton"]:hover,
+div.st-key-loan-payment-source-guide [data-testid="stPopoverButton"]:focus,
+div.st-key-loan-payment-source-guide [data-testid="stPopoverButton"]:focus-visible,
+div.st-key-loan-payment-source-guide [data-testid="stPopoverButton"]:active {
+    width: auto !important;
+    min-width: 0 !important;
+    min-height: 0 !important;
+    height: auto !important;
+    padding: 0.08rem 0.12rem !important;
+    margin: 0 !important;
+    transform: translateY(4.2px) !important;
+    border: 0 !important;
+    outline: 0 !important;
+    background: transparent !important;
+    background-color: transparent !important;
+    background-image: none !important;
+    box-shadow: none !important;
+    border-radius: 0 !important;
+    color: #38BDF8 !important;
+    -webkit-text-fill-color: #38BDF8 !important;
+    font-size: 1.5rem !important;
+    font-weight: 700 !important;
+    line-height: 1 !important;
+    justify-content: center !important;
+    text-decoration: none !important;
+}
+div.st-key-loan-payment-source-guide [data-testid="stPopoverButton"] p {
+    margin: 0 !important;
+    font-size: 1.5rem !important;
+    line-height: 1 !important;
+    color: #38BDF8 !important;
+    -webkit-text-fill-color: #38BDF8 !important;
+}
+div.st-key-loan-payment-source-guide [data-testid="stPopoverButton"] svg,
+div.st-key-loan-payment-source-guide [data-testid="stPopoverButton"] [data-testid="stIconMaterial"] {
+    display: none !important;
+}
+
 /* 탭1 '은퇴 후에는?' 제목과 나침반: 제목의 불필요한 가로 점유 및 자동 링크 제거 */
 div.st-key-retirement-expense-title-row [data-testid="stHorizontalBlock"] {
     align-items: center !important;
@@ -1946,6 +1838,10 @@ div.st-key-source_retirement_expense_guide {
     flex: 0 0 auto !important;
     margin: 0 0 0 0.08rem !important;
     align-self: center !important;
+    padding: 0 !important;
+    border: 0 !important;
+    background: transparent !important;
+    box-shadow: none !important;
 }
 div.st-key-source_retirement_expense_guide [data-testid="stPopoverButton"],
 div.st-key-source_retirement_expense_guide [data-testid="stPopoverButton"]:hover,
@@ -1986,66 +1882,6 @@ div.st-key-source_retirement_expense_guide [data-testid="stPopoverButton"] [data
     display: none !important;
 }
 
-/* 아이폰 세로 화면: 제목과 나침반이 반드시 한 줄에 머물도록 */
-@media (max-width: 600px) and (orientation: portrait) and (pointer: coarse) {
-    .st-key-retirement-title-row [data-testid="stHorizontalBlock"] {
-        flex-wrap: nowrap !important;
-    }
-    .st-key-retirement-title-row [data-testid="stElementContainer"]:has(h3) {
-        flex: 0 1 auto !important;
-        width: auto !important;
-        min-width: 0 !important;
-    }
-    .st-key-retirement-title-row h3 {
-        white-space: nowrap !important;
-        font-size: 1.55rem !important;
-    }
-    .st-key-retirement-title-row .st-key-source_retirement_expense {
-        flex: 0 0 auto !important;
-        min-width: max-content !important;
-    }
-}
-
-/* 대출 설명: 기존 입력 라벨 크기의 청색 텍스트만 남기고 버튼 외형 제거 */
-div.st-key-expense-panel [data-testid="stPopoverButton"],
-div.st-key-expense-panel [data-testid="stPopoverButton"]:hover,
-div.st-key-expense-panel [data-testid="stPopoverButton"]:focus,
-div.st-key-expense-panel [data-testid="stPopoverButton"]:focus-visible,
-div.st-key-expense-panel [data-testid="stPopoverButton"]:active {
-    width: auto !important;
-    min-width: 0 !important;
-    min-height: 0 !important;
-    height: auto !important;
-    padding: 0 !important;
-    margin: 0 !important;
-    border: 0 !important;
-    outline: 0 !important;
-    background: transparent !important;
-    background-color: transparent !important;
-    background-image: none !important;
-    box-shadow: none !important;
-    border-radius: 0 !important;
-    color: #38BDF8 !important;
-    -webkit-text-fill-color: #38BDF8 !important;
-    font-size: inherit !important;
-    font-weight: 400 !important;
-    line-height: inherit !important;
-    justify-content: flex-start !important;
-    text-decoration: none !important;
-}
-div.st-key-expense-panel [data-testid="stPopoverButton"] p {
-    margin: 0 !important;
-    font-size: inherit !important;
-    font-weight: 400 !important;
-    line-height: inherit !important;
-    color: #38BDF8 !important;
-    -webkit-text-fill-color: #38BDF8 !important;
-}
-div.st-key-expense-panel [data-testid="stPopoverButton"]:hover p {
-    color: #7DD3FC !important;
-    -webkit-text-fill-color: #7DD3FC !important;
-    text-decoration: underline !important;
-}
 </style>
 """, unsafe_allow_html=True)
 
@@ -2831,25 +2667,32 @@ if selected_page == "우리집 가계부":
                         with st.container(key="loan-payment-field"):
                             with st.container(
                                 horizontal=True,
-                                vertical_alignment="bottom",
+                                vertical_alignment="center",
                                 gap=None,
-                                key="loan-payment-label-row",
+                                key="loan-payment-title-row",
                             ):
                                 st.markdown(
                                     '<span class="loan-payment-label-text">대출 원리금 월상환액(원금+이자)</span>',
                                     unsafe_allow_html=True,
                                 )
-                                if st.button(
+                                with st.popover(
                                     "🧭",
-                                    key="loan_payment_source_link",
+                                    key="loan-payment-source-guide",
                                     help="대출 원리금 산출 기준과 적용 방식 보기",
                                     type="tertiary",
                                 ):
-                                    _open_source_reference(
-                                        "6050500-01",
-                                        "우리집 가계부",
-                                        "loan-payment-label-origin",
-                                    )
+                                    st.caption("대출 원리금의 산출 기준과 적용 방식을 확인합니다.")
+                                    if st.button(
+                                        "산출 기준 보기",
+                                        key="loan_payment_source_open",
+                                        type="primary",
+                                        use_container_width=True,
+                                    ):
+                                        _open_source_reference(
+                                            "6050500-01",
+                                            "우리집 가계부",
+                                            "loan-payment-label-origin",
+                                        )
                             st.markdown(
                                 '<div id="loan-payment-label-origin"></div>',
                                 unsafe_allow_html=True,
