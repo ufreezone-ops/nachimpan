@@ -8615,3 +8615,93 @@ st.markdown("""
 }
 </style>
 """, unsafe_allow_html=True)
+
+
+# 연결 안내판 최종 색상 보정: 기본 상태에서도 모든 역명이 선명하게 보이도록 고정
+st.markdown("""
+<style>
+/* 현재 '연결' 역: 녹색 테두리를 복원하고 아이콘과 제목을 녹색으로 */
+.retirement-station-current {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 0.38rem !important;
+    min-height: 2.3rem !important;
+    padding: 0.18rem 0.32rem !important;
+    border: 2px solid #159447 !important;
+    border-radius: 999px !important;
+    background: #ffffff !important;
+    color: #159447 !important;
+}
+.retirement-station-current-compass {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    padding: 0 !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    background: transparent !important;
+    color: #159447 !important;
+    font-size: 1.35rem !important;
+    line-height: 1 !important;
+}
+.retirement-station-current strong {
+    color: #159447 !important;
+    font-size: 1rem !important;
+    font-weight: 850 !important;
+}
+
+/* 다음 역 번호는 이전 역 번호와 같은 작은 흰색 원 */
+.retirement-station-next-number {
+    width: 1.05rem !important;
+    min-width: 1.05rem !important;
+    height: 1.05rem !important;
+    margin: 0 auto !important;
+    border: 0 !important;
+    border-radius: 50% !important;
+    background: #ffffff !important;
+    color: #159447 !important;
+    font-size: 0.62rem !important;
+    font-weight: 900 !important;
+}
+
+/* 다음 보고서: hover 여부와 관계없이 녹색 바탕 + 흰색 글씨 */
+.st-key-retirement-connection-platform [data-testid="stButton"] button,
+.st-key-retirement-connection-platform [data-testid="stButton"] button[kind="primary"],
+.st-key-retirement-connection-platform [data-testid="stButton"] button[kind="secondary"] {
+    min-height: 2.65rem !important;
+    height: auto !important;
+    padding: 0.42rem 0.55rem !important;
+    border: 2px solid #159447 !important;
+    border-radius: 999px !important;
+    background: #159447 !important;
+    background-color: #159447 !important;
+    background-image: none !important;
+    color: #ffffff !important;
+    font-size: 0.88rem !important;
+    font-weight: 800 !important;
+    line-height: 1.25 !important;
+    white-space: normal !important;
+    box-shadow: none !important;
+    opacity: 1 !important;
+}
+.st-key-retirement-connection-platform [data-testid="stButton"] button *,
+.st-key-retirement-connection-platform [data-testid="stButton"] button p {
+    color: #ffffff !important;
+    opacity: 1 !important;
+}
+.st-key-retirement-connection-platform [data-testid="stButton"] button:hover,
+.st-key-retirement-connection-platform [data-testid="stButton"] button:focus,
+.st-key-retirement-connection-platform [data-testid="stButton"] button:active {
+    border-color: #087b3c !important;
+    background: #087b3c !important;
+    background-color: #087b3c !important;
+    color: #ffffff !important;
+}
+.st-key-retirement-connection-platform [data-testid="stButton"] button:hover *,
+.st-key-retirement-connection-platform [data-testid="stButton"] button:focus *,
+.st-key-retirement-connection-platform [data-testid="stButton"] button:active * {
+    color: #ffffff !important;
+}
+</style>
+""", unsafe_allow_html=True)
