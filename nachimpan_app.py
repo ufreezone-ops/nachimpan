@@ -2494,23 +2494,17 @@ def _show_retirement_connection_dialog():
                 _score = max(0, min(100, int(_item["raw_score"])))
                 _report_number = int(_item["code"].replace("R", ""))
                 _report_title = _item["title"].split(". ", 1)[-1]
-                _badge_col, _button_col = st.columns([1.2, 8], vertical_alignment="center")
-                with _badge_col:
-                    st.markdown(
-                        f"<div class='retirement-station-next-number'>{_report_number}</div>",
-                        unsafe_allow_html=True,
-                    )
-                with _button_col:
-                    if st.button(
-                        f"{_report_title} ({_score}%)",
-                        key=f"retirement_connection_next_{_index}",
-                        use_container_width=True,
-                        type="primary",
-                    ):
-                        st.session_state["_retirement_explorer_history"] = _history + [_item["source_id"]]
-                        st.session_state["_retirement_explorer_source_id"] = _item["source_id"]
-                        st.session_state["_retirement_connection_open"] = False
-                        st.rerun()
+                # 번호와 보고서명을 하나의 버튼 안에 넣어 이전 역과 동일한 캡슐 구조로 표시
+                if st.button(
+                    f"**{_report_number}**　{_report_title} ({_score}%)",
+                    key=f"retirement_connection_next_{_index}",
+                    use_container_width=False,
+                    type="primary",
+                ):
+                    st.session_state["_retirement_explorer_history"] = _history + [_item["source_id"]]
+                    st.session_state["_retirement_explorer_source_id"] = _item["source_id"]
+                    st.session_state["_retirement_connection_open"] = False
+                    st.rerun()
         else:
             st.info("현재 자료에서 이어지는 다른 보고서가 아직 준비되지 않았습니다.")
 
@@ -8779,6 +8773,96 @@ st.markdown("""
     padding: 0 !important;
     color: #ffffff !important;
     -webkit-text-fill-color: #ffffff !important;
+}
+</style>
+""", unsafe_allow_html=True)
+
+
+# 다음 보고서도 이전 보고서와 같은 단일 캡슐로 구성하고 제목 주변 여백만 유지
+st.markdown("""
+<style>
+/* 이전 보고서 캡슐은 제목 길이에 맞춰 중앙 정렬 */
+.retirement-station-previous {
+    display: flex !important;
+    width: fit-content !important;
+    max-width: 100% !important;
+    min-height: 2.35rem !important;
+    margin: 0 auto !important;
+    padding: 0.22rem 0.62rem !important;
+    gap: 0.38rem !important;
+    box-sizing: border-box !important;
+}
+.retirement-station-previous-number {
+    flex: 0 0 1.05rem !important;
+    width: 1.05rem !important;
+    height: 1.05rem !important;
+}
+
+/* 다음 보고서: 번호 strong 자체를 흰색 원/녹색 숫자로 표현 */
+.st-key-retirement-connection-platform [data-testid="stButton"] {
+    display: flex !important;
+    justify-content: center !important;
+    width: 100% !important;
+}
+.st-key-retirement-connection-platform [data-testid="stButton"] button {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    width: fit-content !important;
+    max-width: 100% !important;
+    min-height: 2.35rem !important;
+    height: auto !important;
+    margin: 0 auto !important;
+    padding: 0.22rem 0.62rem !important;
+    gap: 0.38rem !important;
+    box-sizing: border-box !important;
+    border: 2px solid #159447 !important;
+    border-radius: 999px !important;
+    background: #159447 !important;
+    color: #ffffff !important;
+    white-space: normal !important;
+}
+.st-key-retirement-connection-platform [data-testid="stButton"] button [data-testid="stMarkdownContainer"] {
+    margin: 0 !important;
+    padding: 0 !important;
+}
+.st-key-retirement-connection-platform [data-testid="stButton"] button [data-testid="stMarkdownContainer"] p {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 0.38rem !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    color: #ffffff !important;
+    -webkit-text-fill-color: #ffffff !important;
+    font-size: 0.9rem !important;
+    font-weight: 800 !important;
+    line-height: 1.2 !important;
+}
+.st-key-retirement-connection-platform [data-testid="stButton"] button strong {
+    display: inline-flex !important;
+    flex: 0 0 1.05rem !important;
+    width: 1.05rem !important;
+    min-width: 1.05rem !important;
+    height: 1.05rem !important;
+    align-items: center !important;
+    justify-content: center !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    border: 0 !important;
+    border-radius: 50% !important;
+    background: #ffffff !important;
+    color: #159447 !important;
+    -webkit-text-fill-color: #159447 !important;
+    font-size: 0.62rem !important;
+    font-weight: 900 !important;
+    line-height: 1 !important;
+}
+.st-key-retirement-connection-platform [data-testid="stButton"] button:hover,
+.st-key-retirement-connection-platform [data-testid="stButton"] button:focus,
+.st-key-retirement-connection-platform [data-testid="stButton"] button:active {
+    background: #087b3c !important;
+    border-color: #087b3c !important;
 }
 </style>
 """, unsafe_allow_html=True)
