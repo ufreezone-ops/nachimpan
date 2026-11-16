@@ -2324,8 +2324,7 @@ def _show_retirement_report_explorer():
             for _item in _related_rows:
                 st.markdown(
                     f"- **{_item['title']} · {_item['score']}%**"
-                    f"  
-  {_item['relation']} · {_item['reason']}"
+                    f"  \n  {_item['relation']} · {_item['reason']}"
                 )
             st.caption("분석 기준: 의미 유사도 70% + 태그 중첩도 20% + 사전 정의한 상호보완 관계 10%")
             st.caption("분석 신뢰도: 중하 — 원문 전체의 문맥 분석이 아닌 1차 의미 태그 기반 시범 점수입니다.")
@@ -2790,7 +2789,7 @@ if selected_page == "우리집 가계부":
                                     st.session_state["_retirement_explorer_source_id"] = _report_id
                                     st.session_state["_retirement_explorer_history"] = [_report_id]
                                     st.rerun()
-                    st.markdown(
+                st.markdown(
                     '<div id="source-anchor-retirement-expense"></div>',
                     unsafe_allow_html=True,
                 )
