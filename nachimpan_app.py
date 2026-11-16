@@ -2476,10 +2476,12 @@ def _show_retirement_connection_dialog():
             unsafe_allow_html=True,
         )
 
+        st.markdown("<div class='retirement-vertical-arrow'>↓</div>", unsafe_allow_html=True)
+
         # 현재 역: 이 연결창 자체가 '연결' 역
         st.markdown(
             "<div class='retirement-station-current'>"
-            "<span class='retirement-station-current-number'>🧭</span>"
+            "<span class='retirement-station-current-compass'>🧭</span>"
             "<strong>연결</strong></div>",
             unsafe_allow_html=True,
         )
@@ -8540,3 +8542,76 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
+
+ 
+# 보고서 연결 역 안내판: 이전·현재·다음의 색상과 간격 통일
+st.markdown("""
+<style>
+.st-key-retirement-connection-platform {
+    padding: 0.55rem 0.32rem 0.45rem !important;
+}
+.retirement-station-previous {
+    padding-left: 0.38rem !important;
+    padding-right: 0.38rem !important;
+}
+.retirement-station-previous-number {
+    flex-basis: 1.05rem !important;
+    width: 1.05rem !important;
+    height: 1.05rem !important;
+    font-size: 0.62rem !important;
+}
+.retirement-station-previous,
+.retirement-station-previous strong {
+    color: #ffffff !important;
+}
+.retirement-station-current {
+    min-height: 2.3rem !important;
+    padding: 0.18rem 0.32rem !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    background: transparent !important;
+    gap: 0.38rem !important;
+}
+.retirement-station-current-compass {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.35rem;
+    line-height: 1;
+}
+.retirement-station-current strong {
+    color: #159447 !important;
+    font-size: 1rem !important;
+    font-weight: 850 !important;
+}
+.retirement-vertical-arrow {
+    margin: -0.12rem 0 0.08rem !important;
+    color: #159447 !important;
+    font-size: 1.55rem !important;
+    font-weight: 900 !important;
+}
+.retirement-station-next-number {
+    width: 1.05rem !important;
+    height: 1.05rem !important;
+    font-size: 0.62rem !important;
+    background: #ffffff !important;
+    color: #159447 !important;
+    border: 0 !important;
+    font-weight: 900 !important;
+}
+.st-key-retirement-connection-platform [data-testid="stHorizontalBlock"] {
+    gap: 0.25rem !important;
+}
+.st-key-retirement-connection-platform [data-testid="stButton"] button {
+    min-height: 2.65rem !important;
+    padding-left: 0.38rem !important;
+    padding-right: 0.38rem !important;
+    border: 2px solid #159447 !important;
+    background: #159447 !important;
+    color: #ffffff !important;
+}
+.st-key-retirement-connection-platform [data-testid="stButton"] button p {
+    color: #ffffff !important;
+}
+</style>
+""", unsafe_allow_html=True)
