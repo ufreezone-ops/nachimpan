@@ -339,6 +339,84 @@ div.st-key-retirement-source-details button:hover {
     -webkit-text-fill-color: var(--nc-text) !important;
     border-color: var(--nc-border) !important;
 }
+
+/* 1차 화면 미세 정렬 보정: 대출 나침반은 제목 기준선보다 약간 아래 */
+div.st-key-loan-payment-source-guide [data-testid="stTooltipHoverTarget"] {
+    width: auto !important;
+    justify-content: center !important;
+    align-items: center !important;
+}
+div.st-key-loan-payment-source-guide [data-testid="stPopover"],
+div.st-key-loan-payment-source-guide [data-testid="stLayoutWrapper"] {
+    width: auto !important;
+    min-width: 0 !important;
+    max-width: max-content !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    border: 0 !important;
+    background: transparent !important;
+    box-shadow: none !important;
+}
+div.st-key-loan-payment-source-guide [data-testid="stPopoverButton"],
+div.st-key-loan-payment-source-guide [data-testid="stPopoverButton"]:hover,
+div.st-key-loan-payment-source-guide [data-testid="stPopoverButton"]:focus,
+div.st-key-loan-payment-source-guide [data-testid="stPopoverButton"]:focus-visible,
+div.st-key-loan-payment-source-guide [data-testid="stPopoverButton"]:active {
+    transform: translateY(8px) !important;
+}
+
+/* 은퇴 후에는? 나침반: 일반 버튼의 tertiary 외형과 여백을 완전히 제거 */
+div.st-key-source_retirement_expense_guide,
+div.st-key-source_retirement_expense_guide [data-testid="stElementContainer"],
+div.st-key-source_retirement_expense_guide [data-testid="stButton"],
+div.st-key-source_retirement_expense_guide .stButton {
+    width: auto !important;
+    min-width: 0 !important;
+    max-width: max-content !important;
+    flex: 0 0 auto !important;
+    padding: 0 !important;
+    margin: 0 0 0 0.08rem !important;
+    border: 0 !important;
+    background: transparent !important;
+    background-color: transparent !important;
+    box-shadow: none !important;
+}
+div.st-key-source_retirement_expense_guide [data-testid="stButton"] button,
+div.st-key-source_retirement_expense_guide [data-testid="stButton"] button:hover,
+div.st-key-source_retirement_expense_guide [data-testid="stButton"] button:focus,
+div.st-key-source_retirement_expense_guide [data-testid="stButton"] button:focus-visible,
+div.st-key-source_retirement_expense_guide [data-testid="stButton"] button:active {
+    width: auto !important;
+    min-width: 0 !important;
+    max-width: max-content !important;
+    min-height: 0 !important;
+    height: auto !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    transform: translateY(4.2px) !important;
+    border: 0 !important;
+    outline: 0 !important;
+    background: transparent !important;
+    background-color: transparent !important;
+    background-image: none !important;
+    box-shadow: none !important;
+    border-radius: 0 !important;
+    color: #38BDF8 !important;
+    -webkit-text-fill-color: #38BDF8 !important;
+    font-size: 1.8rem !important;
+    font-weight: 700 !important;
+    line-height: 1 !important;
+    justify-content: center !important;
+    text-decoration: none !important;
+}
+div.st-key-source_retirement_expense_guide [data-testid="stButton"] button p {
+    margin: 0 !important;
+    padding: 0 !important;
+    color: #38BDF8 !important;
+    -webkit-text-fill-color: #38BDF8 !important;
+    font-size: 1.8rem !important;
+    line-height: 1 !important;
+}
 </style>
 """, unsafe_allow_html=True)
 
