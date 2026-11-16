@@ -2278,6 +2278,42 @@ def _render_retirement_explorer_report(source_id):
         st.info("선택한 자료를 찾을 수 없습니다.")
 
 
+@st.dialog("연결", width="large")
+def _show_retirement_entry_dialog():
+    """나침반 최초 클릭에서만 사용하는 연결 탐색 시작 화면."""
+    _entry_reports = [
+        ("3. 노후와 은퇴", "6050400-01"),
+        ("13. 지출 통계 출처 및 산출방법", "6051400-00"),
+        ("12. 과거 소득·지출을 현재 기준과 비교하는 방법", "6051300-00"),
+    ]
+
+    with st.container(key="retirement-connection-platform", border=True):
+        st.markdown("### 어떤 자료부터 살펴볼까요?")
+        st.caption("은퇴 후 생활비와 지출 기준을 이해하는 데 도움이 되는 자료입니다.")
+
+        for _index, (_title, _report_id) in enumerate(_entry_reports):
+            if st.button(
+                _title,
+                key=f"retirement_entry_report_{_report_id}",
+                use_container_width=True,
+                type="primary" if _index == 0 else "secondary",
+            ):
+                st.session_state["_retirement_entry_open"] = False
+                st.session_state["_retirement_connection_open"] = False
+                st.session_state["_retirement_explorer_source_id"] = _report_id
+                st.session_state["_retirement_explorer_history"] = [_report_id]
+                st.rerun()
+
+        st.divider()
+        if st.button("종료", key="retirement_entry_end", use_container_width=True):
+            st.session_state["_retirement_explorer_open"] = False
+            st.session_state["_retirement_entry_open"] = False
+            st.session_state["_retirement_connection_open"] = False
+            st.session_state.pop("_retirement_explorer_source_id", None)
+            st.session_state.pop("_retirement_explorer_history", None)
+            st.rerun()
+
+
 @st.dialog("보고서", width="large")
 def _show_retirement_report_dialog():
     """보고서 본문만 보여주는 읽기 화면."""
@@ -2870,11 +2906,11 @@ if selected_page == "우리집 가계부":
                             help="연결된 보고서와 통계 자료 살펴보기",
                             type="tertiary",
                         ):
-                            _entry_source_id = "6050400-01"
                             st.session_state["_retirement_explorer_open"] = True
-                            st.session_state["_retirement_connection_open"] = True
-                            st.session_state["_retirement_explorer_source_id"] = _entry_source_id
-                            st.session_state["_retirement_explorer_history"] = [_entry_source_id]
+                            st.session_state["_retirement_entry_open"] = True
+                            st.session_state["_retirement_connection_open"] = False
+                            st.session_state.pop("_retirement_explorer_source_id", None)
+                            st.session_state.pop("_retirement_explorer_history", None)
                             st.rerun()
                 st.markdown(
                     '<div id="source-anchor-retirement-expense"></div>',
@@ -7817,7 +7853,9 @@ OECD 「Pensions at a Glance 2025: Korea」는 2024년 한국의 실질 노동�
 # 은퇴 후 생활비 관련 보고서 팝업
 #--------------------------------------------------------
 if st.session_state.get("_retirement_explorer_open", False):
-    if st.session_state.get("_retirement_connection_open", False):
+    if st.session_state.get("_retirement_entry_open", False):
+        _show_retirement_entry_dialog()
+    elif st.session_state.get("_retirement_connection_open", False):
         _show_retirement_connection_dialog()
     else:
         _show_retirement_report_dialog()
