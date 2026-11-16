@@ -2318,9 +2318,12 @@ def _show_retirement_report_explorer():
 
     st.divider()
     st.markdown("### 함께 살펴보면 좋은 자료")
+    # 팝업 본문까지 현재 연결된 자료만 다음 단계로 연다. 전체 23개 자료의 점수는 아래 목록에서 모두 확인한다.
+    _popup_report_codes = {"R03", "R12", "R13"}
     _available_related = [
         item for item in _related_rows
-        if item["code"] in _available_by_code
+        if item["code"] in _popup_report_codes
+        and item["code"] in _available_by_code
         and _available_by_code[item["code"]][1] != _source_id
     ]
     _available_related.sort(key=lambda item: (-item["score"], item["title"] or ""))
