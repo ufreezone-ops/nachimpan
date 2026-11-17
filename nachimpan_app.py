@@ -4264,9 +4264,9 @@ elif selected_page == "인생의 사계절":
         st.caption("대한민국의 생애주기 통계로 내 인생의 사계절을 비춰봅니다.")
 
     #--------------------------------------------------------
-# 6.03.03 | 고급 모드 — 2. 세대 계승 생애주기 재정곡선
+# 6.03.03 | 고급 모드 — NCH-0005
 #--------------------------------------------------------
-        st.markdown("### 세대 계승 생애주기 재정곡선")
+        st.markdown(f"### {_master_report_title('6051700-00')}")
 
         fig_official_nta = build_official_nta_chart()
         st.plotly_chart(fig_official_nta, use_container_width=True, config={"displayModeBar": False, "scrollZoom": False, "doubleClick": False, "showAxisDragHandles": False})
