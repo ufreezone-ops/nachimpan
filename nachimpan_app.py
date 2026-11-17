@@ -2331,10 +2331,12 @@ def _render_master_data_items(_continent_code):
     ].sort_values(["public_number", "resource_id"])
     for _, _item in _items.iterrows():
         _resource_id = str(_item.get("resource_id", "")).strip()
+        _label = str(_item.get("display_label", "")).strip()
         _title = str(_item.get("title", "")).strip()
-        # 보고서와 원자료를 동일한 목차 행으로 표시하고, 클릭 시 같은 자료 보기 창을 연다.
-        with st.popover(_title, key=f"master_resource_{_resource_id}", type="tertiary", width="content"):
-            st.caption("통계 원자료")
+        _kind = str(_item.get("resource_type", "")).strip()
+        _display = f"{_label}. {_title}" if _label else _title
+        with st.popover(_display, key=f"master_resource_{_resource_id}", type="tertiary", width="content"):
+            st.caption(f"통계 원자료 · {_kind}")
             if st.button("자료 열기", key=f"open_master_resource_{_resource_id}", use_container_width=True):
                 st.session_state["_catalog_resource_id"] = _resource_id
                 st.session_state["_catalog_resource_open"] = True
@@ -6625,40 +6627,58 @@ elif selected_page == "통계":
     st.caption("내 삶의 숫자를 사회 전체의 흐름과 나란히 놓고 살펴보는 자료실입니다. 통계는 정답이 아니라, 내 생각의 경계를 넓히는 참고선입니다.")
 
 
-    # 통계 자료실 목차: 대륙별 색상 원형 번호 + 보고서/원자료 동일 행 스타일
+    # 통계 자료실: 단원별 대륙 색상 배경, 간결한 목차
     st.markdown("""
     <style>
-    .st-key-stats-continent-l, .st-key-stats-continent-i,
-    .st-key-stats-continent-c, .st-key-stats-continent-h,
-    .st-key-stats-continent-e { background: transparent !important; }
     .st-key-stats-continent-l { --stats-line-color: #527B60; }
     .st-key-stats-continent-i { --stats-line-color: #4779A8; }
     .st-key-stats-continent-c { --stats-line-color: #C49A35; }
     .st-key-stats-continent-h { --stats-line-color: #555F91; }
     .st-key-stats-continent-e { --stats-line-color: #965C78; }
 
-    /* 단원 expander 자체의 테두리·배경 제거 */
-    .st-key-stats-continent-l [data-testid="stExpander"],
-    .st-key-stats-continent-i [data-testid="stExpander"],
-    .st-key-stats-continent-c [data-testid="stExpander"],
-    .st-key-stats-continent-h [data-testid="stExpander"],
-    .st-key-stats-continent-e [data-testid="stExpander"],
-    .st-key-stats-continent-l [data-testid="stExpander"] details,
-    .st-key-stats-continent-i [data-testid="stExpander"] details,
-    .st-key-stats-continent-c [data-testid="stExpander"] details,
-    .st-key-stats-continent-h [data-testid="stExpander"] details,
-    .st-key-stats-continent-e [data-testid="stExpander"] details {
-        border: 0 !important; background: transparent !important;
-        box-shadow: none !important; border-radius: 0 !important;
-    }
+    /* 단원 제목만 대륙 색상으로 강조 */
     .st-key-stats-continent-l [data-testid="stExpander"] summary,
     .st-key-stats-continent-i [data-testid="stExpander"] summary,
     .st-key-stats-continent-c [data-testid="stExpander"] summary,
     .st-key-stats-continent-h [data-testid="stExpander"] summary,
     .st-key-stats-continent-e [data-testid="stExpander"] summary {
-        padding: 0.42rem 0.12rem !important; border: 0 !important;
-        background: transparent !important; font-weight: 800 !important;
+        background: var(--stats-line-color) !important;
+        color: #fff !important;
+        border: 0 !important;
+        border-radius: 0.42rem !important;
+        padding: 0.62rem 0.85rem !important;
+        font-weight: 800 !important;
+        margin: 0.12rem 0 0.3rem 0 !important;
     }
+    .st-key-stats-continent-l [data-testid="stExpander"] summary svg,
+    .st-key-stats-continent-i [data-testid="stExpander"] summary svg,
+    .st-key-stats-continent-c [data-testid="stExpander"] summary svg,
+    .st-key-stats-continent-h [data-testid="stExpander"] summary svg,
+    .st-key-stats-continent-e [data-testid="stExpander"] summary svg {
+        color: #fff !important;
+        fill: #fff !important;
+    }
+
+    /* 바깥 컨테이너의 기본 테두리 제거 */
+    .st-key-stats-continent-l [data-testid="stExpander"],
+    .st-key-stats-continent-i [data-testid="stExpander"],
+    .st-key-stats-continent-c [data-testid="stExpander"],
+    .st-key-stats-continent-h [data-testid="stExpander"],
+    .st-key-stats-continent-e [data-testid="stExpander"] {
+        border: 0 !important;
+        background: transparent !important;
+        box-shadow: none !important;
+    }
+    .st-key-stats-continent-l [data-testid="stExpander"] details,
+    .st-key-stats-continent-i [data-testid="stExpander"] details,
+    .st-key-stats-continent-c [data-testid="stExpander"] details,
+    .st-key-stats-continent-h [data-testid="stExpander"] details,
+    .st-key-stats-continent-e [data-testid="stExpander"] details {
+        border: 0 !important;
+        background: transparent !important;
+    }
+
+    /* 보고서와 CSV의 목차 행을 같은 모양으로 */
     .st-key-stats-continent-l [data-testid="stExpander"] [data-testid="stVerticalBlock"],
     .st-key-stats-continent-i [data-testid="stExpander"] [data-testid="stVerticalBlock"],
     .st-key-stats-continent-c [data-testid="stExpander"] [data-testid="stVerticalBlock"],
@@ -6666,57 +6686,27 @@ elif selected_page == "통계":
     .st-key-stats-continent-e [data-testid="stExpander"] [data-testid="stVerticalBlock"] {
         gap: 0.08rem !important;
     }
-
-    /* 번호 카운터는 각 단원 안에서 독립적으로 1부터 시작 */
-    .st-key-stats-continent-l [data-testid="stExpander"] [data-testid="stVerticalBlock"],
-    .st-key-stats-continent-i [data-testid="stExpander"] [data-testid="stVerticalBlock"],
-    .st-key-stats-continent-c [data-testid="stExpander"] [data-testid="stVerticalBlock"],
-    .st-key-stats-continent-h [data-testid="stExpander"] [data-testid="stVerticalBlock"],
-    .st-key-stats-continent-e [data-testid="stExpander"] [data-testid="stVerticalBlock"] {
-        counter-reset: stats-report;
-    }
-    .st-key-stats-continent-l [data-testid="stExpander"] [data-testid="stElementContainer"]:has([data-testid="stPopoverButton"]),
-    .st-key-stats-continent-i [data-testid="stExpander"] [data-testid="stElementContainer"]:has([data-testid="stPopoverButton"]),
-    .st-key-stats-continent-c [data-testid="stExpander"] [data-testid="stElementContainer"]:has([data-testid="stPopoverButton"]),
-    .st-key-stats-continent-h [data-testid="stExpander"] [data-testid="stElementContainer"]:has([data-testid="stPopoverButton"]),
-    .st-key-stats-continent-e [data-testid="stExpander"] [data-testid="stElementContainer"]:has([data-testid="stPopoverButton"]) {
-        counter-increment: stats-report;
-        display: flex !important; align-items: center !important;
-        gap: 0.55rem !important; margin: 0 !important;
-        padding: 0 !important; min-height: 1.9rem !important;
-    }
-    .st-key-stats-continent-l [data-testid="stExpander"] [data-testid="stElementContainer"]:has([data-testid="stPopoverButton"])::before,
-    .st-key-stats-continent-i [data-testid="stExpander"] [data-testid="stElementContainer"]:has([data-testid="stPopoverButton"])::before,
-    .st-key-stats-continent-c [data-testid="stExpander"] [data-testid="stElementContainer"]:has([data-testid="stPopoverButton"])::before,
-    .st-key-stats-continent-h [data-testid="stExpander"] [data-testid="stElementContainer"]:has([data-testid="stPopoverButton"])::before,
-    .st-key-stats-continent-e [data-testid="stExpander"] [data-testid="stElementContainer"]:has([data-testid="stPopoverButton"])::before {
-        content: counter(stats-report);
-        display: inline-flex; flex: 0 0 1.48rem;
-        width: 1.48rem; height: 1.48rem; border-radius: 50%;
-        align-items: center; justify-content: center;
-        background: var(--stats-line-color); color: #fff;
-        font-size: 0.78rem; font-weight: 800; line-height: 1;
-    }
     .st-key-stats-continent-l [data-testid="stExpander"] [data-testid="stPopoverButton"],
     .st-key-stats-continent-i [data-testid="stExpander"] [data-testid="stPopoverButton"],
     .st-key-stats-continent-c [data-testid="stExpander"] [data-testid="stPopoverButton"],
     .st-key-stats-continent-h [data-testid="stExpander"] [data-testid="stPopoverButton"],
     .st-key-stats-continent-e [data-testid="stExpander"] [data-testid="stPopoverButton"] {
-        min-height: 1.9rem !important; height: auto !important;
-        width: 100% !important; justify-content: flex-start !important;
-        padding: 0.12rem 0.18rem !important;
-        border: 0 !important; border-radius: 0 !important;
-        background: transparent !important; box-shadow: none !important;
-        color: var(--nc-text) !important; font-size: 0.94rem !important;
-        font-weight: 600 !important; text-align: left !important;
+        display: flex !important;
+        width: 100% !important;
+        min-height: 1.9rem !important;
+        height: auto !important;
+        justify-content: flex-start !important;
+        padding: 0.12rem 0.22rem !important;
+        margin: 0 !important;
+        border: 0 !important;
+        border-radius: 0 !important;
+        background: transparent !important;
+        box-shadow: none !important;
+        color: var(--nc-text) !important;
+        font-size: 0.94rem !important;
+        font-weight: 600 !important;
+        text-align: left !important;
         white-space: normal !important;
-    }
-    .st-key-stats-continent-l [data-testid="stExpander"] [data-testid="stPopoverButton"]:hover,
-    .st-key-stats-continent-i [data-testid="stExpander"] [data-testid="stPopoverButton"]:hover,
-    .st-key-stats-continent-c [data-testid="stExpander"] [data-testid="stPopoverButton"]:hover,
-    .st-key-stats-continent-h [data-testid="stExpander"] [data-testid="stPopoverButton"]:hover,
-    .st-key-stats-continent-e [data-testid="stExpander"] [data-testid="stPopoverButton"]:hover {
-        background: rgba(148,163,184,0.08) !important;
     }
     @media(max-width:640px) {
         .st-key-stats-continent-l [data-testid="stExpander"] [data-testid="stPopoverButton"],
