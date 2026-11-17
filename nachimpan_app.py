@@ -2682,18 +2682,18 @@ def _show_retirement_connection_dialog():
                 text-align:left; overflow-wrap:anywhere; color:inherit;
             }}
             .retirement-connection-center {{
-                min-width:76px; display:flex; flex-direction:row;
-                align-items:center; justify-content:center; gap:4px;
+                min-width:42px; display:flex; flex-direction:column;
+                align-items:center; justify-content:center; gap:2px;
                 text-align:center; color:#222; font-size:12px; font-weight:800;
-                white-space:nowrap; padding:0 2px; background:#fff;
+                white-space:nowrap; padding:0 1px; background:transparent;
             }}
             .retirement-connection-center .compass {{
                 display:flex; width:30px; height:30px; align-items:center;
-                justify-content:center; border-radius:50%; background:#159447;
-                color:#fff; font-size:19px; line-height:1;
+                justify-content:center; border-radius:0; background:transparent;
+                color:inherit; font-size:21px; line-height:1;
             }}
             .retirement-connection-center .direction-arrow {{
-                color:#159447; font-size:19px; font-weight:900; line-height:1;
+                color:#222; font-size:17px; font-weight:900; line-height:1;
             }}
             .st-key-retirement-connection-read-list {{
                 background:{_previous_color} !important; color:{_previous_text_color} !important;
@@ -2775,12 +2775,20 @@ def _show_retirement_connection_dialog():
             .retirement-number-circle {{
                 display:inline-flex; flex:0 0 22px; width:22px; height:22px;
                 align-items:center; justify-content:center; border-radius:50%;
-                background:{_previous_color}; border:1.5px solid {_previous_color};
-                color:#fff; font-size:11px; font-weight:850;
+                background:{_previous_color}; border:4.5px solid {_previous_color};
+                box-sizing:border-box; color:#fff; font-size:11px; font-weight:850;
+            }}
+            .retirement-connection-stop .retirement-number-circle {{
+                border:4.5px solid {_previous_color};
+                box-sizing:border-box;
+            }}
+            .retirement-connection-stop.next .retirement-number-circle {{
+                border-color:{_next_color};
             }}
             .retirement-history-title {{ min-width:0; overflow-wrap:anywhere; }}
             .retirement-recommendation-score {{
-                color:inherit; opacity:.78; font-size:11px; margin:0 0 5px 29px;
+                color:inherit; opacity:.82; font-size:11px; line-height:1.25;
+                margin:1px 0 0 0; text-align:left;
             }}
             .st-key-retirement-connection-platform .st-key-retirement-connection-choice-0 [data-testid="stButton"] button,
             .st-key-retirement-connection-platform .st-key-retirement-connection-choice-1 [data-testid="stButton"] button,
@@ -2803,9 +2811,9 @@ def _show_retirement_connection_dialog():
                 .retirement-connection-stop {{ min-height:108px; padding:8px 4px; }}
                 .retirement-connection-stop .stop-main {{ gap:5px; }}
                 .retirement-connection-stop .stop-name {{ font-size:11px; }}
-                .retirement-connection-center {{ min-width:66px; font-size:10px; gap:3px; }}
-                .retirement-connection-center .compass {{ width:25px; height:25px; font-size:16px; }}
-                .retirement-connection-center .direction-arrow {{ font-size:16px; }}
+                .retirement-connection-center {{ min-width:38px; font-size:10px; gap:1px; }}
+                .retirement-connection-center .compass {{ width:25px; height:25px; font-size:18px; }}
+                .retirement-connection-center .direction-arrow {{ font-size:15px; }}
                 .retirement-connection-columns {{ gap:7px; }}
                 .retirement-connection-list {{ padding:8px 6px; }}
                 .retirement-connection-list h4 {{ font-size:12px; }}
@@ -2887,6 +2895,10 @@ def _show_retirement_connection_dialog():
                                         st.session_state["_retirement_explorer_source_id"] = _item["source_id"]
                                         st.session_state["_retirement_connection_open"] = False
                                         st.rerun()
+                                    st.markdown(
+                                        f"<div class='retirement-recommendation-score'>연관성 {_score}%</div>",
+                                        unsafe_allow_html=True,
+                                    )
                             st.markdown(
                                 f"<style>"
                                 f".st-key-retirement-connection-platform div[class*='st-key-retirement_connection_next_{_index}'] button,"
@@ -2894,8 +2906,7 @@ def _show_retirement_connection_dialog():
                                 f"{{color:{_next_text_color}!important;-webkit-text-fill-color:{_next_text_color}!important;"
                                 f"background:transparent!important;background-color:transparent!important;border:0!important;"
                                 f"box-shadow:none!important;text-align:left!important;justify-content:flex-start!important;}}"
-                                f"</style>"
-                                f"<div class='retirement-recommendation-score'>연관성 {_score}%</div>",
+                                f"</style>",
                                 unsafe_allow_html=True,
                             )
                     else:
