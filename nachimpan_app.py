@@ -2316,6 +2316,42 @@ def _load_nachimpan_master():
     except Exception:
         return pd.DataFrame()
 
+def _nachimpan_master_report_maps():
+    """마스터 원장에서 사용 중인 보고서의 source_id·legacy_id 색인을 만든다."""
+    _master = _load_nachimpan_master()
+    _by_source = {}
+    _by_legacy = {}
+    if _master.empty:
+        return _by_source, _by_legacy
+
+    _reports = _master[
+        (_master["resource_type"] == "보고서")
+        & (_master["status"] == "사용")
+    ]
+    for _record in _reports.to_dict("records"):
+        _record = {str(_key): str(_value or "").strip() for _key, _value in _record.items()}
+        _source_id = _record.get("source_id", "")
+        _legacy_id = _record.get("legacy_id", "")
+        if _source_id:
+            _by_source[_source_id] = _record
+        if _legacy_id:
+            _by_legacy[_legacy_id] = _record
+    return _by_source, _by_legacy
+
+
+def _master_report_display(source_id, suffix=""):
+    """보고서 화면 제목은 마스터의 공개번호와 제목만 사용한다."""
+    _by_source, _ = _nachimpan_master_report_maps()
+    _record = _by_source.get(str(source_id or "").strip())
+    if not _record:
+        return ""
+    _number = _record.get("display_label", "")
+    _title = _record.get("title", "")
+    if not _title:
+        return ""
+    _prefix = f"{_number}. " if _number else ""
+    return f"{_prefix}{_title}{suffix}"
+
 
 def _render_master_data_items(_continent_code):
     """마스터 원장의 자료 항목을 클릭 가능한 목차로 표시한다."""
@@ -2416,27 +2452,36 @@ def _show_master_resource_dialog():
 @st.dialog("연결", width="large")
 def _show_retirement_entry_dialog():
     """나침반 최초 클릭에서만 사용하는 연결 탐색 시작 화면."""
+    _by_source, _ = _nachimpan_master_report_maps()
+    _entry_source_ids = [
+        "6050400-01",
+        "6051400-00",
+        "6051300-00",
+    ]
     _entry_reports = [
-        ("3. 노후와 은퇴", "6050400-01"),
-        ("13. 지출 통계 출처 및 산출방법", "6051400-00"),
-        ("12. 과거 가계부의 현재적 보정", "6051300-00"),
+        (_by_source[_source_id], _source_id)
+        for _source_id in _entry_source_ids
+        if _source_id in _by_source
     ]
 
     with st.container(key="retirement-connection-platform", border=True):
         st.markdown("### 어떤 자료부터 살펴볼까요?")
         st.caption("은퇴 후 생활비와 지출 기준을 이해하는 데 도움이 되는 자료입니다.")
 
-        for _index, (_title, _report_id) in enumerate(_entry_reports):
+        if not _entry_reports:
+            st.warning("마스터에서 연결할 보고서를 찾을 수 없습니다.")
+        for _index, (_record, _source_id) in enumerate(_entry_reports):
+            _title = _master_report_display(_source_id)
             if st.button(
                 _title,
-                key=f"retirement_entry_report_{_report_id}",
+                key=f"retirement_entry_report_{_source_id}",
                 use_container_width=True,
                 type="primary" if _index == 0 else "secondary",
             ):
                 st.session_state["_retirement_entry_open"] = False
                 st.session_state["_retirement_connection_open"] = False
-                st.session_state["_retirement_explorer_source_id"] = _report_id
-                st.session_state["_retirement_explorer_history"] = [_report_id]
+                st.session_state["_retirement_explorer_source_id"] = _source_id
+                st.session_state["_retirement_explorer_history"] = [_source_id]
                 st.rerun()
 
         st.divider()
@@ -2451,38 +2496,18 @@ def _show_retirement_entry_dialog():
 
 @st.dialog("보고서", width="large")
 def _show_retirement_report_dialog():
-    """보고서 본문만 보여주는 읽기 화면."""
-    _report_index = [
-        ("2. 소득과 소비의 생애주기", "6050200-00", "R01"),
-        ("2. 결혼과 주거", "6050300-00", "R02"),
-        ("3. 노후와 은퇴", "6050400-01", "R03"),
-        ("4. 주택대출과 원리금 분리", "6050500-01", "R04"),
-        ("5. 동시성과 통시성", "6050600-00", "R05"),
-        ("6. 연령별 임금과 임금지수", "6050700-00", "R06"),
-        ("7. 결혼비용 통계", "6050800-00", "R07"),
-        ("8. 빅5 우리집 이벤트", "6050900-00", "R08"),
-        ("9. 고령층 근로연령 통계", "6051000-00", "R09"),
-        ("10. 대한민국 3대 은퇴 분기점", "6051100-00", "R10"),
-        ("11. 우리 가정 소득곡선 보정", "6051200-00", "R11"),
-        ("12. 과거 가계부의 현재적 보정", "6051300-00", "R12"),
-        ("13. 지출 통계 출처 및 산출방법", "6051400-00", "R13"),
-        ("14. 지역별 부동산 산정 기준", "6051500-00", "R14"),
-        ("15. 소득 기준곡선 산출 근거", "6051600-00", "R15"),
-        ("1. 세대 계승 생애주기 재정곡선", "6051700-00", "R16"),
-        ("17. 여성의 출산·육아와 경력단절", "6051800-00", "R17"),
-        ("18. 은퇴와 수입 단절", "6051900-00", "R18"),
-        ("19. 나의 결혼", "6052000-00", "R19"),
-        ("20. 출산과 육아", "6052100-00", "R20"),
-        ("21. 주택구입", "6052200-00", "R21"),
-        ("22. 자녀 대학", "6052300-00", "R22"),
-        ("23. 자녀 결혼", "6052400-00", "R23"),
-    ]
-    _report_titles = {source_id: title for title, source_id, _ in _report_index}
+    """보고서 본문과 제목을 마스터 원장 기준으로 표시한다."""
     _source_id = st.session_state.get("_retirement_explorer_source_id")
     if not _source_id:
         return
 
-    st.markdown(f"## {_report_titles.get(_source_id, '보고서')}")
+    _by_source, _ = _nachimpan_master_report_maps()
+    _record = _by_source.get(_source_id)
+    if not _record:
+        st.error("현재 보고서가 마스터 원장에 등록되어 있지 않습니다.")
+        return
+
+    st.markdown(f"## {_master_report_display(_source_id)}")
     _render_retirement_explorer_report(_source_id)
     st.markdown('<div class="retirement-connection-rail"></div>', unsafe_allow_html=True)
     with st.container(key="retirement-report-connection-cta"):
@@ -2495,39 +2520,18 @@ def _show_retirement_report_dialog():
 
 @st.dialog("연결", width="large")
 def _show_retirement_connection_dialog():
-    """2호선 녹색 톤의 공통 자료 연결 화면."""
-    _report_index = [
-        ("2. 소득과 소비의 생애주기", "6050200-00", "R01"),
-        ("2. 결혼과 주거", "6050300-00", "R02"),
-        ("3. 노후와 은퇴", "6050400-01", "R03"),
-        ("4. 주택대출과 원리금 분리", "6050500-01", "R04"),
-        ("5. 동시성과 통시성", "6050600-00", "R05"),
-        ("6. 연령별 임금과 임금지수", "6050700-00", "R06"),
-        ("7. 결혼비용 통계", "6050800-00", "R07"),
-        ("8. 빅5 우리집 이벤트", "6050900-00", "R08"),
-        ("9. 고령층 근로연령 통계", "6051000-00", "R09"),
-        ("10. 대한민국 3대 은퇴 분기점", "6051100-00", "R10"),
-        ("11. 우리 가정 소득곡선 보정", "6051200-00", "R11"),
-        ("12. 과거 가계부의 현재적 보정", "6051300-00", "R12"),
-        ("13. 지출 통계 출처 및 산출방법", "6051400-00", "R13"),
-        ("14. 지역별 부동산 산정 기준", "6051500-00", "R14"),
-        ("15. 소득 기준곡선 산출 근거", "6051600-00", "R15"),
-        ("1. 세대 계승 생애주기 재정곡선", "6051700-00", "R16"),
-        ("17. 여성의 출산·육아와 경력단절", "6051800-00", "R17"),
-        ("18. 은퇴와 수입 단절", "6051900-00", "R18"),
-        ("19. 나의 결혼", "6052000-00", "R19"),
-        ("20. 출산과 육아", "6052100-00", "R20"),
-        ("21. 주택구입", "6052200-00", "R21"),
-        ("22. 자녀 대학", "6052300-00", "R22"),
-        ("23. 자녀 결혼", "6052400-00", "R23"),
-    ]
-    _report_titles = {source_id: title for title, source_id, _ in _report_index}
-    _available_by_code = {code: (title, source_id) for title, source_id, code in _report_index}
-    _code_by_source = {source_id: code for title, source_id, code in _report_index}
+    """마스터 원장과 기존 연관성 ID를 함께 사용해 자료 연결 화면을 표시한다."""
+    _by_source, _by_legacy = _nachimpan_master_report_maps()
     _history = list(st.session_state.get("_retirement_explorer_history", []))
     _source_id = st.session_state.get("_retirement_explorer_source_id")
     if not _source_id:
         return
+
+    _current_record = _by_source.get(_source_id)
+    if not _current_record:
+        st.error("현재 보고서가 마스터 원장에 등록되어 있지 않습니다.")
+        return
+
     if not _history:
         _history = [_source_id]
         st.session_state["_retirement_explorer_history"] = list(_history)
@@ -2549,34 +2553,39 @@ def _show_retirement_connection_dialog():
     except Exception:
         _association_records = []
 
-    _current_code = _code_by_source.get(_source_id)
+    # 연관성 데이터의 R01~R23은 마스터 legacy_id와 연결한다.
+    _current_legacy_id = _current_record.get("legacy_id", "")
     _related_rows = []
-    if _current_code:
+    if _current_legacy_id:
         for _row in _association_records:
-            if _row.get("id_a") == _current_code:
-                _other_code = _row.get("id_b")
-            elif _row.get("id_b") == _current_code:
-                _other_code = _row.get("id_a")
+            if _row.get("id_a") == _current_legacy_id:
+                _other_legacy_id = _row.get("id_b")
+            elif _row.get("id_b") == _current_legacy_id:
+                _other_legacy_id = _row.get("id_a")
             else:
                 continue
-            if _other_code not in _available_by_code:
+
+            _other_record = _by_legacy.get(_other_legacy_id)
+            if not _other_record:
                 continue
-            _other_source = _available_by_code[_other_code][1]
-            if _other_source == _source_id or _other_source in _history:
+            _other_source_id = _other_record.get("source_id", "")
+            if not _other_source_id or _other_source_id == _source_id or _other_source_id in _history:
                 continue
+
             _related_rows.append({
-                "code": _other_code,
-                "title": _available_by_code[_other_code][0],
-                "source_id": _other_source,
+                "legacy_id": _other_legacy_id,
+                "display_label": _other_record.get("display_label", ""),
+                "title": _other_record.get("title", ""),
+                "source_id": _other_source_id,
                 "raw_score": int(_row.get("score", 0) or 0),
                 "reason": _row.get("reason") or _row.get("relation") or "주제상 연결되는 자료입니다.",
             })
     _related_rows.sort(key=lambda item: (-item["raw_score"], item["title"]))
 
     with st.container(key="retirement-connection-platform", border=True):
-        # 이전 역 → 현재 연결 위치를 한 줄로 배치
-        _previous_number = int(_current_code.replace("R", "")) if _current_code else ""
-        _previous_title = _report_titles.get(_source_id, "보고서").split(". ", 1)[-1]
+        # 연결을 누른 보고서는 이전 역으로 표시한다.
+        _previous_number = _current_record.get("display_label", "")
+        _previous_title = _current_record.get("title", "보고서")
         _route_previous, _route_arrow, _route_current = st.columns([1.15, 0.18, 0.85], gap="small", vertical_alignment="center")
         with _route_previous:
             st.markdown(
@@ -2596,7 +2605,7 @@ def _show_retirement_connection_dialog():
                 unsafe_allow_html=True,
             )
 
-        # 현재 위치에서 세 갈래로 분기하는 다음 역
+        # 현재 위치에서 최대 세 갈래의 다음 역을 제안한다.
         if _related_rows:
             _visible_rows = _related_rows[:3]
             st.markdown("<div class='retirement-route-branch-heading'>다음 역 선택</div>", unsafe_allow_html=True)
@@ -2616,10 +2625,11 @@ def _show_retirement_connection_dialog():
             with _branch_columns[1]:
                 for _index, _item in enumerate(_visible_rows):
                     _score = max(0, min(100, int(_item["raw_score"])))
-                    _report_number = int(_item["code"].replace("R", ""))
-                    _report_title = _item["title"].split(". ", 1)[-1].strip()
+                    _report_number = _item["display_label"]
+                    _report_title = _item["title"]
+                    _button_title = f"{_report_number}. {_report_title}" if _report_number else _report_title
                     if st.button(
-                        f"**{_report_number}** {_report_title} ({_score}%)",
+                        f"**{_button_title}** ({_score}%)",
                         key=f"retirement_connection_next_{_index}",
                         use_container_width=True,
                         type="primary",
