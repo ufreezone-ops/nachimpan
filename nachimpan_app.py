@@ -2611,7 +2611,11 @@ def _show_retirement_connection_dialog():
         if sid in _by_source
     ]
     _previous_record = _current_record
-    _next_record = _related_rows[0] if _related_rows else None
+    # 상단 다음 보고서도 추천 목록과 동일한 원본 레코드에서 색상·번호를 가져온다.
+    _next_record = (
+        _by_source.get(_related_rows[0]["source_id"])
+        if _related_rows else None
+    )
 
     def _continent_color(_record):
         _color = str((_record or {}).get("continent_color_hex", "")).strip()
@@ -2803,6 +2807,20 @@ def _show_retirement_connection_dialog():
                 background-color:transparent !important; border:0 !important;
                 box-shadow:none !important; color:#222 !important;
                 font-size:12px !important; font-weight:650 !important;
+            }}
+            .st-key-retirement-connection-platform .st-key-retirement-connection-choice-0 [data-testid="stButton"] button > div,
+            .st-key-retirement-connection-platform .st-key-retirement-connection-choice-1 [data-testid="stButton"] button > div,
+            .st-key-retirement-connection-platform .st-key-retirement-connection-choice-2 [data-testid="stButton"] button > div {{
+                width:100% !important; align-items:flex-start !important;
+                justify-content:flex-start !important; text-align:left !important;
+            }}
+            .st-key-retirement-connection-platform .st-key-retirement-connection-choice-0 [data-testid="stButton"] [data-testid="stMarkdownContainer"],
+            .st-key-retirement-connection-platform .st-key-retirement-connection-choice-1 [data-testid="stButton"] [data-testid="stMarkdownContainer"],
+            .st-key-retirement-connection-platform .st-key-retirement-connection-choice-2 [data-testid="stButton"] [data-testid="stMarkdownContainer"],
+            .st-key-retirement-connection-platform .st-key-retirement-connection-choice-0 [data-testid="stButton"] p,
+            .st-key-retirement-connection-platform .st-key-retirement-connection-choice-1 [data-testid="stButton"] p,
+            .st-key-retirement-connection-platform .st-key-retirement-connection-choice-2 [data-testid="stButton"] p {{
+                width:100% !important; text-align:left !important;
             }}
             .st-key-retirement-connection-platform .st-key-retirement-connection-choice-0 [data-testid="stButton"] button:hover,
             .st-key-retirement-connection-platform .st-key-retirement-connection-choice-1 [data-testid="stButton"] button:hover,
