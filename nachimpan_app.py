@@ -2725,11 +2725,19 @@ def _show_retirement_connection_dialog():
                 display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-top:4px;
             }}
             /* 하단 좌우 패널과 각 추천 항목의 번호·제목을 모바일에서도 가로 정렬 */
-            .st-key-retirement-connection-bottom [data-testid="stHorizontalBlock"] {{
-                flex-wrap:nowrap !important; align-items:center !important;
+            /* 하단 최상위 행: 좌우 패널을 정확히 1:1로 배분 */
+            .st-key-retirement-connection-bottom > div > [data-testid="stHorizontalBlock"] {{
+                display:flex !important; flex-direction:row !important;
+                flex-wrap:nowrap !important; align-items:stretch !important;
+                width:100% !important; gap:8px !important;
+            }}
+            .st-key-retirement-connection-bottom > div > [data-testid="stHorizontalBlock"] > [data-testid="column"] {{
+                flex:1 1 0% !important; width:0 !important;
+                max-width:50% !important; min-width:0 !important;
+                box-sizing:border-box !important;
             }}
             .st-key-retirement-connection-bottom [data-testid="column"] {{
-                min-width:0 !important;
+                min-width:0 !important; box-sizing:border-box !important;
             }}
             .st-key-retirement-connection-bottom .st-key-retirement-connection-choice-0 [data-testid="stHorizontalBlock"],
             .st-key-retirement-connection-bottom .st-key-retirement-connection-choice-1 [data-testid="stHorizontalBlock"],
@@ -2742,7 +2750,7 @@ def _show_retirement_connection_dialog():
                 flex:0 0 27px !important; width:27px !important; min-width:27px !important;
             }}
             .st-key-retirement-connection-bottom .st-key-retirement-connection-choice-0 [data-testid="column"]:last-child,
-            .st-key-retirement-connection-bottom .st-key-retirement-connection-choice-1 [data-testid="stHorizontalBlock"] [data-testid="column"]:last-child,
+            .st-key-retirement-connection-bottom .st-key-retirement-connection-choice-1 [data-testid="column"]:last-child,
             .st-key-retirement-connection-bottom .st-key-retirement-connection-choice-2 [data-testid="column"]:last-child {{
                 flex:1 1 0 !important; width:0 !important; min-width:0 !important;
             }}
