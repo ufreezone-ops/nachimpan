@@ -2304,6 +2304,91 @@ def _render_retirement_explorer_report(source_id):
         st.info("선택한 자료를 찾을 수 없습니다.")
 
 
+#--------------------------------------------------------
+# 6.06.00 | 마스터 원장 기반 자료 팝업
+#--------------------------------------------------------
+def _load_nachimpan_master():
+    _path = Path(__file__).resolve().parent / "data" / "연관성" / "나침반_자료분류_마스터.csv"
+    if not _path.exists():
+        return pd.DataFrame()
+    try:
+        return pd.read_csv(_path, dtype=str).fillna("")
+    except Exception:
+        return pd.DataFrame()
+
+
+def _render_master_data_items(_continent_code):
+    """마스터 원장의 자료 항목을 클릭 가능한 목차로 표시한다."""
+    _master = _load_nachimpan_master()
+    if _master.empty:
+        st.info("자료 마스터를 불러오지 못했습니다.")
+        return
+    _items = _master[
+        (_master["continent_code"] == _continent_code)
+        & (_master["resource_type"] != "보고서")
+        & (_master["status"] == "사용")
+    ].sort_values(["public_number", "resource_id"])
+    for _, _item in _items.iterrows():
+        _resource_id = str(_item.get("resource_id", "")).strip()
+        _label = str(_item.get("display_label", "")).strip()
+        _title = str(_item.get("title", "")).strip()
+        _kind = str(_item.get("resource_type", "")).strip()
+        if st.button(f"{_label}. {_title}  ·  {_kind}", key=f"master_resource_{_resource_id}", use_container_width=True):
+            st.session_state["_catalog_resource_id"] = _resource_id
+            st.session_state["_catalog_resource_open"] = True
+            st.rerun()
+
+
+@st.dialog("자료 보기", width="large")
+def _show_master_resource_dialog():
+    _resource_id = st.session_state.get("_catalog_resource_id", "")
+    _master = _load_nachimpan_master()
+    _matches = _master[_master["resource_id"] == _resource_id] if not _master.empty else pd.DataFrame()
+    if _matches.empty:
+        st.error("선택한 자료를 마스터 원장에서 찾을 수 없습니다.")
+        return
+    _item = _matches.iloc[0]
+    _relative_path = str(_item.get("file_path", "")).strip()
+    _format = str(_item.get("file_format", "")).strip().upper()
+    st.markdown(f"### {_item.get('title', '자료')}")
+    st.caption(f"{_item.get('continent', '')} · {_item.get('resource_type', '')} · {_format}")
+    if not _relative_path:
+        st.info("앱 내부 보고서 본문은 다음 단계에서 동일한 팝업 구조로 통합합니다.")
+    else:
+        _file_path = Path(__file__).resolve().parent / _relative_path
+        if not _file_path.exists():
+            st.error(f"자료 파일을 찾을 수 없습니다: {_relative_path}")
+        elif _format == "CSV":
+            try:
+                try:
+                    _df = pd.read_csv(_file_path, encoding="utf-8-sig")
+                except UnicodeDecodeError:
+                    _df = pd.read_csv(_file_path, encoding="cp949")
+                st.caption(f"{len(_df):,}행 · {len(_df.columns):,}개 변수")
+                st.dataframe(_df.head(200), use_container_width=True, hide_index=True)
+                st.download_button("CSV 원본 내려받기", _file_path.read_bytes(), file_name=_file_path.name, mime="text/csv", use_container_width=True)
+            except Exception as _error:
+                st.error(f"CSV 읽기 오류: {_error}")
+        elif _format in ("XLSX", "XLS"):
+            try:
+                _excel = pd.ExcelFile(_file_path)
+                for _sheet in _excel.sheet_names:
+                    st.markdown(f"**{_sheet}**")
+                    _df = pd.read_excel(_excel, sheet_name=_sheet)
+                    st.dataframe(_df.head(200), use_container_width=True, hide_index=True)
+                    st.caption(f"{len(_df):,}행 · {len(_df.columns):,}개 변수")
+                st.download_button("엑셀 원본 내려받기", _file_path.read_bytes(), file_name=_file_path.name, mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", use_container_width=True)
+            except Exception as _error:
+                st.error(f"엑셀 읽기 오류: {_error}")
+        else:
+            st.info(f"미리보기를 지원하지 않는 파일 형식입니다: {_format}")
+    if st.button("닫기", key="master_resource_dialog_close", use_container_width=True):
+        st.session_state["_catalog_resource_open"] = False
+        st.session_state.pop("_catalog_resource_id", None)
+        st.rerun()
+
+
+
 @st.dialog("연결", width="large")
 def _show_retirement_entry_dialog():
     """나침반 최초 클릭에서만 사용하는 연결 탐색 시작 화면."""
@@ -6987,11 +7072,7 @@ OECD 「Pensions at a Glance 2025: Korea」는 2024년 한국의 실질 노동�
     """)
 
         #--------------------------------------------------------
-    st.markdown("**함께 보는 기준·원자료**")
-    st.markdown(f"""
-- {_display_by_legacy.get("D05", "7")}. 국민이전계정 연령별 누적 노동잉여
-- {_display_by_legacy.get("D13/D14", "8")}. 2024년 국민이전계정 생애주기적자계정 원자료
-        """)
+    _render_master_data_items("L")
 
     #--------------------------------------------------------
     # 2단원. 소득·노동·사업
@@ -7252,12 +7333,7 @@ OECD 「Pensions at a Glance 2025: Korea」는 2024년 한국의 실질 노동�
     """)
 
         #--------------------------------------------------------
-    st.markdown("**함께 보는 기준·원자료**")
-    st.markdown(f"""
-- {_display_by_legacy.get("D06", "5")}. 연령별 임금근로일자리 중위소득
-- {_display_by_legacy.get("D07", "6")}. 연령별 임금근로일자리 평균보수
-- {_display_by_legacy.get("D08", "7")}. 소비자물가지수·임금지수 (심화학습 연계)
-        """)
+    _render_master_data_items("I")
 
     #--------------------------------------------------------
     # 3단원. 소비·지출
@@ -7321,12 +7397,7 @@ OECD 「Pensions at a Glance 2025: Korea」는 2024년 한국의 실질 노동�
     """)
 
         #--------------------------------------------------------
-    st.markdown("**함께 보는 기준·원자료**")
-    st.markdown(f"""
-- {_display_by_legacy.get("D03", "3")}. 가계동향조사 연령·가구원 수별 가계지출
-- {_display_by_legacy.get("D04", "4")}. 가계동향조사 가중중위값
-- {_display_by_legacy.get("D12", "5")}. 2024년 가계동향조사 MDIS 원자료
-        """)
+    _render_master_data_items("C")
 
     #--------------------------------------------------------
     # 4단원. 주거·자산
@@ -7448,12 +7519,7 @@ OECD 「Pensions at a Glance 2025: Korea」는 2024년 한국의 실질 노동�
     """)
 
         #--------------------------------------------------------
-    st.markdown("**함께 보는 기준·원자료**")
-    st.markdown(f"""
-- {_display_by_legacy.get("D01", "5")}. KB 연간 주택가격지수(17개 시도)
-- {_display_by_legacy.get("D09", "6")}. 생애최초 주택 구입자금 구성
-- {_display_by_legacy.get("D10", "7")}. 생애최초 주택 마련 연령
-        """)
+    _render_master_data_items("H")
 
     #--------------------------------------------------------
     # 5단원. 생애사건·빅5 이벤트
@@ -7801,11 +7867,10 @@ OECD 「Pensions at a Glance 2025: Korea」는 2024년 한국의 실질 노동�
 
 
         #--------------------------------------------------------
-    st.markdown("**함께 보는 기준·원자료**")
-    st.markdown(f"""
-- {_display_by_legacy.get("D02", "8")}. 대학등록금·대학생 생활비 기준
-- {_display_by_legacy.get("D11", "9")}. 신혼부부 결혼비용 자금원천
-        """)
+    _render_master_data_items("E")
+
+    if st.session_state.get("_catalog_resource_open", False):
+        _show_master_resource_dialog()
 
     # 6.06.25.00 | 24. 나침반 콘텐츠 키워드 지도
     #--------------------------------------------------------
