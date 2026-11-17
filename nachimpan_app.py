@@ -2673,6 +2673,10 @@ def _show_retirement_connection_dialog():
                 .retirement-connection-list { padding:8px 6px; }
                 .retirement-connection-list h4 { font-size:12px; }
             }
+            .st-key-retirement-connection-platform [data-testid="stButton"] button[kind="primary"] {
+                background:#E87524 !important; border-color:#E87524 !important;
+                color:#fff !important;
+            }
             </style>
             """,
             unsafe_allow_html=True,
@@ -2696,48 +2700,48 @@ def _show_retirement_connection_dialog():
 
         _left, _right = st.columns(2, gap="small")
         with _left:
-            st.markdown("<div class='retirement-connection-list'><h4>← 읽은 보고서</h4>", unsafe_allow_html=True)
-            if _past_records:
-                for _record in _past_records:
-                    _number = _record.get("display_label", "")
-                    _title = _record.get("title", "보고서")
-                    st.markdown(
-                        f"<div class='retirement-history-item'>"
-                        f"<span class='retirement-number-circle'>{_number}</span>"
-                        f"<span class='retirement-history-title'>{_title}</span></div>",
-                        unsafe_allow_html=True,
-                    )
-            else:
-                st.caption("아직 이전에 읽은 보고서가 없습니다.")
-            st.markdown("</div>", unsafe_allow_html=True)
+            with st.container(border=True):
+                st.markdown("<h4 style='color:#087D3D;font-size:14px;margin:0 0 9px;'>← 읽은 보고서</h4>", unsafe_allow_html=True)
+                if _past_records:
+                    for _record in _past_records:
+                        _number = _record.get("display_label", "")
+                        _title = _record.get("title", "보고서")
+                        st.markdown(
+                            f"<div class='retirement-history-item'>"
+                            f"<span class='retirement-number-circle'>{_number}</span>"
+                            f"<span class='retirement-history-title'>{_title}</span></div>",
+                            unsafe_allow_html=True,
+                        )
+                else:
+                    st.caption("아직 이전에 읽은 보고서가 없습니다.")
 
         with _right:
-            st.markdown("<div class='retirement-connection-list'><h4>다음 추천 보고서 →</h4>", unsafe_allow_html=True)
-            if _related_rows:
-                for _index, _item in enumerate(_related_rows[:3]):
-                    _number = _item.get("display_label", "")
-                    _title = _item.get("title", "보고서")
-                    _score = max(0, min(100, int(_item["raw_score"])))
-                    st.markdown(
-                        f"<div class='retirement-history-item'>"
-                        f"<span class='retirement-number-circle'>{_number}</span>"
-                        f"<span class='retirement-history-title'>{_title}</span></div>"
-                        f"<div class='retirement-recommendation-score'>연관성 {_score}%</div>",
-                        unsafe_allow_html=True,
-                    )
-                    if st.button(
-                        f"이 보고서 연결하기",
-                        key=f"retirement_connection_next_{_index}",
-                        use_container_width=True,
-                        type="primary",
-                    ):
-                        st.session_state["_retirement_explorer_history"] = _history + [_item["source_id"]]
-                        st.session_state["_retirement_explorer_source_id"] = _item["source_id"]
-                        st.session_state["_retirement_connection_open"] = False
-                        st.rerun()
-            else:
-                st.caption("현재 보고서에서 이어지는 추천 자료가 없습니다.")
-            st.markdown("</div>", unsafe_allow_html=True)
+            with st.container(border=True):
+                st.markdown("<h4 style='color:#087D3D;font-size:14px;margin:0 0 9px;'>다음 추천 보고서 →</h4>", unsafe_allow_html=True)
+                if _related_rows:
+                    for _index, _item in enumerate(_related_rows[:3]):
+                        _number = _item.get("display_label", "")
+                        _title = _item.get("title", "보고서")
+                        _score = max(0, min(100, int(_item["raw_score"])))
+                        st.markdown(
+                            f"<div class='retirement-history-item'>"
+                            f"<span class='retirement-number-circle'>{_number}</span>"
+                            f"<span class='retirement-history-title'>{_title}</span></div>"
+                            f"<div class='retirement-recommendation-score'>연관성 {_score}%</div>",
+                            unsafe_allow_html=True,
+                        )
+                        if st.button(
+                            "이 보고서 연결하기",
+                            key=f"retirement_connection_next_{_index}",
+                            use_container_width=True,
+                            type="primary",
+                        ):
+                            st.session_state["_retirement_explorer_history"] = _history + [_item["source_id"]]
+                            st.session_state["_retirement_explorer_source_id"] = _item["source_id"]
+                            st.session_state["_retirement_connection_open"] = False
+                            st.rerun()
+                else:
+                    st.caption("현재 보고서에서 이어지는 추천 자료가 없습니다.")
 
         _close_spacer, _close_col = st.columns([7, 1])
         with _close_col:
