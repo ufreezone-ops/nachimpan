@@ -9927,3 +9927,40 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
+
+
+# 연결창 우측 추천 보고서: 좌측 읽은 보고서와 타이포그래피·장식 최종 통일
+st.markdown("""
+<style>
+.st-key-retirement-connection-bottom .st-key-retirement-connection-choice-0 [data-testid="stButton"] button,
+.st-key-retirement-connection-bottom .st-key-retirement-connection-choice-1 [data-testid="stButton"] button,
+.st-key-retirement-connection-bottom .st-key-retirement-connection-choice-2 [data-testid="stButton"] button,
+div[class*="st-key-retirement_connection_next_"] button {
+    font-size:12px !important;
+    line-height:1.4 !important;
+    font-weight:500 !important;
+    text-decoration:none !important;
+    border-bottom:0 !important;
+    box-shadow:none !important;
+}
+.st-key-retirement-connection-bottom .st-key-retirement-connection-choice-0 [data-testid="stButton"] button *,
+.st-key-retirement-connection-bottom .st-key-retirement-connection-choice-1 [data-testid="stButton"] button *,
+.st-key-retirement-connection-bottom .st-key-retirement-connection-choice-2 [data-testid="stButton"] button *,
+div[class*="st-key-retirement_connection_next_"] button * {
+    font-size:12px !important;
+    line-height:1.4 !important;
+    text-decoration:none !important;
+    border-bottom:0 !important;
+}
+.st-key-retirement-connection-bottom .st-key-retirement-connection-choice-0 [data-testid="stButton"] button p,
+.st-key-retirement-connection-bottom .st-key-retirement-connection-choice-1 [data-testid="stButton"] button p,
+.st-key-retirement-connection-bottom .st-key-retirement-connection-choice-2 [data-testid="stButton"] button p,
+div[class*="st-key-retirement_connection_next_"] button p {
+    font-size:12px !important;
+    line-height:1.4 !important;
+    margin:0 !important;
+    text-align:left !important;
+    text-decoration:none !important;
+}
+</style>
+""", unsafe_allow_html=True)
