@@ -6825,9 +6825,9 @@ elif selected_page == "통계":
                     def _show_nta_cumulative_reports():
                         st.caption("이 차트의 해석과 산출 근거를 함께 살펴볼 수 있는 자료입니다.")
                         _nta_cumulative_reports = [
-                            ("1. 소득과 소비의 생애주기", "6050200-00"),
-                            ("11. 우리 가정 소득곡선 보정", "6051200-00"),
-                            ("13. 지출 통계 출처 및 산출방법", "6051400-00"),
+                            (f"{_stats_label('6050200-00', '2')}. 소득과 소비의 생애주기", "6050200-00"),
+                            (f"{_stats_label('6051200-00', '2')}. 우리 가정 소득곡선 보정", "6051200-00"),
+                            (f"{_stats_label('6051400-00', '1')}. 지출 통계 출처 및 산출방법", "6051400-00"),
                         ]
                         for _report_title, _report_id in _nta_cumulative_reports:
                             if st.button(
@@ -7872,7 +7872,7 @@ OECD 「Pensions at a Glance 2025: Korea」는 2024년 한국의 실질 노동�
     # 6.06.25.00 | 24. 나침반 콘텐츠 키워드 지도
     #--------------------------------------------------------
     st.markdown('<div id="stats-anchor-keyword-map" style="scroll-margin-top: 150px;"></div>', unsafe_allow_html=True)
-    with st.expander("부록. 나침반 콘텐츠 키워드 지도", expanded=True):
+    with st.expander("부록. 나침반 콘텐츠 키워드 지도", expanded=False):
         st.markdown("""
 **나침반에 담긴 지식은 어떤 단어들로 연결될까요?**
 
