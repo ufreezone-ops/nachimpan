@@ -2673,9 +2673,13 @@ def _show_retirement_connection_dialog():
             .retirement-connection-stop.next .retirement-number-circle {{
                 color:{_next_color};
             }}
+            .retirement-connection-stop .stop-main {{
+                display:flex; flex-direction:row; align-items:center;
+                justify-content:center; gap:8px; width:100%; min-width:0;
+            }}
             .retirement-connection-stop .stop-name {{
-                display:block; font-size:13px; font-weight:800;
-                overflow-wrap:anywhere; color:inherit;
+                display:block; min-width:0; font-size:13px; font-weight:800;
+                text-align:left; overflow-wrap:anywhere; color:inherit;
             }}
             .retirement-connection-center {{
                 min-width:76px; display:flex; flex-direction:row;
@@ -2784,6 +2788,7 @@ def _show_retirement_connection_dialog():
             @media (max-width:480px) {{
                 .retirement-connection-top {{ gap:5px; }}
                 .retirement-connection-stop {{ min-height:108px; padding:8px 4px; }}
+                .retirement-connection-stop .stop-main {{ gap:5px; }}
                 .retirement-connection-stop .stop-name {{ font-size:11px; }}
                 .retirement-connection-center {{ min-width:66px; font-size:10px; gap:3px; }}
                 .retirement-connection-center .compass {{ width:25px; height:25px; font-size:16px; }}
@@ -2809,11 +2814,11 @@ def _show_retirement_connection_dialog():
             f"<div class='retirement-connection-top'>"
             f"<div class='retirement-connection-stop previous'>"
             f"<span class='stop-caption'>이전 보고서</span>"
-            f"{_previous_number_html}<span class='stop-name'>{_previous_title}</span></div>"
+            f"<div class='stop-main'>{_previous_number_html}<span class='stop-name'>{_previous_title}</span></div></div>"
             f"<div class='retirement-connection-center'><span class='compass'>🧭</span><span>연결</span><span class='direction-arrow'>→</span></div>"
             f"<div class='retirement-connection-stop next'>"
             f"<span class='stop-caption'>다음 보고서</span>"
-            f"{_next_number_html}<span class='stop-name'>{_next_title}</span></div>"
+            f"<div class='stop-main'>{_next_number_html}<span class='stop-name'>{_next_title}</span></div></div>"
             f"</div>",
             unsafe_allow_html=True,
         )
