@@ -2625,6 +2625,9 @@ def _show_retirement_connection_dialog():
             .retirement-connection-stop .stop-caption {
                 display:block; font-size:11px; color:#4B8061; margin-bottom:5px;
             }
+            .retirement-connection-stop .retirement-number-circle {
+                margin:0 auto 5px; width:21px; height:21px; font-size:11px;
+            }
             .retirement-connection-stop .stop-name {
                 display:block; font-size:13px; font-weight:700;
                 overflow-wrap:anywhere;
@@ -2682,17 +2685,22 @@ def _show_retirement_connection_dialog():
             unsafe_allow_html=True,
         )
 
-        _previous_title = _past_records[0].get("title", "이전 보고서") if _past_records else "처음 방문"
+        _previous_record = _past_records[0] if _past_records else None
+        _previous_title = _previous_record.get("title", "이전 보고서") if _previous_record else "처음 방문"
+        _previous_number = _previous_record.get("display_label", "") if _previous_record else ""
         _next_title = _next_record.get("title", "추천 자료 없음") if _next_record else "추천 자료 없음"
+        _next_number = _next_record.get("display_label", "") if _next_record else ""
+        _previous_number_html = f"<span class='retirement-number-circle'>{_previous_number}</span>" if _previous_number else ""
+        _next_number_html = f"<span class='retirement-number-circle'>{_next_number}</span>" if _next_number else ""
         st.markdown(
             f"<div class='retirement-connection-top'>"
             f"<div class='retirement-connection-stop'>"
             f"<span class='stop-caption'>이전 보고서</span>"
-            f"<span class='stop-name'>{_previous_title}</span></div>"
+            f"{_previous_number_html}<span class='stop-name'>{_previous_title}</span></div>"
             f"<div class='retirement-connection-center'><span class='compass'>🧭</span>연결</div>"
             f"<div class='retirement-connection-stop'>"
             f"<span class='stop-caption'>다음 보고서</span>"
-            f"<span class='stop-name'>{_next_title}</span></div>"
+            f"{_next_number_html}<span class='stop-name'>{_next_title}</span></div>"
             f"</div>",
             unsafe_allow_html=True,
         )
