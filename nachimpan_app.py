@@ -2971,7 +2971,7 @@ def _show_retirement_connection_dialog():
             with _right:
                 with st.container(key="retirement-connection-recommend-list", border=True):
                     st.markdown("<h4 style='font-size:14px;margin:0 0 9px;'>다음 추천 보고서 →</h4>", unsafe_allow_html=True)
-                    if _related_rows:
+                    if len(_related_rows) > 1:
                         for _index, _item in enumerate(_related_rows[1:3]):
                             _number = _item.get("display_label", "")
                             _title = _item.get("title", "보고서")
