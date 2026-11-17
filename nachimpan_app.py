@@ -2335,12 +2335,32 @@ def _render_master_data_items(_continent_code):
         _title = str(_item.get("title", "")).strip()
         _kind = str(_item.get("resource_type", "")).strip()
         _display = f"{_label}. {_title}" if _label else _title
-        with st.popover(_display, key=f"master_resource_{_resource_id}", type="tertiary", width="content"):
+        # 보고서와 동일하게 제목을 누르면 바로 팝업 안에서 자료를 보여준다.
+        with st.popover(_display, key=f"master_resource_{_resource_id}", type="tertiary", width="large"):
+            st.markdown(f"### {_title}")
             st.caption(f"통계 원자료 · {_kind}")
-            if st.button("자료 열기", key=f"open_master_resource_{_resource_id}", use_container_width=True):
-                st.session_state["_catalog_resource_id"] = _resource_id
-                st.session_state["_catalog_resource_open"] = True
-                st.rerun()
+            _relative_path = str(_item.get("file_path", "")).strip()
+            _format = str(_item.get("file_format", "")).strip().upper()
+            _file_path = Path(__file__).resolve().parent / _relative_path if _relative_path else None
+            if _file_path is None or not _file_path.exists():
+                st.error("자료 파일을 찾을 수 없습니다.")
+            elif _format == "CSV":
+                try:
+                    try:
+                        _df = pd.read_csv(_file_path, encoding="utf-8-sig")
+                    except UnicodeDecodeError:
+                        _df = pd.read_csv(_file_path, encoding="cp949")
+                    st.caption(f"{len(_df):,}행 · {len(_df.columns):,}개 변수")
+                    st.dataframe(_df.head(200), use_container_width=True, hide_index=True)
+                    st.download_button(
+                        "CSV 원본 내려받기", _file_path.read_bytes(),
+                        file_name=_file_path.name, mime="text/csv",
+                        key=f"download_master_{_resource_id}", use_container_width=True,
+                    )
+                except Exception as _error:
+                    st.error(f"CSV 읽기 오류: {_error}")
+            else:
+                st.info(f"미리보기를 지원하지 않는 파일 형식입니다: {_format}")
 
 
 @st.dialog("자료 보기", width="large")
@@ -6717,6 +6737,41 @@ elif selected_page == "통계":
             font-size: 0.88rem !important;
         }
     }
+
+    /* 제목 hover·클릭·키보드 포커스는 나침반의 녹색 계열로 통일 */
+    .st-key-stats-continent-l [data-testid="stPopoverButton"]:hover,
+    .st-key-stats-continent-i [data-testid="stPopoverButton"]:hover,
+    .st-key-stats-continent-c [data-testid="stPopoverButton"]:hover,
+    .st-key-stats-continent-h [data-testid="stPopoverButton"]:hover,
+    .st-key-stats-continent-e [data-testid="stPopoverButton"]:hover {
+        background: rgba(82, 123, 96, 0.18) !important;
+        color: var(--nc-text) !important;
+        border-color: transparent !important;
+    }
+    .st-key-stats-continent-l [data-testid="stPopoverButton"]:focus,
+    .st-key-stats-continent-i [data-testid="stPopoverButton"]:focus,
+    .st-key-stats-continent-c [data-testid="stPopoverButton"]:focus,
+    .st-key-stats-continent-h [data-testid="stPopoverButton"]:focus,
+    .st-key-stats-continent-e [data-testid="stPopoverButton"]:focus,
+    .st-key-stats-continent-l [data-testid="stPopoverButton"]:active,
+    .st-key-stats-continent-i [data-testid="stPopoverButton"]:active,
+    .st-key-stats-continent-c [data-testid="stPopoverButton"]:active,
+    .st-key-stats-continent-h [data-testid="stPopoverButton"]:active,
+    .st-key-stats-continent-e [data-testid="stPopoverButton"]:active {
+        background: rgba(82, 123, 96, 0.24) !important;
+        color: var(--nc-text) !important;
+        border-color: transparent !important;
+        box-shadow: none !important;
+    }
+    .st-key-stats-continent-l [data-testid="stPopoverButton"]:focus-visible,
+    .st-key-stats-continent-i [data-testid="stPopoverButton"]:focus-visible,
+    .st-key-stats-continent-c [data-testid="stPopoverButton"]:focus-visible,
+    .st-key-stats-continent-h [data-testid="stPopoverButton"]:focus-visible,
+    .st-key-stats-continent-e [data-testid="stPopoverButton"]:focus-visible {
+        outline: 2px solid #527B60 !important;
+        outline-offset: 2px !important;
+    }
+
     </style>
     """, unsafe_allow_html=True)
 
