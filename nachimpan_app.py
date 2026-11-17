@@ -2929,34 +2929,27 @@ def _show_retirement_connection_dialog():
                                         unsafe_allow_html=True,
                                     )
                                 with _title_col:
-                                    if st.button(
-                                        _title,
-                                        key=f"retirement_connection_next_{_index}",
-                                        use_container_width=True,
-                                        type="secondary",
-                                    ):
-                                        st.session_state["_retirement_explorer_history"] = _history + (
-                                            [] if _history and _history[-1] == _item["source_id"]
-                                            else [_item["source_id"]]
-                                        )
-                                        st.session_state["_retirement_explorer_source_id"] = _item["source_id"]
-                                        st.session_state["_retirement_connection_open"] = False
-                                        st.rerun()
-                            st.markdown(
-                                f"<style>"
-                                f".st-key-retirement-connection-platform div[class*='st-key-retirement_connection_next_{_index}'] button,"
-                                f".st-key-retirement-connection-platform div[class*='st-key-retirement_connection_next_{_index}'] button *"
-                                f"{{color:{_next_text_color}!important;-webkit-text-fill-color:{_next_text_color}!important;"
-                                f"background:transparent!important;background-color:transparent!important;border:0!important;"
-                                f"box-shadow:none!important;text-align:left!important;}}"
-                                f".st-key-retirement-connection-platform div[class*='st-key-retirement_connection_next_{_index}'] button::after"
-                                f"{{content:'연관성 {_score}%';display:block;align-self:flex-start;"
-                                f"margin:1px 0 0 0;color:{_next_text_color}!important;"
-                                f"-webkit-text-fill-color:{_next_text_color}!important;"
-                                f"font-size:11px!important;font-weight:500!important;line-height:1.25!important;}}"
-                                f"</style>",
-                                unsafe_allow_html=True,
-                            )
+                                    _button_col, _score_col = st.columns([1, 0.42], gap="small")
+                                    with _button_col:
+                                        if st.button(
+                                            _title,
+                                            key=f"retirement_connection_next_{_index}",
+                                            use_container_width=True,
+                                            type="secondary",
+                                        ):
+                                            st.session_state["_retirement_explorer_history"] = _history + (
+                                                [] if _history and _history[-1] == _item["source_id"]
+                                                else [_item["source_id"]]
+                                            )
+                                            st.session_state["_retirement_explorer_source_id"] = _item["source_id"]
+                                            st.session_state["_retirement_connection_open"] = False
+                                            st.rerun()
+                                    with _score_col:
+                                        with st.container(key=f"retirement-connection-score-{_index}"):
+                                            st.markdown(
+                                                f"<div class='retirement-connection-score'>연관성 {_score}%</div>",
+                                                unsafe_allow_html=True,
+                                            )
                     else:
                         st.caption("현재 보고서에서 이어지는 추천 자료가 없습니다.")
 
@@ -9840,6 +9833,98 @@ st.markdown("""
     margin: 0 0 0 auto !important;
     white-space: nowrap !important;
     text-align: right !important;
+}
+</style>
+""", unsafe_allow_html=True)
+
+
+# 추천 보고서: 제목 버튼과 연관성 점수를 같은 행의 독립 열로 배치
+st.markdown("""
+<style>
+.st-key-retirement-connection-bottom .st-key-retirement-connection-choice-0 [data-testid="stHorizontalBlock"],
+.st-key-retirement-connection-bottom .st-key-retirement-connection-choice-1 [data-testid="stHorizontalBlock"],
+.st-key-retirement-connection-bottom .st-key-retirement-connection-choice-2 [data-testid="stHorizontalBlock"] {
+    align-items: stretch !important;
+}
+.st-key-retirement-connection-bottom .st-key-retirement-connection-choice-0 [data-testid="stColumn"]:first-child,
+.st-key-retirement-connection-bottom .st-key-retirement-connection-choice-1 [data-testid="stColumn"]:first-child,
+.st-key-retirement-connection-bottom .st-key-retirement-connection-choice-2 [data-testid="stColumn"]:first-child {
+    display: flex !important;
+    align-self: stretch !important;
+    align-items: center !important;
+    justify-content: center !important;
+}
+.st-key-retirement-connection-bottom .st-key-retirement-connection-choice-0 [data-testid="stColumn"]:first-child [data-testid="stElementContainer"],
+.st-key-retirement-connection-bottom .st-key-retirement-connection-choice-1 [data-testid="stColumn"]:first-child [data-testid="stElementContainer"],
+.st-key-retirement-connection-bottom .st-key-retirement-connection-choice-2 [data-testid="stColumn"]:first-child [data-testid="stElementContainer"] {
+    width: 100% !important;
+    height: 100% !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+}
+.st-key-retirement-connection-bottom .st-key-retirement-connection-choice-0 [data-testid="stColumn"]:last-child [data-testid="stHorizontalBlock"],
+.st-key-retirement-connection-bottom .st-key-retirement-connection-choice-1 [data-testid="stColumn"]:last-child [data-testid="stHorizontalBlock"],
+.st-key-retirement-connection-bottom .st-key-retirement-connection-choice-2 [data-testid="stColumn"]:last-child [data-testid="stHorizontalBlock"] {
+    display: flex !important;
+    flex-wrap: nowrap !important;
+    align-items: center !important;
+    gap: 5px !important;
+    width: 100% !important;
+}
+.st-key-retirement-connection-bottom .st-key-retirement-connection-choice-0 [data-testid="stColumn"]:last-child [data-testid="stColumn"]:first-child,
+.st-key-retirement-connection-bottom .st-key-retirement-connection-choice-1 [data-testid="stColumn"]:last-child [data-testid="stColumn"]:first-child,
+.st-key-retirement-connection-bottom .st-key-retirement-connection-choice-2 [data-testid="stColumn"]:last-child [data-testid="stColumn"]:first-child {
+    flex: 1 1 0 !important;
+    width: 0 !important;
+    min-width: 0 !important;
+}
+.st-key-retirement-connection-bottom .st-key-retirement-connection-choice-0 [data-testid="stColumn"]:last-child [data-testid="stColumn"]:last-child,
+.st-key-retirement-connection-bottom .st-key-retirement-connection-choice-1 [data-testid="stColumn"]:last-child [data-testid="stColumn"]:last-child,
+.st-key-retirement-connection-bottom .st-key-retirement-connection-choice-2 [data-testid="stColumn"]:last-child [data-testid="stColumn"]:last-child {
+    flex: 0 0 76px !important;
+    width: 76px !important;
+    min-width: 76px !important;
+}
+.st-key-retirement-connection-bottom .st-key-retirement-connection-choice-0 [data-testid="stColumn"]:last-child button,
+.st-key-retirement-connection-bottom .st-key-retirement-connection-choice-1 [data-testid="stColumn"]:last-child button,
+.st-key-retirement-connection-bottom .st-key-retirement-connection-choice-2 [data-testid="stColumn"]:last-child button {
+    width: 100% !important;
+    min-width: 0 !important;
+    display: flex !important;
+    justify-content: flex-start !important;
+    text-align: left !important;
+}
+.st-key-retirement-connection-bottom .st-key-retirement-connection-choice-0 [data-testid="stColumn"]:last-child button [data-testid="stMarkdownContainer"],
+.st-key-retirement-connection-bottom .st-key-retirement-connection-choice-1 [data-testid="stColumn"]:last-child button [data-testid="stMarkdownContainer"],
+.st-key-retirement-connection-bottom .st-key-retirement-connection-choice-2 [data-testid="stColumn"]:last-child button [data-testid="stMarkdownContainer"] {
+    width: 100% !important;
+    min-width: 0 !important;
+    text-align: left !important;
+}
+.st-key-retirement-connection-bottom .retirement-connection-score {
+    width: 100% !important;
+    color: #fff !important;
+    -webkit-text-fill-color: #fff !important;
+    font-size: 10px !important;
+    line-height: 1.25 !important;
+    font-weight: 600 !important;
+    text-align: right !important;
+    white-space: nowrap !important;
+}
+.st-key-retirement-connection-bottom .st-key-retirement-connection-score-0,
+.st-key-retirement-connection-bottom .st-key-retirement-connection-score-1,
+.st-key-retirement-connection-bottom .st-key-retirement-connection-score-2 {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: flex-end !important;
+    width: 100% !important;
+}
+.st-key-retirement-connection-bottom .st-key-retirement-connection-choice-0 button::after,
+.st-key-retirement-connection-bottom .st-key-retirement-connection-choice-1 button::after,
+.st-key-retirement-connection-bottom .st-key-retirement-connection-choice-2 button::after {
+    content: none !important;
+    display: none !important;
 }
 </style>
 """, unsafe_allow_html=True)
