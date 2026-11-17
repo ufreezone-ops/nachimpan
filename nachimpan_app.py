@@ -9928,3 +9928,50 @@ st.markdown("""
 }
 </style>
 """, unsafe_allow_html=True)
+
+
+# 추천 보고서 제목 영역의 폭 붕괴 방지: 내부 두 열을 CSS Grid로 고정
+st.markdown("""
+<style>
+.st-key-retirement-connection-bottom .st-key-retirement-connection-choice-0 [data-testid="stColumn"]:last-child [data-testid="stHorizontalBlock"],
+.st-key-retirement-connection-bottom .st-key-retirement-connection-choice-1 [data-testid="stColumn"]:last-child [data-testid="stHorizontalBlock"],
+.st-key-retirement-connection-bottom .st-key-retirement-connection-choice-2 [data-testid="stColumn"]:last-child [data-testid="stHorizontalBlock"] {
+    display: grid !important;
+    grid-template-columns: minmax(0, 1fr) 68px !important;
+    align-items: center !important;
+    column-gap: 5px !important;
+    width: 100% !important;
+}
+.st-key-retirement-connection-bottom .st-key-retirement-connection-choice-0 [data-testid="stColumn"]:last-child [data-testid="stHorizontalBlock"] > [data-testid="stColumn"],
+.st-key-retirement-connection-bottom .st-key-retirement-connection-choice-1 [data-testid="stColumn"]:last-child [data-testid="stHorizontalBlock"] > [data-testid="stColumn"],
+.st-key-retirement-connection-bottom .st-key-retirement-connection-choice-2 [data-testid="stColumn"]:last-child [data-testid="stHorizontalBlock"] > [data-testid="stColumn"] {
+    width: auto !important;
+    min-width: 0 !important;
+    max-width: 100% !important;
+    flex: none !important;
+}
+.st-key-retirement-connection-bottom .st-key-retirement-connection-choice-0 [data-testid="stColumn"]:last-child [data-testid="stColumn"]:first-child button,
+.st-key-retirement-connection-bottom .st-key-retirement-connection-choice-1 [data-testid="stColumn"]:last-child [data-testid="stColumn"]:first-child button,
+.st-key-retirement-connection-bottom .st-key-retirement-connection-choice-2 [data-testid="stColumn"]:last-child [data-testid="stColumn"]:first-child button {
+    width: 100% !important;
+    min-width: 0 !important;
+    white-space: normal !important;
+    justify-content: flex-start !important;
+    text-align: left !important;
+}
+.st-key-retirement-connection-bottom .st-key-retirement-connection-choice-0 [data-testid="stColumn"]:last-child [data-testid="stColumn"]:first-child button [data-testid="stMarkdownContainer"],
+.st-key-retirement-connection-bottom .st-key-retirement-connection-choice-1 [data-testid="stColumn"]:last-child [data-testid="stColumn"]:first-child button [data-testid="stMarkdownContainer"],
+.st-key-retirement-connection-bottom .st-key-retirement-connection-choice-2 [data-testid="stColumn"]:last-child [data-testid="stColumn"]:first-child button [data-testid="stMarkdownContainer"] {
+    width: 100% !important;
+    min-width: 0 !important;
+    text-align: left !important;
+    overflow-wrap: break-word !important;
+    word-break: keep-all !important;
+}
+.st-key-retirement-connection-bottom .retirement-connection-score {
+    width: 100% !important;
+    white-space: nowrap !important;
+    text-align: right !important;
+}
+</style>
+""", unsafe_allow_html=True)
