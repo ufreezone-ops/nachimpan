@@ -6876,8 +6876,7 @@ elif selected_page == "통계":
             '<div id="stats-anchor-retirement-expense" style="scroll-margin-top: 150px;"></div>',
             unsafe_allow_html=True,
         )
-        with st.expander(f"{_stats_label('6050400-01', '2')}. 노후와 은퇴", expanded=True,
-        ):
+        with st.popover(f"{_stats_label('6050400-01', '2')}. 노후와 은퇴"):
             st.markdown("""
 **은퇴 후 생활비는 한 가지 금액으로 고정되지 않습니다.**
 
@@ -6995,8 +6994,7 @@ elif selected_page == "통계":
         # 6.06.11.00 | 10. 통계로 본 대한민국 3대 은퇴 분기점
         #--------------------------------------------------------
         st.markdown('<div id="stats-anchor-retirement-milestones" style="scroll-margin-top: 150px;"></div>', unsafe_allow_html=True)
-        with st.expander(f"{_stats_label('6051100-00', '4')}. 대한민국 3대 은퇴 분기점", expanded=True,
-        ):
+        with st.popover(f"{_stats_label('6051100-00', '4')}. 대한민국 3대 은퇴 분기점"):
             st.markdown("""
 은퇴는 하나의 나이로 끝나는 사건이 아닙니다. **주된 일자리에서 물러나는 시기**, **사회 전체의 생애주기 수지가 적자로 돌아서는 시기**, **노동시장에서 실질적으로 이탈하는 시기**는 서로 다른 통계가 보여주는 세 가지 장면입니다.
 
@@ -7140,8 +7138,7 @@ OECD 「Pensions at a Glance 2025: Korea」는 2024년 한국의 실질 노동�
         # 6.06.12.00 | 11. 우리 가정 소득곡선 보정
         #--------------------------------------------------------
         st.markdown('<div id="stats-anchor-household-income-after-retirement" style="scroll-margin-top: 150px;"></div>', unsafe_allow_html=True)
-        with st.expander(f"{_stats_label('6051200-00', '2')}. 우리 가정 소득곡선 보정", expanded=True,
-        ):
+        with st.popover(f"{_stats_label('6051200-00', '2')}. 우리 가정 소득곡선 보정"):
             st.markdown("""
 ### 기존 가구소득 곡선은 어떻게 만들어지나요?
 
@@ -7447,8 +7444,7 @@ OECD 「Pensions at a Glance 2025: Korea」는 2024년 한국의 실질 노동�
             '<div id="stats-anchor-loan-payment" style="scroll-margin-top: 150px;"></div>',
             unsafe_allow_html=True,
         )
-        with st.expander(f"{_stats_label('6050500-01', '2')}. 주택대출과 원리금 분리", expanded=True,
-        ):
+        with st.popover(f"{_stats_label('6050500-01', '2')}. 주택대출과 원리금 분리"):
             st.markdown("""
 **주택 구입자금과 대출 상환의 기준**
 
