@@ -2336,7 +2336,7 @@ def _render_master_data_items(_continent_code):
         _kind = str(_item.get("resource_type", "")).strip()
         _display = f"{_label}. {_title}" if _label else _title
         # 보고서와 동일하게 제목을 누르면 바로 팝업 안에서 자료를 보여준다.
-        with st.popover(_display, key=f"master_resource_{_resource_id}", type="tertiary", width="large"):
+        with st.popover(_display, key=f"master_resource_{_resource_id}", type="tertiary", width="content"):
             st.markdown(f"### {_title}")
             st.caption(f"통계 원자료 · {_kind}")
             _relative_path = str(_item.get("file_path", "")).strip()
