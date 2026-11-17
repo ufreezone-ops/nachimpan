@@ -7209,7 +7209,7 @@ OECD 「Pensions at a Glance 2025: Korea」는 2024년 한국의 실질 노동�
 - 국가데이터처 「2024년 국민이전계정」. [보도자료](https://mods.go.kr/board.es?act=view&bid=11898&list_no=447028&mid=a10301130100)
 - OECD 「Pensions at a Glance 2025: Korea」. [국가별 보고서](https://www.oecd.org/en/publications/pensions-at-a-glance-2025-country-notes_8a53ef12-en/korea-republic-of_5cd52913-en.html)
     """)
-    st.markdown(f"- 나침반 통계 리포트: {_master_report_display('6051200-00')}")
+        st.markdown(f"- 나침반 통계 리포트: {_master_report_display('6051200-00')}")
 
         #--------------------------------------------------------
         _render_master_data_items("L")
