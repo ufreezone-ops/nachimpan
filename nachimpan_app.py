@@ -2915,7 +2915,7 @@ def _show_retirement_connection_dialog():
             if _previous_number else ""
         )
         _next_number_html = (
-            f"<span class='retirement-number-circle'>{_next_number}</span>"
+            f"<span class='retirement-number-circle' style='background:{_next_color};color:#fff;'>{_next_number}</span>"
             if _next_number else ""
         )
         _top_previous_col, _top_arrow_col, _top_next_col = st.columns([1, 0.12, 1], gap="small")
