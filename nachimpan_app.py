@@ -2536,7 +2536,7 @@ def _show_retirement_report_dialog():
 
 @st.dialog("연결", width="large")
 def _show_retirement_connection_dialog():
-    """마스터 원장과 기존 연관성 ID를 함께 사용해 자료 연결 화면을 표시한다."""
+    """읽은 보고서 이력과 다음 추천 보고서를 좌우로 보여주는 연결창."""
     _by_source, _by_legacy = _nachimpan_master_report_maps()
     _history = list(st.session_state.get("_retirement_explorer_history", []))
     _source_id = st.session_state.get("_retirement_explorer_source_id")
@@ -2555,6 +2555,7 @@ def _show_retirement_connection_dialog():
         _history.append(_source_id)
         st.session_state["_retirement_explorer_history"] = list(_history)
 
+    # 연관성 자료는 내부 legacy_id로만 조회하고, 화면 표시는 마스터 원장을 따른다.
     _association_path = (
         Path(__file__).resolve().parent
         / "data" / "연관성" / "보고서_쌍별연관성_1차.json.zlib.b64"
@@ -2569,7 +2570,6 @@ def _show_retirement_connection_dialog():
     except Exception:
         _association_records = []
 
-    # 연관성 데이터의 R01~R23은 마스터 legacy_id와 연결한다.
     _current_legacy_id = _current_record.get("legacy_id", "")
     _related_rows = []
     if _current_legacy_id:
@@ -2585,11 +2585,14 @@ def _show_retirement_connection_dialog():
             if not _other_record:
                 continue
             _other_source_id = _other_record.get("source_id", "")
-            if not _other_source_id or _other_source_id == _source_id or _other_source_id in _history:
+            if (
+                not _other_source_id
+                or _other_source_id == _source_id
+                or _other_source_id in _history
+            ):
                 continue
 
             _related_rows.append({
-                "legacy_id": _other_legacy_id,
                 "display_label": _other_record.get("display_label", ""),
                 "title": _other_record.get("title", ""),
                 "source_id": _other_source_id,
@@ -2598,54 +2601,132 @@ def _show_retirement_connection_dialog():
             })
     _related_rows.sort(key=lambda item: (-item["raw_score"], item["title"]))
 
-    with st.container(key="retirement-connection-platform", border=True):
-        # 연결을 누른 보고서는 이전 역으로 표시한다.
-        _previous_number = _current_record.get("display_label", "")
-        _previous_title = _current_record.get("title", "보고서")
-        _route_previous, _route_arrow, _route_current = st.columns([1.15, 0.18, 0.85], gap="small", vertical_alignment="center")
-        with _route_previous:
-            st.markdown(
-                f"<div class='retirement-station-previous'>"
-                f"<span class='retirement-station-previous-number'>{_previous_number}</span>"
-                f"<strong>{_previous_title}</strong>"
-                f"</div>",
-                unsafe_allow_html=True,
-            )
-        with _route_arrow:
-            st.markdown("<div class='retirement-route-arrow'>→</div>", unsafe_allow_html=True)
-        with _route_current:
-            st.markdown(
-                "<div class='retirement-station-current'>"
-                "<span class='retirement-station-current-compass'>🧭</span>"
-                "<strong>연결</strong></div>",
-                unsafe_allow_html=True,
-            )
+    # 현재 보고서를 제외한 방문 이력을 최신순으로 왼쪽에 표시한다.
+    _past_source_ids = _history[:-1] if _history and _history[-1] == _source_id else _history
+    _past_records = [
+        _by_source[sid] for sid in reversed(_past_source_ids)
+        if sid in _by_source
+    ]
+    _next_record = _related_rows[0] if _related_rows else None
 
-        # 현재 위치에서 최대 세 갈래의 다음 역을 제안한다.
-        if _related_rows:
-            _visible_rows = _related_rows[:3]
-            st.markdown("<div class='retirement-route-branch-heading'>다음 역 선택</div>", unsafe_allow_html=True)
-            _branch_columns = st.columns([0.10, 0.90], gap="small", vertical_alignment="center")
-            with _branch_columns[0]:
-                st.markdown(
-                    "<div class='retirement-route-branch-rail' aria-hidden='true'>"
-                    "<svg viewBox='0 0 28 180' preserveAspectRatio='none'>"
-                    "<path d='M5 30 V150 M5 30 H27 M5 90 H27 M5 150 H27' "
-                    "fill='none' stroke='#159447' stroke-width='2.5' stroke-linecap='round'/>"
-                    "<circle cx='5' cy='30' r='3.5' fill='#159447'/>"
-                    "<circle cx='5' cy='90' r='3.5' fill='#159447'/>"
-                    "<circle cx='5' cy='150' r='3.5' fill='#159447'/>"
-                    "</svg></div>",
-                    unsafe_allow_html=True,
-                )
-            with _branch_columns[1]:
-                for _index, _item in enumerate(_visible_rows):
+    with st.container(key="retirement-connection-platform", border=True):
+        st.markdown(
+            """
+            <style>
+            .retirement-connection-top {
+                display:grid; grid-template-columns:1fr auto 1fr;
+                align-items:center; gap:8px; margin:2px 0 14px;
+            }
+            .retirement-connection-stop {
+                min-width:0; text-align:center; border:1px solid #00A84D;
+                border-radius:12px; padding:9px 5px; color:#176B3A;
+                background:rgba(0,168,77,.055); line-height:1.35;
+            }
+            .retirement-connection-stop .stop-caption {
+                display:block; font-size:11px; color:#4B8061; margin-bottom:5px;
+            }
+            .retirement-connection-stop .stop-name {
+                display:block; font-size:13px; font-weight:700;
+                overflow-wrap:anywhere;
+            }
+            .retirement-connection-center {
+                text-align:center; color:#008F43; font-weight:800;
+                white-space:nowrap; padding:0 3px;
+            }
+            .retirement-connection-center .compass {
+                display:block; font-size:22px; line-height:1.25;
+            }
+            .retirement-connection-columns {
+                display:grid; grid-template-columns:1fr 1fr; gap:12px;
+                margin-top:4px;
+            }
+            .retirement-connection-list {
+                border:1px solid rgba(0,168,77,.35); border-radius:11px;
+                padding:10px 9px; min-width:0;
+            }
+            .retirement-connection-list h4 {
+                color:#087D3D; font-size:14px; margin:0 0 9px 0;
+                padding-bottom:7px; border-bottom:1px solid rgba(0,168,77,.25);
+            }
+            .retirement-history-item {
+                display:flex; align-items:flex-start; gap:7px;
+                padding:6px 1px; color:inherit; font-size:12px;
+                line-height:1.4; border-bottom:1px solid rgba(0,0,0,.06);
+            }
+            .retirement-number-circle {
+                display:inline-flex; flex:0 0 22px; width:22px; height:22px;
+                align-items:center; justify-content:center; border-radius:50%;
+                background:#fff; border:1.5px solid #00A84D; color:#008F43;
+                font-size:11px; font-weight:800;
+            }
+            .retirement-history-title { min-width:0; overflow-wrap:anywhere; }
+            .retirement-recommendation-score {
+                color:#548067; font-size:11px; margin:0 0 5px 29px;
+            }
+            @media (max-width:480px) {
+                .retirement-connection-top { gap:5px; }
+                .retirement-connection-stop { padding:8px 3px; }
+                .retirement-connection-stop .stop-name { font-size:11px; }
+                .retirement-connection-center { font-size:12px; }
+                .retirement-connection-center .compass { font-size:19px; }
+                .retirement-connection-columns { gap:7px; }
+                .retirement-connection-list { padding:8px 6px; }
+                .retirement-connection-list h4 { font-size:12px; }
+            }
+            </style>
+            """,
+            unsafe_allow_html=True,
+        )
+
+        _previous_title = _past_records[0].get("title", "이전 보고서") if _past_records else "처음 방문"
+        _next_title = _next_record.get("title", "추천 자료 없음") if _next_record else "추천 자료 없음"
+        st.markdown(
+            f"<div class='retirement-connection-top'>"
+            f"<div class='retirement-connection-stop'>"
+            f"<span class='stop-caption'>이전 보고서</span>"
+            f"<span class='stop-name'>{_previous_title}</span></div>"
+            f"<div class='retirement-connection-center'><span class='compass'>🧭</span>연결</div>"
+            f"<div class='retirement-connection-stop'>"
+            f"<span class='stop-caption'>다음 보고서</span>"
+            f"<span class='stop-name'>{_next_title}</span></div>"
+            f"</div>",
+            unsafe_allow_html=True,
+        )
+        st.caption(f"현재 보고서 · {_current_record.get('display_label', '')} {_current_record.get('title', '')}".strip())
+
+        _left, _right = st.columns(2, gap="small")
+        with _left:
+            st.markdown("<div class='retirement-connection-list'><h4>← 읽은 보고서</h4>", unsafe_allow_html=True)
+            if _past_records:
+                for _record in _past_records:
+                    _number = _record.get("display_label", "")
+                    _title = _record.get("title", "보고서")
+                    st.markdown(
+                        f"<div class='retirement-history-item'>"
+                        f"<span class='retirement-number-circle'>{_number}</span>"
+                        f"<span class='retirement-history-title'>{_title}</span></div>",
+                        unsafe_allow_html=True,
+                    )
+            else:
+                st.caption("아직 이전에 읽은 보고서가 없습니다.")
+            st.markdown("</div>", unsafe_allow_html=True)
+
+        with _right:
+            st.markdown("<div class='retirement-connection-list'><h4>다음 추천 보고서 →</h4>", unsafe_allow_html=True)
+            if _related_rows:
+                for _index, _item in enumerate(_related_rows[:3]):
+                    _number = _item.get("display_label", "")
+                    _title = _item.get("title", "보고서")
                     _score = max(0, min(100, int(_item["raw_score"])))
-                    _report_number = _item["display_label"]
-                    _report_title = _item["title"]
-                    _button_title = f"{_report_number}. {_report_title}" if _report_number else _report_title
+                    st.markdown(
+                        f"<div class='retirement-history-item'>"
+                        f"<span class='retirement-number-circle'>{_number}</span>"
+                        f"<span class='retirement-history-title'>{_title}</span></div>"
+                        f"<div class='retirement-recommendation-score'>연관성 {_score}%</div>",
+                        unsafe_allow_html=True,
+                    )
                     if st.button(
-                        f"**{_button_title}** ({_score}%)",
+                        f"이 보고서 연결하기",
                         key=f"retirement_connection_next_{_index}",
                         use_container_width=True,
                         type="primary",
@@ -2654,8 +2735,9 @@ def _show_retirement_connection_dialog():
                         st.session_state["_retirement_explorer_source_id"] = _item["source_id"]
                         st.session_state["_retirement_connection_open"] = False
                         st.rerun()
-        else:
-            st.info("현재 자료에서 이어지는 다른 보고서가 아직 준비되지 않았습니다.")
+            else:
+                st.caption("현재 보고서에서 이어지는 추천 자료가 없습니다.")
+            st.markdown("</div>", unsafe_allow_html=True)
 
         _close_spacer, _close_col = st.columns([7, 1])
         with _close_col:
@@ -2666,7 +2748,6 @@ def _show_retirement_connection_dialog():
                 st.session_state.pop("_retirement_explorer_source_id", None)
                 st.session_state.pop("_retirement_explorer_history", None)
                 st.rerun()
-
 
 
 HOUSING_PRICE_SOURCE = {
