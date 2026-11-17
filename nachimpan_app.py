@@ -6162,7 +6162,7 @@ elif selected_page == "우리집 재정곡선":
                             use_container_width=True,
                         ):
                             _open_source_reference(
-                                _active_event_report[1],
+                                _active_event_report,
                                 "우리집 재정곡선",
                                 "life-cycle-finance-chart-origin",
                             )
