@@ -2353,6 +2353,22 @@ def _master_report_display(source_id, suffix=""):
     return f"{_prefix}{_title}{suffix}"
 
 
+def _master_report_title(source_id):
+    """보고서의 제목만 마스터 원장에서 가져온다."""
+    _by_source, _ = _nachimpan_master_report_maps()
+    _record = _by_source.get(str(source_id or "").strip())
+    return _record.get("title", "") if _record else ""
+
+
+def _master_report_titles(source_ids, separator=" · "):
+    """여러 보고서 제목을 마스터 원장 기준으로 연결해 표시한다."""
+    _titles = [
+        _master_report_title(_source_id)
+        for _source_id in source_ids
+    ]
+    return separator.join(_title for _title in _titles if _title)
+
+
 def _render_master_data_items(_continent_code):
     """마스터 원장의 자료 항목을 클릭 가능한 목차로 표시한다."""
     _master = _load_nachimpan_master()
@@ -7193,8 +7209,8 @@ OECD 「Pensions at a Glance 2025: Korea」는 2024년 한국의 실질 노동�
 - 국가데이터처 「2026년 5월 경제활동인구조사 고령층 부가조사 결과」. [보도자료](https://www.mods.go.kr/board.es?act=view&bid=210&list_no=446335&mid=a10301010000)
 - 국가데이터처 「2024년 국민이전계정」. [보도자료](https://mods.go.kr/board.es?act=view&bid=11898&list_no=447028&mid=a10301130100)
 - OECD 「Pensions at a Glance 2025: Korea」. [국가별 보고서](https://www.oecd.org/en/publications/pensions-at-a-glance-2025-country-notes_8a53ef12-en/korea-republic-of_5cd52913-en.html)
-- 나침반 통계 리포트 11. 「우리 가정 생애주기 소득곡선의 통계적 보정」
     """)
+    st.markdown(f"- 나침반 통계 리포트: {_master_report_display('6051200-00')}"
 
         #--------------------------------------------------------
         _render_master_data_items("L")
@@ -8128,25 +8144,38 @@ OECD 「Pensions at a Glance 2025: Korea」는 2024년 한국의 실질 노동�
 """)
 
         st.markdown("### 서로 연결되는 공통 개념")
-        st.markdown("""
-| 공통 키워드 | 연결되는 콘텐츠 | 연결의 성격 |
-|---|---|---|
-| 생애주기 | 보고서 1·3·9·10·16·18, 국민이전계정 자료 | 연령에 따른 소득·소비·노동의 변화 |
-| 소득·임금 | 보고서 1·6·9·10·11·15·16·17·18, 임금 통계 | 개인·가구의 소득과 사회 통계의 비교 |
-| 소비·지출 | 보고서 1·3·11·13·16, 가계동향조사 자료 | 소비와 비소비지출, 연령·가구규모별 차이 |
-| 주택·부채 | 보고서 2·4·7·14·19·21·23, 주거실태조사·주택가격 자료 | 주거 마련, 자금 조달, 대출과 자산 취득 |
-| 결혼·가족 | 보고서 2·7·8·19·20·22·23, 결혼비용 자료 | 가족 형성과 생애 사건에 따른 재정 변화 |
-| 시간·가치 | 보고서 5·12, CPI·임금지수 자료 | 서로 다른 시점의 금액과 구매력 비교 |
-| 교육·양육 | 보고서 8·20·22, 대학등록금·생활비 자료 | 자녀 성장 단계의 교육·양육 비용 |
-""")
+        _common_concept_rows = [
+            ("생애주기", ["6050200-00", "6050400-01", "6051000-00", "6051100-00", "6051700-00", "6051900-00"], "연령에 따른 소득·소비·노동의 변화"),
+            ("소득·임금", ["6050200-00", "6050700-00", "6051000-00", "6051100-00", "6051200-00", "6051600-00", "6051700-00", "6051800-00", "6051900-00"], "개인·가구의 소득과 사회 통계의 비교"),
+            ("소비·지출", ["6050200-00", "6050400-01", "6051200-00", "6051400-00", "6051700-00"], "소비와 비소비지출, 연령·가구규모별 차이"),
+            ("주택·부채", ["6050300-00", "6050500-01", "6050800-00", "6051500-00", "6052000-00", "6052200-00", "6052400-00"], "주거 마련, 자금 조달, 대출과 자산 취득"),
+            ("결혼·가족", ["6050300-00", "6050800-00", "6050900-00", "6052000-00", "6052100-00", "6052300-00", "6052400-00"], "가족 형성과 생애 사건에 따른 재정 변화"),
+            ("시간·가치", ["6050600-00", "6051300-00"], "서로 다른 시점의 금액과 구매력 비교"),
+            ("교육·양육", ["6050900-00", "6052100-00", "6052300-00"], "자녀 성장 단계의 교육·양육 비용"),
+        ]
+        _common_concept_display_rows = [
+            (
+                _concept,
+                _master_report_titles(_source_ids),
+                _description,
+            )
+            for _concept, _source_ids, _description in _common_concept_rows
+        ]
+        st.dataframe(
+            pd.DataFrame(
+                _common_concept_display_rows,
+                columns=["공통 키워드", "연결되는 콘텐츠", "연결의 성격"],
+            ),
+            use_container_width=True,
+            hide_index=True,
+        )
 
         st.markdown("### 특별한 연결 노드")
-        st.markdown("""
-- **5번 · 동시성과 통시성 — 블루 사파이어:** 서로 다른 시점의 소득과 지출을 비교할 때 기준을 맞추는 방법론입니다.
-- **12번 · 과거 소득·지출 비교 — 블랙 다이아몬드:** 과거 금액을 현재의 구매력 관점에서 바라보게 하는 연결 도구입니다.
-
-두 자료는 하나의 대륙에 고정하기보다 여러 지식 영역을 오가는 특별한 노드로 다룹니다.
-""")
+        st.markdown(
+            f"- **{_master_report_display('6050600-00')} — 블루 사파이어:** 서로 다른 시점의 소득과 지출을 비교할 때 기준을 맞추는 방법론입니다.\n"
+            f"- **{_master_report_display('6051300-00')} — 블랙 다이아몬드:** 과거 금액을 현재의 구매력 관점에서 바라보게 하는 연결 도구입니다.\n\n"
+            "두 자료는 하나의 대륙에 고정하기보다 여러 지식 영역을 오가는 특별한 노드로 다룹니다."
+        )
 
         st.markdown("### 이번 분석의 범위와 다음 단계")
         st.markdown("""
