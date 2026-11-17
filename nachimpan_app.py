@@ -2661,6 +2661,9 @@ def _show_retirement_connection_dialog():
                 display:block; font-size:11px; color:{_previous_text_color};
                 font-weight:700; margin:0;
             }}
+            .retirement-connection-stop.next .stop-caption {{
+                color:{_next_text_color};
+            }}
             .retirement-connection-stop .retirement-number-circle {{
                 display:inline-flex; width:25px; height:25px; flex:0 0 25px;
                 align-items:center; justify-content:center; border-radius:50%;
@@ -2675,8 +2678,8 @@ def _show_retirement_connection_dialog():
                 overflow-wrap:anywhere; color:inherit;
             }}
             .retirement-connection-center {{
-                min-width:54px; display:flex; flex-direction:column;
-                align-items:center; justify-content:center; gap:5px;
+                min-width:76px; display:flex; flex-direction:row;
+                align-items:center; justify-content:center; gap:4px;
                 text-align:center; color:#222; font-size:12px; font-weight:800;
                 white-space:nowrap; padding:0 2px; background:#fff;
             }}
@@ -2760,8 +2763,9 @@ def _show_retirement_connection_dialog():
                 .retirement-connection-top {{ gap:5px; }}
                 .retirement-connection-stop {{ min-height:108px; padding:8px 4px; }}
                 .retirement-connection-stop .stop-name {{ font-size:11px; }}
-                .retirement-connection-center {{ min-width:44px; font-size:11px; }}
-                .retirement-connection-center .compass {{ width:27px; height:27px; font-size:17px; }}
+                .retirement-connection-center {{ min-width:66px; font-size:10px; gap:3px; }}
+                .retirement-connection-center .compass {{ width:25px; height:25px; font-size:16px; }}
+                .retirement-connection-center .direction-arrow {{ font-size:16px; }}
                 .retirement-connection-columns {{ gap:7px; }}
                 .retirement-connection-list {{ padding:8px 6px; }}
                 .retirement-connection-list h4 {{ font-size:12px; }}
