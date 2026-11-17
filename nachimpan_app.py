@@ -2601,153 +2601,209 @@ def _show_retirement_connection_dialog():
             })
     _related_rows.sort(key=lambda item: (-item["raw_score"], item["title"]))
 
-    # 현재 보고서를 제외한 방문 이력을 최신순으로 왼쪽에 표시한다.
-    _past_source_ids = _history[:-1] if _history and _history[-1] == _source_id else _history
+    # 연결창에 진입한 보고서 자체가 '이전 보고서' 역이다.
+    # 방문 이력에는 현재 보고서도 포함되므로 왼쪽 목록에도 표시한다.
+    _past_source_ids = list(_history)
+    if not _past_source_ids or _past_source_ids[-1] != _source_id:
+        _past_source_ids.append(_source_id)
     _past_records = [
         _by_source[sid] for sid in reversed(_past_source_ids)
         if sid in _by_source
     ]
+    _previous_record = _current_record
     _next_record = _related_rows[0] if _related_rows else None
 
+    def _continent_color(_record):
+        _color = str((_record or {}).get("continent_color_hex", "")).strip()
+        return _color if re.fullmatch(r"#[0-9A-Fa-f]{6}", _color) else "#527B60"
+
     with st.container(key="retirement-connection-platform", border=True):
+        _previous_title = _previous_record.get("title", "이전 보고서")
+        _previous_number = _previous_record.get("display_label", "")
+        _next_title = _next_record.get("title", "추천 자료 없음") if _next_record else "추천 자료 없음"
+        _next_number = _next_record.get("display_label", "") if _next_record else ""
+        _previous_color = _continent_color(_previous_record)
+        _next_color = _continent_color(_next_record) if _next_record else "#777777"
+
         st.markdown(
-            """
+            f"""
             <style>
-            .retirement-connection-top {
-                display:grid; grid-template-columns:1fr auto 1fr;
-                align-items:center; gap:8px; margin:2px 0 14px;
-            }
-            .retirement-connection-stop {
-                min-width:0; text-align:center; border:1px solid #00A84D;
-                border-radius:12px; padding:9px 5px; color:#176B3A;
-                background:rgba(0,168,77,.055); line-height:1.35;
-            }
-            .retirement-connection-stop .stop-caption {
-                display:block; font-size:11px; color:#4B8061; margin-bottom:5px;
-            }
-            .retirement-connection-stop .retirement-number-circle {
-                margin:0 auto 5px; width:21px; height:21px; font-size:11px;
-            }
-            .retirement-connection-stop .stop-name {
-                display:block; font-size:13px; font-weight:700;
-                overflow-wrap:anywhere;
-            }
-            .retirement-connection-center {
-                text-align:center; color:#008F43; font-weight:800;
-                white-space:nowrap; padding:0 3px;
-            }
-            .retirement-connection-center .compass {
-                display:block; font-size:22px; line-height:1.25;
-            }
-            .retirement-connection-columns {
-                display:grid; grid-template-columns:1fr 1fr; gap:12px;
-                margin-top:4px;
-            }
-            .retirement-connection-list {
-                border:1px solid rgba(0,168,77,.35); border-radius:11px;
+            .retirement-connection-top {{
+                display:grid; grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);
+                align-items:stretch; gap:8px; margin:2px 0 12px;
+            }}
+            .retirement-connection-stop {{
+                min-width:0; min-height:116px; height:100%; box-sizing:border-box;
+                display:flex; flex-direction:column; align-items:center;
+                justify-content:center; text-align:center; gap:7px;
+                border:2px solid transparent; border-radius:12px;
+                padding:10px 7px; line-height:1.3;
+            }}
+            .retirement-connection-stop.previous {{
+                background:{_previous_color}; border-color:{_previous_color}; color:#fff;
+            }}
+            .retirement-connection-stop.next {{
+                background:{_next_color}; border-color:{_next_color}; color:#fff;
+            }}
+            .retirement-connection-stop .stop-caption {{
+                display:block; font-size:11px; color:rgba(255,255,255,.88);
+                font-weight:700; margin:0;
+            }}
+            .retirement-connection-stop .retirement-number-circle {{
+                display:inline-flex; width:25px; height:25px; flex:0 0 25px;
+                align-items:center; justify-content:center; border-radius:50%;
+                background:#fff; color:{_previous_color}; font-size:12px;
+                font-weight:900; line-height:1;
+            }}
+            .retirement-connection-stop.next .retirement-number-circle {{
+                color:{_next_color};
+            }}
+            .retirement-connection-stop .stop-name {{
+                display:block; font-size:13px; font-weight:800;
+                overflow-wrap:anywhere; color:#fff;
+            }}
+            .retirement-connection-center {{
+                min-width:54px; display:flex; flex-direction:column;
+                align-items:center; justify-content:center; gap:5px;
+                text-align:center; color:#222; font-size:12px; font-weight:800;
+                white-space:nowrap; padding:0 2px; background:#fff;
+            }}
+            .retirement-connection-center .compass {{
+                display:flex; width:30px; height:30px; align-items:center;
+                justify-content:center; border-radius:50%; background:#159447;
+                color:#fff; font-size:19px; line-height:1;
+            }}
+            .retirement-connection-columns {{
+                display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-top:4px;
+            }}
+            .retirement-connection-list {{
+                border:1px solid rgba(0,0,0,.14); border-radius:11px;
                 padding:10px 9px; min-width:0;
-            }
-            .retirement-connection-list h4 {
-                color:#087D3D; font-size:14px; margin:0 0 9px 0;
-                padding-bottom:7px; border-bottom:1px solid rgba(0,168,77,.25);
-            }
-            .retirement-history-item {
+            }}
+            .retirement-connection-list h4 {{
+                color:#333; font-size:14px; margin:0 0 9px 0;
+                padding-bottom:7px; border-bottom:1px solid rgba(0,0,0,.12);
+            }}
+            .retirement-history-item {{
                 display:flex; align-items:flex-start; gap:7px;
                 padding:6px 1px; color:inherit; font-size:12px;
                 line-height:1.4; border-bottom:1px solid rgba(0,0,0,.06);
-            }
-            .retirement-number-circle {
+            }}
+            .retirement-number-circle {{
                 display:inline-flex; flex:0 0 22px; width:22px; height:22px;
                 align-items:center; justify-content:center; border-radius:50%;
-                background:#fff; border:1.5px solid #00A84D; color:#008F43;
-                font-size:11px; font-weight:800;
-            }
-            .retirement-history-title { min-width:0; overflow-wrap:anywhere; }
-            .retirement-recommendation-score {
-                color:#548067; font-size:11px; margin:0 0 5px 29px;
-            }
-            @media (max-width:480px) {
-                .retirement-connection-top { gap:5px; }
-                .retirement-connection-stop { padding:8px 3px; }
-                .retirement-connection-stop .stop-name { font-size:11px; }
-                .retirement-connection-center { font-size:12px; }
-                .retirement-connection-center .compass { font-size:19px; }
-                .retirement-connection-columns { gap:7px; }
-                .retirement-connection-list { padding:8px 6px; }
-                .retirement-connection-list h4 { font-size:12px; }
-            }
-            .st-key-retirement-connection-platform [data-testid="stButton"] button[kind="primary"] {
-                background:#E87524 !important; border-color:#E87524 !important;
-                color:#fff !important;
-            }
+                background:{_previous_color}; border:1.5px solid {_previous_color};
+                color:#fff; font-size:11px; font-weight:850;
+            }}
+            .retirement-history-title {{ min-width:0; overflow-wrap:anywhere; }}
+            .retirement-recommendation-score {{
+                color:#666; font-size:11px; margin:0 0 5px 29px;
+            }}
+            .st-key-retirement-connection-platform .st-key-retirement-connection-choice-0 [data-testid="stButton"] button,
+            .st-key-retirement-connection-platform .st-key-retirement-connection-choice-1 [data-testid="stButton"] button,
+            .st-key-retirement-connection-platform .st-key-retirement-connection-choice-2 [data-testid="stButton"] button {{
+                min-height:30px !important; height:auto !important; width:100% !important;
+                justify-content:flex-start !important; text-align:left !important;
+                padding:3px 2px !important; background:transparent !important;
+                background-color:transparent !important; border:0 !important;
+                box-shadow:none !important; color:#222 !important;
+                font-size:12px !important; font-weight:650 !important;
+            }}
+            .st-key-retirement-connection-platform .st-key-retirement-connection-choice-0 [data-testid="stButton"] button:hover,
+            .st-key-retirement-connection-platform .st-key-retirement-connection-choice-1 [data-testid="stButton"] button:hover,
+            .st-key-retirement-connection-platform .st-key-retirement-connection-choice-2 [data-testid="stButton"] button:hover {{
+                color:#087D3D !important; background:rgba(0,0,0,.045) !important;
+            }}
+            @media (max-width:480px) {{
+                .retirement-connection-top {{ gap:5px; }}
+                .retirement-connection-stop {{ min-height:108px; padding:8px 4px; }}
+                .retirement-connection-stop .stop-name {{ font-size:11px; }}
+                .retirement-connection-center {{ min-width:44px; font-size:11px; }}
+                .retirement-connection-center .compass {{ width:27px; height:27px; font-size:17px; }}
+                .retirement-connection-columns {{ gap:7px; }}
+                .retirement-connection-list {{ padding:8px 6px; }}
+                .retirement-connection-list h4 {{ font-size:12px; }}
+            }}
             </style>
             """,
             unsafe_allow_html=True,
         )
 
-        _previous_record = _past_records[0] if _past_records else None
-        _previous_title = _previous_record.get("title", "이전 보고서") if _previous_record else "처음 방문"
-        _previous_number = _previous_record.get("display_label", "") if _previous_record else ""
-        _next_title = _next_record.get("title", "추천 자료 없음") if _next_record else "추천 자료 없음"
-        _next_number = _next_record.get("display_label", "") if _next_record else ""
-        _previous_number_html = f"<span class='retirement-number-circle'>{_previous_number}</span>" if _previous_number else ""
-        _next_number_html = f"<span class='retirement-number-circle'>{_next_number}</span>" if _next_number else ""
+        _previous_number_html = (
+            f"<span class='retirement-number-circle'>{_previous_number}</span>"
+            if _previous_number else ""
+        )
+        _next_number_html = (
+            f"<span class='retirement-number-circle'>{_next_number}</span>"
+            if _next_number else ""
+        )
         st.markdown(
             f"<div class='retirement-connection-top'>"
-            f"<div class='retirement-connection-stop'>"
+            f"<div class='retirement-connection-stop previous'>"
             f"<span class='stop-caption'>이전 보고서</span>"
             f"{_previous_number_html}<span class='stop-name'>{_previous_title}</span></div>"
             f"<div class='retirement-connection-center'><span class='compass'>🧭</span>연결</div>"
-            f"<div class='retirement-connection-stop'>"
+            f"<div class='retirement-connection-stop next'>"
             f"<span class='stop-caption'>다음 보고서</span>"
             f"{_next_number_html}<span class='stop-name'>{_next_title}</span></div>"
             f"</div>",
             unsafe_allow_html=True,
         )
-        st.caption(f"현재 보고서 · {_current_record.get('display_label', '')} {_current_record.get('title', '')}".strip())
 
         _left, _right = st.columns(2, gap="small")
         with _left:
             with st.container(border=True):
-                st.markdown("<h4 style='color:#087D3D;font-size:14px;margin:0 0 9px;'>← 읽은 보고서</h4>", unsafe_allow_html=True)
+                st.markdown("<h4 style='font-size:14px;margin:0 0 9px;'>← 읽은 보고서</h4>", unsafe_allow_html=True)
                 if _past_records:
                     for _record in _past_records:
                         _number = _record.get("display_label", "")
                         _title = _record.get("title", "보고서")
+                        _color = _continent_color(_record)
                         st.markdown(
                             f"<div class='retirement-history-item'>"
-                            f"<span class='retirement-number-circle'>{_number}</span>"
-                            f"<span class='retirement-history-title'>{_title}</span></div>",
+                            f"<span class='retirement-number-circle' style='background:{_color};border-color:{_color};'>"
+                            f"{_number}</span><span class='retirement-history-title'>{_title}</span></div>",
                             unsafe_allow_html=True,
                         )
                 else:
-                    st.caption("아직 이전에 읽은 보고서가 없습니다.")
+                    st.caption("아직 읽은 보고서가 없습니다.")
 
         with _right:
             with st.container(border=True):
-                st.markdown("<h4 style='color:#087D3D;font-size:14px;margin:0 0 9px;'>다음 추천 보고서 →</h4>", unsafe_allow_html=True)
+                st.markdown("<h4 style='font-size:14px;margin:0 0 9px;'>다음 추천 보고서 →</h4>", unsafe_allow_html=True)
                 if _related_rows:
                     for _index, _item in enumerate(_related_rows[:3]):
                         _number = _item.get("display_label", "")
                         _title = _item.get("title", "보고서")
                         _score = max(0, min(100, int(_item["raw_score"])))
+                        _item_color = _continent_color(_by_source.get(_item["source_id"]))
+                        with st.container(key=f"retirement-connection-choice-{_index}"):
+                            _number_col, _title_col = st.columns([0.18, 0.82], gap="small")
+                            with _number_col:
+                                st.markdown(
+                                    f"<div style='display:flex;justify-content:center;padding-top:7px;'>"
+                                    f"<span class='retirement-number-circle' style='background:{_item_color};"
+                                    f"border-color:{_item_color};'>{_number}</span></div>",
+                                    unsafe_allow_html=True,
+                                )
+                            with _title_col:
+                                if st.button(
+                                    _title,
+                                    key=f"retirement_connection_next_{_index}",
+                                    use_container_width=True,
+                                    type="secondary",
+                                ):
+                                    st.session_state["_retirement_explorer_history"] = _history + (
+                                        [] if _history and _history[-1] == _item["source_id"]
+                                        else [_item["source_id"]]
+                                    )
+                                    st.session_state["_retirement_explorer_source_id"] = _item["source_id"]
+                                    st.session_state["_retirement_connection_open"] = False
+                                    st.rerun()
                         st.markdown(
-                            f"<div class='retirement-history-item'>"
-                            f"<span class='retirement-number-circle'>{_number}</span>"
-                            f"<span class='retirement-history-title'>{_title}</span></div>"
                             f"<div class='retirement-recommendation-score'>연관성 {_score}%</div>",
                             unsafe_allow_html=True,
                         )
-                        if st.button(
-                            "이 보고서 연결하기",
-                            key=f"retirement_connection_next_{_index}",
-                            use_container_width=True,
-                            type="primary",
-                        ):
-                            st.session_state["_retirement_explorer_history"] = _history + [_item["source_id"]]
-                            st.session_state["_retirement_explorer_source_id"] = _item["source_id"]
-                            st.session_state["_retirement_connection_open"] = False
-                            st.rerun()
                 else:
                     st.caption("현재 보고서에서 이어지는 추천 자료가 없습니다.")
 
