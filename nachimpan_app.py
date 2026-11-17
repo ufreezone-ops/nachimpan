@@ -6000,7 +6000,7 @@ elif selected_page == "우리집 재정곡선":
                 st.markdown("**가구소득**")
                 st.caption("우리 가정의 예상 소득곡선은 어떻게 만들어졌을까요?")
                 if st.button(
-                    "🧭 11. 우리 가정 소득곡선 보정",
+                    f"🧭 {_master_report_display('6051200-00')}",
                     key="household_income_legend_report_6051200",
                     use_container_width=True,
                 ):
