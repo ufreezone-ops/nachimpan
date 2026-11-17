@@ -2753,6 +2753,17 @@ def _show_retirement_connection_dialog():
                 display:flex !important; flex-wrap:nowrap !important; align-items:center !important; gap:6px !important;
                 width:100% !important; min-width:0 !important;
             }}
+            /* 추천 보고서 번호는 두 줄짜리 제목·연관성 텍스트 묶음의 세로 중앙에 배치 */
+            .st-key-retirement-connection-bottom .st-key-retirement-connection-choice-0 [data-testid="stColumn"]:first-child > [data-testid="stVerticalBlock"],
+            .st-key-retirement-connection-bottom .st-key-retirement-connection-choice-1 [data-testid="stColumn"]:first-child > [data-testid="stVerticalBlock"],
+            .st-key-retirement-connection-bottom .st-key-retirement-connection-choice-2 [data-testid="stColumn"]:first-child > [data-testid="stVerticalBlock"] {{
+                height:100% !important; justify-content:center !important; align-items:center !important;
+            }}
+            .st-key-retirement-connection-bottom .st-key-retirement-connection-choice-0 [data-testid="stColumn"]:first-child [data-testid="stMarkdownContainer"],
+            .st-key-retirement-connection-bottom .st-key-retirement-connection-choice-1 [data-testid="stColumn"]:first-child [data-testid="stMarkdownContainer"],
+            .st-key-retirement-connection-bottom .st-key-retirement-connection-choice-2 [data-testid="stColumn"]:first-child [data-testid="stMarkdownContainer"] {{
+                width:100% !important; display:flex !important; align-items:center !important; justify-content:center !important;
+            }}
             .st-key-retirement-connection-bottom .st-key-retirement-connection-choice-0 [data-testid="stColumn"]:first-child,
             .st-key-retirement-connection-bottom .st-key-retirement-connection-choice-1 [data-testid="stColumn"]:first-child,
             .st-key-retirement-connection-bottom .st-key-retirement-connection-choice-2 [data-testid="stColumn"]:first-child {{
@@ -2824,6 +2835,17 @@ def _show_retirement_connection_dialog():
             .st-key-retirement-connection-platform .st-key-retirement-connection-choice-1 [data-testid="stButton"] p,
             .st-key-retirement-connection-platform .st-key-retirement-connection-choice-2 [data-testid="stButton"] p {{
                 width:100% !important; text-align:left !important;
+            }}
+            /* Streamlit 버튼 내부의 말줄임 래퍼까지 왼쪽 정렬을 강제해 줄바꿈된 제목도 같은 기준선 유지 */
+            .st-key-retirement-connection-platform .st-key-retirement-connection-choice-0 [data-testid="stButton"] button *,
+            .st-key-retirement-connection-platform .st-key-retirement-connection-choice-1 [data-testid="stButton"] button *,
+            .st-key-retirement-connection-platform .st-key-retirement-connection-choice-2 [data-testid="stButton"] button * {{
+                text-align:left !important;
+            }}
+            .st-key-retirement-connection-platform .st-key-retirement-connection-choice-0 [data-testid="stButton"] [data-testid="stMarkdownContainer"],
+            .st-key-retirement-connection-platform .st-key-retirement-connection-choice-1 [data-testid="stButton"] [data-testid="stMarkdownContainer"],
+            .st-key-retirement-connection-platform .st-key-retirement-connection-choice-2 [data-testid="stButton"] [data-testid="stMarkdownContainer"] {{
+                display:block !important; align-self:flex-start !important; width:100% !important;
             }}
             .st-key-retirement-connection-platform .st-key-retirement-connection-choice-0 [data-testid="stButton"] button:hover,
             .st-key-retirement-connection-platform .st-key-retirement-connection-choice-1 [data-testid="stButton"] button:hover,
