@@ -2640,6 +2640,9 @@ def _show_retirement_connection_dialog():
         _next_color = _continent_color(_next_record) if _next_record else "#777777"
         _previous_text_color = _contrast_text(_previous_color)
         _next_text_color = _contrast_text(_next_color)
+        # 연결창 자체는 특정 대륙에 속하지 않으므로 전용 녹색을 사용한다.
+        _connection_panel_color = "#159447"
+        _connection_panel_text_color = "#FFFFFF"
 
         st.markdown(
             f"""
@@ -2656,17 +2659,17 @@ def _show_retirement_connection_dialog():
                 padding:10px 7px; line-height:1.3;
             }}
             .retirement-connection-stop.previous {{
-                background:{_previous_color}; border-color:{_previous_color}; color:{_previous_text_color};
+                background:{_connection_panel_color}; border-color:{_connection_panel_color}; color:{_connection_panel_text_color};
             }}
             .retirement-connection-stop.next {{
-                background:{_next_color}; border-color:{_next_color}; color:{_next_text_color};
+                background:{_connection_panel_color}; border-color:{_connection_panel_color}; color:{_connection_panel_text_color};
             }}
             .retirement-connection-stop .stop-caption {{
-                display:block; font-size:11px; color:{_previous_text_color};
+                display:block; font-size:11px; color:{_connection_panel_text_color};
                 font-weight:700; margin:0;
             }}
             .retirement-connection-stop.next .stop-caption {{
-                color:{_next_text_color};
+                color:{_connection_panel_text_color};
             }}
             .retirement-connection-stop .retirement-number-circle {{
                 display:inline-flex; width:25px; height:25px; flex:0 0 25px;
@@ -2700,12 +2703,12 @@ def _show_retirement_connection_dialog():
                 color:#222; font-size:51px; font-weight:900; line-height:.8;
             }}
             .st-key-retirement-connection-read-list {{
-                background:{_previous_color} !important; color:{_previous_text_color} !important;
-                border-color:{_previous_color} !important;
+                background:{_connection_panel_color} !important; color:{_connection_panel_text_color} !important;
+                border-color:{_connection_panel_color} !important;
             }}
             .st-key-retirement-connection-recommend-list {{
-                background:{_next_color} !important; color:{_next_text_color} !important;
-                border-color:{_next_color} !important;
+                background:{_connection_panel_color} !important; color:{_connection_panel_text_color} !important;
+                border-color:{_connection_panel_color} !important;
             }}
             .st-key-retirement-connection-read-list [data-testid="stMarkdownContainer"],
             .st-key-retirement-connection-recommend-list [data-testid="stMarkdownContainer"],
@@ -2716,14 +2719,14 @@ def _show_retirement_connection_dialog():
             .st-key-retirement-connection-platform div[class*="st-key-retirement_connection_next_"] button {{
                 background:transparent !important; background-color:transparent !important;
                 border:0 !important; box-shadow:none !important;
-                color:{_next_text_color} !important; -webkit-text-fill-color:{_next_text_color} !important;
+                color:{_connection_panel_text_color} !important; -webkit-text-fill-color:{_connection_panel_text_color} !important;
                 text-align:left !important; justify-content:flex-start !important;
                 white-space:normal !important; height:auto !important; min-height:30px !important;
                 padding:3px 2px !important;
             }}
             .st-key-retirement-connection-platform div[class*="st-key-retirement_connection_next_"] button *,
             .st-key-retirement-connection-platform div[class*="st-key-retirement_connection_next_"] button p {{
-                color:{_next_text_color} !important; -webkit-text-fill-color:{_next_text_color} !important;
+                color:{_connection_panel_text_color} !important; -webkit-text-fill-color:{_connection_panel_text_color} !important;
             }}
             .retirement-connection-columns {{
                 display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-top:4px;
@@ -2764,17 +2767,17 @@ def _show_retirement_connection_dialog():
                 align-items:center !important;
             }}
             .retirement-connection-list {{
-                border:1px solid rgba(0,0,0,.14); border-radius:11px;
+                border:1px solid rgba(255,255,255,.42); border-radius:11px;
                 padding:10px 9px; min-width:0;
             }}
             .retirement-connection-list h4 {{
                 color:inherit; font-size:14px; margin:0 0 9px 0;
-                padding-bottom:7px; border-bottom:1px solid rgba(0,0,0,.12);
+                padding-bottom:7px; border-bottom:1px solid rgba(255,255,255,.35);
             }}
             .retirement-history-item {{
                 display:flex; align-items:flex-start; gap:7px;
                 padding:6px 1px; color:inherit; font-size:12px;
-                line-height:1.4; border-bottom:1px solid rgba(0,0,0,.06);
+                line-height:1.4; border-bottom:1px solid rgba(255,255,255,.22);
             }}
             .retirement-number-circle {{
                 display:inline-flex; flex:0 0 22px; width:22px; height:22px;
@@ -2805,7 +2808,7 @@ def _show_retirement_connection_dialog():
                 text-align:left !important; gap:2px !important;
                 padding:3px 2px !important; background:transparent !important;
                 background-color:transparent !important; border:0 !important;
-                box-shadow:none !important; color:#222 !important;
+                box-shadow:none !important; color:#FFFFFF !important; -webkit-text-fill-color:#FFFFFF !important;
                 font-size:12px !important; font-weight:650 !important;
             }}
             .st-key-retirement-connection-platform .st-key-retirement-connection-choice-0 [data-testid="stButton"] button > div,
@@ -2825,7 +2828,7 @@ def _show_retirement_connection_dialog():
             .st-key-retirement-connection-platform .st-key-retirement-connection-choice-0 [data-testid="stButton"] button:hover,
             .st-key-retirement-connection-platform .st-key-retirement-connection-choice-1 [data-testid="stButton"] button:hover,
             .st-key-retirement-connection-platform .st-key-retirement-connection-choice-2 [data-testid="stButton"] button:hover {{
-                color:{_next_text_color} !important; -webkit-text-fill-color:{_next_text_color} !important;
+                color:{_connection_panel_text_color} !important; -webkit-text-fill-color:{_connection_panel_text_color} !important;
                 background:rgba(255,255,255,.16) !important;
             }}
             @media (max-width:480px) {{
