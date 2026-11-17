@@ -6637,7 +6637,6 @@ elif selected_page == "통계":
     }
     _source_labels.update({
         "6030200-01": "국가데이터처 「2024년 국민이전계정」",
-        "6052500-00": "나침반 콘텐츠 키워드 지도",
     })
     if _active_source_id in _source_labels:
         with st.container(key="source-return-bar"):
@@ -6793,7 +6792,7 @@ elif selected_page == "통계":
     # 1단원. 생애주기·세대
     #--------------------------------------------------------
     with st.expander("1단원. 생애주기·세대", expanded=True, key="stats-continent-l"):
-        # 6.06.17.00 | 16. 세대 계승 생애주기 재정곡선
+        # 6.06.17.00 | NCH-0005
         #--------------------------------------------------------
         st.markdown('<div id="stats-anchor-nta-generational" style="scroll-margin-top: 150px;"></div>', unsafe_allow_html=True)
         with st.popover(_stats_label("6051700-00")):
@@ -6827,7 +6826,7 @@ elif selected_page == "통계":
     """)
 
         #--------------------------------------------------------
-        # 6.06.02.00 | 1. 소득과 소비의 생애주기
+        # 6.06.02.00 | NCH-0001
         #--------------------------------------------------------
         st.markdown('<div id="stats-anchor-lifecycle-income" style="scroll-margin-top: 150px;"></div>', unsafe_allow_html=True)
         with st.popover(_stats_label("6050200-00")):
@@ -7012,7 +7011,7 @@ elif selected_page == "통계":
                 st.info("국민이전계정 누적 노동잉여 기준데이터 파일을 찾지 못했습니다. data/기준데이터 파일을 확인해 주세요.")
 
         #--------------------------------------------------------
-        # 6.06.04.00 | 3. 노후와 은퇴
+        # 6.06.04.00 | NCH-0002
         #--------------------------------------------------------
         st.markdown(
             '<div id="stats-anchor-retirement-expense" style="scroll-margin-top: 150px;"></div>',
@@ -7058,7 +7057,7 @@ elif selected_page == "통계":
                         st.info("산출 방법 파일을 현재 앱에서 찾을 수 없습니다.")
 
         #--------------------------------------------------------
-        # 6.06.10.00 | 9. 고령층 근로연령 통계
+        # 6.06.10.00 | NCH-0003
         #--------------------------------------------------------
         st.markdown('<div id="stats-anchor-older-work" style="scroll-margin-top: 150px;"></div>', unsafe_allow_html=True)
         with st.popover(_stats_label("6051000-00")):
@@ -7133,7 +7132,7 @@ elif selected_page == "통계":
     """)
 
         #--------------------------------------------------------
-        # 6.06.11.00 | 10. 통계로 본 대한민국 3대 은퇴 분기점
+        # 6.06.11.00 | NCH-0004
         #--------------------------------------------------------
         st.markdown('<div id="stats-anchor-retirement-milestones" style="scroll-margin-top: 150px;"></div>', unsafe_allow_html=True)
         with st.popover(_stats_label("6051100-00")):
@@ -7179,7 +7178,7 @@ OECD 「Pensions at a Glance 2025: Korea」는 2024년 한국의 실질 노동�
     """, unsafe_allow_html=True)
 
         #--------------------------------------------------------
-        # 6.06.19.00 | 18. 은퇴와 수입 단절
+        # 6.06.19.00 | NCH-0006
         #--------------------------------------------------------
         st.markdown('<div id="stats-anchor-retirement-income-stop" style="scroll-margin-top: 150px;"></div>', unsafe_allow_html=True)
         with st.popover(_stats_label("6051900-00")):
@@ -7219,7 +7218,7 @@ OECD 「Pensions at a Glance 2025: Korea」는 2024년 한국의 실질 노동�
     # 2단원. 소득·노동·사업
     #--------------------------------------------------------
     with st.expander("2단원. 소득·노동·사업", expanded=True, key="stats-continent-i"):
-        # 6.06.07.00 | 6. 연령별 임금과 임금지수
+        # 6.06.07.00 | NCH-0007
         #--------------------------------------------------------
         st.markdown('<div id="stats-anchor-income-statistics" style="scroll-margin-top: 150px;"></div>', unsafe_allow_html=True)
         with st.popover(_stats_label("6050700-00")):
@@ -7277,7 +7276,7 @@ OECD 「Pensions at a Glance 2025: Korea」는 2024년 한국의 실질 노동�
     """)
 
         #--------------------------------------------------------
-        # 6.06.12.00 | 11. 우리 가정 소득곡선 보정
+        # 6.06.12.00 | NCH-0008
         #--------------------------------------------------------
         st.markdown('<div id="stats-anchor-household-income-after-retirement" style="scroll-margin-top: 150px;"></div>', unsafe_allow_html=True)
         with st.popover(_stats_label("6051200-00")):
@@ -7315,7 +7314,7 @@ OECD 「Pensions at a Glance 2025: Korea」는 2024년 한국의 실질 노동�
     """, unsafe_allow_html=True)
 
         #--------------------------------------------------------
-        # 6.06.16.00 | 15. 소득 기준곡선 산출 근거
+        # 6.06.16.00 | NCH-0009
         #--------------------------------------------------------
         st.markdown('<div id="stats-anchor-income-curve-method" style="scroll-margin-top: 150px;"></div>', unsafe_allow_html=True)
         with st.popover(_stats_label("6051600-00")):
@@ -7344,7 +7343,7 @@ OECD 「Pensions at a Glance 2025: Korea」는 2024년 한국의 실질 노동�
     """)
 
         #--------------------------------------------------------
-        # 6.06.06.00 | 5. 동시성과 통시성
+        # 6.06.06.00 | NCH-0022
         #--------------------------------------------------------
         st.markdown('<div id="stats-anchor-time-adjustment" style="scroll-margin-top: 150px;"></div>', unsafe_allow_html=True)
         with st.popover(_stats_label("6050600-00") + " · 심화학습"):
@@ -7479,7 +7478,7 @@ OECD 「Pensions at a Glance 2025: Korea」는 2024년 한국의 실질 노동�
     # 3단원. 소비·지출
     #--------------------------------------------------------
     with st.expander("3단원. 소비·지출", expanded=True, key="stats-continent-c"):
-        # 6.06.14.00 | 13. 지출 통계 출처 및 산출방법
+        # 6.06.14.00 | NCH-0010
         #--------------------------------------------------------
         st.markdown('<div id="stats-anchor-spending-method" style="scroll-margin-top: 150px;"></div>', unsafe_allow_html=True)
         with st.popover(_stats_label("6051400-00")):
@@ -7515,7 +7514,7 @@ OECD 「Pensions at a Glance 2025: Korea」는 2024년 한국의 실질 노동�
                         st.info("산출 방법 파일을 현재 앱에서 찾을 수 없습니다.")
 
         #--------------------------------------------------------
-        # 6.06.13.00 | 12. 과거 가계부의 현재적 보정
+        # 6.06.13.00 | NCH-0023
         #--------------------------------------------------------
         st.markdown('<div id="stats-anchor-historical-comparison" style="scroll-margin-top: 150px;"></div>', unsafe_allow_html=True)
         with st.popover(_stats_label("6051300-00") + " · 심화학습"):
@@ -7543,7 +7542,7 @@ OECD 「Pensions at a Glance 2025: Korea」는 2024년 한국의 실질 노동�
     # 4단원. 주거·자산
     #--------------------------------------------------------
     with st.expander("4단원. 주거·자산", expanded=True, key="stats-continent-h"):
-        # 6.06.03.00 | 2. 결혼과 주거
+        # 6.06.03.00 | NCH-0011
         #--------------------------------------------------------
         st.markdown('<div id="stats-anchor-marriage-housing" style="scroll-margin-top: 150px;"></div>', unsafe_allow_html=True)
         with st.popover(_stats_label("6050300-00")):
@@ -7580,7 +7579,7 @@ OECD 「Pensions at a Glance 2025: Korea」는 2024년 한국의 실질 노동�
 자료: [국무조정실 「2024년 청년의 삶 실태조사 결과 발표」](https://www.opm.go.kr/opm/news/press-release.do?articleNo=158583&mode=view)
     """)
         #--------------------------------------------------------
-        # 6.06.05.00 | 4. 주택대출과 원리금 분리
+        # 6.06.05.00 | NCH-0012
         #--------------------------------------------------------
         st.markdown(
             '<div id="stats-anchor-loan-payment" style="scroll-margin-top: 150px;"></div>',
@@ -7613,14 +7612,14 @@ OECD 「Pensions at a Glance 2025: Korea」는 2024년 한국의 실질 노동�
 자료: [국토교통부 「2024년도 주거실태조사 결과」(2025.11.17.)](https://www.molit.go.kr/USR/NEWS/dtl.jsp?id=95091415&lcmspage=2)
     """)
         #--------------------------------------------------------
-        # 6.06.15.00 | 14. 지역별 부동산 산정 기준
+        # 6.06.15.00 | NCH-0013
         #--------------------------------------------------------
         st.markdown('<div id="stats-anchor-housing-method" style="scroll-margin-top: 150px;"></div>', unsafe_allow_html=True)
         with st.popover(_stats_label("6051500-00")):
             st.markdown(_HOUSING_METHOD_REPORT_MD)
 
         #--------------------------------------------------------
-        # 6.06.22.00 | 21. 주택구입
+        # 6.06.22.00 | NCH-0014
         #--------------------------------------------------------
         st.markdown('<div id="stats-anchor-event-housing" style="scroll-margin-top: 150px;"></div>', unsafe_allow_html=True)
         with st.popover(_stats_label("6052200-00")):
@@ -7664,7 +7663,7 @@ OECD 「Pensions at a Glance 2025: Korea」는 2024년 한국의 실질 노동�
     # 5단원. 생애사건·빅5 이벤트
     #--------------------------------------------------------
     with st.expander("5단원. 생애사건·빅5 이벤트", expanded=True, key="stats-continent-e"):
-        # 6.06.08.00 | 7. 결혼비용 통계
+        # 6.06.08.00 | NCH-0015
         #--------------------------------------------------------
         st.markdown('<div id="stats-anchor-marriage-cost" style="scroll-margin-top: 150px;"></div>', unsafe_allow_html=True)
         with st.popover(_stats_label("6050800-00")):
@@ -7809,7 +7808,7 @@ OECD 「Pensions at a Glance 2025: Korea」는 2024년 한국의 실질 노동�
 
         #--------------------------------------------------------
         #--------------------------------------------------------
-        # 6.06.09.00 | 8. 빅5 우리집 이벤트 개요
+        # 6.06.09.00 | NCH-0016
         #--------------------------------------------------------
         st.markdown('<div id="stats-anchor-household-events" style="scroll-margin-top: 150px;"></div>', unsafe_allow_html=True)
         with st.popover(_stats_label("6050900-00")):
@@ -7833,7 +7832,7 @@ OECD 「Pensions at a Glance 2025: Korea」는 2024년 한국의 실질 노동�
 
 각 사건의 통계 근거, 비용 산식, 중복 조정과 모델 가정은 아래 개별 리포트에서 확인할 수 있습니다.
     """)
-        # 6.06.18.00 | 17. 여성의 출산·육아와 경력단절
+        # 6.06.18.00 | NCH-0017
         #--------------------------------------------------------
         st.markdown('<div id="stats-anchor-career-break" style="scroll-margin-top: 150px;"></div>', unsafe_allow_html=True)
         with st.popover(_stats_label("6051800-00")):
@@ -7868,7 +7867,7 @@ OECD 「Pensions at a Glance 2025: Korea」는 2024년 한국의 실질 노동�
     """)
 
         #--------------------------------------------------------
-        # 6.06.20.00 | 19. 나의 결혼
+        # 6.06.20.00 | NCH-0018
         #--------------------------------------------------------
         st.markdown('<div id="stats-anchor-event-own-marriage" style="scroll-margin-top: 150px;"></div>', unsafe_allow_html=True)
         with st.popover(_stats_label("6052000-00")):
@@ -7897,7 +7896,7 @@ OECD 「Pensions at a Glance 2025: Korea」는 2024년 한국의 실질 노동�
     """)
 
         #--------------------------------------------------------
-        # 6.06.21.00 | 20. 출산과 육아
+        # 6.06.21.00 | NCH-0019
         #--------------------------------------------------------
         st.markdown('<div id="stats-anchor-event-childcare" style="scroll-margin-top: 150px;"></div>', unsafe_allow_html=True)
         with st.popover(_stats_label("6052100-00")):
@@ -7930,7 +7929,7 @@ OECD 「Pensions at a Glance 2025: Korea」는 2024년 한국의 실질 노동�
     """)
 
         #--------------------------------------------------------
-        # 6.06.23.00 | 22. 자녀 대학
+        # 6.06.23.00 | NCH-0020
         #--------------------------------------------------------
         st.markdown('<div id="stats-anchor-event-college" style="scroll-margin-top: 150px;"></div>', unsafe_allow_html=True)
         with st.popover(_stats_label("6052300-00")):
@@ -7973,7 +7972,7 @@ OECD 「Pensions at a Glance 2025: Korea」는 2024년 한국의 실질 노동�
     """)
 
         #--------------------------------------------------------
-        # 6.06.24.00 | 23. 자녀 결혼
+        # 6.06.24.00 | NCH-0021
         #--------------------------------------------------------
         st.markdown('<div id="stats-anchor-event-child-marriage" style="scroll-margin-top: 150px;"></div>', unsafe_allow_html=True)
         with st.popover(_stats_label("6052400-00")):
