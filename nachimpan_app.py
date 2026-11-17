@@ -9719,3 +9719,55 @@ line-height: 1 !important;
 }
 </style>
 """, unsafe_allow_html=True)
+
+
+# 추천 보고서 목록: 파일 하단의 기존 중앙정렬 규칙보다 우선하는 최종 정렬 보정
+st.markdown("""
+<style>
+.st-key-retirement-connection-bottom .st-key-retirement-connection-choice-0 [data-testid="stHorizontalBlock"],
+.st-key-retirement-connection-bottom .st-key-retirement-connection-choice-1 [data-testid="stHorizontalBlock"],
+.st-key-retirement-connection-bottom .st-key-retirement-connection-choice-2 [data-testid="stHorizontalBlock"] {
+    align-items: stretch !important;
+}
+.st-key-retirement-connection-bottom .st-key-retirement-connection-choice-0 [data-testid="stColumn"]:first-child,
+.st-key-retirement-connection-bottom .st-key-retirement-connection-choice-1 [data-testid="stColumn"]:first-child,
+.st-key-retirement-connection-bottom .st-key-retirement-connection-choice-2 [data-testid="stColumn"]:first-child {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+}
+.st-key-retirement-connection-bottom .st-key-retirement-connection-choice-0 [data-testid="stColumn"]:first-child > [data-testid="stVerticalBlock"],
+.st-key-retirement-connection-bottom .st-key-retirement-connection-choice-1 [data-testid="stColumn"]:first-child > [data-testid="stVerticalBlock"],
+.st-key-retirement-connection-bottom .st-key-retirement-connection-choice-2 [data-testid="stColumn"]:first-child > [data-testid="stVerticalBlock"] {
+    width: 100% !important;
+    height: 100% !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+}
+.st-key-retirement-connection-bottom .st-key-retirement-connection-choice-0 [data-testid="stColumn"]:last-child,
+.st-key-retirement-connection-bottom .st-key-retirement-connection-choice-1 [data-testid="stColumn"]:last-child,
+.st-key-retirement-connection-bottom .st-key-retirement-connection-choice-2 [data-testid="stColumn"]:last-child {
+    min-width: 0 !important;
+    text-align: left !important;
+}
+.st-key-retirement-connection-bottom .st-key-retirement-connection-choice-0 [data-testid="stColumn"]:last-child button,
+.st-key-retirement-connection-bottom .st-key-retirement-connection-choice-1 [data-testid="stColumn"]:last-child button,
+.st-key-retirement-connection-bottom .st-key-retirement-connection-choice-2 [data-testid="stColumn"]:last-child button {
+    display: flex !important;
+    align-items: flex-start !important;
+    justify-content: flex-start !important;
+    text-align: left !important;
+}
+.st-key-retirement-connection-bottom .st-key-retirement-connection-choice-0 [data-testid="stColumn"]:last-child button [data-testid="stMarkdownContainer"],
+.st-key-retirement-connection-bottom .st-key-retirement-connection-choice-1 [data-testid="stColumn"]:last-child button [data-testid="stMarkdownContainer"],
+.st-key-retirement-connection-bottom .st-key-retirement-connection-choice-2 [data-testid="stColumn"]:last-child button [data-testid="stMarkdownContainer"],
+.st-key-retirement-connection-bottom .st-key-retirement-connection-choice-0 [data-testid="stColumn"]:last-child button [data-testid="stMarkdownContainer"] *,
+.st-key-retirement-connection-bottom .st-key-retirement-connection-choice-1 [data-testid="stColumn"]:last-child button [data-testid="stMarkdownContainer"] *,
+.st-key-retirement-connection-bottom .st-key-retirement-connection-choice-2 [data-testid="stColumn"]:last-child button [data-testid="stMarkdownContainer"] * {
+    width: 100% !important;
+    text-align: left !important;
+    justify-content: flex-start !important;
+}
+</style>
+""", unsafe_allow_html=True)
