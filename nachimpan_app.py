@@ -7810,7 +7810,7 @@ OECD 「Pensions at a Glance 2025: Korea」는 2024년 한국의 실질 노동�
     # 6.06.25.00 | 24. 나침반 콘텐츠 키워드 지도
     #--------------------------------------------------------
     st.markdown('<div id="stats-anchor-keyword-map" style="scroll-margin-top: 150px;"></div>', unsafe_allow_html=True)
-    with st.expander("24. 나침반 콘텐츠 키워드 지도", expanded=_active_source_id == "6052500-00"):
+    with st.expander("부록. 나침반 콘텐츠 키워드 지도", expanded=_active_source_id == "6052500-00"):
         st.markdown("""
 **나침반에 담긴 지식은 어떤 단어들로 연결될까요?**
 
