@@ -2810,22 +2810,35 @@ def _show_retirement_connection_dialog():
                 color:inherit; opacity:.82; font-size:11px; line-height:1.25;
                 margin:1px 0 0 0; text-align:left;
             }}
+            /* 오른쪽 추천 항목도 왼쪽 읽은 보고서와 같은 한 줄 행 형식으로 표시 */
+            .st-key-retirement-connection-platform .st-key-retirement-connection-choice-0,
+            .st-key-retirement-connection-platform .st-key-retirement-connection-choice-1,
+            .st-key-retirement-connection-platform .st-key-retirement-connection-choice-2 {{
+                padding:6px 1px !important;
+                border-bottom:1px solid rgba(255,255,255,.22) !important;
+            }}
+            .st-key-retirement-connection-platform .st-key-retirement-connection-choice-0 [data-testid="stHorizontalBlock"],
+            .st-key-retirement-connection-platform .st-key-retirement-connection-choice-1 [data-testid="stHorizontalBlock"],
+            .st-key-retirement-connection-platform .st-key-retirement-connection-choice-2 [data-testid="stHorizontalBlock"] {{
+                align-items:center !important; gap:7px !important;
+            }}
             .st-key-retirement-connection-platform .st-key-retirement-connection-choice-0 [data-testid="stButton"] button,
             .st-key-retirement-connection-platform .st-key-retirement-connection-choice-1 [data-testid="stButton"] button,
             .st-key-retirement-connection-platform .st-key-retirement-connection-choice-2 [data-testid="stButton"] button {{
-                min-height:42px !important; height:auto !important; width:100% !important;
-                display:flex !important; flex-direction:column !important;
-                align-items:flex-start !important; justify-content:center !important;
-                text-align:left !important; gap:2px !important;
-                padding:3px 2px !important; background:transparent !important;
-                background-color:transparent !important; border:0 !important;
-                box-shadow:none !important; color:#FFFFFF !important; -webkit-text-fill-color:#FFFFFF !important;
-                font-size:12px !important; font-weight:650 !important;
+                min-height:22px !important; height:auto !important; width:100% !important;
+                display:flex !important; flex-direction:row !important;
+                align-items:center !important; justify-content:flex-start !important;
+                text-align:left !important; padding:0 1px !important;
+                background:transparent !important; background-color:transparent !important;
+                border:0 !important; box-shadow:none !important;
+                color:#FFFFFF !important; -webkit-text-fill-color:#FFFFFF !important;
+                font-size:12px !important; font-weight:500 !important; line-height:1.4 !important;
+                white-space:normal !important;
             }}
             .st-key-retirement-connection-platform .st-key-retirement-connection-choice-0 [data-testid="stButton"] button > div,
             .st-key-retirement-connection-platform .st-key-retirement-connection-choice-1 [data-testid="stButton"] button > div,
             .st-key-retirement-connection-platform .st-key-retirement-connection-choice-2 [data-testid="stButton"] button > div {{
-                width:100% !important; align-items:flex-start !important;
+                width:100% !important; align-items:center !important;
                 justify-content:flex-start !important; text-align:left !important;
             }}
             .st-key-retirement-connection-platform .st-key-retirement-connection-choice-0 [data-testid="stButton"] [data-testid="stMarkdownContainer"],
@@ -2834,18 +2847,12 @@ def _show_retirement_connection_dialog():
             .st-key-retirement-connection-platform .st-key-retirement-connection-choice-0 [data-testid="stButton"] p,
             .st-key-retirement-connection-platform .st-key-retirement-connection-choice-1 [data-testid="stButton"] p,
             .st-key-retirement-connection-platform .st-key-retirement-connection-choice-2 [data-testid="stButton"] p {{
-                width:100% !important; text-align:left !important;
+                width:100% !important; text-align:left !important; margin:0 !important;
             }}
-            /* Streamlit 버튼 내부의 말줄임 래퍼까지 왼쪽 정렬을 강제해 줄바꿈된 제목도 같은 기준선 유지 */
             .st-key-retirement-connection-platform .st-key-retirement-connection-choice-0 [data-testid="stButton"] button *,
             .st-key-retirement-connection-platform .st-key-retirement-connection-choice-1 [data-testid="stButton"] button *,
             .st-key-retirement-connection-platform .st-key-retirement-connection-choice-2 [data-testid="stButton"] button * {{
                 text-align:left !important;
-            }}
-            .st-key-retirement-connection-platform .st-key-retirement-connection-choice-0 [data-testid="stButton"] [data-testid="stMarkdownContainer"],
-            .st-key-retirement-connection-platform .st-key-retirement-connection-choice-1 [data-testid="stButton"] [data-testid="stMarkdownContainer"],
-            .st-key-retirement-connection-platform .st-key-retirement-connection-choice-2 [data-testid="stButton"] [data-testid="stMarkdownContainer"] {{
-                display:block !important; align-self:flex-start !important; width:100% !important;
             }}
             .st-key-retirement-connection-platform .st-key-retirement-connection-choice-0 [data-testid="stButton"] button:hover,
             .st-key-retirement-connection-platform .st-key-retirement-connection-choice-1 [data-testid="stButton"] button:hover,
