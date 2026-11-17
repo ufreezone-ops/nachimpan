@@ -7072,7 +7072,7 @@ OECD 「Pensions at a Glance 2025: Korea」는 2024년 한국의 실질 노동�
     """)
 
         #--------------------------------------------------------
-    _render_master_data_items("L")
+        _render_master_data_items("L")
 
     #--------------------------------------------------------
     # 2단원. 소득·노동·사업
@@ -7333,7 +7333,7 @@ OECD 「Pensions at a Glance 2025: Korea」는 2024년 한국의 실질 노동�
     """)
 
         #--------------------------------------------------------
-    _render_master_data_items("I")
+        _render_master_data_items("I")
 
     #--------------------------------------------------------
     # 3단원. 소비·지출
@@ -7397,7 +7397,7 @@ OECD 「Pensions at a Glance 2025: Korea」는 2024년 한국의 실질 노동�
     """)
 
         #--------------------------------------------------------
-    _render_master_data_items("C")
+        _render_master_data_items("C")
 
     #--------------------------------------------------------
     # 4단원. 주거·자산
@@ -7519,7 +7519,7 @@ OECD 「Pensions at a Glance 2025: Korea」는 2024년 한국의 실질 노동�
     """)
 
         #--------------------------------------------------------
-    _render_master_data_items("H")
+        _render_master_data_items("H")
 
     #--------------------------------------------------------
     # 5단원. 생애사건·빅5 이벤트
@@ -7867,7 +7867,7 @@ OECD 「Pensions at a Glance 2025: Korea」는 2024년 한국의 실질 노동�
 
 
         #--------------------------------------------------------
-    _render_master_data_items("E")
+        _render_master_data_items("E")
 
     if st.session_state.get("_catalog_resource_open", False):
         _show_master_resource_dialog()
