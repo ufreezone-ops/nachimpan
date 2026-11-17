@@ -2693,7 +2693,7 @@ def _show_retirement_connection_dialog():
                 color:inherit; font-size:21px; line-height:1;
             }}
             .retirement-connection-center .direction-arrow {{
-                color:#222; font-size:17px; font-weight:900; line-height:1;
+                color:#222; font-size:51px; font-weight:900; line-height:.8;
             }}
             .st-key-retirement-connection-read-list {{
                 background:{_previous_color} !important; color:{_previous_text_color} !important;
@@ -2776,10 +2776,12 @@ def _show_retirement_connection_dialog():
                 display:inline-flex; flex:0 0 22px; width:22px; height:22px;
                 align-items:center; justify-content:center; border-radius:50%;
                 background:{_previous_color}; border:4.5px solid {_previous_color};
+                box-shadow:0 0 0 2px #fff;
                 box-sizing:border-box; color:#fff; font-size:11px; font-weight:850;
             }}
             .retirement-connection-stop .retirement-number-circle {{
                 border:4.5px solid {_previous_color};
+                box-shadow:0 0 0 2px #fff;
                 box-sizing:border-box;
             }}
             .retirement-connection-stop.next .retirement-number-circle {{
@@ -2793,8 +2795,10 @@ def _show_retirement_connection_dialog():
             .st-key-retirement-connection-platform .st-key-retirement-connection-choice-0 [data-testid="stButton"] button,
             .st-key-retirement-connection-platform .st-key-retirement-connection-choice-1 [data-testid="stButton"] button,
             .st-key-retirement-connection-platform .st-key-retirement-connection-choice-2 [data-testid="stButton"] button {{
-                min-height:30px !important; height:auto !important; width:100% !important;
-                justify-content:flex-start !important; text-align:left !important;
+                min-height:42px !important; height:auto !important; width:100% !important;
+                display:flex !important; flex-direction:column !important;
+                align-items:flex-start !important; justify-content:center !important;
+                text-align:left !important; gap:2px !important;
                 padding:3px 2px !important; background:transparent !important;
                 background-color:transparent !important; border:0 !important;
                 box-shadow:none !important; color:#222 !important;
@@ -2813,7 +2817,7 @@ def _show_retirement_connection_dialog():
                 .retirement-connection-stop .stop-name {{ font-size:11px; }}
                 .retirement-connection-center {{ min-width:38px; font-size:10px; gap:1px; }}
                 .retirement-connection-center .compass {{ width:25px; height:25px; font-size:18px; }}
-                .retirement-connection-center .direction-arrow {{ font-size:15px; }}
+                .retirement-connection-center .direction-arrow {{ font-size:45px; }}
                 .retirement-connection-columns {{ gap:7px; }}
                 .retirement-connection-list {{ padding:8px 6px; }}
                 .retirement-connection-list h4 {{ font-size:12px; }}
@@ -2895,17 +2899,18 @@ def _show_retirement_connection_dialog():
                                         st.session_state["_retirement_explorer_source_id"] = _item["source_id"]
                                         st.session_state["_retirement_connection_open"] = False
                                         st.rerun()
-                                    st.markdown(
-                                        f"<div class='retirement-recommendation-score'>연관성 {_score}%</div>",
-                                        unsafe_allow_html=True,
-                                    )
                             st.markdown(
                                 f"<style>"
                                 f".st-key-retirement-connection-platform div[class*='st-key-retirement_connection_next_{_index}'] button,"
                                 f".st-key-retirement-connection-platform div[class*='st-key-retirement_connection_next_{_index}'] button *"
                                 f"{{color:{_next_text_color}!important;-webkit-text-fill-color:{_next_text_color}!important;"
                                 f"background:transparent!important;background-color:transparent!important;border:0!important;"
-                                f"box-shadow:none!important;text-align:left!important;justify-content:flex-start!important;}}"
+                                f"box-shadow:none!important;text-align:left!important;}}"
+                                f".st-key-retirement-connection-platform div[class*='st-key-retirement_connection_next_{_index}'] button::after"
+                                f"{{content:'연관성 {_score}%';display:block;align-self:flex-start;"
+                                f"margin:1px 0 0 0;color:{_next_text_color}!important;"
+                                f"-webkit-text-fill-color:{_next_text_color}!important;"
+                                f"font-size:11px!important;font-weight:500!important;line-height:1.25!important;}}"
                                 f"</style>",
                                 unsafe_allow_html=True,
                             )
