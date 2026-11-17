@@ -6987,8 +6987,8 @@ OECD 「Pensions at a Glance 2025: Korea」는 2024년 한국의 실질 노동�
     """)
 
         #--------------------------------------------------------
-    with st.expander("함께 보는 기준·원자료", expanded=False):
-        st.markdown(f"""
+    st.markdown("**함께 보는 기준·원자료**")
+    st.markdown(f"""
 - {_display_by_legacy.get("D05", "7")}. 국민이전계정 연령별 누적 노동잉여
 - {_display_by_legacy.get("D13/D14", "8")}. 2024년 국민이전계정 생애주기적자계정 원자료
         """)
@@ -7252,8 +7252,8 @@ OECD 「Pensions at a Glance 2025: Korea」는 2024년 한국의 실질 노동�
     """)
 
         #--------------------------------------------------------
-    with st.expander("함께 보는 기준·원자료", expanded=False):
-        st.markdown(f"""
+    st.markdown("**함께 보는 기준·원자료**")
+    st.markdown(f"""
 - {_display_by_legacy.get("D06", "5")}. 연령별 임금근로일자리 중위소득
 - {_display_by_legacy.get("D07", "6")}. 연령별 임금근로일자리 평균보수
 - {_display_by_legacy.get("D08", "7")}. 소비자물가지수·임금지수 (심화학습 연계)
@@ -7321,8 +7321,8 @@ OECD 「Pensions at a Glance 2025: Korea」는 2024년 한국의 실질 노동�
     """)
 
         #--------------------------------------------------------
-    with st.expander("함께 보는 기준·원자료", expanded=False):
-        st.markdown(f"""
+    st.markdown("**함께 보는 기준·원자료**")
+    st.markdown(f"""
 - {_display_by_legacy.get("D03", "3")}. 가계동향조사 연령·가구원 수별 가계지출
 - {_display_by_legacy.get("D04", "4")}. 가계동향조사 가중중위값
 - {_display_by_legacy.get("D12", "5")}. 2024년 가계동향조사 MDIS 원자료
@@ -7448,8 +7448,8 @@ OECD 「Pensions at a Glance 2025: Korea」는 2024년 한국의 실질 노동�
     """)
 
         #--------------------------------------------------------
-    with st.expander("함께 보는 기준·원자료", expanded=False):
-        st.markdown(f"""
+    st.markdown("**함께 보는 기준·원자료**")
+    st.markdown(f"""
 - {_display_by_legacy.get("D01", "5")}. KB 연간 주택가격지수(17개 시도)
 - {_display_by_legacy.get("D09", "6")}. 생애최초 주택 구입자금 구성
 - {_display_by_legacy.get("D10", "7")}. 생애최초 주택 마련 연령
@@ -7801,8 +7801,8 @@ OECD 「Pensions at a Glance 2025: Korea」는 2024년 한국의 실질 노동�
 
 
         #--------------------------------------------------------
-    with st.expander("함께 보는 기준·원자료", expanded=False):
-        st.markdown(f"""
+    st.markdown("**함께 보는 기준·원자료**")
+    st.markdown(f"""
 - {_display_by_legacy.get("D02", "8")}. 대학등록금·대학생 생활비 기준
 - {_display_by_legacy.get("D11", "9")}. 신혼부부 결혼비용 자금원천
         """)
