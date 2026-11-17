@@ -2732,9 +2732,10 @@ def _show_retirement_connection_dialog():
                 width:100% !important; gap:8px !important;
             }}
             .st-key-retirement-connection-bottom > div > [data-testid="stHorizontalBlock"] > [data-testid="column"] {{
-                flex:1 1 0% !important; width:0 !important;
-                max-width:50% !important; min-width:0 !important;
-                box-sizing:border-box !important;
+                flex:0 0 calc((100% - 8px) / 2) !important;
+                width:calc((100% - 8px) / 2) !important;
+                max-width:calc((100% - 8px) / 2) !important;
+                min-width:0 !important; box-sizing:border-box !important;
             }}
             .st-key-retirement-connection-bottom [data-testid="column"] {{
                 min-width:0 !important; box-sizing:border-box !important;
