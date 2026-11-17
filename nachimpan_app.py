@@ -6541,11 +6541,11 @@ elif selected_page == "통계":
     #--------------------------------------------------------
     # 1단원. 생애주기·세대
     #--------------------------------------------------------
-    with st.expander("1단원. 생애주기·세대", expanded=_active_source_id == "6050400-01" or _active_source_id == "6051700-00" or _active_source_id == "6051900-00"):
+    with st.expander("1단원. 생애주기·세대", expanded=_active_source_id in ["6050200-00","6050400-01","6051000-00","6051100-00","6051700-00","6051900-00"]):
         # 6.06.02.00 | 1. 소득과 소비의 생애주기
         #--------------------------------------------------------
         st.markdown('<div id="stats-anchor-lifecycle-income" style="scroll-margin-top: 150px;"></div>', unsafe_allow_html=True)
-        with st.expander("1. 소득과 소비의 생애주기", expanded=True):
+        with st.expander("1. 소득과 소비의 생애주기", expanded=_active_source_id == "6050200-00"):
             st.markdown("""
 **국민이전계정(NTA)이 보여주는 생애주기**
 
@@ -6777,7 +6777,7 @@ elif selected_page == "통계":
         # 6.06.10.00 | 9. 고령층 근로연령 통계
         #--------------------------------------------------------
         st.markdown('<div id="stats-anchor-older-work" style="scroll-margin-top: 150px;"></div>', unsafe_allow_html=True)
-        with st.expander("3. 고령층 근로연령 통계", expanded=True):
+        with st.expander("3. 고령층 근로연령 통계", expanded=_active_source_id == "6051000-00"):
             st.markdown("""
 **은퇴를 몇 살로 생각하더라도, 실제 사회에서는 그 이후에도 일하는 사람이 적지 않습니다.** 이 자료는 개인의 은퇴 희망 연령과 사회의 고령층 근로 현실을 비교해 보기 위한 참고 자료입니다.
 
@@ -6973,7 +6973,7 @@ OECD 「Pensions at a Glance 2025: Korea」는 2024년 한국의 실질 노동�
     #--------------------------------------------------------
     # 2단원. 소득·노동·사업
     #--------------------------------------------------------
-    with st.expander("2단원. 소득·노동·사업", expanded=_active_source_id == "6051600-00"):
+    with st.expander("2단원. 소득·노동·사업", expanded=_active_source_id in ["6050700-00","6051200-00","6051600-00","6050600-00"]):
         # 6.06.07.00 | 6. 연령별 임금과 임금지수
         #--------------------------------------------------------
         st.markdown('<div id="stats-anchor-income-statistics" style="scroll-margin-top: 150px;"></div>', unsafe_allow_html=True)
@@ -7239,7 +7239,7 @@ OECD 「Pensions at a Glance 2025: Korea」는 2024년 한국의 실질 노동�
     #--------------------------------------------------------
     # 3단원. 소비·지출
     #--------------------------------------------------------
-    with st.expander("3단원. 소비·지출", expanded=_active_source_id == "6051400-00" or _active_source_id == "6051300-00"):
+    with st.expander("3단원. 소비·지출", expanded=_active_source_id in ["6051400-00","6051300-00"]):
         # 6.06.14.00 | 13. 지출 통계 출처 및 산출방법
         #--------------------------------------------------------
         st.markdown('<div id="stats-anchor-spending-method" style="scroll-margin-top: 150px;"></div>', unsafe_allow_html=True)
@@ -7308,7 +7308,7 @@ OECD 「Pensions at a Glance 2025: Korea」는 2024년 한국의 실질 노동�
     #--------------------------------------------------------
     # 4단원. 주거·자산
     #--------------------------------------------------------
-    with st.expander("4단원. 주거·자산", expanded=_active_source_id == "6050300-00" or _active_source_id == "6050500-01" or _active_source_id == "6051500-00" or _active_source_id == "6052200-00"):
+    with st.expander("4단원. 주거·자산", expanded=_active_source_id in ["6050300-00","6050500-01","6051500-00","6052200-00"]):
         # 6.06.03.00 | 2. 결혼과 주거
         #--------------------------------------------------------
         st.markdown('<div id="stats-anchor-marriage-housing" style="scroll-margin-top: 150px;"></div>', unsafe_allow_html=True)
@@ -7435,7 +7435,7 @@ OECD 「Pensions at a Glance 2025: Korea」는 2024년 한국의 실질 노동�
     #--------------------------------------------------------
     # 5단원. 생애사건·빅5 이벤트
     #--------------------------------------------------------
-    with st.expander("5단원. 생애사건·빅5 이벤트", expanded=_active_source_id == "6050900-00" or _active_source_id == "6051800-00" or _active_source_id == "6052000-00" or _active_source_id == "6052100-00" or _active_source_id == "6052300-00" or _active_source_id == "6052400-00"):
+    with st.expander("5단원. 생애사건·빅5 이벤트", expanded=_active_source_id in ["6050800-00","6050900-00","6051800-00","6052000-00","6052100-00","6052300-00","6052400-00"]):
         # 6.06.08.00 | 7. 결혼비용 통계
         #--------------------------------------------------------
         st.markdown('<div id="stats-anchor-marriage-cost" style="scroll-margin-top: 150px;"></div>', unsafe_allow_html=True)
