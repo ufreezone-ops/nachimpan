@@ -2720,6 +2720,28 @@ def _show_retirement_connection_dialog():
             .retirement-connection-columns {{
                 display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-top:4px;
             }}
+            /* 하단 좌우 패널과 각 추천 항목의 번호·제목을 모바일에서도 가로 정렬 */
+            .st-key-retirement-connection-bottom [data-testid="stHorizontalBlock"] {{
+                flex-wrap:nowrap !important; align-items:center !important;
+            }}
+            .st-key-retirement-connection-bottom [data-testid="column"] {{
+                min-width:0 !important;
+            }}
+            .st-key-retirement-connection-bottom .st-key-retirement-connection-choice-0 [data-testid="stHorizontalBlock"],
+            .st-key-retirement-connection-bottom .st-key-retirement-connection-choice-1 [data-testid="stHorizontalBlock"],
+            .st-key-retirement-connection-bottom .st-key-retirement-connection-choice-2 [data-testid="stHorizontalBlock"] {{
+                flex-wrap:nowrap !important; align-items:center !important; gap:6px !important;
+            }}
+            .st-key-retirement-connection-bottom .st-key-retirement-connection-choice-0 [data-testid="column"]:first-child,
+            .st-key-retirement-connection-bottom .st-key-retirement-connection-choice-1 [data-testid="column"]:first-child,
+            .st-key-retirement-connection-bottom .st-key-retirement-connection-choice-2 [data-testid="column"]:first-child {{
+                flex:0 0 27px !important; width:27px !important; min-width:27px !important;
+            }}
+            .st-key-retirement-connection-bottom .st-key-retirement-connection-choice-0 [data-testid="column"]:last-child,
+            .st-key-retirement-connection-bottom .st-key-retirement-connection-choice-1 [data-testid="stHorizontalBlock"] [data-testid="column"]:last-child,
+            .st-key-retirement-connection-bottom .st-key-retirement-connection-choice-2 [data-testid="column"]:last-child {{
+                flex:1 1 0 !important; width:0 !important; min-width:0 !important;
+            }}
             .retirement-connection-list {{
                 border:1px solid rgba(0,0,0,.14); border-radius:11px;
                 padding:10px 9px; min-width:0;
@@ -2796,69 +2818,70 @@ def _show_retirement_connection_dialog():
             unsafe_allow_html=True,
         )
 
-        _left, _right = st.columns(2, gap="small")
-        with _left:
-            with st.container(key="retirement-connection-read-list", border=True):
-                st.markdown("<h4 style='font-size:14px;margin:0 0 9px;'>← 읽은 보고서</h4>", unsafe_allow_html=True)
-                if _past_records:
-                    for _record in _past_records:
-                        _number = _record.get("display_label", "")
-                        _title = _record.get("title", "보고서")
-                        _color = _continent_color(_record)
-                        st.markdown(
-                            f"<div class='retirement-history-item'>"
-                            f"<span class='retirement-number-circle' style='background:{_color};border-color:{_color};'>"
-                            f"{_number}</span><span class='retirement-history-title'>{_title}</span></div>",
-                            unsafe_allow_html=True,
-                        )
-                else:
-                    st.caption("아직 읽은 보고서가 없습니다.")
+        with st.container(key="retirement-connection-bottom"):
+            _left, _right = st.columns(2, gap="small")
+            with _left:
+                with st.container(key="retirement-connection-read-list", border=True):
+                    st.markdown("<h4 style='font-size:14px;margin:0 0 9px;'>← 읽은 보고서</h4>", unsafe_allow_html=True)
+                    if _past_records:
+                        for _record in _past_records:
+                            _number = _record.get("display_label", "")
+                            _title = _record.get("title", "보고서")
+                            _color = _continent_color(_record)
+                            st.markdown(
+                                f"<div class='retirement-history-item'>"
+                                f"<span class='retirement-number-circle' style='background:{_color};border-color:{_color};'>"
+                                f"{_number}</span><span class='retirement-history-title'>{_title}</span></div>",
+                                unsafe_allow_html=True,
+                            )
+                    else:
+                        st.caption("아직 읽은 보고서가 없습니다.")
 
-        with _right:
-            with st.container(key="retirement-connection-recommend-list", border=True):
-                st.markdown("<h4 style='font-size:14px;margin:0 0 9px;'>다음 추천 보고서 →</h4>", unsafe_allow_html=True)
-                if _related_rows:
-                    for _index, _item in enumerate(_related_rows[:3]):
-                        _number = _item.get("display_label", "")
-                        _title = _item.get("title", "보고서")
-                        _score = max(0, min(100, int(_item["raw_score"])))
-                        _item_color = _continent_color(_by_source.get(_item["source_id"]))
-                        with st.container(key=f"retirement-connection-choice-{_index}"):
-                            _number_col, _title_col = st.columns([0.18, 0.82], gap="small")
-                            with _number_col:
-                                st.markdown(
-                                    f"<div style='display:flex;justify-content:center;padding-top:7px;'>"
-                                    f"<span class='retirement-number-circle' style='background:{_item_color};"
-                                    f"border-color:{_item_color};'>{_number}</span></div>",
-                                    unsafe_allow_html=True,
-                                )
-                            with _title_col:
-                                if st.button(
-                                    _title,
-                                    key=f"retirement_connection_next_{_index}",
-                                    use_container_width=True,
-                                    type="secondary",
-                                ):
-                                    st.session_state["_retirement_explorer_history"] = _history + (
-                                        [] if _history and _history[-1] == _item["source_id"]
-                                        else [_item["source_id"]]
+            with _right:
+                with st.container(key="retirement-connection-recommend-list", border=True):
+                    st.markdown("<h4 style='font-size:14px;margin:0 0 9px;'>다음 추천 보고서 →</h4>", unsafe_allow_html=True)
+                    if _related_rows:
+                        for _index, _item in enumerate(_related_rows[:3]):
+                            _number = _item.get("display_label", "")
+                            _title = _item.get("title", "보고서")
+                            _score = max(0, min(100, int(_item["raw_score"])))
+                            _item_color = _continent_color(_by_source.get(_item["source_id"]))
+                            with st.container(key=f"retirement-connection-choice-{_index}"):
+                                _number_col, _title_col = st.columns([0.18, 0.82], gap="small")
+                                with _number_col:
+                                    st.markdown(
+                                        f"<div style='display:flex;justify-content:center;align-items:center;height:100%;'>"
+                                        f"<span class='retirement-number-circle' style='background:{_item_color};"
+                                        f"border-color:{_item_color};'>{_number}</span></div>",
+                                        unsafe_allow_html=True,
                                     )
-                                    st.session_state["_retirement_explorer_source_id"] = _item["source_id"]
-                                    st.session_state["_retirement_connection_open"] = False
-                                    st.rerun()
-                        st.markdown(
-                            f"<style>"
-                            f".st-key-retirement-connection-platform div[class*='st-key-retirement_connection_next_{_index}'] button,"
-                            f".st-key-retirement-connection-platform div[class*='st-key-retirement_connection_next_{_index}'] button *"
-                            f"{{color:{_next_text_color}!important;-webkit-text-fill-color:{_next_text_color}!important;"
-                            f"background:transparent!important;background-color:transparent!important;border:0!important;"
-                            f"box-shadow:none!important;text-align:left!important;justify-content:flex-start!important;}}"
-                            f"</style>"
-                            f"<div class='retirement-recommendation-score'>연관성 {_score}%</div>",
-                            unsafe_allow_html=True,
-                        )
-                else:
-                    st.caption("현재 보고서에서 이어지는 추천 자료가 없습니다.")
+                                with _title_col:
+                                    if st.button(
+                                        _title,
+                                        key=f"retirement_connection_next_{_index}",
+                                        use_container_width=True,
+                                        type="secondary",
+                                    ):
+                                        st.session_state["_retirement_explorer_history"] = _history + (
+                                            [] if _history and _history[-1] == _item["source_id"]
+                                            else [_item["source_id"]]
+                                        )
+                                        st.session_state["_retirement_explorer_source_id"] = _item["source_id"]
+                                        st.session_state["_retirement_connection_open"] = False
+                                        st.rerun()
+                            st.markdown(
+                                f"<style>"
+                                f".st-key-retirement-connection-platform div[class*='st-key-retirement_connection_next_{_index}'] button,"
+                                f".st-key-retirement-connection-platform div[class*='st-key-retirement_connection_next_{_index}'] button *"
+                                f"{{color:{_next_text_color}!important;-webkit-text-fill-color:{_next_text_color}!important;"
+                                f"background:transparent!important;background-color:transparent!important;border:0!important;"
+                                f"box-shadow:none!important;text-align:left!important;justify-content:flex-start!important;}}"
+                                f"</style>"
+                                f"<div class='retirement-recommendation-score'>연관성 {_score}%</div>",
+                                unsafe_allow_html=True,
+                            )
+                    else:
+                        st.caption("현재 보고서에서 이어지는 추천 자료가 없습니다.")
 
         _close_spacer, _close_col = st.columns([7, 1])
         with _close_col:
