@@ -2905,6 +2905,28 @@ def _show_retirement_connection_dialog():
              .st-key-retirement-connection-platform [data-testid="stButton"] button p {{
                  text-decoration:none !important; border-bottom:0 !important; background-image:none !important;
              }}
+             .st-key-retirement-connection-top > [data-testid="stVerticalBlock"] > [data-testid="stHorizontalBlock"] {{
+                 display:flex !important; flex-direction:row !important;
+                 flex-wrap:nowrap !important; align-items:stretch !important;
+                 width:100% !important; gap:8px !important;
+             }}
+             .st-key-retirement-connection-top [data-testid="stColumn"] {{
+                 min-width:0 !important; box-sizing:border-box !important;
+             }}
+             .st-key-retirement-connection-top [data-testid="stColumn"]:first-child,
+             .st-key-retirement-connection-top [data-testid="stColumn"]:last-child {{
+                 flex:1 1 0 !important; width:calc((100% - 48px) / 2) !important;
+                 max-width:calc((100% - 48px) / 2) !important;
+             }}
+             .st-key-retirement-connection-top [data-testid="stColumn"]:nth-child(2) {{
+                 flex:0 0 42px !important; width:42px !important; max-width:42px !important;
+             }}
+             .st-key-retirement-connection-top .retirement-connection-stop {{
+                 width:100%; min-height:116px; box-sizing:border-box;
+             }}
+             .st-key-retirement-connection-top .retirement-top-arrow {{
+                 min-height:116px; height:100%; display:flex; align-items:center; justify-content:center;
+             }}
 </style>
             """,
             unsafe_allow_html=True,
@@ -2918,36 +2940,37 @@ def _show_retirement_connection_dialog():
             f"<span class='retirement-number-circle' style='background:{_next_color};color:#fff;'>{_next_number}</span>"
             if _next_number else ""
         )
-        _top_previous_col, _top_arrow_col, _top_next_col = st.columns([1, 0.12, 1], gap="small")
-        with _top_previous_col:
-            st.markdown(
-                f"<div class='retirement-connection-stop previous'>"
-                f"<span class='stop-caption'>이전 보고서</span>"
-                f"<div class='stop-main'>{_previous_number_html}<span class='stop-name'>{_previous_title}</span></div></div>",
-                unsafe_allow_html=True,
-            )
-        with _top_arrow_col:
-            st.markdown("<div class='retirement-top-arrow'>→</div>", unsafe_allow_html=True)
-        with _top_next_col:
-            with st.container(key="retirement-top-next-clickable"):
+        with st.container(key="retirement-connection-top"):
+            _top_previous_col, _top_arrow_col, _top_next_col = st.columns([1, 0.16, 1], gap="small")
+            with _top_previous_col:
                 st.markdown(
-                    f"<div class='retirement-top-next-number'>{_next_number_html}</div>"
-                    f"<div class='retirement-top-next-caption'>다음 보고서</div>",
+                    f"<div class='retirement-connection-stop previous'>"
+                    f"<span class='stop-caption'>이전 보고서</span>"
+                    f"<div class='stop-main'>{_previous_number_html}<span class='stop-name'>{_previous_title}</span></div></div>",
                     unsafe_allow_html=True,
                 )
-                if _next_record and st.button(
-                    _next_title, key="retirement_connection_top_next",
-                    use_container_width=True, type="secondary",
-                ):
-                    st.session_state["_retirement_explorer_history"] = _history + (
-                        [] if _history and _history[-1] == _next_record.get("source_id")
-                        else [_next_record.get("source_id")]
+            with _top_arrow_col:
+                st.markdown("<div class='retirement-top-arrow'>→</div>", unsafe_allow_html=True)
+            with _top_next_col:
+                with st.container(key="retirement-top-next-clickable"):
+                    st.markdown(
+                        f"<div class='retirement-top-next-number'>{_next_number_html}</div>"
+                        f"<div class='retirement-top-next-caption'>다음 보고서</div>",
+                        unsafe_allow_html=True,
                     )
-                    st.session_state["_retirement_explorer_source_id"] = _next_record.get("source_id")
-                    st.session_state["_retirement_connection_open"] = False
-                    st.rerun()
-                elif not _next_record:
-                    st.markdown("<div class='retirement-top-next-empty'>추천 자료 없음</div>", unsafe_allow_html=True)
+                    if _next_record and st.button(
+                        _next_title, key="retirement_connection_top_next",
+                        use_container_width=True, type="secondary",
+                    ):
+                        st.session_state["_retirement_explorer_history"] = _history + (
+                            [] if _history and _history[-1] == _next_record.get("source_id")
+                            else [_next_record.get("source_id")]
+                        )
+                        st.session_state["_retirement_explorer_source_id"] = _next_record.get("source_id")
+                        st.session_state["_retirement_connection_open"] = False
+                        st.rerun()
+                    elif not _next_record:
+                        st.markdown("<div class='retirement-top-next-empty'>추천 자료 없음</div>", unsafe_allow_html=True)
 
         with st.container(key="retirement-connection-bottom"):
             _left, _right = st.columns(2, gap="small")
