@@ -2674,8 +2674,8 @@ def _show_retirement_connection_dialog():
             .retirement-connection-stop .retirement-number-circle {{
                 display:inline-flex; width:25px; height:25px; flex:0 0 25px;
                 align-items:center; justify-content:center; border-radius:50%;
-                background:#fff; color:{_previous_color}; font-size:12px;
-                font-weight:900; line-height:1;
+                background:{_previous_color}; color:#fff; font-size:12px;
+                font-weight:900; line-height:1; border:0; box-shadow:none;
             }}
             .retirement-connection-stop.next .retirement-number-circle {{
                 color:{_next_color};
@@ -2793,19 +2793,10 @@ def _show_retirement_connection_dialog():
             .retirement-number-circle {{
                 display:inline-flex; flex:0 0 22px; width:22px; height:22px;
                 align-items:center; justify-content:center; border-radius:50%;
-                background:{_previous_color}; border:4.5px solid {_previous_color};
-                box-shadow:0 0 0 2px #fff;
-                box-sizing:border-box; color:#fff; font-size:11px; font-weight:850;
+                background:{_previous_color}; box-sizing:border-box; color:#fff; font-size:11px; font-weight:850; border:0 !important; box-shadow:none !important;
             }}
-            .retirement-connection-stop .retirement-number-circle {{
-                border:4.5px solid {_previous_color};
-                box-shadow:0 0 0 2px #fff;
-                box-sizing:border-box;
-            }}
-            .retirement-connection-stop.next .retirement-number-circle {{
-                border-color:{_next_color};
-            }}
-            .retirement-history-title {{ min-width:0; overflow-wrap:anywhere; }}
+            .retirement-connection-stop .retirement-number-circle {{ border:0 !important; box-shadow:none !important; box-sizing:border-box; }}
+            .retirement-history-title {{ min-width:0; overflow-wrap:anywhere; font-size:12px; font-weight:500; line-height:1.4; }}
             .retirement-recommendation-score {{
                 color:inherit; opacity:.82; font-size:11px; line-height:1.25;
                 margin:1px 0 0 0; text-align:left;
@@ -2872,7 +2863,49 @@ def _show_retirement_connection_dialog():
                 .retirement-connection-list {{ padding:8px 6px; }}
                 .retirement-connection-list h4 {{ font-size:12px; }}
             }}
-            </style>
+                         .retirement-top-arrow {{
+                 display:flex; height:100%; min-height:116px; align-items:center;
+                 justify-content:center; color:#222; font-size:38px; font-weight:900;
+             }}
+             .st-key-retirement-top-next-clickable {{
+                 min-width:0; min-height:116px; height:100%; box-sizing:border-box;
+                 display:flex; flex-direction:column; align-items:center; justify-content:center;
+                 gap:7px; padding:10px 7px; border:2px solid {_connection_panel_color};
+                 border-radius:12px; background:{_connection_panel_color}; color:#fff;
+             }}
+             .st-key-retirement-top-next-clickable .retirement-top-next-number .retirement-number-circle {{
+                 width:25px; height:25px; flex-basis:25px; font-size:12px;
+             }}
+             .st-key-retirement-top-next-clickable .retirement-top-next-caption {{
+                 font-size:11px; font-weight:700; line-height:1.3; color:#fff;
+             }}
+             .st-key-retirement-top-next-clickable [data-testid="stButton"] {{ width:100%; }}
+             .st-key-retirement-top-next-clickable [data-testid="stButton"] button {{
+                 width:100%; min-height:30px; height:auto; padding:2px 4px;
+                 background:transparent !important; border:0 !important; border-bottom:0 !important;
+                 border-radius:0 !important; box-shadow:none !important; text-decoration:none !important;
+                 background-image:none !important; color:#fff !important; -webkit-text-fill-color:#fff !important;
+                 font-size:13px !important; font-weight:800 !important; line-height:1.3 !important;
+                 white-space:normal !important;
+             }}
+             .st-key-retirement-top-next-clickable [data-testid="stButton"] button *,
+             .st-key-retirement-top-next-clickable [data-testid="stButton"] button p {{
+                 color:#fff !important; -webkit-text-fill-color:#fff !important;
+                 text-decoration:none !important; font-size:13px !important; font-weight:800 !important;
+             }}
+             .st-key-retirement-top-next-clickable [data-testid="stButton"] button:hover,
+             .st-key-retirement-top-next-clickable [data-testid="stButton"] button:focus,
+             .st-key-retirement-top-next-clickable [data-testid="stButton"] button:active {{
+                 background:rgba(255,255,255,.12) !important; border:0 !important;
+                 box-shadow:none !important; text-decoration:none !important;
+             }}
+             .retirement-top-next-empty {{ color:#fff; font-size:13px; font-weight:700; }}
+             .st-key-retirement-connection-platform [data-testid="stButton"] button,
+             .st-key-retirement-connection-platform [data-testid="stButton"] button *,
+             .st-key-retirement-connection-platform [data-testid="stButton"] button p {{
+                 text-decoration:none !important; border-bottom:0 !important; background-image:none !important;
+             }}
+</style>
             """,
             unsafe_allow_html=True,
         )
@@ -2885,18 +2918,36 @@ def _show_retirement_connection_dialog():
             f"<span class='retirement-number-circle'>{_next_number}</span>"
             if _next_number else ""
         )
-        st.markdown(
-            f"<div class='retirement-connection-top'>"
-            f"<div class='retirement-connection-stop previous'>"
-            f"<span class='stop-caption'>이전 보고서</span>"
-            f"<div class='stop-main'>{_previous_number_html}<span class='stop-name'>{_previous_title}</span></div></div>"
-            f"<div class='retirement-connection-center'><span class='compass'>🧭</span><span>연결</span><span class='direction-arrow'>→</span></div>"
-            f"<div class='retirement-connection-stop next'>"
-            f"<span class='stop-caption'>다음 보고서</span>"
-            f"<div class='stop-main'>{_next_number_html}<span class='stop-name'>{_next_title}</span></div></div>"
-            f"</div>",
-            unsafe_allow_html=True,
-        )
+        _top_previous_col, _top_arrow_col, _top_next_col = st.columns([1, 0.12, 1], gap="small")
+        with _top_previous_col:
+            st.markdown(
+                f"<div class='retirement-connection-stop previous'>"
+                f"<span class='stop-caption'>이전 보고서</span>"
+                f"<div class='stop-main'>{_previous_number_html}<span class='stop-name'>{_previous_title}</span></div></div>",
+                unsafe_allow_html=True,
+            )
+        with _top_arrow_col:
+            st.markdown("<div class='retirement-top-arrow'>→</div>", unsafe_allow_html=True)
+        with _top_next_col:
+            with st.container(key="retirement-top-next-clickable"):
+                st.markdown(
+                    f"<div class='retirement-top-next-number'>{_next_number_html}</div>"
+                    f"<div class='retirement-top-next-caption'>다음 보고서</div>",
+                    unsafe_allow_html=True,
+                )
+                if _next_record and st.button(
+                    _next_title, key="retirement_connection_top_next",
+                    use_container_width=True, type="secondary",
+                ):
+                    st.session_state["_retirement_explorer_history"] = _history + (
+                        [] if _history and _history[-1] == _next_record.get("source_id")
+                        else [_next_record.get("source_id")]
+                    )
+                    st.session_state["_retirement_explorer_source_id"] = _next_record.get("source_id")
+                    st.session_state["_retirement_connection_open"] = False
+                    st.rerun()
+                elif not _next_record:
+                    st.markdown("<div class='retirement-top-next-empty'>추천 자료 없음</div>", unsafe_allow_html=True)
 
         with st.container(key="retirement-connection-bottom"):
             _left, _right = st.columns(2, gap="small")
@@ -2910,7 +2961,7 @@ def _show_retirement_connection_dialog():
                             _color = _continent_color(_record)
                             st.markdown(
                                 f"<div class='retirement-history-item'>"
-                                f"<span class='retirement-number-circle' style='background:#fff;color:{_color};border-color:{_color};'>"
+                                f"<span class='retirement-number-circle' style='background:{_color};color:#fff;'>"
                                 f"{_number}</span><span class='retirement-history-title'>{_title}</span></div>",
                                 unsafe_allow_html=True,
                             )
@@ -2921,7 +2972,7 @@ def _show_retirement_connection_dialog():
                 with st.container(key="retirement-connection-recommend-list", border=True):
                     st.markdown("<h4 style='font-size:14px;margin:0 0 9px;'>다음 추천 보고서 →</h4>", unsafe_allow_html=True)
                     if _related_rows:
-                        for _index, _item in enumerate(_related_rows[:3]):
+                        for _index, _item in enumerate(_related_rows[1:3]):
                             _number = _item.get("display_label", "")
                             _title = _item.get("title", "보고서")
                             _item_color = _continent_color(_by_source.get(_item["source_id"]))
@@ -2929,8 +2980,8 @@ def _show_retirement_connection_dialog():
                                 _number_col, _title_col = st.columns([0.12, 0.88], gap=None)
                                 with _number_col:
                                     st.markdown(
-                                        f"<span class='retirement-number-circle' style='background:#fff;color:{_item_color};"
-                                        f"border-color:{_item_color};'>{_number}</span>",
+                                        f"<span class='retirement-number-circle' style='background:{_item_color};color:#fff;"
+                                        f"'>{_number}</span>",
                                         unsafe_allow_html=True,
                                     )
                                 with _title_col:
