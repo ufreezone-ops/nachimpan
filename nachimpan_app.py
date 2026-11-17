@@ -6852,7 +6852,7 @@ elif selected_page == "통계":
         # 6.06.11.00 | 10. 통계로 본 대한민국 3대 은퇴 분기점
         #--------------------------------------------------------
         st.markdown('<div id="stats-anchor-retirement-milestones" style="scroll-margin-top: 150px;"></div>', unsafe_allow_html=True)
-        with st.expander("4. 대한민국 3대 은퇴 분기점", expanded=True,
+        with st.expander("4. 대한민국 3대 은퇴 분기점", expanded=_active_source_id == "6051100-00",
         ):
             st.markdown("""
 은퇴는 하나의 나이로 끝나는 사건이 아닙니다. **주된 일자리에서 물러나는 시기**, **사회 전체의 생애주기 수지가 적자로 돌아서는 시기**, **노동시장에서 실질적으로 이탈하는 시기**는 서로 다른 통계가 보여주는 세 가지 장면입니다.
@@ -6977,7 +6977,7 @@ OECD 「Pensions at a Glance 2025: Korea」는 2024년 한국의 실질 노동�
         # 6.06.07.00 | 6. 연령별 임금과 임금지수
         #--------------------------------------------------------
         st.markdown('<div id="stats-anchor-income-statistics" style="scroll-margin-top: 150px;"></div>', unsafe_allow_html=True)
-        with st.expander("1. 연령별 임금과 임금지수", expanded=True):
+        with st.expander("1. 연령별 임금과 임금지수", expanded=_active_source_id == "6050700-00"):
             st.markdown("""
 **1. 연령별 임금 통계 — 같은 해, 서로 다른 연령대의 소득 수준**
 
@@ -7035,7 +7035,7 @@ OECD 「Pensions at a Glance 2025: Korea」는 2024년 한국의 실질 노동�
         # 6.06.12.00 | 11. 우리 가정 소득곡선 보정
         #--------------------------------------------------------
         st.markdown('<div id="stats-anchor-household-income-after-retirement" style="scroll-margin-top: 150px;"></div>', unsafe_allow_html=True)
-        with st.expander("2. 우리 가정 소득곡선 보정", expanded=True,
+        with st.expander("2. 우리 가정 소득곡선 보정", expanded=_active_source_id == "6051200-00",
         ):
             st.markdown("""
 ### 기존 가구소득 곡선은 어떻게 만들어지나요?
@@ -7103,7 +7103,7 @@ OECD 「Pensions at a Glance 2025: Korea」는 2024년 한국의 실질 노동�
         # 6.06.06.00 | 5. 동시성과 통시성
         #--------------------------------------------------------
         st.markdown('<div id="stats-anchor-time-adjustment" style="scroll-margin-top: 150px;"></div>', unsafe_allow_html=True)
-        with st.expander("4. 동시성과 통시성 · 심화학습", expanded=True):
+        with st.expander("4. 동시성과 통시성 · 심화학습", expanded=_active_source_id == "6050600-00"):
             st.markdown("""
 **왜 시간의 기준을 맞춰야 하는가**
 
@@ -7439,7 +7439,7 @@ OECD 「Pensions at a Glance 2025: Korea」는 2024년 한국의 실질 노동�
         # 6.06.08.00 | 7. 결혼비용 통계
         #--------------------------------------------------------
         st.markdown('<div id="stats-anchor-marriage-cost" style="scroll-margin-top: 150px;"></div>', unsafe_allow_html=True)
-        with st.expander("1. 결혼비용 통계", expanded=True):
+        with st.expander("1. 결혼비용 통계", expanded=_active_source_id == "6050800-00"):
             st.markdown("""
 **결혼비용은 어디에서, 누구의 자금으로 마련될까?**
 
@@ -7705,7 +7705,7 @@ OECD 「Pensions at a Glance 2025: Korea」는 2024년 한국의 실질 노동�
         # 6.06.23.00 | 22. 자녀 대학
         #--------------------------------------------------------
         st.markdown('<div id="stats-anchor-event-college" style="scroll-margin-top: 150px;"></div>', unsafe_allow_html=True)
-        with st.expander("6. 주택구입", expanded=_active_source_id == "6052300-00"):
+        with st.expander("6. 자녀 대학", expanded=_active_source_id == "6052300-00"):
             st.markdown("""
 **대학 비용은 등록금과 생활비를 분리해 계산합니다.**
 
@@ -7748,7 +7748,7 @@ OECD 「Pensions at a Glance 2025: Korea」는 2024년 한국의 실질 노동�
         # 6.06.24.00 | 23. 자녀 결혼
         #--------------------------------------------------------
         st.markdown('<div id="stats-anchor-event-child-marriage" style="scroll-margin-top: 150px;"></div>', unsafe_allow_html=True)
-        with st.expander("7. 자녀 대학", expanded=_active_source_id == "6052400-00"):
+        with st.expander("7. 자녀 결혼", expanded=_active_source_id == "6052400-00"):
             st.markdown("""
 **자녀 결혼 지원은 신혼집 주거자금과 신혼집 외 비용을 나누어 추정합니다.**
 
