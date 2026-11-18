@@ -4961,10 +4961,12 @@ if selected_page == "우리집 가계부":
                 ):
                     st.write(bonus_help)
                 st.markdown(
-                    f'<div style="font-size:26px; line-height:1.2; color:var(--nc-text); white-space:nowrap;">'
-                    f'<span style="font-weight:800;">{money(s["annual_net_surplus"])}</span> '
-                    f'<span style="font-weight:400;">(월평균 {money(s["monthly_effective_surplus"])})</span>'
-                    f'</div>',
+                    f'<div data-testid="stMetric" class="annual-surplus-inline-metric">'
+                    f'<div data-testid="stMetricValue" style="white-space:nowrap;">'
+                    f'<span style="font-weight:800 !important;">{money(s["annual_net_surplus"])}</span> '
+                    f'<span style="font-weight:400 !important; font-size:inherit !important;">'
+                    f'(월평균 {money(s["monthly_effective_surplus"])})</span>'
+                    f'</div></div>',
                     unsafe_allow_html=True,
                 )
         cols[3].metric("현재 파악된 금융자산", fmt_eok(s["net_worth"]))
@@ -11762,6 +11764,25 @@ div.st-key-loan-payment-field div.st-key-loan-payment-source-guide [data-testid=
     font: inherit !important;
     line-height: 1.2 !important;
     white-space: nowrap !important;
+}
+</style>
+""", unsafe_allow_html=True)
+
+# 연간 잉여자금 값의 메트릭 기본 크기와 아래쪽 여백 복원
+st.markdown("""
+<style>
+div.st-key-annual-surplus-metric-stack .annual-surplus-inline-metric {
+    margin-top: 0.25rem !important;
+    margin-bottom: 1rem !important;
+}
+div.st-key-annual-surplus-metric-stack .annual-surplus-inline-metric [data-testid="stMetricValue"] {
+    color: var(--nc-text) !important;
+    font-size: 26px !important;
+    font-weight: 800 !important;
+    line-height: 1.2 !important;
+}
+div.st-key-annual-surplus-metric-stack .annual-surplus-inline-metric [data-testid="stMetricValue"] span:last-child {
+    font-weight: 400 !important;
 }
 </style>
 """, unsafe_allow_html=True)
