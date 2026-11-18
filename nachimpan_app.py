@@ -11827,7 +11827,11 @@ div.st-key-annual-surplus-source-guide button p {
     padding: 0 !important;
     white-space: nowrap !important;
     line-height: 1.2 !important;
-    font: inherit !important;
+    font-family: inherit !important;
+    font-size: 15px !important;
+    font-weight: 600 !important;
+    color: var(--nc-subtext) !important;
+    -webkit-text-fill-color: var(--nc-subtext) !important;
 }
 </style>
 """, unsafe_allow_html=True)
