@@ -3638,7 +3638,7 @@ def _show_retirement_report_dialog():
     with st.container(key="retirement-report-connection-cta"):
         _left_spacer, _button_col, _right_spacer = st.columns([1, 2, 1])
         with _button_col:
-            if st.button("연결", key="retirement_report_open_connection", type="secondary", use_container_width=True):
+            if st.button("연결", key="retirement_report_open_connection", type="secondary"):
                 st.session_state["_retirement_connection_open"] = True
                 st.rerun()
 
@@ -10318,7 +10318,15 @@ font-size: 0.82rem;
 font-weight: 800;
 font-variant-numeric: tabular-nums;
 }
+.st-key-retirement-report-connection-cta [data-testid="stButton"] {
+width: 100% !important;
+display: flex !important;
+justify-content: center !important;
+}
 .st-key-retirement-report-connection-cta [data-testid="stButton"] button {
+width: 180px !important;
+min-width: 180px !important;
+max-width: 100% !important;
 min-height: 2.4rem !important;
 border: 6px solid #159447 !important;
 border-radius: 999px !important;
