@@ -10569,18 +10569,37 @@ st.markdown("""
     margin:0 -5.396% 0 -5.396% !important;
 }
 
-/* 중앙 화살표 열도 좌우 버튼과 동일한 68px 높이 안에서 정중앙 배치 */
+/* 중앙 화살표 열: 실제 콘텐츠 영역까지 68px 높이를 전달해 수직 중앙 정렬 */
 .st-key-retirement-connection-platform [data-testid="stHorizontalBlock"]:has(.st-key-retirement-top-previous-clickable):has(.retirement-top-arrow):has(.st-key-retirement-top-next-clickable) > [data-testid="stColumn"]:nth-child(2) {
     display:flex !important;
-    align-items:center !important;
+    align-items:stretch !important;
     justify-content:center !important;
 }
 .st-key-retirement-connection-platform [data-testid="stHorizontalBlock"]:has(.st-key-retirement-top-previous-clickable):has(.retirement-top-arrow):has(.st-key-retirement-top-next-clickable) > [data-testid="stColumn"]:nth-child(2) > [data-testid="stVerticalBlock"] {
     display:flex !important;
-    align-items:center !important;
+    align-items:stretch !important;
     justify-content:center !important;
     width:100% !important;
     height:68px !important;
+    min-height:68px !important;
+}
+.st-key-retirement-connection-platform [data-testid="stColumn"]:nth-child(2) > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"]:has(.retirement-top-arrow) {
+    display:flex !important;
+    flex:1 1 auto !important;
+    align-items:center !important;
+    justify-content:center !important;
+    width:100% !important;
+    height:100% !important;
+    min-height:68px !important;
+}
+.st-key-retirement-connection-platform [data-testid="stColumn"]:nth-child(2) [data-testid="stElementContainer"]:has(.retirement-top-arrow) [data-testid="stMarkdown"],
+.st-key-retirement-connection-platform [data-testid="stColumn"]:nth-child(2) [data-testid="stElementContainer"]:has(.retirement-top-arrow) [data-testid="stMarkdown"] > div,
+.st-key-retirement-connection-platform [data-testid="stColumn"]:nth-child(2) [data-testid="stElementContainer"]:has(.retirement-top-arrow) [data-testid="stMarkdownContainer"] {
+    display:flex !important;
+    align-items:center !important;
+    justify-content:center !important;
+    width:100% !important;
+    height:100% !important;
     min-height:68px !important;
 }
 .st-key-retirement-connection-platform .retirement-top-arrow {
@@ -10588,7 +10607,7 @@ st.markdown("""
     align-items:center !important;
     justify-content:center !important;
     width:100% !important;
-    height:68px !important;
+    height:100% !important;
     min-height:68px !important;
     margin:0 !important;
     padding:0 !important;
