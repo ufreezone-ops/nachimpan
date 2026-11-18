@@ -3001,7 +3001,7 @@ def _show_retirement_connection_dialog():
             f"<span class='retirement-number-circle' style='background:{_next_color};color:#fff;'>{_next_number}</span>"
             if _next_number else ""
         )
-        # 좌우 모두 동일한 Streamlit 컨테이너 구조: 캡션 + 번호/제목 통합 버튼
+        # 좌우 카드: 외곽 컨테이너 안에서 캡션과 버튼 영역을 독립 컨테이너로 분리
         st.markdown(
             f"<style>"
             f".st-key-retirement-top-previous-clickable {{ --report-number:'{_previous_number}'; --report-color:{_previous_color}; }}"
@@ -3012,19 +3012,20 @@ def _show_retirement_connection_dialog():
         _top_previous_col, _top_arrow_col, _top_next_col = st.columns([1, 0.12, 1], gap="small")
         with _top_previous_col:
             with st.container(key="retirement-top-previous-clickable"):
-                st.markdown(
-                    "<div class='retirement-top-next-header'>"
-                    "<span class='retirement-top-next-caption'>이전 보고서</span></div>",
-                    unsafe_allow_html=True,
-                )
-                _previous_clicked = st.button(
-                    _previous_title, key="retirement_connection_top_previous",
-                    use_container_width=True, type="secondary",
-                )
-                if _previous_clicked:
-                    st.session_state["_retirement_explorer_source_id"] = _previous_record.get("source_id")
-                    st.session_state["_retirement_connection_open"] = False
-                    st.rerun()
+                with st.container(key="retirement-top-previous-caption"):
+                    st.markdown(
+                        "<span class='retirement-top-next-caption'>이전 보고서</span>",
+                        unsafe_allow_html=True,
+                    )
+                with st.container(key="retirement-top-previous-button"):
+                    _previous_clicked = st.button(
+                        _previous_title, key="retirement_connection_top_previous",
+                        use_container_width=True, type="secondary",
+                    )
+                    if _previous_clicked:
+                        st.session_state["_retirement_explorer_source_id"] = _previous_record.get("source_id")
+                        st.session_state["_retirement_connection_open"] = False
+                        st.rerun()
         with _top_arrow_col:
             st.markdown(
                 "<div class='retirement-top-arrow' aria-hidden='true'>"
@@ -3036,25 +3037,26 @@ def _show_retirement_connection_dialog():
             )
         with _top_next_col:
             with st.container(key="retirement-top-next-clickable"):
-                st.markdown(
-                    "<div class='retirement-top-next-header'>"
-                    "<span class='retirement-top-next-caption'>다음 보고서</span></div>",
-                    unsafe_allow_html=True,
-                )
-                _next_clicked = _next_record and st.button(
-                    _next_title, key="retirement_connection_top_next",
-                    use_container_width=True, type="secondary",
-                )
-                if _next_clicked:
-                    st.session_state["_retirement_explorer_history"] = _history + (
-                        [] if _history and _history[-1] == _next_record.get("source_id")
-                        else [_next_record.get("source_id")]
+                with st.container(key="retirement-top-next-caption"):
+                    st.markdown(
+                        "<span class='retirement-top-next-caption'>다음 보고서</span>",
+                        unsafe_allow_html=True,
                     )
-                    st.session_state["_retirement_explorer_source_id"] = _next_record.get("source_id")
-                    st.session_state["_retirement_connection_open"] = False
-                    st.rerun()
-                elif not _next_record:
-                    st.markdown("<div class='retirement-top-next-empty'>추천 자료 없음</div>", unsafe_allow_html=True)
+                with st.container(key="retirement-top-next-button"):
+                    _next_clicked = _next_record and st.button(
+                        _next_title, key="retirement_connection_top_next",
+                        use_container_width=True, type="secondary",
+                    )
+                    if _next_clicked:
+                        st.session_state["_retirement_explorer_history"] = _history + (
+                            [] if _history and _history[-1] == _next_record.get("source_id")
+                            else [_next_record.get("source_id")]
+                        )
+                        st.session_state["_retirement_explorer_source_id"] = _next_record.get("source_id")
+                        st.session_state["_retirement_connection_open"] = False
+                        st.rerun()
+                    elif not _next_record:
+                        st.markdown("<div class='retirement-top-next-empty'>추천 자료 없음</div>", unsafe_allow_html=True)
 
         with st.container(key="retirement-connection-bottom"):
             _left, _right = st.columns(2, gap="small")
@@ -10378,6 +10380,48 @@ st.markdown("""
 }
 .st-key-retirement-connection-read-list h4 {
     font-weight:500 !important;
+}
+ 
+/* 좌우 카드의 캡션/버튼을 별도 컨테이너로 분리한 구조 */
+.st-key-retirement-top-previous-clickable,
+.st-key-retirement-top-next-clickable {
+    display:flex !important; flex-direction:column !important;
+    align-items:stretch !important; justify-content:flex-start !important;
+    height:92px !important; min-height:92px !important; max-height:92px !important;
+    box-sizing:border-box !important; padding:6px !important;
+}
+.st-key-retirement-top-previous-caption,
+.st-key-retirement-top-next-caption {
+    flex:0 0 auto !important; width:100% !important; min-width:0 !important;
+    margin:0 !important; padding:0 !important;
+}
+.st-key-retirement-top-previous-caption [data-testid="stMarkdownContainer"],
+.st-key-retirement-top-next-caption [data-testid="stMarkdownContainer"] {
+    width:100% !important; margin:0 !important; padding:0 !important;
+}
+.st-key-retirement-top-previous-button,
+.st-key-retirement-top-next-button {
+    flex:1 1 0% !important; display:flex !important; flex-direction:column !important;
+    justify-content:center !important; align-items:stretch !important;
+    width:100% !important; min-width:0 !important; min-height:0 !important;
+    margin:0 !important; padding:0 !important;
+}
+.st-key-retirement-top-previous-button > [data-testid="stVerticalBlock"],
+.st-key-retirement-top-next-button > [data-testid="stVerticalBlock"] {
+    flex:1 1 auto !important; display:flex !important; justify-content:center !important;
+    align-items:stretch !important; width:100% !important; min-height:0 !important;
+}
+.st-key-retirement-top-previous-button [data-testid="stButton"],
+.st-key-retirement-top-next-button [data-testid="stButton"] {
+    display:flex !important; align-items:center !important; justify-content:center !important;
+    width:100% !important; min-width:0 !important; margin:0 !important; padding:0 !important;
+}
+.st-key-retirement-top-previous-button [data-testid="stButton"] button,
+.st-key-retirement-top-next-button [data-testid="stButton"] button {
+    display:flex !important; align-items:center !important; justify-content:flex-start !important;
+    width:100% !important; min-width:0 !important; min-height:0 !important; height:auto !important;
+    margin:0 !important; padding:0 !important; gap:6px !important;
+    transform:none !important;
 }
 </style>
 """, unsafe_allow_html=True)
