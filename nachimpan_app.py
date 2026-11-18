@@ -2527,7 +2527,7 @@ OECD 「Pensions at a Glance 2025: Korea」는 2024년 한국의 실질 노동�
         # 6.06.19.00 | NCH-0006
         #--------------------------------------------------------
         st.markdown('<div id="stats-anchor-retirement-income-stop" style="scroll-margin-top: 150px;"></div>', unsafe_allow_html=True)
-        with st.popover(_stats_label("6051900-00")):
+        with st.popover(_master_report_display("6051900-00")):
             st.markdown("""
 **은퇴는 특정 나이에 모든 소득이 한꺼번에 사라지는 사건이 아닙니다.** 주된 일자리에서 물러나는 시점, 근로·사업소득이 줄거나 멈추는 시점, 연금과 다른 소득원이 시작되는 시점은 서로 다를 수 있습니다.
 
@@ -2703,7 +2703,7 @@ OECD 「Pensions at a Glance 2025: Korea」는 2024년 한국의 실질 노동�
         # 6.06.16.00 | NCH-0009
         #--------------------------------------------------------
         st.markdown('<div id="stats-anchor-income-curve-method" style="scroll-margin-top: 150px;"></div>', unsafe_allow_html=True)
-        with st.popover(_stats_label("6051600-00")):
+        with st.popover(_master_report_display("6051600-00")):
             st.markdown("""
 나침반의 소득 기준곡선은 국가데이터처의 연령별 임금근로일자리 평균보수를 참고하되, 그래프의 모든 연령별 점을 공식 통계값 그대로 연결한 것은 아닙니다. 공식 통계의 연령 구간은 20대·30대 등 10세 단위이므로, 나침반은 직장인·자영업자별로 5세 간격의 **모델 기준값**을 별도로 두고 연령대 사이를 보간합니다.
 
