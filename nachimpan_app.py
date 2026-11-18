@@ -3004,8 +3004,8 @@ def _show_retirement_connection_dialog():
         # 다음 보고서 번호는 클릭 버튼의 ::before 원형 마커로 표현해
         # 이전 보고서와 동일한 '캡션 + 번호/제목 한 줄' 구조를 유지한다.
         st.markdown(
-            f"<style>.st-key-retirement-top-next-clickable [data-testid='stButton'] button::before "
-            f"{{ content:'{_next_number}'; background:{_next_color}; }}</style>",
+            f"<style>.st-key-retirement-top-next-clickable "
+            f"{{ --next-report-number:'{_next_number}'; --next-report-color:{_next_color}; }}</style>",
             unsafe_allow_html=True,
         )
         _top_previous_col, _top_arrow_col, _top_next_col = st.columns([1, 0.12, 1], gap="small")
@@ -10138,7 +10138,8 @@ st.markdown("""
     text-align:left !important;
 }
 .st-key-retirement-top-next-clickable [data-testid="stButton"] button::before {
-    content:"" !important;
+    content:var(--next-report-number, "") !important;
+    background:var(--next-report-color, #6B4C3B) !important;
     display:inline-flex !important;
     flex:0 0 25px !important;
     width:25px !important;
