@@ -3014,7 +3014,7 @@ def _show_retirement_connection_dialog():
                 "<div class='retirement-top-arrow' aria-hidden='true'>"
                 "<svg viewBox='0 0 100 24' role='presentation'>"
                 "<path d='M8 12 H92 M78 3 L92 12 L78 21' fill='none' "
-                "stroke='#222222' stroke-width='4.5' stroke-linecap='round' stroke-linejoin='round'/>"
+                "stroke='#222222' stroke-width='8' stroke-linecap='round' stroke-linejoin='round'/>"
                 "</svg></div>",
                 unsafe_allow_html=True,
             )
@@ -10016,6 +10016,98 @@ st.markdown("""
   flex-basis:25px !important; width:25px !important; max-width:25px !important; min-width:25px !important;
  }
  .retirement-top-arrow svg { max-width:25px !important; height:20px !important; }
+}
+</style>
+""", unsafe_allow_html=True)
+
+ 
+# 연결창 4차 미세 보정: 다음 보고서 번호·제목 결합, 화살표 중앙 정렬, 추천 제목 대비
+st.markdown("""
+<style>
+/* 다음 보고서: 번호·제목 두 칸을 고정폭 번호 + 가변 제목으로 붙임 */
+.st-key-retirement-top-next-clickable [data-testid="stHorizontalBlock"] {
+    display:grid !important;
+    grid-template-columns:28px minmax(0,1fr) !important;
+    column-gap:5px !important;
+    align-items:center !important;
+    width:100% !important;
+}
+.st-key-retirement-top-next-clickable [data-testid="stHorizontalBlock"] > [data-testid="stColumn"] {
+    width:auto !important;
+    max-width:none !important;
+    min-width:0 !important;
+    flex:none !important;
+}
+.st-key-retirement-top-next-clickable [data-testid="stColumn"]:first-child {
+    display:flex !important;
+    align-items:center !important;
+    justify-content:center !important;
+}
+.st-key-retirement-top-next-clickable [data-testid="stColumn"]:first-child .retirement-number-circle {
+    margin:0 auto !important;
+}
+.st-key-retirement-top-next-clickable [data-testid="stColumn"]:last-child [data-testid="stButton"],
+.st-key-retirement-top-next-clickable [data-testid="stColumn"]:last-child [data-testid="stButton"] button,
+.st-key-retirement-top-next-clickable [data-testid="stColumn"]:last-child [data-testid="stButton"] button > div {
+    width:100% !important;
+    justify-content:flex-start !important;
+    text-align:left !important;
+}
+.st-key-retirement-top-next-clickable [data-testid="stColumn"]:last-child [data-testid="stButton"] button {
+    padding-left:0 !important;
+    padding-right:0 !important;
+}
+.st-key-retirement-top-next-clickable [data-testid="stColumn"]:last-child [data-testid="stButton"] button *,
+.st-key-retirement-top-next-clickable [data-testid="stColumn"]:last-child [data-testid="stButton"] p {
+    text-align:left !important;
+    margin-left:0 !important;
+}
+
+/* 중앙 화살표: 가운데 열 자체를 세로 중앙 정렬 */
+.st-key-retirement-connection-platform [data-testid="stHorizontalBlock"]:has(.retirement-connection-stop.previous):has(.st-key-retirement-top-next-clickable) > [data-testid="stColumn"]:nth-child(2) {
+    display:flex !important;
+    align-items:center !important;
+    justify-content:center !important;
+}
+.st-key-retirement-connection-platform [data-testid="stHorizontalBlock"]:has(.retirement-connection-stop.previous):has(.st-key-retirement-top-next-clickable) > [data-testid="stColumn"]:nth-child(2) > [data-testid="stVerticalBlock"] {
+    height:100% !important;
+    min-height:78px !important;
+    display:flex !important;
+    align-items:center !important;
+    justify-content:center !important;
+}
+.st-key-retirement-connection-platform .retirement-top-arrow {
+    width:100% !important;
+    min-height:78px !important;
+    height:100% !important;
+    display:flex !important;
+    align-items:center !important;
+    justify-content:center !important;
+    margin:0 !important;
+    padding:0 !important;
+}
+.st-key-retirement-connection-platform .retirement-top-arrow svg {
+    display:block !important;
+    width:100% !important;
+    max-width:38px !important;
+    height:24px !important;
+    margin:auto !important;
+}
+
+/* 하단 추천 보고서: 원래 흰색을 강제하던 버튼 규칙을 검정·보통 굵기로 덮어씀 */
+.st-key-retirement-connection-platform div[class*="st-key-retirement_connection_next_"] [data-testid="stButton"] button,
+.st-key-retirement-connection-platform div[class*="st-key-retirement_connection_next_"] [data-testid="stButton"] button *,
+.st-key-retirement-connection-platform div[class*="st-key-retirement_connection_next_"] [data-testid="stButton"] p {
+    color:#222222 !important;
+    -webkit-text-fill-color:#222222 !important;
+    font-weight:500 !important;
+    text-decoration:none !important;
+}
+.st-key-retirement-connection-platform div[class*="st-key-retirement_connection_next_"] [data-testid="stButton"] button:hover,
+.st-key-retirement-connection-platform div[class*="st-key-retirement_connection_next_"] [data-testid="stButton"] button:hover * {
+    color:#222222 !important;
+    -webkit-text-fill-color:#222222 !important;
+    background:rgba(34,34,34,.06) !important;
 }
 </style>
 """, unsafe_allow_html=True)
