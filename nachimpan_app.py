@@ -4497,30 +4497,32 @@ if selected_page == "우리집 가계부":
                     )
                     if is_representative_case_for_loan:
                         with st.container(key="loan-payment-field"):
-                            with st.container(
-                                horizontal=True,
-                                vertical_alignment="center",
-                                gap=None,
-                                key="loan-payment-title-row",
-                            ):
-                                st.markdown(
-                                    '<span class="loan-payment-label-text">대출 원리금 월상환액(원금+이자)</span>',
-                                    unsafe_allow_html=True,
-                                )
-                                if st.button(
-                                    "🧭",
-                                    key="loan-payment-source-guide",
-                                    help="대출 원리금의 산출 기준과 적용 방식 보기",
-                                    type="tertiary",
+                            # 제목과 나침반을 하나의 명시적인 가로 정렬 컨테이너로 묶는다.
+                            with st.container(key="loan-payment-title-row"):
+                                with st.container(
+                                    horizontal=True,
+                                    vertical_alignment="center",
+                                    gap=None,
+                                    key="loan-payment-title-content",
                                 ):
-                                    # 중간 팝오버를 거치지 않고 보고서를 바로 연다.
-                                    # 팝오버와 보고서가 겹쳐 보고서를 가리는 현상을 방지한다.
-                                    st.session_state["_retirement_explorer_open"] = True
-                                    st.session_state["_retirement_entry_open"] = False
-                                    st.session_state["_retirement_connection_open"] = False
-                                    st.session_state["_retirement_explorer_source_id"] = "6050500-01"
-                                    st.session_state["_retirement_explorer_history"] = ["6050500-01"]
-                                    st.rerun()
+                                    st.markdown(
+                                        '<span class="loan-payment-label-text">대출 원리금 월상환액(원금+이자)</span>',
+                                        unsafe_allow_html=True,
+                                    )
+                                    if st.button(
+                                        "🧭",
+                                        key="loan-payment-source-guide",
+                                        help="대출 원리금의 산출 기준과 적용 방식 보기",
+                                        type="tertiary",
+                                    ):
+                                        # 중간 팝오버를 거치지 않고 보고서를 바로 연다.
+                                        # 팝오버와 보고서가 겹쳐 보고서를 가리는 현상을 방지한다.
+                                        st.session_state["_retirement_explorer_open"] = True
+                                        st.session_state["_retirement_entry_open"] = False
+                                        st.session_state["_retirement_connection_open"] = False
+                                        st.session_state["_retirement_explorer_source_id"] = "6050500-01"
+                                        st.session_state["_retirement_explorer_history"] = ["6050500-01"]
+                                        st.rerun()
                             st.markdown(
                                 '<div id="loan-payment-label-origin"></div>',
                                 unsafe_allow_html=True,
@@ -11668,27 +11670,86 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
-# 대출 원리금 나침반: 제목 행의 자동 수직 중앙정렬 사용
+# 대출 원리금 제목/나침반: 명시적 공통 가로 컨테이너에서 중앙정렬
 st.markdown("""
 <style>
-div.st-key-loan-payment-title-row [data-testid="stHorizontalBlock"] {
-    align-items: center !important;
+/* 바깥 컨테이너는 제목 행의 폭만 차지 */
+div.st-key-loan-payment-title-row {
+    width: 100% !important;
+    min-width: 0 !important;
 }
-div.st-key-loan-payment-title-row div.st-key-loan-payment-source-guide [data-testid="stButton"] button,
-div.st-key-loan-payment-title-row div.st-key-loan-payment-source-guide [data-testid="stButton"] button:hover,
-div.st-key-loan-payment-title-row div.st-key-loan-payment-source-guide [data-testid="stButton"] button:focus,
-div.st-key-loan-payment-title-row div.st-key-loan-payment-source-guide [data-testid="stButton"] button:focus-visible,
-div.st-key-loan-payment-title-row div.st-key-loan-payment-source-guide [data-testid="stButton"] button:active {
-    transform: none !important;
+
+/* 제목과 나침반을 담은 단 하나의 가로 정렬 행 */
+div.st-key-loan-payment-title-content,
+div.st-key-loan-payment-title-content [data-testid="stHorizontalBlock"] {
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    justify-content: flex-start !important;
+    width: max-content !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    gap: 0.12rem !important;
+}
+
+/* 두 Streamlit 요소의 바깥 래퍼도 같은 세로 중심선에 정렬 */
+div.st-key-loan-payment-title-content [data-testid="stElementContainer"] {
+    display: flex !important;
+    align-items: center !important;
     align-self: center !important;
+    width: auto !important;
+    min-width: 0 !important;
+    height: auto !important;
+    min-height: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+/* 제목 문단의 기본 위아래 여백 제거 */
+div.st-key-loan-payment-title-content .loan-payment-label-text,
+div.st-key-loan-payment-title-content [data-testid="stMarkdownContainer"] p {
+    display: block !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    line-height: 1.2 !important;
+}
+
+/* 아이콘 버튼은 별도 위치 이동 없이 공통 행의 중앙에 놓는다 */
+div.st-key-loan-payment-title-content div.st-key-loan-payment-source-guide,
+div.st-key-loan-payment-title-content div.st-key-loan-payment-source-guide [data-testid="stButton"] {
+    display: flex !important;
+    align-items: center !important;
+    align-self: center !important;
+    width: auto !important;
+    min-width: 0 !important;
+    min-height: 0 !important;
+    height: auto !important;
+    margin: 0 !important;
+    padding: 0 !important;
+}
+div.st-key-loan-payment-title-content div.st-key-loan-payment-source-guide [data-testid="stButton"] button,
+div.st-key-loan-payment-title-content div.st-key-loan-payment-source-guide [data-testid="stButton"] button:hover,
+div.st-key-loan-payment-title-content div.st-key-loan-payment-source-guide [data-testid="stButton"] button:focus,
+div.st-key-loan-payment-title-content div.st-key-loan-payment-source-guide [data-testid="stButton"] button:focus-visible,
+div.st-key-loan-payment-title-content div.st-key-loan-payment-source-guide [data-testid="stButton"] button:active {
     display: inline-flex !important;
     align-items: center !important;
     justify-content: center !important;
+    width: auto !important;
+    min-width: 0 !important;
+    min-height: 0 !important;
+    height: auto !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    transform: none !important;
+    line-height: 1 !important;
+    font-size: 1.26rem !important;
 }
-div.st-key-loan-payment-title-row div.st-key-loan-payment-source-guide [data-testid="stButton"] button p {
+div.st-key-loan-payment-title-content div.st-key-loan-payment-source-guide [data-testid="stButton"] button p {
     margin: 0 !important;
     padding: 0 !important;
     line-height: 1 !important;
+    font-size: 1.26rem !important;
 }
 </style>
 """, unsafe_allow_html=True)
