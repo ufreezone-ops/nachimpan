@@ -3001,7 +3001,7 @@ def _show_retirement_connection_dialog():
             f"<span class='retirement-number-circle' style='background:{_next_color};color:#fff;'>{_next_number}</span>"
             if _next_number else ""
         )
-        # 좌우 카드: 외곽 컨테이너 안에서 캡션과 버튼 영역을 독립 컨테이너로 분리
+        # 좌우에는 보고서 버튼만 배치하고, 버튼 자체를 동일한 높이의 영역 중앙에 정렬
         st.markdown(
             f"<style>"
             f".st-key-retirement-top-previous-clickable {{ --report-number:'{_previous_number}'; --report-color:{_previous_color}; }}"
@@ -3012,11 +3012,6 @@ def _show_retirement_connection_dialog():
         _top_previous_col, _top_arrow_col, _top_next_col = st.columns([1, 0.12, 1], gap="small")
         with _top_previous_col:
             with st.container(key="retirement-top-previous-clickable"):
-                with st.container(key="retirement-top-previous-caption"):
-                    st.markdown(
-                        "<span class='retirement-top-next-caption'>이전 보고서</span>",
-                        unsafe_allow_html=True,
-                    )
                 with st.container(key="retirement-top-previous-button"):
                     _previous_clicked = st.button(
                         _previous_title, key="retirement_connection_top_previous",
@@ -3037,11 +3032,6 @@ def _show_retirement_connection_dialog():
             )
         with _top_next_col:
             with st.container(key="retirement-top-next-clickable"):
-                with st.container(key="retirement-top-next-caption"):
-                    st.markdown(
-                        "<span class='retirement-top-next-caption'>다음 보고서</span>",
-                        unsafe_allow_html=True,
-                    )
                 with st.container(key="retirement-top-next-button"):
                     _next_clicked = _next_record and st.button(
                         _next_title, key="retirement_connection_top_next",
@@ -10511,6 +10501,69 @@ st.markdown("""
 .stVerticalBlock.st-key-retirement-connection-read-list {
     padding-left:1px !important;
     padding-right:1px !important;
+}
+</style>
+""", unsafe_allow_html=True)
+
+
+# 상단 이전/다음 보고서: 캡션 제거 후 버튼만 동일한 세로 중심에 정렬
+st.markdown("""
+<style>
+.st-key-retirement-top-previous-clickable,
+.st-key-retirement-top-next-clickable {
+    display:flex !important;
+    flex-direction:column !important;
+    justify-content:center !important;
+    align-items:stretch !important;
+    height:92px !important;
+    min-height:92px !important;
+    max-height:92px !important;
+    box-sizing:border-box !important;
+    padding:6px !important;
+}
+.st-key-retirement-top-previous-clickable > [data-testid="stVerticalBlock"],
+.st-key-retirement-top-next-clickable > [data-testid="stVerticalBlock"] {
+    display:flex !important;
+    flex-direction:column !important;
+    justify-content:center !important;
+    align-items:stretch !important;
+    width:100% !important;
+    height:100% !important;
+    min-height:0 !important;
+    gap:0 !important;
+}
+.st-key-retirement-top-previous-clickable > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"]:has(.st-key-retirement-top-previous-button),
+.st-key-retirement-top-next-clickable > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"]:has(.st-key-retirement-top-next-button) {
+    flex:1 1 0% !important;
+    display:flex !important;
+    align-items:center !important;
+    justify-content:center !important;
+    width:100% !important;
+    min-height:0 !important;
+    margin:0 !important;
+    padding:0 !important;
+}
+.st-key-retirement-top-previous-button,
+.st-key-retirement-top-next-button,
+.st-key-retirement-top-previous-button > [data-testid="stVerticalBlock"],
+.st-key-retirement-top-next-button > [data-testid="stVerticalBlock"],
+.st-key-retirement-top-previous-button [data-testid="stButton"],
+.st-key-retirement-top-next-button [data-testid="stButton"] {
+    display:flex !important;
+    align-items:center !important;
+    justify-content:center !important;
+    width:100% !important;
+    min-width:0 !important;
+    min-height:0 !important;
+    margin:0 !important;
+    padding:0 !important;
+}
+.st-key-retirement-top-previous-button [data-testid="stButton"] button,
+.st-key-retirement-top-next-button [data-testid="stButton"] button {
+    width:100% !important;
+    height:auto !important;
+    min-height:0 !important;
+    margin:0 !important;
 }
 </style>
 """, unsafe_allow_html=True)
