@@ -659,7 +659,7 @@ button[kind="primary"], .stApp [data-testid="stFormSubmitButton"] button[kind="p
     padding: 10px !important;
 }
 
-/* 탭 하단 '다음' 버튼: 버튼 폭은 내용에 맞추고, 버튼 자체를 화면 중앙에 배치 */
+/* 탭 하단 '다음' 버튼: 키가 부여된 요소 자체와 내부 버튼 영역을 모두 중앙 정렬 */
 :is(
     .st-key-basic_fin_next,
     .st-key-finance_next,
@@ -668,9 +668,51 @@ button[kind="primary"], .stApp [data-testid="stFormSubmitButton"] button[kind="p
     .st-key-basic_seasons_next,
     .st-key-seasons_next,
     .st-key-advanced_finance_next
-) [data-testid="stButton"] {
+) {
+    width: 100% !important;
+}
+:is(
+    .st-key-basic_fin_next,
+    .st-key-finance_next,
+    .st-key-basic_livelihood_next,
+    .st-key-advanced_livelihood_next,
+    .st-key-basic_seasons_next,
+    .st-key-seasons_next,
+    .st-key-advanced_finance_next
+) [data-testid="stButton"],
+:is(
+    .st-key-basic_fin_next,
+    .st-key-finance_next,
+    .st-key-basic_livelihood_next,
+    .st-key-advanced_livelihood_next,
+    .st-key-basic_seasons_next,
+    .st-key-seasons_next,
+    .st-key-advanced_finance_next
+).stButton {
+    width: 100% !important;
     display: flex !important;
     justify-content: center !important;
+}
+:is(
+    .st-key-basic_fin_next,
+    .st-key-finance_next,
+    .st-key-basic_livelihood_next,
+    .st-key-advanced_livelihood_next,
+    .st-key-basic_seasons_next,
+    .st-key-seasons_next,
+    .st-key-advanced_finance_next
+) [data-testid="stButton"] button,
+:is(
+    .st-key-basic_fin_next,
+    .st-key-finance_next,
+    .st-key-basic_livelihood_next,
+    .st-key-advanced_livelihood_next,
+    .st-key-basic_seasons_next,
+    .st-key-seasons_next,
+    .st-key-advanced_finance_next
+).stButton button {
+    width: auto !important;
+    min-width: 88px !important;
 }
 
 [data-testid="stSidebar"] { background-color: var(--nc-sidebar-bg) !important; border-right: 1px solid var(--nc-border) !important; }
@@ -5544,6 +5586,8 @@ elif selected_page == "삶과 생계수단":
         # 기본모드 — 돌쇠와 똘똘이 우화 카드 호출
         render_dolssoe_story_card()
 
+        # 성찰 메시지와 다음 버튼 사이에 한 줄 정도의 여백 확보
+        st.markdown("<div style='height: 16px;'></div>", unsafe_allow_html=True)
         if st.button("다음 →", key="basic_livelihood_next", type="primary"):
                 _navigate_to_page_top("인생의 사계절")
                 st.rerun()
