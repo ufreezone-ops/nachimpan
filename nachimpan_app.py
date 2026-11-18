@@ -10516,3 +10516,15 @@ st.markdown("""
 }
 </style>
 """, unsafe_allow_html=True)
+
+
+# 하단 추천 보고서 행: 번호 열과 제목 열 각각의 패딩을 1px로 통일
+st.markdown("""
+<style>
+.st-key-retirement-connection-recommend-list .st-key-retirement-connection-choice-0 [data-testid="stColumn"],
+.st-key-retirement-connection-recommend-list .st-key-retirement-connection-choice-1 [data-testid="stColumn"],
+.st-key-retirement-connection-recommend-list .st-key-retirement-connection-choice-2 [data-testid="stColumn"] {
+    padding:1px !important;
+}
+</style>
+""", unsafe_allow_html=True)
