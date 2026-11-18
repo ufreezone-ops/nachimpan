@@ -3762,7 +3762,9 @@ def _show_retirement_connection_dialog():
                 display:-webkit-box; -webkit-box-orient:vertical; -webkit-line-clamp:2;
                 overflow:hidden; overflow-wrap:anywhere; line-height:1.4; max-height:2.8em;
             }}
-            [class*="st-key-retirement-connection-choice-csv-"] [data-testid="stButton"] button p {{
+            .st-key-retirement-connection-choice-0 [data-testid="stButton"] button p,
+            .st-key-retirement-connection-choice-1 [data-testid="stButton"] button p,
+            .st-key-retirement-connection-choice-2 [data-testid="stButton"] button p {{
                 display:-webkit-box !important; -webkit-box-orient:vertical !important;
                 -webkit-line-clamp:2 !important; overflow:hidden !important;
                 max-height:2.8em !important; line-height:1.4 !important;
@@ -4060,7 +4062,7 @@ def _show_retirement_connection_dialog():
                             _item_record = _by_source.get(_item.get("source_id", "")) if _item.get("source_id") else _by_resource.get(_item.get("resource_id", ""))
                             _item_color = _continent_color(_item_record)
                             _is_csv_item = bool(_item_record and _item_record.get("file_format", "").upper() == "CSV")
-                            _choice_key = f"retirement-connection-choice-csv-{_index}" if _is_csv_item else f"retirement-connection-choice-{_index}"
+                            _choice_key = f"retirement-connection-choice-{_index}"
                             with st.container(key=_choice_key):
                                 _number_col, _title_col = st.columns([0.12, 0.88], gap=None)
                                 with _number_col:
