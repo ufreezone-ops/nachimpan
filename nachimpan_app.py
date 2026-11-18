@@ -2080,6 +2080,45 @@ with st.container(key="main_navigation_shell"):
 
 selected_page = st.session_state["active_navigation_default"]
 
+
+def _navigate_to_page_top(page):
+    """다음 탭으로 이동할 때 화면 스크롤을 맨 위로 초기화한다."""
+    st.session_state["_pending_nav"] = page
+    st.session_state["_scroll_to_top_once"] = True
+
+
+if st.session_state.pop("_scroll_to_top_once", False):
+    st.components.v1.html(
+        """
+        <script>
+        (() => {
+            const scrollToTop = () => {
+                try {
+                    const doc = window.parent.document;
+                    const anchor = doc.querySelector('[data-testid="stMainBlockContainer"]')
+                        || doc.querySelector('section.main');
+                    let node = anchor;
+                    while (node && node !== doc.body && node !== doc.documentElement) {
+                        if (node.scrollHeight > node.clientHeight + 2) {
+                            node.scrollTop = 0;
+                            if (typeof node.scrollTo === "function") {
+                                node.scrollTo({ top: 0, left: 0, behavior: "instant" });
+                            }
+                        }
+                        node = node.parentElement;
+                    }
+                    doc.documentElement.scrollTop = 0;
+                    doc.body.scrollTop = 0;
+                    window.parent.scrollTo(0, 0);
+                } catch (e) {}
+            };
+            requestAnimationFrame(() => requestAnimationFrame(scrollToTop));
+        })();
+        </script>
+        """,
+        height=0,
+    )
+
 # 메뉴의 실제 스크롤 위치를 읽고, 고정 shell에 좌우 화살표 상태 반영
 st.components.v1.html(
     """
@@ -4495,7 +4534,7 @@ if selected_page == "우리집 가계부":
         _, next_col = st.columns([5, 1])
         with next_col:
             if st.button("다음 →", key="basic_fin_next", use_container_width=True, type="primary"):
-                st.session_state["_pending_nav"] = "삶과 생계수단"
+                _navigate_to_page_top("삶과 생계수단")
                 st.rerun()
 
     else:
@@ -5411,7 +5450,7 @@ if selected_page == "우리집 가계부":
         _, next_col = st.columns([5, 1])
         with next_col:
             if st.button("다음 →", key="finance_next", use_container_width=True, type="primary"):
-                st.session_state["_pending_nav"] = "삶과 생계수단"
+                _navigate_to_page_top("삶과 생계수단")
                 st.rerun()
 
 
@@ -5471,7 +5510,7 @@ elif selected_page == "삶과 생계수단":
         _, next_col = st.columns([5, 1])
         with next_col:
             if st.button("다음 →", key="basic_livelihood_next", use_container_width=True, type="primary"):
-                st.session_state["_pending_nav"] = "인생의 사계절"
+                _navigate_to_page_top("인생의 사계절")
                 st.rerun()
 
     else:
@@ -5639,8 +5678,6 @@ elif selected_page == "삶과 생계수단":
 # 6.03 | Tab 3 — 인생의 사계절
 #########################################################
 elif selected_page == "인생의 사계절":
-    if st.session_state.pop("_scroll_to_top_once", False):
-        st.components.v1.html("<script>try { window.parent.scrollTo({top: 0, behavior: 'instant'}); } catch(e) {}</script>", height=0)
     
     is_adv = st.session_state.get("advanced_mode", False)
     cur_age = int(st.session_state.person_age)
@@ -5834,7 +5871,7 @@ elif selected_page == "인생의 사계절":
         _, next_col = st.columns([5, 1])
         with next_col:
             if st.button("다음 →", key="basic_seasons_next", use_container_width=True, type="primary"):
-                st.session_state["_pending_nav"] = "우리집 재정곡선"
+                _navigate_to_page_top("우리집 재정곡선")
                 st.rerun()
 
     else:
@@ -5913,7 +5950,7 @@ elif selected_page == "인생의 사계절":
         _, next_col = st.columns([5, 1])
         with next_col:
             if st.button("다음 →", key="seasons_next", use_container_width=True, type="primary"):
-                st.session_state["_pending_nav"] = "우리집 재정곡선"
+                _navigate_to_page_top("우리집 재정곡선")
                 st.rerun()
 
 
@@ -5921,8 +5958,6 @@ elif selected_page == "인생의 사계절":
 # 6.04 | Tab 4 — 우리집 재정곡선
 #########################################################
 elif selected_page == "우리집 재정곡선":
-    if st.session_state.pop("_scroll_to_top_once", False):
-        st.components.v1.html("<script>try { window.parent.scrollTo({top: 0, behavior: 'instant'}); } catch(e) {}</script>", height=0)
 
     is_adv = st.session_state.get("advanced_mode", False)
     cur_age = int(st.session_state.get("person_age", 35) or 35)
