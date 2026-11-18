@@ -3026,7 +3026,7 @@ def _show_retirement_connection_dialog():
                 "<div class='retirement-top-arrow' aria-hidden='true'>"
                 "<svg viewBox='0 0 100 24' role='presentation'>"
                 "<path d='M8 12 H92 M78 3 L92 12 L78 21' fill='none' "
-                "stroke='#222222' stroke-width='8' stroke-linecap='round' stroke-linejoin='round'/>"
+                "stroke='#159447' stroke-width='12' stroke-linecap='round' stroke-linejoin='round'/>"
                 "</svg></div>",
                 unsafe_allow_html=True,
             )
