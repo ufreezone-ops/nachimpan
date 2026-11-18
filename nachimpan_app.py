@@ -12340,3 +12340,19 @@ st.markdown("""
 }
 </style>
 """, unsafe_allow_html=True)
+
+
+# 연결창 초록색 안내판 최상단의 불필요한 두 줄 여백 제거
+st.markdown("""
+<style>
+.st-key-retirement-connection-platform {
+    padding-top: 0 !important;
+}
+.st-key-retirement-connection-platform > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"]:first-child {
+    margin-top: 0 !important;
+    margin-bottom: 0 !important;
+    padding-top: 0 !important;
+    padding-bottom: 0 !important;
+}
+</style>
+""", unsafe_allow_html=True)
