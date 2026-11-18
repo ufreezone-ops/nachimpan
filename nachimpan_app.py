@@ -11811,6 +11811,12 @@ div.st-key-annual-surplus-source-guide [data-testid="stPopoverButton"] button sv
 div.st-key-annual-surplus-source-guide [data-testid="stPopover"] button svg {
     display: none !important;
 }
+div.st-key-annual-surplus-source-guide [data-testid="stPopoverButton"] button [data-testid="stIconMaterial"],
+div.st-key-annual-surplus-source-guide [data-testid="stPopover"] button [data-testid="stIconMaterial"],
+div.st-key-annual-surplus-source-guide [data-testid="stPopoverButton"] button .material-symbols-rounded,
+div.st-key-annual-surplus-source-guide [data-testid="stPopover"] button .material-symbols-rounded {
+    display: none !important;
+}
 div.st-key-annual-surplus-source-guide [data-testid="stPopoverButton"] button::after,
 div.st-key-annual-surplus-source-guide [data-testid="stPopover"] button::after {
     display: none !important;
