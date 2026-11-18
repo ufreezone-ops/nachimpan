@@ -10568,5 +10568,35 @@ st.markdown("""
     min-height:0 !important;
     margin:0 -5.396% 0 -5.396% !important;
 }
+
+/* 중앙 화살표 열도 좌우 버튼과 동일한 68px 높이 안에서 정중앙 배치 */
+.st-key-retirement-connection-platform [data-testid="stHorizontalBlock"]:has(.st-key-retirement-top-previous-clickable):has(.retirement-top-arrow):has(.st-key-retirement-top-next-clickable) > [data-testid="stColumn"]:nth-child(2) {
+    display:flex !important;
+    align-items:center !important;
+    justify-content:center !important;
+}
+.st-key-retirement-connection-platform [data-testid="stHorizontalBlock"]:has(.st-key-retirement-top-previous-clickable):has(.retirement-top-arrow):has(.st-key-retirement-top-next-clickable) > [data-testid="stColumn"]:nth-child(2) > [data-testid="stVerticalBlock"] {
+    display:flex !important;
+    align-items:center !important;
+    justify-content:center !important;
+    width:100% !important;
+    height:68px !important;
+    min-height:68px !important;
+}
+.st-key-retirement-connection-platform .retirement-top-arrow {
+    display:flex !important;
+    align-items:center !important;
+    justify-content:center !important;
+    width:100% !important;
+    height:68px !important;
+    min-height:68px !important;
+    margin:0 !important;
+    padding:0 !important;
+}
+.st-key-retirement-connection-platform .retirement-top-arrow svg {
+    display:block !important;
+    height:24px !important;
+    margin:0 !important;
+}
 </style>
 """, unsafe_allow_html=True)
