@@ -12281,3 +12281,50 @@ div.st-key-income-wage-stats-note-row div.st-key-income_wage_stats_popup [data-t
 }
 </style>
 """, unsafe_allow_html=True)
+
+
+# 연결창 하단 '닫기' 버튼: 실제 DOM 구조를 기준으로 2호선 스타일 최종 고정
+st.markdown("""
+<style>
+div.st-key-retirement-connection-close-cta div.stButton > button[data-testid="stBaseButton-secondary"],
+div.st-key-retirement-connection-close-cta div.stButton > button[data-testid="stBaseButton-secondary"]:hover,
+div.st-key-retirement-connection-close-cta div.stButton > button[data-testid="stBaseButton-secondary"]:focus,
+div.st-key-retirement-connection-close-cta div.stButton > button[data-testid="stBaseButton-secondary"]:focus-visible,
+div.st-key-retirement-connection-close-cta div.stButton > button[data-testid="stBaseButton-secondary"]:active {
+    width: 120px !important;
+    min-width: 120px !important;
+    max-width: 100% !important;
+    min-height: 2.4rem !important;
+    padding: 0.35rem !important;
+    border: 6px solid #159447 !important;
+    border-radius: 999px !important;
+    background: #ffffff !important;
+    background-color: #ffffff !important;
+    background-image: none !important;
+    color: #000000 !important;
+    -webkit-text-fill-color: #000000 !important;
+    font-weight: 850 !important;
+    box-shadow: none !important;
+}
+div.st-key-retirement-connection-close-cta div.stButton > button[data-testid="stBaseButton-secondary"] > div,
+div.st-key-retirement-connection-close-cta div.stButton > button[data-testid="stBaseButton-secondary"] span,
+div.st-key-retirement-connection-close-cta div.stButton > button[data-testid="stBaseButton-secondary"] [data-testid="stMarkdownContainer"] {
+    background: transparent !important;
+    background-color: transparent !important;
+    background-image: none !important;
+    color: #000000 !important;
+    -webkit-text-fill-color: #000000 !important;
+}
+div.st-key-retirement-connection-close-cta div.stButton > button[data-testid="stBaseButton-secondary"] [data-testid="stMarkdownContainer"] p {
+    margin: 0 !important;
+    color: #000000 !important;
+    -webkit-text-fill-color: #000000 !important;
+    font-weight: 850 !important;
+}
+div.st-key-retirement-connection-close-cta [data-testid="stElementContainer"] {
+    width: 100% !important;
+    display: flex !important;
+    justify-content: center !important;
+}
+</style>
+""", unsafe_allow_html=True)
