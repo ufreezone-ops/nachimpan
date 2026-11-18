@@ -3196,6 +3196,43 @@ def _nachimpan_master_report_maps():
     return _by_source, _by_legacy
 
 
+def _nachimpan_master_resource_maps():
+    """연결창에서 보고서와 일반 CSV 자료를 동일한 자료 단위로 조회한다."""
+    _master = _load_nachimpan_master()
+    _by_source, _by_legacy = _nachimpan_master_report_maps()
+    _by_resource = {}
+    if _master.empty:
+        return _by_source, _by_resource, _by_legacy
+    _usable = _master[
+        (_master["status"] == "사용")
+        & (_master["file_format"].str.upper() != "XLSX")
+    ]
+    for _record in _usable.to_dict("records"):
+        _record = {str(_key): str(_value or "").strip() for _key, _value in _record.items()}
+        _resource_id = _record.get("resource_id", "")
+        if _resource_id:
+            _by_resource[_resource_id] = _record
+    return _by_source, _by_resource, _by_legacy
+
+
+# CSV 자료와 직접 연결되는 보고서 source_id. 기존 보고서 연관성 데이터는 변경하지 않는다.
+_RETIREMENT_CSV_REPORT_LINKS = {
+    "NCH-0024": ["6051500-00", "6052200-00"],
+    "NCH-0025": ["6052300-00"],
+    "NCH-0026": ["6051400-00", "6051300-00"],
+    "NCH-0027": ["6051400-00", "6051300-00"],
+    "NCH-0028": ["6050200-00", "6051700-00"],
+    "NCH-0029": ["6050700-00", "6051200-00"],
+    "NCH-0030": ["6050700-00", "6051200-00"],
+    "NCH-0031": ["6050600-00", "6051300-00"],
+    "NCH-0032": ["6052200-00", "6050300-00"],
+    "NCH-0033": ["6052200-00", "6050300-00"],
+    "NCH-0034": ["6050800-00", "6052000-00"],
+    "NCH-0035": ["6051400-00", "6051300-00"],
+    "NCH-0037": ["6050200-00", "6051700-00"],
+}
+
+
 def _master_report_display(source_id, suffix=""):
     """보고서 화면 제목은 마스터의 공개번호와 제목만 사용한다."""
     _by_source, _ = _nachimpan_master_report_maps()
@@ -3367,21 +3404,43 @@ def _show_retirement_entry_dialog():
             st.rerun()
 
 
-@st.dialog("보고서", width="large")
+@st.dialog("자료 보기", width="large")
 def _show_retirement_report_dialog():
-    """보고서 본문과 제목을 마스터 원장 기준으로 표시한다."""
+    """보고서 본문 또는 CSV 미리보기를 전체 제목과 함께 표시한다."""
     _source_id = st.session_state.get("_retirement_explorer_source_id")
-    if not _source_id:
-        return
-
-    _by_source, _ = _nachimpan_master_report_maps()
-    _record = _by_source.get(_source_id)
+    _resource_id = st.session_state.get("_retirement_explorer_resource_id")
+    _by_source, _by_resource, _ = _nachimpan_master_resource_maps()
+    _record = _by_source.get(_source_id) if _source_id else _by_resource.get(_resource_id)
     if not _record:
-        st.error("현재 보고서가 마스터 원장에 등록되어 있지 않습니다.")
+        st.error("현재 자료가 마스터 원장에 등록되어 있지 않습니다.")
         return
 
-    st.markdown(f"## {_master_report_display(_source_id)}")
-    _render_retirement_explorer_report(_source_id)
+    st.markdown(f"## {_record.get('title', '자료')}")
+    if _record.get("resource_type") == "보고서":
+        _render_retirement_explorer_report(_source_id)
+    else:
+        st.caption(f"{_record.get('continent', '')} · {_record.get('resource_type', '')} · {_record.get('file_format', '')}")
+        _relative_path = _record.get("file_path", "")
+        _file_path = Path(__file__).resolve().parent / _relative_path if _relative_path else None
+        if _file_path is None or not _file_path.exists():
+            st.error("자료 파일을 찾을 수 없습니다.")
+        elif _record.get("file_format", "").upper() == "CSV":
+            try:
+                try:
+                    _df = pd.read_csv(_file_path, encoding="utf-8-sig")
+                except UnicodeDecodeError:
+                    _df = pd.read_csv(_file_path, encoding="cp949")
+                st.caption(f"{len(_df):,}행 · {len(_df.columns):,}개 변수")
+                st.dataframe(_df.head(200), use_container_width=True, hide_index=True)
+                st.download_button(
+                    "CSV 원본 내려받기", _file_path.read_bytes(),
+                    file_name=_file_path.name, mime="text/csv",
+                    key=f"retirement_csv_download_{_resource_id}",
+                    use_container_width=True,
+                )
+            except Exception as _error:
+                st.error(f"CSV 읽기 오류: {_error}")
+
     st.markdown('<div class="retirement-connection-rail"></div>', unsafe_allow_html=True)
     with st.container(key="retirement-report-connection-cta"):
         _button_spacer, _button_col = st.columns([4, 2])
@@ -3394,22 +3453,21 @@ def _show_retirement_report_dialog():
 @st.dialog("연결", width="large")
 def _show_retirement_connection_dialog():
     """읽은 보고서 이력과 다음 추천 보고서를 좌우로 보여주는 연결창."""
-    _by_source, _by_legacy = _nachimpan_master_report_maps()
+    _by_source, _by_resource, _by_legacy = _nachimpan_master_resource_maps()
     _history = list(st.session_state.get("_retirement_explorer_history", []))
     _source_id = st.session_state.get("_retirement_explorer_source_id")
-    if not _source_id:
-        return
-
-    _current_record = _by_source.get(_source_id)
-    if not _current_record:
-        st.error("현재 보고서가 마스터 원장에 등록되어 있지 않습니다.")
+    _resource_id = st.session_state.get("_retirement_explorer_resource_id")
+    _current_record = _by_source.get(_source_id) if _source_id else _by_resource.get(_resource_id)
+    _current_key = _source_id or _resource_id
+    if not _current_record or not _current_key:
+        st.error("현재 자료가 마스터 원장에 등록되어 있지 않습니다.")
         return
 
     if not _history:
-        _history = [_source_id]
+        _history = [_current_key]
         st.session_state["_retirement_explorer_history"] = list(_history)
-    elif _history[-1] != _source_id:
-        _history.append(_source_id)
+    elif _history[-1] != _current_key:
+        _history.append(_current_key)
         st.session_state["_retirement_explorer_history"] = list(_history)
 
     # 연관성 자료는 내부 legacy_id로만 조회하고, 화면 표시는 마스터 원장을 따른다.
@@ -3456,23 +3514,58 @@ def _show_retirement_connection_dialog():
                 "raw_score": int(_row.get("score", 0) or 0),
                 "reason": _row.get("reason") or _row.get("relation") or "주제상 연결되는 자료입니다.",
             })
-    _related_rows.sort(key=lambda item: (-item["raw_score"], item["title"]))
+    # 보고서와 CSV 사이의 연결을 추가한다. CSV는 resource_id로 식별한다.
+    _csv_links_for_current = _RETIREMENT_CSV_REPORT_LINKS.get(_resource_id, []) if _resource_id else ([_source_id] if _source_id else [])
+    if _source_id:
+        for _csv_id, _linked_sources in _RETIREMENT_CSV_REPORT_LINKS.items():
+            if _source_id in _linked_sources and _csv_id not in _history:
+                _csv_record = _by_resource.get(_csv_id)
+                if _csv_record:
+                    _related_rows.append({
+                        "display_label": _csv_record.get("display_label", ""),
+                        "title": _csv_record.get("title", ""),
+                        "source_id": "", "resource_id": _csv_id,
+                        "resource_type": _csv_record.get("resource_type", ""),
+                        "raw_score": 0,
+                        "reason": "이 보고서의 통계 근거가 되는 원자료입니다.",
+                    })
+    else:
+        for _linked_source in _csv_links_for_current:
+            _report_record = _by_source.get(_linked_source)
+            if _report_record and _linked_source not in _history:
+                _related_rows.append({
+                    "display_label": _report_record.get("display_label", ""),
+                    "title": _report_record.get("title", ""),
+                    "source_id": _linked_source, "resource_id": "",
+                    "resource_type": "보고서", "raw_score": 1000,
+                    "reason": "이 원자료를 설명하거나 활용하는 보고서입니다.",
+                })
+        for _csv_id, _linked_sources in _RETIREMENT_CSV_REPORT_LINKS.items():
+            if _csv_id == _resource_id or _csv_id in _history:
+                continue
+            if set(_linked_sources).intersection(_csv_links_for_current):
+                _csv_record = _by_resource.get(_csv_id)
+                if _csv_record:
+                    _related_rows.append({
+                        "display_label": _csv_record.get("display_label", ""),
+                        "title": _csv_record.get("title", ""),
+                        "source_id": "", "resource_id": _csv_id,
+                        "resource_type": _csv_record.get("resource_type", ""),
+                        "raw_score": 900,
+                        "reason": "같은 보고서와 연결되는 관련 통계 원자료입니다.",
+                    })
 
-    # 연결창에 진입한 보고서 자체가 '이전 보고서' 역이다.
-    # 방문 이력에는 현재 보고서도 포함되므로 왼쪽 목록에도 표시한다.
-    _past_source_ids = list(_history)
-    if not _past_source_ids or _past_source_ids[-1] != _source_id:
-        _past_source_ids.append(_source_id)
-    _past_records = [
-        _by_source[sid] for sid in reversed(_past_source_ids)
-        if sid in _by_source
-    ]
+    _related_rows.sort(key=lambda item: (-item["raw_score"], item["title"]))
+    _past_records = []
+    for _history_key in reversed(_history):
+        _history_record = _by_source.get(_history_key) or _by_resource.get(_history_key)
+        if _history_record:
+            _past_records.append(_history_record)
     _previous_record = _current_record
-    # 상단 다음 보고서도 추천 목록과 동일한 원본 레코드에서 색상·번호를 가져온다.
-    _next_record = (
-        _by_source.get(_related_rows[0]["source_id"])
-        if _related_rows else None
-    )
+    _next_record = None
+    if _related_rows:
+        _first = _related_rows[0]
+        _next_record = _by_source.get(_first.get("source_id", "")) if _first.get("source_id") else _by_resource.get(_first.get("resource_id", ""))
 
     def _continent_color(_record):
         _color = str((_record or {}).get("continent_color_hex", "")).strip()
@@ -3489,14 +3582,24 @@ def _show_retirement_connection_dialog():
         return "#173126" if _luminance > 0.34 else "#FFFFFF"
 
     with st.container(key="retirement-connection-platform", border=True):
-        _previous_title = _previous_record.get("title", "이전 보고서")
+        _previous_title = _previous_record.get("title", "이전 자료")
         _previous_number = _previous_record.get("display_label", "")
+        _previous_is_csv = _previous_record.get("file_format", "").upper() == "CSV"
         _next_title = _next_record.get("title", "추천 자료 없음") if _next_record else "추천 자료 없음"
         _next_number = _next_record.get("display_label", "") if _next_record else ""
+        _next_is_csv = bool(_next_record and _next_record.get("file_format", "").upper() == "CSV")
         _previous_color = _continent_color(_previous_record)
         _next_color = _continent_color(_next_record) if _next_record else "#777777"
         _previous_text_color = _contrast_text(_previous_color)
         _next_text_color = _contrast_text(_next_color)
+        _previous_csv_css = (
+            ".st-key-retirement-top-previous-clickable [data-testid='stButton'] button p{display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden;max-height:2.6em;line-height:1.3;}"
+            if _previous_is_csv else ""
+        )
+        _next_csv_css = (
+            ".st-key-retirement-top-next-clickable [data-testid='stButton'] button p{display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden;max-height:2.6em;line-height:1.3;}"
+            if _next_is_csv else ""
+        )
         # 연결창 자체는 특정 대륙에 속하지 않으므로 전용 녹색을 사용한다.
         _connection_panel_color = "#159447"
         _connection_panel_text_color = "#FFFFFF"
@@ -3654,6 +3757,17 @@ def _show_retirement_connection_dialog():
             }}
             .retirement-connection-stop .retirement-number-circle {{ border:0 !important; box-shadow:none !important; box-sizing:border-box; }}
             .retirement-history-title {{ min-width:0; overflow-wrap:anywhere; font-size:12px; font-weight:500; line-height:1.4; }}
+            .retirement-csv-title-clamp {{
+                display:-webkit-box; -webkit-box-orient:vertical; -webkit-line-clamp:2;
+                overflow:hidden; overflow-wrap:anywhere; line-height:1.4; max-height:2.8em;
+            }}
+            [class*="st-key-retirement-connection-choice-csv-"] [data-testid="stButton"] button p {{
+                display:-webkit-box !important; -webkit-box-orient:vertical !important;
+                -webkit-line-clamp:2 !important; overflow:hidden !important;
+                max-height:2.8em !important; line-height:1.4 !important;
+            }}
+            {_previous_csv_css}
+            {_next_csv_css}
             .retirement-recommendation-score {{
                 color:inherit; opacity:.82; font-size:11px; line-height:1.25;
                 margin:1px 0 0 0; text-align:left;
@@ -3875,7 +3989,12 @@ def _show_retirement_connection_dialog():
                         use_container_width=True, type="secondary",
                     )
                     if _previous_clicked:
-                        st.session_state["_retirement_explorer_source_id"] = _previous_record.get("source_id")
+                        if _previous_record.get("resource_type") == "보고서":
+                            st.session_state["_retirement_explorer_source_id"] = _previous_record.get("source_id")
+                            st.session_state.pop("_retirement_explorer_resource_id", None)
+                        else:
+                            st.session_state["_retirement_explorer_resource_id"] = _previous_record.get("resource_id")
+                            st.session_state.pop("_retirement_explorer_source_id", None)
                         st.session_state["_retirement_connection_open"] = False
                         st.rerun()
         with _top_arrow_col:
@@ -3895,11 +4014,16 @@ def _show_retirement_connection_dialog():
                         use_container_width=True, type="secondary",
                     )
                     if _next_clicked:
+                        _next_key = _next_record.get("source_id") or _next_record.get("resource_id")
                         st.session_state["_retirement_explorer_history"] = _history + (
-                            [] if _history and _history[-1] == _next_record.get("source_id")
-                            else [_next_record.get("source_id")]
+                            [] if _history and _history[-1] == _next_key else [_next_key]
                         )
-                        st.session_state["_retirement_explorer_source_id"] = _next_record.get("source_id")
+                        if _next_record.get("resource_type") == "보고서":
+                            st.session_state["_retirement_explorer_source_id"] = _next_record.get("source_id")
+                            st.session_state.pop("_retirement_explorer_resource_id", None)
+                        else:
+                            st.session_state["_retirement_explorer_resource_id"] = _next_record.get("resource_id")
+                            st.session_state.pop("_retirement_explorer_source_id", None)
                         st.session_state["_retirement_connection_open"] = False
                         st.rerun()
                     elif not _next_record:
@@ -3909,30 +4033,34 @@ def _show_retirement_connection_dialog():
             _left, _right = st.columns(2, gap="small")
             with _left:
                 with st.container(key="retirement-connection-read-list", border=True):
-                    st.markdown("<h4 style='font-size:12px;font-weight:500;margin:0 0 9px;'>← 읽은 보고서</h4>", unsafe_allow_html=True)
+                    st.markdown("<h4 style='font-size:12px;font-weight:500;margin:0 0 9px;'>← 읽은 자료</h4>", unsafe_allow_html=True)
                     if _past_records:
                         for _record in _past_records:
                             _number = _record.get("display_label", "")
-                            _title = _record.get("title", "보고서")
+                            _title = _record.get("title", "자료")
                             _color = _continent_color(_record)
+                            _csv_class = " retirement-csv-title-clamp" if _record.get("file_format", "").upper() == "CSV" else ""
                             st.markdown(
                                 f"<div class='retirement-history-item'>"
                                 f"<span class='retirement-number-circle' style='background:{_color};color:#fff;'>"
-                                f"{_number}</span><span class='retirement-history-title'>{_title}</span></div>",
+                                f"{_number}</span><span class='retirement-history-title{_csv_class}'>{_title}</span></div>",
                                 unsafe_allow_html=True,
                             )
                     else:
-                        st.caption("아직 읽은 보고서가 없습니다.")
+                        st.caption("아직 읽은 자료가 없습니다.")
 
             with _right:
                 with st.container(key="retirement-connection-recommend-list", border=True):
-                    st.markdown("<h4 style='font-size:12px;font-weight:700;margin:0 0 9px;'>다음 추천 보고서 →</h4>", unsafe_allow_html=True)
-                    if len(_related_rows) > 1:
+                    st.markdown("<h4 style='font-size:12px;font-weight:700;margin:0 0 9px;'>다음 추천 자료 →</h4>", unsafe_allow_html=True)
+                    if _related_rows:
                         for _index, _item in enumerate(_related_rows[1:3]):
                             _number = _item.get("display_label", "")
-                            _title = _item.get("title", "보고서")
-                            _item_color = _continent_color(_by_source.get(_item["source_id"]))
-                            with st.container(key=f"retirement-connection-choice-{_index}"):
+                            _title = _item.get("title", "자료")
+                            _item_record = _by_source.get(_item.get("source_id", "")) if _item.get("source_id") else _by_resource.get(_item.get("resource_id", ""))
+                            _item_color = _continent_color(_item_record)
+                            _is_csv_item = bool(_item_record and _item_record.get("file_format", "").upper() == "CSV")
+                            _choice_key = f"retirement-connection-choice-csv-{_index}" if _is_csv_item else f"retirement-connection-choice-{_index}"
+                            with st.container(key=_choice_key):
                                 _number_col, _title_col = st.columns([0.12, 0.88], gap=None)
                                 with _number_col:
                                     st.markdown(
@@ -3941,21 +4069,19 @@ def _show_retirement_connection_dialog():
                                         unsafe_allow_html=True,
                                     )
                                 with _title_col:
-                                    if st.button(
-                                        _title,
-                                        key=f"retirement_connection_next_{_index}",
-                                        use_container_width=True,
-                                        type="secondary",
-                                    ):
-                                        st.session_state["_retirement_explorer_history"] = _history + (
-                                            [] if _history and _history[-1] == _item["source_id"]
-                                            else [_item["source_id"]]
-                                        )
-                                        st.session_state["_retirement_explorer_source_id"] = _item["source_id"]
+                                    if st.button(_title, key=f"retirement_connection_next_{_index}", use_container_width=True, type="secondary"):
+                                        _item_key = _item.get("source_id") or _item.get("resource_id")
+                                        st.session_state["_retirement_explorer_history"] = _history + ([] if _history and _history[-1] == _item_key else [_item_key])
+                                        if _item_record and _item_record.get("resource_type") == "보고서":
+                                            st.session_state["_retirement_explorer_source_id"] = _item.get("source_id")
+                                            st.session_state.pop("_retirement_explorer_resource_id", None)
+                                        else:
+                                            st.session_state["_retirement_explorer_resource_id"] = _item.get("resource_id")
+                                            st.session_state.pop("_retirement_explorer_source_id", None)
                                         st.session_state["_retirement_connection_open"] = False
                                         st.rerun()
                     else:
-                        st.caption("현재 보고서에서 이어지는 추천 자료가 없습니다.")
+                        st.caption("현재 자료에서 이어지는 추천 자료가 없습니다.")
 
         _close_spacer, _close_col = st.columns([7, 1])
         with _close_col:
