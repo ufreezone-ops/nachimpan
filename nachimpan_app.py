@@ -10566,7 +10566,7 @@ st.markdown("""
     max-width:none !important;
     height:auto !important;
     min-height:0 !important;
-    margin:0 0 0 -5% !important;
+    margin:0 -5.396% 0 -5.396% !important;
 }
 </style>
 """, unsafe_allow_html=True)
