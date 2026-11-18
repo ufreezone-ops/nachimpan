@@ -11758,3 +11758,70 @@ div.st-key-loan-payment-field div.st-key-loan-payment-source-guide [data-testid=
 }
 </style>
 """, unsafe_allow_html=True)
+
+# 연간 잉여자금 팝오버 버튼: 실제 내부 button까지 최종 CSS에서 외형 제거
+st.markdown("""
+<style>
+div.st-key-annual-surplus-source-guide,
+div.st-key-annual-surplus-source-guide [data-testid="stPopover"],
+div.st-key-annual-surplus-source-guide [data-testid="stPopoverButton"] {
+    display: inline-flex !important;
+    width: auto !important;
+    min-width: 0 !important;
+    max-width: max-content !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    border: 0 !important;
+    background: transparent !important;
+    background-color: transparent !important;
+    box-shadow: none !important;
+}
+div.st-key-annual-surplus-source-guide [data-testid="stPopoverButton"] button,
+div.st-key-annual-surplus-source-guide [data-testid="stPopoverButton"] button:hover,
+div.st-key-annual-surplus-source-guide [data-testid="stPopoverButton"] button:focus,
+div.st-key-annual-surplus-source-guide [data-testid="stPopoverButton"] button:focus-visible,
+div.st-key-annual-surplus-source-guide [data-testid="stPopoverButton"] button:active,
+div.st-key-annual-surplus-source-guide [data-testid="stPopover"] button,
+div.st-key-annual-surplus-source-guide [data-testid="stPopover"] button:hover,
+div.st-key-annual-surplus-source-guide [data-testid="stPopover"] button:focus,
+div.st-key-annual-surplus-source-guide [data-testid="stPopover"] button:focus-visible,
+div.st-key-annual-surplus-source-guide [data-testid="stPopover"] button:active {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: flex-start !important;
+    width: auto !important;
+    min-width: 0 !important;
+    max-width: max-content !important;
+    min-height: 0 !important;
+    height: auto !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    border: 0 !important;
+    outline: 0 !important;
+    background: transparent !important;
+    background-color: transparent !important;
+    background-image: none !important;
+    box-shadow: none !important;
+    border-radius: 0 !important;
+    appearance: none !important;
+    -webkit-appearance: none !important;
+    transform: none !important;
+}
+div.st-key-annual-surplus-source-guide [data-testid="stPopoverButton"] button svg,
+div.st-key-annual-surplus-source-guide [data-testid="stPopover"] button svg {
+    display: none !important;
+}
+div.st-key-annual-surplus-source-guide [data-testid="stPopoverButton"] button::after,
+div.st-key-annual-surplus-source-guide [data-testid="stPopover"] button::after {
+    display: none !important;
+    content: none !important;
+}
+div.st-key-annual-surplus-source-guide button p {
+    margin: 0 !important;
+    padding: 0 !important;
+    white-space: nowrap !important;
+    line-height: 1.2 !important;
+    font: inherit !important;
+}
+</style>
+""", unsafe_allow_html=True)
