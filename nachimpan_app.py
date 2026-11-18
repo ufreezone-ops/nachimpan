@@ -11667,3 +11667,28 @@ st.markdown("""
 }
 </style>
 """, unsafe_allow_html=True)
+
+# 대출 원리금 나침반: 제목 행의 자동 수직 중앙정렬 사용
+st.markdown("""
+<style>
+div.st-key-loan-payment-title-row [data-testid="stHorizontalBlock"] {
+    align-items: center !important;
+}
+div.st-key-loan-payment-title-row div.st-key-loan-payment-source-guide [data-testid="stButton"] button,
+div.st-key-loan-payment-title-row div.st-key-loan-payment-source-guide [data-testid="stButton"] button:hover,
+div.st-key-loan-payment-title-row div.st-key-loan-payment-source-guide [data-testid="stButton"] button:focus,
+div.st-key-loan-payment-title-row div.st-key-loan-payment-source-guide [data-testid="stButton"] button:focus-visible,
+div.st-key-loan-payment-title-row div.st-key-loan-payment-source-guide [data-testid="stButton"] button:active {
+    transform: none !important;
+    align-self: center !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+}
+div.st-key-loan-payment-title-row div.st-key-loan-payment-source-guide [data-testid="stButton"] button p {
+    margin: 0 !important;
+    padding: 0 !important;
+    line-height: 1 !important;
+}
+</style>
+""", unsafe_allow_html=True)
