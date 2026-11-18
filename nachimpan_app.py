@@ -4962,8 +4962,7 @@ if selected_page == "우리집 가계부":
                     st.write(bonus_help)
                 st.metric(
                     "",
-                    money(s["annual_net_surplus"]),
-                    delta=f"월평균 {money(s['monthly_effective_surplus'])}",
+                    f"{money(s['annual_net_surplus'])} (월평균 {money(s['monthly_effective_surplus'])})",
                     label_visibility="collapsed",
                 )
         cols[3].metric("현재 파악된 금융자산", fmt_eok(s["net_worth"]))
