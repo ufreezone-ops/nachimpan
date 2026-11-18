@@ -10229,9 +10229,9 @@ st.markdown("""
 /* 상단 좌우 카드: 제목 줄 수와 관계없이 동일한 외곽 높이 */
 .st-key-retirement-top-previous-clickable,
 .st-key-retirement-top-next-clickable {
-    height:92px !important;
-    min-height:92px !important;
-    max-height:92px !important;
+    height:62px !important;
+    min-height:62px !important;
+    max-height:62px !important;
     flex:0 0 92px !important;
     box-sizing:border-box !important;
 }
@@ -10516,9 +10516,9 @@ st.markdown("""
     flex-direction:column !important;
     align-items:stretch !important;
     justify-content:center !important;
-    height:92px !important;
-    min-height:92px !important;
-    max-height:92px !important;
+    height:62px !important;
+    min-height:62px !important;
+    max-height:62px !important;
     box-sizing:border-box !important;
     padding:6px !important;
 }
