@@ -3001,6 +3001,13 @@ def _show_retirement_connection_dialog():
             f"<span class='retirement-number-circle' style='background:{_next_color};color:#fff;'>{_next_number}</span>"
             if _next_number else ""
         )
+        # 다음 보고서 번호는 클릭 버튼의 ::before 원형 마커로 표현해
+        # 이전 보고서와 동일한 '캡션 + 번호/제목 한 줄' 구조를 유지한다.
+        st.markdown(
+            f"<style>.st-key-retirement-top-next-clickable [data-testid='stButton'] button::before "
+            f"{{ content:'{_next_number}'; background:{_next_color}; }}</style>",
+            unsafe_allow_html=True,
+        )
         _top_previous_col, _top_arrow_col, _top_next_col = st.columns([1, 0.12, 1], gap="small")
         with _top_previous_col:
             st.markdown(
@@ -3025,14 +3032,10 @@ def _show_retirement_connection_dialog():
                     "<span class='retirement-top-next-caption'>다음 보고서</span></div>",
                     unsafe_allow_html=True,
                 )
-                _next_number_col, _next_title_col = st.columns([0.12, 0.88], gap=None)
-                with _next_number_col:
-                    st.markdown(_next_number_html, unsafe_allow_html=True)
-                with _next_title_col:
-                    _next_clicked = _next_record and st.button(
-                        _next_title, key="retirement_connection_top_next",
-                        use_container_width=True, type="secondary",
-                    )
+                _next_clicked = _next_record and st.button(
+                    _next_title, key="retirement_connection_top_next",
+                    use_container_width=True, type="secondary",
+                )
                 if _next_clicked:
                     st.session_state["_retirement_explorer_history"] = _history + (
                         [] if _history and _history[-1] == _next_record.get("source_id")
@@ -10108,6 +10111,112 @@ st.markdown("""
     color:#222222 !important;
     -webkit-text-fill-color:#222222 !important;
     background:rgba(34,34,34,.06) !important;
+}
+</style>
+""", unsafe_allow_html=True)
+
+
+# 연결창 최종 정렬: 상단 좌우를 동일한 2단 구조로, 하단 추천 글자를 12px로 통일
+st.markdown("""
+<style>
+/* 상단 우측 버튼을 좌측 .stop-main과 같은 '번호 원 + 제목' 한 줄로 구성 */
+.st-key-retirement-top-next-clickable [data-testid="stButton"] {
+    width:100% !important;
+}
+.st-key-retirement-top-next-clickable [data-testid="stButton"] button {
+    display:flex !important;
+    flex-direction:row !important;
+    align-items:center !important;
+    justify-content:flex-start !important;
+    gap:8px !important;
+    width:100% !important;
+    min-width:0 !important;
+    min-height:30px !important;
+    height:auto !important;
+    padding:2px 4px !important;
+    white-space:normal !important;
+    text-align:left !important;
+}
+.st-key-retirement-top-next-clickable [data-testid="stButton"] button::before {
+    content:"" !important;
+    display:inline-flex !important;
+    flex:0 0 25px !important;
+    width:25px !important;
+    height:25px !important;
+    align-items:center !important;
+    justify-content:center !important;
+    border-radius:50% !important;
+    color:#fff !important;
+    -webkit-text-fill-color:#fff !important;
+    font-size:12px !important;
+    font-weight:900 !important;
+    line-height:1 !important;
+}
+.st-key-retirement-top-next-clickable [data-testid="stButton"] button > div {
+    display:flex !important;
+    flex:1 1 auto !important;
+    min-width:0 !important;
+    width:auto !important;
+    align-items:center !important;
+    justify-content:flex-start !important;
+}
+.st-key-retirement-top-next-clickable [data-testid="stButton"] button [data-testid="stMarkdownContainer"],
+.st-key-retirement-top-next-clickable [data-testid="stButton"] button p {
+    min-width:0 !important;
+    margin:0 !important;
+    text-align:left !important;
+    white-space:normal !important;
+    overflow-wrap:anywhere !important;
+    font-size:13px !important;
+    font-weight:800 !important;
+    line-height:1.25 !important;
+}
+/* 좌우 상단 카드의 내부를 동일한 높이 기준으로 늘리고 화살표는 전체 높이의 정중앙 */
+.st-key-retirement-connection-platform [data-testid="stHorizontalBlock"]:has(.retirement-connection-stop.previous):has(.st-key-retirement-top-next-clickable) {
+    align-items:stretch !important;
+}
+.st-key-retirement-connection-platform [data-testid="stHorizontalBlock"]:has(.retirement-connection-stop.previous):has(.st-key-retirement-top-next-clickable) > [data-testid="stColumn"] {
+    align-self:stretch !important;
+}
+.st-key-retirement-connection-platform [data-testid="stHorizontalBlock"]:has(.retirement-connection-stop.previous):has(.st-key-retirement-top-next-clickable) > [data-testid="stColumn"] > [data-testid="stVerticalBlock"] {
+    height:100% !important;
+}
+.st-key-retirement-connection-platform [data-testid="stHorizontalBlock"]:has(.retirement-connection-stop.previous):has(.st-key-retirement-top-next-clickable) > [data-testid="stColumn"]:nth-child(2) > [data-testid="stVerticalBlock"] {
+    display:flex !important;
+    align-items:center !important;
+    justify-content:center !important;
+}
+.st-key-retirement-connection-platform .retirement-top-arrow {
+    display:flex !important;
+    align-items:center !important;
+    justify-content:center !important;
+    align-self:stretch !important;
+    height:100% !important;
+    min-height:100% !important;
+    margin:0 !important;
+    padding:0 !important;
+}
+.st-key-retirement-connection-platform .retirement-top-arrow svg {
+    display:block !important;
+    margin:auto !important;
+}
+/* 하단 추천 보고서: 실제 Streamlit 위젯 키 기준으로 글자색·크기·굵기를 강제 */
+.st-key-retirement-connection-platform .st-key-retirement-connection-choice-0 [data-testid="stButton"] button,
+.st-key-retirement-connection-platform .st-key-retirement-connection-choice-1 [data-testid="stButton"] button,
+.st-key-retirement-connection-platform .st-key-retirement-connection-choice-2 [data-testid="stButton"] button,
+.st-key-retirement-connection-platform .st-key-retirement-connection-choice-0 [data-testid="stButton"] button *,
+.st-key-retirement-connection-platform .st-key-retirement-connection-choice-1 [data-testid="stButton"] button *,
+.st-key-retirement-connection-platform .st-key-retirement-connection-choice-2 [data-testid="stButton"] button *,
+.st-key-retirement-connection-platform .st-key-retirement-connection-choice-0 [data-testid="stButton"] p,
+.st-key-retirement-connection-platform .st-key-retirement-connection-choice-1 [data-testid="stButton"] p,
+.st-key-retirement-connection-platform .st-key-retirement-connection-choice-2 [data-testid="stButton"] p {
+    color:#222222 !important;
+    -webkit-text-fill-color:#222222 !important;
+    font-size:12px !important;
+    font-weight:500 !important;
+    font-family:inherit !important;
+    line-height:1.4 !important;
+    text-decoration:none !important;
 }
 </style>
 """, unsafe_allow_html=True)
