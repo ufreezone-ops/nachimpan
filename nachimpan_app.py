@@ -3008,7 +3008,7 @@ def _show_retirement_connection_dialog():
             st.markdown(
                 "<div class='retirement-top-arrow' aria-hidden='true'>"
                 "<svg viewBox='0 0 100 24' role='presentation'>"
-                "<path d='M3 12 H91 M80 3 L91 12 L80 21' fill='none' "
+                "<path d='M26 12 H74 M64 5 L74 12 L64 19' fill='none' "
                 "stroke='#222222' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'/>"
                 "</svg></div>",
                 unsafe_allow_html=True,
@@ -3016,14 +3016,19 @@ def _show_retirement_connection_dialog():
         with _top_next_col:
             with st.container(key="retirement-top-next-clickable"):
                 st.markdown(
-                    f"<div class='retirement-top-next-header'>{_next_number_html}"
-                    f"<span class='retirement-top-next-caption'>다음 보고서</span></div>",
+                    "<div class='retirement-top-next-header'>"
+                    "<span class='retirement-top-next-caption'>다음 보고서</span></div>",
                     unsafe_allow_html=True,
                 )
-                if _next_record and st.button(
-                    _next_title, key="retirement_connection_top_next",
-                    use_container_width=True, type="secondary",
-                ):
+                _next_number_col, _next_title_col = st.columns([0.12, 0.88], gap=None)
+                with _next_number_col:
+                    st.markdown(_next_number_html, unsafe_allow_html=True)
+                with _next_title_col:
+                    _next_clicked = _next_record and st.button(
+                        _next_title, key="retirement_connection_top_next",
+                        use_container_width=True, type="secondary",
+                    )
+                if _next_clicked:
                     st.session_state["_retirement_explorer_history"] = _history + (
                         [] if _history and _history[-1] == _next_record.get("source_id")
                         else [_next_record.get("source_id")]
@@ -9942,6 +9947,70 @@ st.markdown("""
 .st-key-retirement-connection-bottom .st-key-retirement-connection-choice-2 [data-testid="stButton"] button:hover {
     background:rgba(255,255,255,.12) !important;
     text-decoration:none !important;
+}
+</style>
+""", unsafe_allow_html=True)
+
+ 
+# 연결창 최종 모바일·추천목록 스타일 보정
+st.markdown("""
+<style>
+.st-key-retirement-connection-platform [data-testid="stHorizontalBlock"]:has(.retirement-connection-stop.previous):has(.st-key-retirement-top-next-clickable) {
+ display:flex !important; flex-direction:row !important; flex-wrap:nowrap !important;
+ align-items:stretch !important; width:100% !important; min-width:0 !important; gap:4px !important;
+}
+.st-key-retirement-connection-platform [data-testid="stHorizontalBlock"]:has(.retirement-connection-stop.previous):has(.st-key-retirement-top-next-clickable) > [data-testid="stColumn"] {
+ min-width:0 !important; box-sizing:border-box !important;
+}
+.st-key-retirement-connection-platform [data-testid="stHorizontalBlock"]:has(.retirement-connection-stop.previous):has(.st-key-retirement-top-next-clickable) > [data-testid="stColumn"]:first-child,
+.st-key-retirement-connection-platform [data-testid="stHorizontalBlock"]:has(.retirement-connection-stop.previous):has(.st-key-retirement-top-next-clickable) > [data-testid="stColumn"]:last-child {
+ flex:1 1 0% !important; width:0 !important; max-width:none !important; min-width:0 !important;
+}
+.st-key-retirement-connection-platform [data-testid="stHorizontalBlock"]:has(.retirement-connection-stop.previous):has(.st-key-retirement-top-next-clickable) > [data-testid="stColumn"]:nth-child(2) {
+ flex:0 0 38px !important; width:38px !important; max-width:38px !important; min-width:38px !important;
+}
+.retirement-top-arrow svg { max-width:38px !important; height:22px !important; }
+.st-key-retirement-top-next-clickable .retirement-top-next-header {
+ display:flex !important; justify-content:flex-end !important; width:100% !important;
+}
+.st-key-retirement-top-next-clickable .retirement-top-next-caption { text-align:right !important; margin-left:auto !important; }
+.st-key-retirement-top-next-clickable [data-testid="stHorizontalBlock"] {
+ display:flex !important; flex-wrap:nowrap !important; align-items:center !important; gap:6px !important; width:100% !important;
+}
+.st-key-retirement-top-next-clickable [data-testid="stColumn"]:first-child { flex:0 0 22px !important; width:22px !important; min-width:22px !important; }
+.st-key-retirement-top-next-clickable [data-testid="stColumn"]:last-child { flex:1 1 0% !important; width:0 !important; min-width:0 !important; }
+.st-key-retirement-top-next-clickable [data-testid="stButton"] button,
+.st-key-retirement-top-next-clickable [data-testid="stButton"] button *,
+.st-key-retirement-top-next-clickable [data-testid="stButton"] p {
+ font-size:13px !important; font-weight:800 !important; line-height:1.4 !important; text-align:left !important;
+}
+.st-key-retirement-connection-bottom .st-key-retirement-connection-choice-0,
+.st-key-retirement-connection-bottom .st-key-retirement-connection-choice-1,
+.st-key-retirement-connection-bottom .st-key-retirement-connection-choice-2 {
+ border-bottom:0 !important; box-shadow:none !important;
+}
+.st-key-retirement-connection-bottom .st-key-retirement-connection-choice-0 [data-testid="stButton"] button,
+.st-key-retirement-connection-bottom .st-key-retirement-connection-choice-1 [data-testid="stButton"] button,
+.st-key-retirement-connection-bottom .st-key-retirement-connection-choice-2 [data-testid="stButton"] button,
+.st-key-retirement-connection-bottom .st-key-retirement-connection-choice-0 [data-testid="stButton"] button *,
+.st-key-retirement-connection-bottom .st-key-retirement-connection-choice-1 [data-testid="stButton"] button *,
+.st-key-retirement-connection-bottom .st-key-retirement-connection-choice-2 [data-testid="stButton"] button *,
+.st-key-retirement-connection-bottom .st-key-retirement-connection-choice-0 [data-testid="stButton"] p,
+.st-key-retirement-connection-bottom .st-key-retirement-connection-choice-1 [data-testid="stButton"] p,
+.st-key-retirement-connection-bottom .st-key-retirement-connection-choice-2 [data-testid="stButton"] p {
+ color:#222222 !important; -webkit-text-fill-color:#222222 !important; font-family:inherit !important;
+ font-size:12px !important; font-weight:500 !important; line-height:1.4 !important;
+ text-decoration:none !important; border:0 !important;
+}
+.st-key-retirement-connection-bottom .st-key-retirement-connection-choice-0 [data-testid="stButton"] button {
+ background:transparent !important; border:0 !important; box-shadow:none !important;
+}
+@media (max-width:640px) {
+ .st-key-retirement-connection-platform [data-testid="stHorizontalBlock"]:has(.retirement-connection-stop.previous):has(.st-key-retirement-top-next-clickable) { gap:2px !important; }
+ .st-key-retirement-connection-platform [data-testid="stHorizontalBlock"]:has(.retirement-connection-stop.previous):has(.st-key-retirement-top-next-clickable) > [data-testid="stColumn"]:nth-child(2) {
+  flex-basis:25px !important; width:25px !important; max-width:25px !important; min-width:25px !important;
+ }
+ .retirement-top-arrow svg { max-width:25px !important; height:20px !important; }
 }
 </style>
 """, unsafe_allow_html=True)
