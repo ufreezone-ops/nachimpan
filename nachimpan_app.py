@@ -10451,3 +10451,54 @@ st.markdown("""
 }
 </style>
 """, unsafe_allow_html=True)
+
+
+# 연결창 상단 3열 비율 및 보고서 번호 원형 크기 조정
+st.markdown("""
+<style>
+/* 좌우 보고서 카드의 공간을 넓히고 중앙 화살표 열은 기존의 절반으로 축소 */
+.st-key-retirement-connection-platform [data-testid="stHorizontalBlock"]:has(.st-key-retirement-top-previous-clickable):has(.retirement-top-arrow):has(.st-key-retirement-top-next-clickable) {
+    gap:6px !important;
+}
+.st-key-retirement-connection-platform [data-testid="stHorizontalBlock"]:has(.st-key-retirement-top-previous-clickable):has(.retirement-top-arrow):has(.st-key-retirement-top-next-clickable) > [data-testid="stColumn"]:first-child,
+.st-key-retirement-connection-platform [data-testid="stHorizontalBlock"]:has(.st-key-retirement-top-previous-clickable):has(.retirement-top-arrow):has(.st-key-retirement-top-next-clickable) > [data-testid="stColumn"]:last-child {
+    flex:1 1 0% !important;
+    width:calc((100% - 27px) / 2) !important;
+    max-width:none !important;
+    min-width:0 !important;
+}
+.st-key-retirement-connection-platform [data-testid="stHorizontalBlock"]:has(.st-key-retirement-top-previous-clickable):has(.retirement-top-arrow):has(.st-key-retirement-top-next-clickable) > [data-testid="stColumn"]:nth-child(2) {
+    flex:0 0 15px !important;
+    width:15px !important;
+    max-width:15px !important;
+    min-width:15px !important;
+}
+
+/* 보고서 번호 원은 기존보다 약 1/3 작게, 숫자 글자 크기는 12px 그대로 유지 */
+.st-key-retirement-top-previous-clickable [data-testid="stButton"] button::before,
+.st-key-retirement-top-next-clickable [data-testid="stButton"] button::before {
+    flex:0 0 17px !important;
+    width:17px !important;
+    min-width:17px !important;
+    height:17px !important;
+    font-size:12px !important;
+    line-height:1 !important;
+}
+
+@media (max-width:640px) {
+    .st-key-retirement-connection-platform [data-testid="stHorizontalBlock"]:has(.st-key-retirement-top-previous-clickable):has(.retirement-top-arrow):has(.st-key-retirement-top-next-clickable) > [data-testid="stColumn"]:first-child,
+    .st-key-retirement-connection-platform [data-testid="stHorizontalBlock"]:has(.st-key-retirement-top-previous-clickable):has(.retirement-top-arrow):has(.st-key-retirement-top-next-clickable) > [data-testid="stColumn"]:last-child {
+        width:calc((100% - 16.5px) / 2) !important;
+    }
+    .st-key-retirement-connection-platform [data-testid="stHorizontalBlock"]:has(.st-key-retirement-top-previous-clickable):has(.retirement-top-arrow):has(.st-key-retirement-top-next-clickable) > [data-testid="stColumn"]:nth-child(2) {
+        flex:0 0 12.5px !important;
+        width:12.5px !important;
+        max-width:12.5px !important;
+        min-width:12.5px !important;
+    }
+    .st-key-retirement-connection-platform .retirement-top-arrow svg {
+        max-width:12.5px !important;
+    }
+}
+</style>
+""", unsafe_allow_html=True)
