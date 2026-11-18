@@ -3456,7 +3456,8 @@ def _show_retirement_connection_dialog():
     _by_source, _by_resource, _by_legacy = _nachimpan_master_resource_maps()
     _history = list(st.session_state.get("_retirement_explorer_history", []))
     _source_id = st.session_state.get("_retirement_explorer_source_id")
-    _resource_id = st.session_state.get("_retirement_explorer_resource_id")
+    # 보고서 source_id가 설정되어 있으면 이전 CSV 선택 상태는 무시한다.
+    _resource_id = None if _source_id else st.session_state.get("_retirement_explorer_resource_id")
     _current_record = _by_source.get(_source_id) if _source_id else _by_resource.get(_resource_id)
     _current_key = _source_id or _resource_id
     if not _current_record or not _current_key:
