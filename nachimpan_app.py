@@ -3045,6 +3045,118 @@ OECD 「Pensions at a Glance 2025: Korea」는 2024년 한국의 실질 노동�
 
 따라서 현 단계에서는 통시성 보정식을 성급히 바꾸지 않습니다. 대신 미래 명목금액과 현재 구매력의 차이, 실질임금 상승이 잉여소득에 미치는 영향을 명확히 설명하는 것을 우선합니다.
     """)
+    elif source_id == "6050200-00":
+        st.markdown("""
+**국민이전계정(NTA)이 보여주는 생애주기**
+
+- 평균적으로 노동소득이 소비를 넘어서는 흑자 진입 연령: **28세**
+- 평균 흑자 정점: **45세** (연간 1,932만 원)
+- 노동소득보다 소비가 다시 커지는 적자 재전환 연령: **61세**
+
+이 지표는 대한민국 전체 인구의 1인당 평균 흐름입니다. 개인이나 특정 가구의 실제 소득·지출과 같다는 뜻은 아닙니다. 내 가구의 생애주기 곡선과 사회 전체의 평균 곡선을 비교해 보는 기준선으로 활용합니다.
+
+자료: 국가데이터처 「2024년 국민이전계정」(2026. 9. 17. 발표). [보도자료](https://mods.go.kr/board.es?act=view&bid=11898&list_no=447028&mid=a10301130100) · [원문 PDF](https://mods.go.kr/boardDownload.es?bid=11898&list_no=447028&seq=3)
+""")
+        st.markdown("""
+**생애주기 흑자·적자를 누적해서 보면**
+
+연령별 노동소득에서 소비를 뺀 금액을 매년 더하면, 한 해의 흑자·적자와는 다른 흐름이 보입니다. 아래 그래프는 같은 2024년 1인당 자료를 사용해, 20세부터 누적한 값은 실선으로, 출생부터 누적한 값은 점선으로 함께 보여줍니다.
+""")
+        _explorer_nta_cumulative_path = os.path.join(
+            "data", "기준데이터",
+            "연령별_누적노동잉여_2024_국민이전계정.csv"
+        )
+        if os.path.exists(_explorer_nta_cumulative_path):
+            _explorer_nta_df = pd.read_csv(_explorer_nta_cumulative_path)
+            _explorer_nta_df["age"] = pd.to_numeric(
+                _explorer_nta_df["age"], errors="coerce"
+            )
+            _explorer_nta_df["cumulative_from_0_eok"] = (
+                _explorer_nta_df["cumulative_from_0_thousand_won"] / 100000
+            )
+            _explorer_nta_df["cumulative_from_20_eok"] = (
+                _explorer_nta_df["cumulative_from_20_thousand_won"] / 100000
+            )
+            _explorer_nta_fig = go.Figure()
+            _explorer_nta_adult_df = _explorer_nta_df[
+                _explorer_nta_df["age"] >= 20
+            ].copy()
+            _explorer_nta_fig.add_trace(go.Scatter(
+                x=_explorer_nta_adult_df["age"],
+                y=_explorer_nta_adult_df["cumulative_from_20_eok"],
+                customdata=_explorer_nta_adult_df["age_label"],
+                mode="lines",
+                name="20세부터 누적",
+                line=dict(color="#F59E0B", width=3, dash="solid"),
+                hovertemplate=(
+                    "연령: %{customdata}<br>"
+                    "20세부터 누적: <b>%{y:,.2f}억 원</b>"
+                    "<extra></extra>"
+                ),
+            ))
+            _explorer_nta_fig.add_trace(go.Scatter(
+                x=_explorer_nta_df["age"],
+                y=_explorer_nta_df["cumulative_from_0_eok"],
+                customdata=_explorer_nta_df["age_label"],
+                mode="lines",
+                name="0세부터 누적",
+                line=dict(color="#38BDF8", width=3, dash="dot"),
+                hovertemplate=(
+                    "연령: %{customdata}<br>"
+                    "0세부터 누적: <b>%{y:,.2f}억 원</b>"
+                    "<extra></extra>"
+                ),
+            ))
+            _explorer_nta_fig.add_hline(
+                y=0, line_color="#CBD5E1", line_width=1.4,
+                line_dash="solid"
+            )
+            _explorer_nta_fig.update_layout(
+                height=390,
+                margin=dict(l=12, r=12, t=28, b=48),
+                paper_bgcolor="rgba(0,0,0,0)",
+                plot_bgcolor="rgba(0,0,0,0)",
+                font=dict(color="#E2E8F0", size=12),
+                xaxis=dict(
+                    title="연령", range=[0, 85], tickmode="linear",
+                    tick0=0, dtick=10,
+                    gridcolor="rgba(100, 116, 139, 0.18)",
+                    fixedrange=True,
+                ),
+                yaxis=dict(
+                    title="누적액 (억 원)", range=[-9, 4], dtick=2,
+                    gridcolor="rgba(100, 116, 139, 0.18)",
+                    zeroline=False, fixedrange=True,
+                ),
+                hovermode="x",
+                clickmode="event",
+                legend=dict(
+                    orientation="h", yanchor="bottom", y=1.02,
+                    xanchor="left", x=0,
+                ),
+            )
+            st.plotly_chart(
+                _explorer_nta_fig,
+                use_container_width=True,
+                key="retirement_explorer_nta_cumulative_chart",
+                config={"displayModeBar": False, "scrollZoom": False},
+            )
+            st.markdown("""
+- **0세 기준:** 출생부터 85세 이상까지 누적 노동잉여는 계속 마이너스이며, 마지막 85세 이상 구간에서는 약 **-8억 588만 원**입니다. 노동소득이 없는 유년기의 소비가 생애 초기에 큰 누적 적자로 쌓이기 때문입니다.
+- **20세 기준:** 20세부터 누적하면 39세까지는 마이너스지만 **40세에 처음 플러스로 전환**합니다. 60세에 약 **2억 9,695만 원**으로 가장 높아집니다.
+- **연간 수지와 누적 수지는 다릅니다.** 연간 노동소득이 소비보다 작아지는 시점은 61세입니다. 그러나 20세부터 쌓인 누적 노동잉여는 79세에도 약 **934만 원** 남아 있고, 80세에 약 **-1,504만 원**으로 다시 마이너스가 됩니다.
+- 85세 이상 구간의 20세 기준 누적값은 약 **-1억 4,533만 원**입니다.
+
+**이 그래프가 말해주는 것**
+
+한 해의 소득이 줄어드는 것과 곧바로 생계가 어려워지는 것은 같은 일이 아닙니다. 일하는 시기에 소비보다 더 많이 벌어 쌓은 잉여가 이후의 연간 적자를 일정 기간 메워줄 수 있기 때문입니다. 그래서 연간 수지뿐 아니라 생애 전체의 누적 흐름도 함께 볼 필요가 있습니다.
+
+> **해석할 때 주의할 점:** 이 누적 노동잉여는 실제 개인의 예금·투자자산 잔액이나 순자산이 아닙니다. 연령별 1인당 평균 노동소득과 소비의 차이를 가상의 생애 경로로 합산한 값입니다. 공적·사적 이전, 자산소득, 투자수익, 주택 등 자산의 취득·처분은 포함하지 않습니다. 따라서 플러스 금액을 실제 보유자산으로 해석해서는 안 됩니다.
+
+자료: 국가데이터처 「2024년 국민이전계정」 연령별 1인 규모 원자료. 단위는 1인당 연간 천 원이며, 85세 이상은 집단 구간입니다. [원자료 CSV](https://github.com/ufreezone-ops/nachimpan/blob/dev/data/원자료/생애주기적자계정_1인규모__20261110084848.csv) · [가공 데이터 및 산출방법](https://github.com/ufreezone-ops/nachimpan/blob/dev/data/기준데이터/국가데이터처_2024_국민이전계정_연령별_누적노동잉여_README.md)
+""")
+        else:
+            st.info("국민이전계정 누적 노동잉여 기준데이터 파일을 찾지 못했습니다. data/기준데이터 파일을 확인해 주세요.")
     else:
         st.info("선택한 자료를 찾을 수 없습니다.")
 
