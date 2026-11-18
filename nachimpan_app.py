@@ -10562,10 +10562,11 @@ st.markdown("""
 }
 .st-key-retirement-top-previous-button [data-testid="stButton"] button,
 .st-key-retirement-top-next-button [data-testid="stButton"] button {
-    width:100% !important;
+    width:110% !important;
+    max-width:none !important;
     height:auto !important;
     min-height:0 !important;
-    margin:0 !important;
+    margin:0 0 0 -5% !important;
 }
 </style>
 """, unsafe_allow_html=True)
