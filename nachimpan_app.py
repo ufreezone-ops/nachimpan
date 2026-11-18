@@ -12342,17 +12342,13 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 
-# 연결창 초록색 안내판 최상단의 불필요한 두 줄 여백 제거
+# 연결창 안내판: 첫 번째 CSS 주입 요소가 차지하는 빈 높이 제거
 st.markdown("""
 <style>
-.st-key-retirement-connection-platform {
-    padding-top: 0 !important;
-}
+/* 첫 번째 자식은 실제 콘텐츠가 아니라 389줄 CSS를 담은 stMarkdown 요소다.
+   CSS 규칙은 유지하면서 해당 요소의 레이아웃 높이만 제거한다. */
 .st-key-retirement-connection-platform > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"]:first-child {
-    margin-top: 0 !important;
-    margin-bottom: 0 !important;
-    padding-top: 0 !important;
-    padding-bottom: 0 !important;
+    display: none !important;
 }
 </style>
 """, unsafe_allow_html=True)
