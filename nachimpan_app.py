@@ -3511,16 +3511,17 @@ def _show_retirement_connection_dialog():
     _resource_id = None if _source_id else st.session_state.get("_retirement_explorer_resource_id")
     _current_record = _by_source.get(_source_id) if _source_id else _by_resource.get(_resource_id)
     _current_key = _source_id or _resource_id
-    if not _current_record or not _current_key:
-        st.error("현재 자료가 마스터 원장에 등록되어 있지 않습니다.")
-        return
+    _initial_connection = not (_current_record and _current_key)
 
-    if not _history:
-        _history = [_current_key]
-        st.session_state["_retirement_explorer_history"] = list(_history)
-    elif _history[-1] != _current_key:
-        _history.append(_current_key)
-        st.session_state["_retirement_explorer_history"] = list(_history)
+    if _current_record and _current_key:
+        if not _history:
+            _history = [_current_key]
+            st.session_state["_retirement_explorer_history"] = list(_history)
+        elif _history[-1] != _current_key:
+            _history.append(_current_key)
+            st.session_state["_retirement_explorer_history"] = list(_history)
+    else:
+        _history = []
 
     # 연관성 자료는 내부 legacy_id로만 조회하고, 화면 표시는 마스터 원장을 따른다.
     _association_path = (
@@ -3541,7 +3542,6 @@ def _show_retirement_connection_dialog():
     # 미열람 자료를 먼저, 이미 읽은 자료는 다시 읽을 후보로 뒤에 배치한다.
     _candidate_by_key = {}
     _history_set = set(_history)
-    _current_legacy_id = _current_record.get("legacy_id", "")
 
     def _add_connection_candidate(_record, _key, _score, _origin_key, _reason):
         if not _record or not _key or _key == _current_key:
@@ -3622,6 +3622,19 @@ def _show_retirement_connection_dialog():
                         "같은 보고서와 연결되는 관련 통계 원자료입니다.",
                     )
 
+    # 첫 진입은 이전 보고서가 없으므로 은퇴 후 생활비 주제의 시작 추천 자료를 배치한다.
+    if _initial_connection:
+        _entry_source_ids = ["6050400-01", "6051400-00", "6051300-00"]
+        for _index, _entry_source_id in enumerate(_entry_source_ids):
+            _entry_record = _by_source.get(_entry_source_id)
+            _add_connection_candidate(
+                _entry_record,
+                _entry_source_id,
+                300 - _index,
+                None,
+                "은퇴 후 생활비와 지출 기준을 이해하는 데 도움이 되는 자료입니다.",
+            )
+
     _related_rows = list(_candidate_by_key.values())
     _related_rows.sort(
         key=lambda item: (
@@ -3636,7 +3649,7 @@ def _show_retirement_connection_dialog():
         _history_record = _by_source.get(_history_key) or _by_resource.get(_history_key)
         if _history_record:
             _past_records.append(_history_record)
-    _previous_record = _current_record
+    _previous_record = None if _initial_connection else _current_record
     _next_record = None
     if _related_rows:
         _first = _related_rows[0]
@@ -3657,9 +3670,9 @@ def _show_retirement_connection_dialog():
         return "#173126" if _luminance > 0.34 else "#FFFFFF"
 
     with st.container(key="retirement-connection-platform", border=True):
-        _previous_title = _previous_record.get("title", "이전 자료")
-        _previous_number = _previous_record.get("display_label", "")
-        _previous_is_csv = _previous_record.get("file_format", "").upper() == "CSV"
+        _previous_title = _previous_record.get("title", "이전 보고서 없음") if _previous_record else "이전 보고서 없음"
+        _previous_number = _previous_record.get("display_label", "") if _previous_record else ""
+        _previous_is_csv = bool(_previous_record and _previous_record.get("file_format", "").upper() == "CSV")
         _next_title = _next_record.get("title", "추천 자료 없음") if _next_record else "추천 자료 없음"
         _next_number = _next_record.get("display_label", "") if _next_record else ""
         _next_is_csv = bool(_next_record and _next_record.get("file_format", "").upper() == "CSV")
@@ -4087,6 +4100,7 @@ def _show_retirement_connection_dialog():
             f"<style>"
             f".st-key-retirement-top-previous-clickable {{ --report-number:'{_previous_number}'; --report-color:{_previous_color}; }}"
             f".st-key-retirement-top-next-clickable {{ --report-number:'{_next_number}'; --report-color:{_next_color}; }}"
+            + (".st-key-retirement-top-previous-clickable [data-testid='stButton'] button::before { display:none !important; }" if not _previous_record else "")
             f"</style>",
             unsafe_allow_html=True,
         )
@@ -4097,8 +4111,9 @@ def _show_retirement_connection_dialog():
                     _previous_clicked = st.button(
                         _previous_title, key="retirement_connection_top_previous",
                         use_container_width=True, type="secondary",
+                        disabled=not bool(_previous_record),
                     )
-                    if _previous_clicked:
+                    if _previous_clicked and _previous_record:
                         if _previous_record.get("resource_type") == "보고서":
                             st.session_state["_retirement_explorer_source_id"] = _previous_record.get("source_id")
                             st.session_state.pop("_retirement_explorer_resource_id", None)
@@ -4614,9 +4629,10 @@ if selected_page == "우리집 가계부":
                             type="tertiary",
                         ):
                             st.session_state["_retirement_explorer_open"] = True
-                            st.session_state["_retirement_entry_open"] = True
-                            st.session_state["_retirement_connection_open"] = False
+                            st.session_state["_retirement_entry_open"] = False
+                            st.session_state["_retirement_connection_open"] = True
                             st.session_state.pop("_retirement_explorer_source_id", None)
+                            st.session_state.pop("_retirement_explorer_resource_id", None)
                             st.session_state.pop("_retirement_explorer_history", None)
                             st.rerun()
                 st.markdown(
