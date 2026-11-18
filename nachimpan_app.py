@@ -366,14 +366,10 @@ div.st-key-loan-payment-source-guide [data-testid="stPopoverButton"]:active {
 }
 
 /* 은퇴 후에는? 나침반: 일반 버튼의 tertiary 외형과 여백을 완전히 제거 */
-div.st-key-source_retirement_expense_guide,
- div.st-key-source_lifetime_income_guide,
-div.st-key-source_retirement_expense_guide,
- div.st-key-source_lifetime_income_guide [data-testid="stElementContainer"],
-div.st-key-source_retirement_expense_guide,
- div.st-key-source_lifetime_income_guide [data-testid="stButton"],
-div.st-key-source_retirement_expense_guide,
- div.st-key-source_lifetime_income_guide .stButton {
+:is(div.st-key-source_retirement_expense_guide, div.st-key-source_lifetime_income_guide),
+:is(div.st-key-source_retirement_expense_guide, div.st-key-source_lifetime_income_guide) [data-testid="stElementContainer"],
+:is(div.st-key-source_retirement_expense_guide, div.st-key-source_lifetime_income_guide) [data-testid="stButton"],
+:is(div.st-key-source_retirement_expense_guide, div.st-key-source_lifetime_income_guide) .stButton {
     width: auto !important;
     min-width: 0 !important;
     max-width: max-content !important;
@@ -385,16 +381,11 @@ div.st-key-source_retirement_expense_guide,
     background-color: transparent !important;
     box-shadow: none !important;
 }
-div.st-key-source_retirement_expense_guide,
- div.st-key-source_lifetime_income_guide [data-testid="stButton"] button,
-div.st-key-source_retirement_expense_guide,
- div.st-key-source_lifetime_income_guide [data-testid="stButton"] button:hover,
-div.st-key-source_retirement_expense_guide,
- div.st-key-source_lifetime_income_guide [data-testid="stButton"] button:focus,
-div.st-key-source_retirement_expense_guide,
- div.st-key-source_lifetime_income_guide [data-testid="stButton"] button:focus-visible,
-div.st-key-source_retirement_expense_guide,
- div.st-key-source_lifetime_income_guide [data-testid="stButton"] button:active {
+:is(div.st-key-source_retirement_expense_guide, div.st-key-source_lifetime_income_guide) [data-testid="stButton"] button,
+:is(div.st-key-source_retirement_expense_guide, div.st-key-source_lifetime_income_guide) [data-testid="stButton"] button:hover,
+:is(div.st-key-source_retirement_expense_guide, div.st-key-source_lifetime_income_guide) [data-testid="stButton"] button:focus,
+:is(div.st-key-source_retirement_expense_guide, div.st-key-source_lifetime_income_guide) [data-testid="stButton"] button:focus-visible,
+:is(div.st-key-source_retirement_expense_guide, div.st-key-source_lifetime_income_guide) [data-testid="stButton"] button:active {
     width: auto !important;
     min-width: 0 !important;
     max-width: max-content !important;
@@ -418,8 +409,7 @@ div.st-key-source_retirement_expense_guide,
     justify-content: center !important;
     text-decoration: none !important;
 }
-div.st-key-source_retirement_expense_guide,
- div.st-key-source_lifetime_income_guide [data-testid="stButton"] button p {
+:is(div.st-key-source_retirement_expense_guide, div.st-key-source_lifetime_income_guide) [data-testid="stButton"] button p {
     margin: 0 !important;
     padding: 0 !important;
     color: #38BDF8 !important;
@@ -1989,28 +1979,23 @@ div.st-key-loan-payment-source-guide [data-testid="stPopoverButton"] [data-testi
 }
 
 /* 탭1 '은퇴 후에는?' 제목과 나침반: 제목의 불필요한 가로 점유 및 자동 링크 제거 */
-div.st-key-retirement-expense-title-row,
- div.st-key-lifetime-income-title-row [data-testid="stHorizontalBlock"] {
+:is(div.st-key-retirement-expense-title-row, div.st-key-lifetime-income-title-row) [data-testid="stHorizontalBlock"] {
     align-items: center !important;
     gap: 0.12rem !important;
 }
-div.st-key-retirement-expense-title-row,
- div.st-key-lifetime-income-title-row [data-testid="stElementContainer"]:has(h3) {
+:is(div.st-key-retirement-expense-title-row, div.st-key-lifetime-income-title-row) [data-testid="stElementContainer"]:has(h3) {
     width: auto !important;
     min-width: 0 !important;
     max-width: max-content !important;
     flex: 0 1 auto !important;
 }
-div.st-key-retirement-expense-title-row,
- div.st-key-lifetime-income-title-row [data-testid="stHeaderActionElements"] {
+:is(div.st-key-retirement-expense-title-row, div.st-key-lifetime-income-title-row) [data-testid="stHeaderActionElements"] {
     display: none !important;
 }
-div.st-key-retirement-expense-title-row,
- div.st-key-lifetime-income-title-row > div {
+:is(div.st-key-retirement-expense-title-row, div.st-key-lifetime-income-title-row) > div {
     align-self: center !important;
 }
-div.st-key-source_retirement_expense_guide,
- div.st-key-source_lifetime_income_guide {
+:is(div.st-key-source_retirement_expense_guide, div.st-key-source_lifetime_income_guide) {
     width: auto !important;
     min-width: 0 !important;
     max-width: max-content !important;
@@ -2022,16 +2007,11 @@ div.st-key-source_retirement_expense_guide,
     background: transparent !important;
     box-shadow: none !important;
 }
-div.st-key-source_retirement_expense_guide,
- div.st-key-source_lifetime_income_guide [data-testid="stPopoverButton"],
-div.st-key-source_retirement_expense_guide,
- div.st-key-source_lifetime_income_guide [data-testid="stPopoverButton"]:hover,
-div.st-key-source_retirement_expense_guide,
- div.st-key-source_lifetime_income_guide [data-testid="stPopoverButton"]:focus,
-div.st-key-source_retirement_expense_guide,
- div.st-key-source_lifetime_income_guide [data-testid="stPopoverButton"]:focus-visible,
-div.st-key-source_retirement_expense_guide,
- div.st-key-source_lifetime_income_guide [data-testid="stPopoverButton"]:active {
+:is(div.st-key-source_retirement_expense_guide, div.st-key-source_lifetime_income_guide) [data-testid="stPopoverButton"],
+:is(div.st-key-source_retirement_expense_guide, div.st-key-source_lifetime_income_guide) [data-testid="stPopoverButton"]:hover,
+:is(div.st-key-source_retirement_expense_guide, div.st-key-source_lifetime_income_guide) [data-testid="stPopoverButton"]:focus,
+:is(div.st-key-source_retirement_expense_guide, div.st-key-source_lifetime_income_guide) [data-testid="stPopoverButton"]:focus-visible,
+:is(div.st-key-source_retirement_expense_guide, div.st-key-source_lifetime_income_guide) [data-testid="stPopoverButton"]:active {
     width: auto !important;
     min-width: 0 !important;
     min-height: 0 !important;
@@ -2054,18 +2034,15 @@ div.st-key-source_retirement_expense_guide,
     justify-content: center !important;
     text-decoration: none !important;
 }
-div.st-key-source_retirement_expense_guide,
- div.st-key-source_lifetime_income_guide [data-testid="stPopoverButton"] p {
+:is(div.st-key-source_retirement_expense_guide, div.st-key-source_lifetime_income_guide) [data-testid="stPopoverButton"] p {
     margin: 0 !important;
     font-size: 1.5rem !important;
     line-height: 1 !important;
     color: #38BDF8 !important;
     -webkit-text-fill-color: #38BDF8 !important;
 }
-div.st-key-source_retirement_expense_guide,
- div.st-key-source_lifetime_income_guide [data-testid="stPopoverButton"] svg,
-div.st-key-source_retirement_expense_guide,
- div.st-key-source_lifetime_income_guide [data-testid="stPopoverButton"] [data-testid="stIconMaterial"] {
+:is(div.st-key-source_retirement_expense_guide, div.st-key-source_lifetime_income_guide) [data-testid="stPopoverButton"] svg,
+:is(div.st-key-source_retirement_expense_guide, div.st-key-source_lifetime_income_guide) [data-testid="stPopoverButton"] [data-testid="stIconMaterial"] {
     display: none !important;
 }
 
@@ -2078,21 +2055,11 @@ div.st-key-loan-payment-title-row div.st-key-loan-payment-source-guide [data-tes
 div.st-key-loan-payment-title-row div.st-key-loan-payment-source-guide [data-testid="stPopoverButton"]:active {
     transform: translateY(9px) !important;
 }
-div.st-key-retirement-expense-title-row,
- div.st-key-lifetime-income-title-row div.st-key-source_retirement_expense_guide,
- div.st-key-source_lifetime_income_guide [data-testid="stButton"] button,
-div.st-key-retirement-expense-title-row,
- div.st-key-lifetime-income-title-row div.st-key-source_retirement_expense_guide,
- div.st-key-source_lifetime_income_guide [data-testid="stButton"] button:hover,
-div.st-key-retirement-expense-title-row,
- div.st-key-lifetime-income-title-row div.st-key-source_retirement_expense_guide,
- div.st-key-source_lifetime_income_guide [data-testid="stButton"] button:focus,
-div.st-key-retirement-expense-title-row,
- div.st-key-lifetime-income-title-row div.st-key-source_retirement_expense_guide,
- div.st-key-source_lifetime_income_guide [data-testid="stButton"] button:focus-visible,
-div.st-key-retirement-expense-title-row,
- div.st-key-lifetime-income-title-row div.st-key-source_retirement_expense_guide,
- div.st-key-source_lifetime_income_guide [data-testid="stButton"] button:active {
+:is(div.st-key-retirement-expense-title-row, div.st-key-lifetime-income-title-row) :is(div.st-key-source_retirement_expense_guide, div.st-key-source_lifetime_income_guide) [data-testid="stButton"] button,
+:is(div.st-key-retirement-expense-title-row, div.st-key-lifetime-income-title-row) :is(div.st-key-source_retirement_expense_guide, div.st-key-source_lifetime_income_guide) [data-testid="stButton"] button:hover,
+:is(div.st-key-retirement-expense-title-row, div.st-key-lifetime-income-title-row) :is(div.st-key-source_retirement_expense_guide, div.st-key-source_lifetime_income_guide) [data-testid="stButton"] button:focus,
+:is(div.st-key-retirement-expense-title-row, div.st-key-lifetime-income-title-row) :is(div.st-key-source_retirement_expense_guide, div.st-key-source_lifetime_income_guide) [data-testid="stButton"] button:focus-visible,
+:is(div.st-key-retirement-expense-title-row, div.st-key-lifetime-income-title-row) :is(div.st-key-source_retirement_expense_guide, div.st-key-source_lifetime_income_guide) [data-testid="stButton"] button:active {
     transform: translateY(9px) !important;
 }
 </style>
@@ -9864,14 +9831,10 @@ if _restore_anchor or _open_anchor:
 # 나침반 아이콘의 최종 외형 고정 — 전역 스타일보다 높은 우선순위
 st.markdown("""
 <style>
-div.st-key-source_retirement_expense_guide,
- div.st-key-source_lifetime_income_guide,
-div.st-key-source_retirement_expense_guide,
- div.st-key-source_lifetime_income_guide [data-testid="stElementContainer"],
-div.st-key-source_retirement_expense_guide,
- div.st-key-source_lifetime_income_guide [data-testid="stButton"],
-div.st-key-source_retirement_expense_guide,
- div.st-key-source_lifetime_income_guide .stButton {
+:is(div.st-key-source_retirement_expense_guide, div.st-key-source_lifetime_income_guide),
+:is(div.st-key-source_retirement_expense_guide, div.st-key-source_lifetime_income_guide) [data-testid="stElementContainer"],
+:is(div.st-key-source_retirement_expense_guide, div.st-key-source_lifetime_income_guide) [data-testid="stButton"],
+:is(div.st-key-source_retirement_expense_guide, div.st-key-source_lifetime_income_guide) .stButton {
 width: auto !important;
 min-width: 0 !important;
 max-width: max-content !important;
@@ -9887,16 +9850,11 @@ background-color: transparent !important;
 background-image: none !important;
 box-shadow: none !important;
 }
-div.st-key-source_retirement_expense_guide,
- div.st-key-source_lifetime_income_guide [data-testid="stButton"] button,
-div.st-key-source_retirement_expense_guide,
- div.st-key-source_lifetime_income_guide [data-testid="stButton"] button:hover,
-div.st-key-source_retirement_expense_guide,
- div.st-key-source_lifetime_income_guide [data-testid="stButton"] button:focus,
-div.st-key-source_retirement_expense_guide,
- div.st-key-source_lifetime_income_guide [data-testid="stButton"] button:focus-visible,
-div.st-key-source_retirement_expense_guide,
- div.st-key-source_lifetime_income_guide [data-testid="stButton"] button:active {
+:is(div.st-key-source_retirement_expense_guide, div.st-key-source_lifetime_income_guide) [data-testid="stButton"] button,
+:is(div.st-key-source_retirement_expense_guide, div.st-key-source_lifetime_income_guide) [data-testid="stButton"] button:hover,
+:is(div.st-key-source_retirement_expense_guide, div.st-key-source_lifetime_income_guide) [data-testid="stButton"] button:focus,
+:is(div.st-key-source_retirement_expense_guide, div.st-key-source_lifetime_income_guide) [data-testid="stButton"] button:focus-visible,
+:is(div.st-key-source_retirement_expense_guide, div.st-key-source_lifetime_income_guide) [data-testid="stButton"] button:active {
 width: auto !important;
 min-width: 0 !important;
 max-width: max-content !important;
@@ -9921,8 +9879,7 @@ display: inline-flex !important;
 align-items: center !important;
 justify-content: center !important;
 }
-div.st-key-source_retirement_expense_guide,
- div.st-key-source_lifetime_income_guide [data-testid="stButton"] button p {
+:is(div.st-key-source_retirement_expense_guide, div.st-key-source_lifetime_income_guide) [data-testid="stButton"] button p {
 margin: 0 !important;
 padding: 0 !important;
 color: #38BDF8 !important;
@@ -9930,13 +9887,11 @@ color: #38BDF8 !important;
 font-size: 1.8rem !important;
 line-height: 1 !important;
 }
-div.st-key-retirement-expense-title-row,
- div.st-key-lifetime-income-title-row [data-testid="stHorizontalBlock"] {
+:is(div.st-key-retirement-expense-title-row, div.st-key-lifetime-income-title-row) [data-testid="stHorizontalBlock"] {
 align-items: center !important;
 gap: 0.12rem !important;
 }
-div.st-key-retirement-expense-title-row,
- div.st-key-lifetime-income-title-row > div {
+:is(div.st-key-retirement-expense-title-row, div.st-key-lifetime-income-title-row) > div {
 align-self: center !important;
 }
 </style>
@@ -10021,21 +9976,11 @@ div.st-key-loan-payment-title-row div.st-key-loan-payment-source-guide [data-tes
 div.st-key-loan-payment-title-row div.st-key-loan-payment-source-guide [data-testid="stButton"] button:focus,
 div.st-key-loan-payment-title-row div.st-key-loan-payment-source-guide [data-testid="stButton"] button:focus-visible,
 div.st-key-loan-payment-title-row div.st-key-loan-payment-source-guide [data-testid="stButton"] button:active,
-div.st-key-retirement-expense-title-row,
- div.st-key-lifetime-income-title-row div.st-key-source_retirement_expense_guide,
- div.st-key-source_lifetime_income_guide [data-testid="stButton"] button,
-div.st-key-retirement-expense-title-row,
- div.st-key-lifetime-income-title-row div.st-key-source_retirement_expense_guide,
- div.st-key-source_lifetime_income_guide [data-testid="stButton"] button:hover,
-div.st-key-retirement-expense-title-row,
- div.st-key-lifetime-income-title-row div.st-key-source_retirement_expense_guide,
- div.st-key-source_lifetime_income_guide [data-testid="stButton"] button:focus,
-div.st-key-retirement-expense-title-row,
- div.st-key-lifetime-income-title-row div.st-key-source_retirement_expense_guide,
- div.st-key-source_lifetime_income_guide [data-testid="stButton"] button:focus-visible,
-div.st-key-retirement-expense-title-row,
- div.st-key-lifetime-income-title-row div.st-key-source_retirement_expense_guide,
- div.st-key-source_lifetime_income_guide [data-testid="stButton"] button:active {
+:is(div.st-key-retirement-expense-title-row, div.st-key-lifetime-income-title-row) :is(div.st-key-source_retirement_expense_guide, div.st-key-source_lifetime_income_guide) [data-testid="stButton"] button,
+:is(div.st-key-retirement-expense-title-row, div.st-key-lifetime-income-title-row) :is(div.st-key-source_retirement_expense_guide, div.st-key-source_lifetime_income_guide) [data-testid="stButton"] button:hover,
+:is(div.st-key-retirement-expense-title-row, div.st-key-lifetime-income-title-row) :is(div.st-key-source_retirement_expense_guide, div.st-key-source_lifetime_income_guide) [data-testid="stButton"] button:focus,
+:is(div.st-key-retirement-expense-title-row, div.st-key-lifetime-income-title-row) :is(div.st-key-source_retirement_expense_guide, div.st-key-source_lifetime_income_guide) [data-testid="stButton"] button:focus-visible,
+:is(div.st-key-retirement-expense-title-row, div.st-key-lifetime-income-title-row) :is(div.st-key-source_retirement_expense_guide, div.st-key-source_lifetime_income_guide) [data-testid="stButton"] button:active {
 transform: translateY(6px) !important;
 }
 
