@@ -10423,5 +10423,23 @@ st.markdown("""
     margin:0 !important; padding:0 !important; gap:6px !important;
     transform:none !important;
 }
+
+/* Streamlit이 생성하는 직접 자식 래퍼에도 캡션/버튼의 높이 배분 적용 */
+.st-key-retirement-top-previous-clickable > [data-testid="stVerticalBlock"],
+.st-key-retirement-top-next-clickable > [data-testid="stVerticalBlock"] {
+    display:flex !important; flex-direction:column !important;
+    align-items:stretch !important; justify-content:flex-start !important;
+    width:100% !important; height:100% !important; min-height:0 !important; gap:0 !important;
+}
+.st-key-retirement-top-previous-clickable > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"]:has(.st-key-retirement-top-previous-caption),
+.st-key-retirement-top-next-clickable > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"]:has(.st-key-retirement-top-next-caption) {
+    flex:0 0 auto !important; width:100% !important; margin:0 !important; padding:0 !important;
+}
+.st-key-retirement-top-previous-clickable > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"]:has(.st-key-retirement-top-previous-button),
+.st-key-retirement-top-next-clickable > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"]:has(.st-key-retirement-top-next-button) {
+    flex:1 1 0% !important; display:flex !important; align-items:center !important;
+    justify-content:center !important; width:100% !important; min-height:0 !important;
+    margin:0 !important; padding:0 !important;
+}
 </style>
 """, unsafe_allow_html=True)
