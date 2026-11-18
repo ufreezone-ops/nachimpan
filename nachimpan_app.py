@@ -10126,149 +10126,106 @@ st.markdown("""
 
 
 
-# 연결창 좌우 상단 버튼 구조 및 하단 추천 타이포그래피 최종 통일
+# 연결창 상단 3열 고정 및 좌우 카드·하단 추천 항목 스타일 통일
 st.markdown("""
 <style>
-/* 좌우 카드: 캡션 + 단일 클릭 버튼, 불필요한 중간 여백 제거 */
+.st-key-retirement-connection-platform [data-testid="stHorizontalBlock"]:has(.st-key-retirement-top-previous-clickable):has(.retirement-top-arrow):has(.st-key-retirement-top-next-clickable) {
+ display:flex !important; flex-direction:row !important; flex-wrap:nowrap !important;
+ align-items:stretch !important; width:100% !important; gap:6px !important;
+}
+.st-key-retirement-connection-platform [data-testid="stHorizontalBlock"]:has(.st-key-retirement-top-previous-clickable):has(.retirement-top-arrow):has(.st-key-retirement-top-next-clickable) > [data-testid="stColumn"] {
+ min-width:0 !important; max-width:none !important; box-sizing:border-box !important;
+}
+.st-key-retirement-connection-platform [data-testid="stHorizontalBlock"]:has(.st-key-retirement-top-previous-clickable):has(.retirement-top-arrow):has(.st-key-retirement-top-next-clickable) > [data-testid="stColumn"]:first-child,
+.st-key-retirement-connection-platform [data-testid="stHorizontalBlock"]:has(.st-key-retirement-top-previous-clickable):has(.retirement-top-arrow):has(.st-key-retirement-top-next-clickable) > [data-testid="stColumn"]:last-child {
+ flex:1 1 0% !important; width:calc((100% - 42px) / 2) !important;
+}
+.st-key-retirement-connection-platform [data-testid="stHorizontalBlock"]:has(.st-key-retirement-top-previous-clickable):has(.retirement-top-arrow):has(.st-key-retirement-top-next-clickable) > [data-testid="stColumn"]:nth-child(2) {
+ flex:0 0 30px !important; width:30px !important; display:flex !important;
+ align-items:center !important; justify-content:center !important;
+}
 .st-key-retirement-top-previous-clickable,
 .st-key-retirement-top-next-clickable {
-    min-width:0 !important;
-    min-height:78px !important;
-    height:100% !important;
-    box-sizing:border-box !important;
-    display:flex !important;
-    flex-direction:column !important;
-    align-items:stretch !important;
-    justify-content:center !important;
-    gap:2px !important;
-    padding:6px !important;
-    border:2px solid var(--connection-panel-color, #159447) !important;
-    border-radius:12px !important;
-    background:var(--connection-panel-color, #159447) !important;
-    color:#fff !important;
+ display:block !important; width:100% !important; min-width:0 !important;
+ min-height:78px !important; height:100% !important; box-sizing:border-box !important;
+ padding:6px !important; border:2px solid #159447 !important; border-radius:12px !important;
+ background:#159447 !important; color:#fff !important;
+}
+.st-key-retirement-top-previous-clickable > [data-testid="stVerticalBlock"],
+.st-key-retirement-top-next-clickable > [data-testid="stVerticalBlock"] {
+ display:flex !important; flex-direction:column !important; align-items:stretch !important;
+ justify-content:flex-start !important; gap:2px !important; width:100% !important; min-width:0 !important;
+}
+.st-key-retirement-top-previous-clickable [data-testid="stMarkdownContainer"],
+.st-key-retirement-top-next-clickable [data-testid="stMarkdownContainer"] {
+ width:100% !important; margin:0 !important; padding:0 !important;
 }
 .st-key-retirement-top-previous-clickable .retirement-top-next-header,
 .st-key-retirement-top-next-clickable .retirement-top-next-header {
-    width:100% !important;
-    margin:0 !important;
-    padding:0 !important;
-    line-height:1.2 !important;
+ display:block !important; width:100% !important; margin:0 !important; padding:0 !important; line-height:1.2 !important;
 }
 .st-key-retirement-top-previous-clickable .retirement-top-next-caption,
 .st-key-retirement-top-next-clickable .retirement-top-next-caption {
-    display:block !important;
-    width:100% !important;
-    margin:0 !important;
-    padding:0 !important;
-    color:#fff !important;
-    -webkit-text-fill-color:#fff !important;
-    font-size:11px !important;
-    font-weight:700 !important;
-    text-align:left !important;
+ display:block !important; width:100% !important; margin:0 !important; padding:0 !important;
+ color:#fff !important; -webkit-text-fill-color:#fff !important; font-size:11px !important;
+ font-weight:700 !important; line-height:1.2 !important; text-align:left !important;
 }
+.st-key-retirement-top-previous-clickable [data-testid="stMarkdownContainer"] p,
+.st-key-retirement-top-next-clickable [data-testid="stMarkdownContainer"] p { margin:0 !important; padding:0 !important; }
 .st-key-retirement-top-previous-clickable [data-testid="stButton"],
-.st-key-retirement-top-next-clickable [data-testid="stButton"] {
-    width:100% !important;
-    margin:0 !important;
-}
+.st-key-retirement-top-next-clickable [data-testid="stButton"] { width:100% !important; margin:0 !important; padding:0 !important; }
 .st-key-retirement-top-previous-clickable [data-testid="stButton"] button,
 .st-key-retirement-top-next-clickable [data-testid="stButton"] button {
-    display:flex !important;
-    flex-direction:row !important;
-    align-items:center !important;
-    justify-content:flex-start !important;
-    gap:8px !important;
-    width:100% !important;
-    min-width:0 !important;
-    min-height:30px !important;
-    height:auto !important;
-    margin:0 !important;
-    padding:2px 0 !important;
-    background:transparent !important;
-    border:0 !important;
-    box-shadow:none !important;
-    text-align:left !important;
-    white-space:normal !important;
+ display:flex !important; flex-direction:row !important; align-items:center !important;
+ justify-content:flex-start !important; gap:8px !important; width:100% !important;
+ min-width:0 !important; min-height:30px !important; height:auto !important;
+ margin:0 !important; padding:2px 0 !important; background:transparent !important;
+ border:0 !important; outline:0 !important; box-shadow:none !important;
+ text-align:left !important; white-space:normal !important;
 }
 .st-key-retirement-top-previous-clickable [data-testid="stButton"] button::before,
 .st-key-retirement-top-next-clickable [data-testid="stButton"] button::before {
-    content:var(--report-number, "") !important;
-    display:inline-flex !important;
-    flex:0 0 25px !important;
-    width:25px !important;
-    height:25px !important;
-    align-items:center !important;
-    justify-content:center !important;
-    border-radius:50% !important;
-    background:var(--report-color, #6B4C3B) !important;
-    color:#fff !important;
-    -webkit-text-fill-color:#fff !important;
-    font-size:12px !important;
-    font-weight:900 !important;
-    line-height:1 !important;
+ content:var(--report-number, "") !important; display:inline-flex !important;
+ flex:0 0 25px !important; width:25px !important; height:25px !important;
+ align-items:center !important; justify-content:center !important; border-radius:50% !important;
+ background:var(--report-color, #6B4C3B) !important; color:#fff !important;
+ -webkit-text-fill-color:#fff !important; font-size:12px !important; font-weight:900 !important; line-height:1 !important;
 }
 .st-key-retirement-top-previous-clickable [data-testid="stButton"] button > div,
 .st-key-retirement-top-next-clickable [data-testid="stButton"] button > div {
-    display:flex !important;
-    flex:1 1 auto !important;
-    min-width:0 !important;
-    width:auto !important;
-    align-items:center !important;
-    justify-content:flex-start !important;
+ display:flex !important; flex:1 1 auto !important; min-width:0 !important; width:auto !important;
+ align-items:center !important; justify-content:flex-start !important;
 }
 .st-key-retirement-top-previous-clickable [data-testid="stButton"] button *,
 .st-key-retirement-top-next-clickable [data-testid="stButton"] button * {
-    color:#fff !important;
-    -webkit-text-fill-color:#fff !important;
-    font-family:inherit !important;
-    font-size:12px !important;
-    font-weight:800 !important;
-    line-height:1.25 !important;
-    text-align:left !important;
-    white-space:normal !important;
-    overflow-wrap:anywhere !important;
-    text-decoration:none !important;
+ color:#fff !important; -webkit-text-fill-color:#fff !important; font-family:inherit !important;
+ font-size:12px !important; font-weight:800 !important; line-height:1.25 !important;
+ text-align:left !important; white-space:normal !important; overflow-wrap:anywhere !important; text-decoration:none !important;
 }
 .st-key-retirement-top-previous-clickable [data-testid="stButton"] button:hover,
-.st-key-retirement-top-next-clickable [data-testid="stButton"] button:hover {
-    background:rgba(255,255,255,.12) !important;
-}
-/* 화살표 정중앙 유지 */
-.st-key-retirement-connection-platform [data-testid="stHorizontalBlock"]:has(.st-key-retirement-top-previous-clickable):has(.st-key-retirement-top-next-clickable) {
-    align-items:stretch !important;
-}
-.st-key-retirement-connection-platform [data-testid="stHorizontalBlock"]:has(.st-key-retirement-top-previous-clickable):has(.st-key-retirement-top-next-clickable) > [data-testid="stColumn"]:nth-child(2) {
-    display:flex !important;
-    align-items:center !important;
-    justify-content:center !important;
+.st-key-retirement-top-next-clickable [data-testid="stButton"] button:hover,
+.st-key-retirement-top-previous-clickable [data-testid="stButton"] button:focus,
+.st-key-retirement-top-next-clickable [data-testid="stButton"] button:focus {
+ background:rgba(255,255,255,.12) !important; border:0 !important; outline:0 !important; box-shadow:none !important;
 }
 .st-key-retirement-connection-platform .retirement-top-arrow {
-    display:flex !important;
-    align-items:center !important;
-    justify-content:center !important;
-    height:100% !important;
-    min-height:78px !important;
-    margin:0 !important;
-    padding:0 !important;
+ display:flex !important; align-items:center !important; justify-content:center !important;
+ width:100% !important; height:100% !important; min-height:78px !important; margin:0 !important; padding:0 !important;
 }
-/* 하단 우측: 추천 목록 컨테이너 안의 실제 버튼 텍스트에 직접 적용 */
+/* 하단 추천 보고서: 실제 버튼 및 내부 텍스트에 직접 적용 */
 .st-key-retirement-connection-platform .st-key-retirement-connection-recommend-list [data-testid="stButton"] button,
 .st-key-retirement-connection-platform .st-key-retirement-connection-recommend-list [data-testid="stButton"] button *,
-.st-key-retirement-connection-platform .st-key-retirement-connection-recommend-list [data-testid="stButton"] p,
-.st-key-retirement-connection-platform .st-key-retirement-connection-recommend-list [data-testid^="stMarkdownContainer"] p {
-    color:#222222 !important;
-    -webkit-text-fill-color:#222222 !important;
-    font-family:inherit !important;
-    font-size:12px !important;
-    font-weight:500 !important;
-    line-height:1.4 !important;
-    text-decoration:none !important;
-    border-bottom:0 !important;
-    background-image:none !important;
+.st-key-retirement-connection-platform .st-key-retirement-connection-recommend-list [data-testid="stButton"] button p,
+.st-key-retirement-connection-platform .st-key-retirement-connection-recommend-list [data-testid="stMarkdownContainer"],
+.st-key-retirement-connection-platform .st-key-retirement-connection-recommend-list [data-testid="stMarkdownContainer"] *,
+.st-key-retirement-connection-platform .st-key-retirement-connection-recommend-list [data-testid="stMarkdownContainer"] p {
+ color:#222222 !important; -webkit-text-fill-color:#222222 !important; font-family:inherit !important;
+ font-size:12px !important; font-weight:500 !important; line-height:1.4 !important;
+ text-decoration:none !important; border-bottom:0 !important; background-image:none !important;
 }
 .st-key-retirement-connection-platform .st-key-retirement-connection-recommend-list [data-testid="stButton"] button {
-    justify-content:flex-start !important;
-    text-align:left !important;
+ display:flex !important; justify-content:flex-start !important; text-align:left !important;
+ background:transparent !important; border:0 !important; box-shadow:none !important;
 }
 </style>
 """, unsafe_allow_html=True)
