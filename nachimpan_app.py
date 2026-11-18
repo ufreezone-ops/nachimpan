@@ -659,6 +659,20 @@ button[kind="primary"], .stApp [data-testid="stFormSubmitButton"] button[kind="p
     padding: 10px !important;
 }
 
+/* 탭 하단 '다음' 버튼: 버튼 폭은 내용에 맞추고, 버튼 자체를 화면 중앙에 배치 */
+:is(
+    .st-key-basic_fin_next,
+    .st-key-finance_next,
+    .st-key-basic_livelihood_next,
+    .st-key-advanced_livelihood_next,
+    .st-key-basic_seasons_next,
+    .st-key-seasons_next,
+    .st-key-advanced_finance_next
+) [data-testid="stButton"] {
+    display: flex !important;
+    justify-content: center !important;
+}
+
 [data-testid="stSidebar"] { background-color: var(--nc-sidebar-bg) !important; border-right: 1px solid var(--nc-border) !important; }
 [data-testid="stSidebar"] * { color: var(--nc-text) !important; }
 
@@ -4558,9 +4572,7 @@ if selected_page == "우리집 가계부":
         b_c2.metric("월 기본 생활비", money(st.session_state.get("expense_living", 0) or 0))
         b_c3.metric("월 저축여력 (잉여)", money(surplus_val), delta=f"{'+' if surplus_val >= 0 else ''}{money(surplus_val)}")
 
-        _, next_col = st.columns([5, 1])
-        with next_col:
-            if st.button("다음 →", key="basic_fin_next", use_container_width=True, type="primary"):
+        if st.button("다음 →", key="basic_fin_next", type="primary"):
                 _navigate_to_page_top("삶과 생계수단")
                 st.rerun()
 
@@ -5474,9 +5486,7 @@ if selected_page == "우리집 가계부":
                 _show_income_wage_stats_dialog()
 
         # 기존 다음 버튼 유지
-        _, next_col = st.columns([5, 1])
-        with next_col:
-            if st.button("다음 →", key="finance_next", use_container_width=True, type="primary"):
+        if st.button("다음 →", key="finance_next", type="primary"):
                 _navigate_to_page_top("삶과 생계수단")
                 st.rerun()
 
@@ -5534,9 +5544,7 @@ elif selected_page == "삶과 생계수단":
         # 기본모드 — 돌쇠와 똘똘이 우화 카드 호출
         render_dolssoe_story_card()
 
-        _, next_col = st.columns([5, 1])
-        with next_col:
-            if st.button("다음 →", key="basic_livelihood_next", use_container_width=True, type="primary"):
+        if st.button("다음 →", key="basic_livelihood_next", type="primary"):
                 _navigate_to_page_top("인생의 사계절")
                 st.rerun()
 
@@ -5702,9 +5710,7 @@ elif selected_page == "삶과 생계수단":
 
         # 고급 모드 하단 이동 버튼 — 중앙의 작은 버튼
         st.markdown("<div style='height: 18px;'></div>", unsafe_allow_html=True)
-        _, next_col, _ = st.columns([1, 1, 1])
-        with next_col:
-            if st.button("다음 →", key="advanced_livelihood_next", type="primary"):
+        if st.button("다음 →", key="advanced_livelihood_next", type="primary"):
                 _navigate_to_page_top("인생의 사계절")
                 st.rerun()
 
@@ -5903,9 +5909,7 @@ elif selected_page == "인생의 사계절":
         st.caption("출처: 국가데이터처 「2024년 국민이전계정」(2026. 9. 17. 발표). 28세 흑자 진입, 45세 최대 흑자(연 1,932만 원), 61세 적자 재진입 지표를 기준으로 표시합니다.")
         st.markdown(f"[📄 국가데이터처 2024년 국민이전계정 보도자료]({OFFICIAL_RELEASE_URL}) · [PDF 원문]({OFFICIAL_PDF_URL})")
 
-        _, next_col = st.columns([5, 1])
-        with next_col:
-            if st.button("다음 →", key="basic_seasons_next", use_container_width=True, type="primary"):
+        if st.button("다음 →", key="basic_seasons_next", type="primary"):
                 _navigate_to_page_top("AI 시선")
                 st.rerun()
 
@@ -5982,9 +5986,7 @@ elif selected_page == "인생의 사계절":
 </div></div>
 """, unsafe_allow_html=True)
 
-        _, next_col = st.columns([5, 1])
-        with next_col:
-            if st.button("다음 →", key="seasons_next", use_container_width=True, type="primary"):
+        if st.button("다음 →", key="seasons_next", type="primary"):
                 _navigate_to_page_top("우리집 재정곡선")
                 st.rerun()
 
@@ -7903,9 +7905,7 @@ elif selected_page == "우리집 재정곡선":
 
         # 고급 모드 하단 이동 버튼 — 중앙의 작은 버튼
         st.markdown("<div style='height: 18px;'></div>", unsafe_allow_html=True)
-        _, next_col, _ = st.columns([1, 1, 1])
-        with next_col:
-            if st.button("다음 →", key="advanced_finance_next", type="primary"):
+        if st.button("다음 →", key="advanced_finance_next", type="primary"):
                 _navigate_to_page_top("AI 시선")
                 st.rerun()
 
