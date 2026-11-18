@@ -3391,6 +3391,7 @@ def _show_retirement_entry_dialog():
                 st.session_state["_retirement_entry_open"] = False
                 st.session_state["_retirement_connection_open"] = False
                 st.session_state["_retirement_explorer_source_id"] = _source_id
+                st.session_state.pop("_retirement_explorer_resource_id", None)
                 st.session_state["_retirement_explorer_history"] = [_source_id]
                 st.rerun()
 
@@ -3400,6 +3401,7 @@ def _show_retirement_entry_dialog():
             st.session_state["_retirement_entry_open"] = False
             st.session_state["_retirement_connection_open"] = False
             st.session_state.pop("_retirement_explorer_source_id", None)
+            st.session_state.pop("_retirement_explorer_resource_id", None)
             st.session_state.pop("_retirement_explorer_history", None)
             st.rerun()
 
@@ -4093,6 +4095,7 @@ def _show_retirement_connection_dialog():
                 st.session_state["_retirement_entry_open"] = False
                 st.session_state["_retirement_connection_open"] = False
                 st.session_state.pop("_retirement_explorer_source_id", None)
+                st.session_state.pop("_retirement_explorer_resource_id", None)
                 st.session_state.pop("_retirement_explorer_history", None)
                 st.rerun()
 
