@@ -4360,9 +4360,8 @@ def _show_retirement_connection_dialog():
                     else:
                         st.caption("현재 자료에서 이어지는 추천 자료가 없습니다.")
 
-        _close_left, _close_col, _close_right = st.columns([1, 0.7, 1])
-        with _close_col:
-            if st.button("닫기", key="retirement_connection_end", use_container_width=True):
+        with st.container(key="retirement-connection-close-cta"):
+            if st.button("닫기", key="retirement_connection_end"):
                 st.session_state["_retirement_explorer_open"] = False
                 st.session_state["_retirement_entry_open"] = False
                 st.session_state["_retirement_connection_open"] = False
@@ -10349,6 +10348,40 @@ color: #111111 !important;
 font-weight: 850 !important;
 }
 .st-key-retirement-report-connection-cta [data-testid="stButton"] button:hover {
+background: #e8f5ec !important;
+border-color: #087b3c !important;
+}
+.st-key-retirement-connection-close-cta [data-testid="stElementContainer"] {
+width: 100% !important;
+display: flex !important;
+justify-content: center !important;
+}
+.st-key-retirement-connection-close-cta [data-testid="stButton"] {
+width: auto !important;
+display: flex !important;
+justify-content: center !important;
+}
+.st-key-retirement-connection-close-cta [data-testid="stButton"] button {
+width: 120px !important;
+min-width: 120px !important;
+max-width: 100% !important;
+min-height: 2.4rem !important;
+padding-left: 0.35rem !important;
+padding-right: 0.35rem !important;
+border: 6px solid #159447 !important;
+border-radius: 999px !important;
+background: #ffffff !important;
+color: #111111 !important;
+-webkit-text-fill-color: #111111 !important;
+font-weight: 850 !important;
+box-shadow: none !important;
+}
+.st-key-retirement-connection-close-cta [data-testid="stButton"] button p {
+color: #111111 !important;
+-webkit-text-fill-color: #111111 !important;
+font-weight: 850 !important;
+}
+.st-key-retirement-connection-close-cta [data-testid="stButton"] button:hover {
 background: #e8f5ec !important;
 border-color: #087b3c !important;
 }
