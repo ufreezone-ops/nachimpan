@@ -3060,7 +3060,7 @@ def _show_retirement_connection_dialog():
             _left, _right = st.columns(2, gap="small")
             with _left:
                 with st.container(key="retirement-connection-read-list", border=True):
-                    st.markdown("<h4 style='font-size:14px;margin:0 0 9px;'>← 읽은 보고서</h4>", unsafe_allow_html=True)
+                    st.markdown("<h4 style='font-size:12px;font-weight:700;margin:0 0 9px;'>← 읽은 보고서</h4>", unsafe_allow_html=True)
                     if _past_records:
                         for _record in _past_records:
                             _number = _record.get("display_label", "")
@@ -3077,7 +3077,7 @@ def _show_retirement_connection_dialog():
 
             with _right:
                 with st.container(key="retirement-connection-recommend-list", border=True):
-                    st.markdown("<h4 style='font-size:14px;margin:0 0 9px;'>다음 추천 보고서 →</h4>", unsafe_allow_html=True)
+                    st.markdown("<h4 style='font-size:12px;font-weight:700;margin:0 0 9px;'>다음 추천 보고서 →</h4>", unsafe_allow_html=True)
                     if len(_related_rows) > 1:
                         for _index, _item in enumerate(_related_rows[1:3]):
                             _number = _item.get("display_label", "")
@@ -10304,6 +10304,77 @@ st.markdown("""
 .st-key-retirement-connection-recommend-list [data-testid="stButton"] button p {
     width:100% !important;
     margin:0 !important;
+}
+</style>
+""", unsafe_allow_html=True)
+
+
+# 연결창 상단 버튼의 캡션 아래 중앙 배치 및 하단 실제 HTML 요소 직접 보정
+st.markdown("""
+<style>
+/* 카드 내부: 캡션은 상단에 고정하고, 버튼 영역만 남은 높이의 중앙에 배치 */
+.st-key-retirement-top-previous-clickable,
+.st-key-retirement-top-next-clickable {
+    height:92px !important; min-height:92px !important; max-height:92px !important;
+    padding:6px !important; box-sizing:border-box !important;
+}
+.st-key-retirement-top-previous-clickable > [data-testid="stVerticalBlock"],
+.st-key-retirement-top-next-clickable > [data-testid="stVerticalBlock"] {
+    display:flex !important; flex-direction:column !important;
+    justify-content:flex-start !important; align-items:stretch !important;
+    height:100% !important; min-height:0 !important; gap:0 !important;
+}
+.st-key-retirement-top-previous-clickable > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"]:has([data-testid="stMarkdownContainer"] .retirement-top-next-caption),
+.st-key-retirement-top-next-clickable > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"]:has([data-testid="stMarkdownContainer"] .retirement-top-next-caption) {
+    flex:0 0 auto !important; width:100% !important; margin:0 !important; padding:0 !important;
+}
+.st-key-retirement-top-previous-clickable > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"]:has([data-testid="stButton"]),
+.st-key-retirement-top-next-clickable > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"]:has([data-testid="stButton"]) {
+    flex:1 1 0% !important; display:flex !important; align-items:center !important;
+    justify-content:center !important; width:100% !important; min-height:0 !important;
+    margin:0 !important; padding:0 !important;
+}
+.st-key-retirement-top-previous-clickable [data-testid="stButton"],
+.st-key-retirement-top-next-clickable [data-testid="stButton"] {
+    display:flex !important; align-items:center !important; justify-content:center !important;
+    width:100% !important; min-width:0 !important; margin:0 !important; padding:0 !important;
+}
+.st-key-retirement-top-previous-clickable [data-testid="stButton"] button,
+.st-key-retirement-top-next-clickable [data-testid="stButton"] button {
+    display:flex !important; align-items:center !important; justify-content:flex-start !important;
+    width:100% !important; min-width:0 !important; min-height:0 !important; height:auto !important;
+    margin:0 !important; padding:0 !important; gap:6px !important;
+    transform:none !important; transition:background-color .12s ease !important;
+}
+.st-key-retirement-top-previous-clickable [data-testid="stButton"] button > div,
+.st-key-retirement-top-next-clickable [data-testid="stButton"] button > div,
+.st-key-retirement-top-previous-clickable [data-testid="stButton"] button [data-testid="stMarkdownContainer"],
+.st-key-retirement-top-next-clickable [data-testid="stButton"] button [data-testid="stMarkdownContainer"] {
+    display:flex !important; flex:1 1 auto !important; align-items:center !important;
+    justify-content:flex-start !important; width:100% !important; min-width:0 !important;
+    margin:0 !important; padding:0 !important; text-align:left !important;
+}
+.st-key-retirement-top-previous-clickable [data-testid="stButton"] button p,
+.st-key-retirement-top-next-clickable [data-testid="stButton"] button p {
+    width:100% !important; margin:0 !important; padding:0 !important;
+    text-align:left !important; white-space:normal !important; overflow-wrap:anywhere !important;
+}
+.st-key-retirement-top-previous-clickable [data-testid="stButton"] button:hover,
+.st-key-retirement-top-next-clickable [data-testid="stButton"] button:hover,
+.st-key-retirement-top-previous-clickable [data-testid="stButton"] button:focus,
+.st-key-retirement-top-next-clickable [data-testid="stButton"] button:focus {
+    transform:none !important; border:0 !important; outline:0 !important; box-shadow:none !important;
+}
+
+/* 하단 헤더는 실제 HTML에 직접 적용한 12px 설정을 유지 */
+.st-key-retirement-connection-read-list h4,
+.st-key-retirement-connection-recommend-list h4 {
+    font-size:12px !important; font-weight:700 !important; line-height:1.4 !important;
+}
+
+/* 번호 원은 제목/마크다운 공통 색상 규칙보다 우선해 흰색 유지 */
+.st-key-retirement-connection-platform .st-key-retirement-connection-recommend-list .retirement-number-circle {
+    color:#FFFFFF !important; -webkit-text-fill-color:#FFFFFF !important;
 }
 </style>
 """, unsafe_allow_html=True)
