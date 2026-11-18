@@ -12342,12 +12342,14 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 
-# 연결창 안내판: 첫 번째 CSS 주입 요소가 차지하는 빈 높이 제거
+# 연결창 안내판: 상단의 CSS 주입 요소 두 개가 만드는 세로 간격 제거
 st.markdown("""
 <style>
-/* 첫 번째 자식은 실제 콘텐츠가 아니라 389줄 CSS를 담은 stMarkdown 요소다.
-   CSS 규칙은 유지하면서 해당 요소의 레이아웃 높이만 제거한다. */
-.st-key-retirement-connection-platform > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"]:first-child {
+/* retirement-connection-platform 자체가 stVerticalBlock이다.
+   첫 두 직계 자식은 화면 콘텐츠가 아닌 CSS 주입용 stElementContainer이므로
+   두 요소를 레이아웃에서 제외해 보고서 이동 행 위의 기본 간격을 없앤다.
+   style 태그의 CSS 규칙은 display:none 상태에서도 계속 적용된다. */
+.st-key-retirement-connection-platform > [data-testid="stElementContainer"]:nth-child(-n+2) {
     display: none !important;
 }
 </style>
