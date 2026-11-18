@@ -4952,19 +4952,20 @@ if selected_page == "우리집 가계부":
         cols[1].metric("월 지출", money(s["expenses"]))
         bonus_help = f"연간 상여금 {money(s['annual_bonus'])} 및 연간 비정기 지출 {money(s['annual_other_expense'])} 반영"
         with cols[2]:
-            with st.popover(
-                "연간 잉여자금 🧭",
-                key="annual-surplus-source-guide",
-                help="연간 잉여자금 계산에 반영된 항목 보기",
-                type="tertiary",
-            ):
-                st.write(bonus_help)
-            st.metric(
-                "",
-                money(s["annual_net_surplus"]),
-                delta=f"월평균 {money(s['monthly_effective_surplus'])}",
-                label_visibility="collapsed",
-            )
+            with st.container(gap="none", key="annual-surplus-metric-stack"):
+                with st.popover(
+                    "연간 잉여자금 🧭",
+                    key="annual-surplus-source-guide",
+                    help="연간 잉여자금 계산에 반영된 항목 보기",
+                    type="tertiary",
+                ):
+                    st.write(bonus_help)
+                st.metric(
+                    "",
+                    money(s["annual_net_surplus"]),
+                    delta=f"월평균 {money(s['monthly_effective_surplus'])}",
+                    label_visibility="collapsed",
+                )
         cols[3].metric("현재 파악된 금융자산", fmt_eok(s["net_worth"]))
 
 
@@ -11760,6 +11761,20 @@ div.st-key-loan-payment-field div.st-key-loan-payment-source-guide [data-testid=
     font: inherit !important;
     line-height: 1.2 !important;
     white-space: nowrap !important;
+}
+</style>
+""", unsafe_allow_html=True)
+
+# 연간 잉여자금 제목과 숫자 사이의 위젯 간격 제거
+st.markdown("""
+<style>
+div.st-key-annual-surplus-metric-stack [data-testid="stVerticalBlock"] {
+    gap: 0 !important;
+    row-gap: 0 !important;
+}
+div.st-key-annual-surplus-metric-stack [data-testid="stPopover"],
+div.st-key-annual-surplus-metric-stack [data-testid="stMetric"] {
+    margin-block: 0 !important;
 }
 </style>
 """, unsafe_allow_html=True)
