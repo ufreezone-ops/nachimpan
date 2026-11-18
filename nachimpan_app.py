@@ -10502,3 +10502,17 @@ st.markdown("""
 }
 </style>
 """, unsafe_allow_html=True)
+
+
+# 하단 추천 보고서 제목 버튼 좌우 패딩 최소화
+st.markdown("""
+<style>
+.st-key-retirement-connection-recommend-list .st-key-retirement-connection-choice-0 [data-testid="stButton"] button,
+.st-key-retirement-connection-recommend-list .st-key-retirement-connection-choice-1 [data-testid="stButton"] button,
+.st-key-retirement-connection-recommend-list .st-key-retirement-connection-choice-2 [data-testid="stButton"] button {
+    padding-left:1px !important;
+    padding-right:1px !important;
+    padding-inline:1px !important;
+}
+</style>
+""", unsafe_allow_html=True)
