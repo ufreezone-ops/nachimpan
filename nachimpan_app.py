@@ -2900,6 +2900,84 @@ def _show_retirement_connection_dialog():
                  box-shadow:none !important; text-decoration:none !important;
              }}
              .retirement-top-next-empty {{ color:#fff; font-size:13px; font-weight:700; }}
+             /* 상단 3개 역은 모바일에서도 한 줄의 좌→우 흐름을 유지 */
+             .st-key-retirement-connection-platform > [data-testid="stVerticalBlock"] > [data-testid="stHorizontalBlock"]:has(.retirement-connection-stop.previous):has(.st-key-retirement-top-next-clickable) {{
+                 display:flex !important; flex-direction:row !important; flex-wrap:nowrap !important;
+                 align-items:stretch !important; width:100% !important; gap:6px !important;
+             }}
+             .st-key-retirement-connection-platform > [data-testid="stVerticalBlock"] > [data-testid="stHorizontalBlock"]:has(.retirement-connection-stop.previous):has(.st-key-retirement-top-next-clickable) > [data-testid="stColumn"] {{
+                 min-width:0 !important; box-sizing:border-box !important;
+             }}
+             .st-key-retirement-connection-platform > [data-testid="stVerticalBlock"] > [data-testid="stHorizontalBlock"]:has(.retirement-connection-stop.previous):has(.st-key-retirement-top-next-clickable) > [data-testid="stColumn"]:first-child,
+             .st-key-retirement-connection-platform > [data-testid="stVerticalBlock"] > [data-testid="stHorizontalBlock"]:has(.retirement-connection-stop.previous):has(.st-key-retirement-top-next-clickable) > [data-testid="stColumn"]:last-child {{
+                 flex:1 1 0% !important; width:0 !important; max-width:none !important; min-width:0 !important;
+             }}
+             .st-key-retirement-connection-platform > [data-testid="stVerticalBlock"] > [data-testid="stHorizontalBlock"]:has(.retirement-connection-stop.previous):has(.st-key-retirement-top-next-clickable) > [data-testid="stColumn"]:nth-child(2) {{
+                 flex:0 0 78px !important; width:78px !important; max-width:78px !important; min-width:78px !important;
+             }}
+             .retirement-connection-stop.previous {{ align-items:stretch !important; justify-content:space-between !important; }}
+             .retirement-connection-stop.previous .stop-caption {{ align-self:flex-start !important; text-align:left !important; }}
+             .retirement-connection-stop.previous .stop-main {{ justify-content:center !important; }}
+             .st-key-retirement-top-next-clickable {{ align-items:stretch !important; justify-content:space-between !important; }}
+             .st-key-retirement-top-next-clickable .retirement-top-next-header {{
+                 display:flex !important; align-items:flex-start !important; justify-content:space-between !important;
+                 width:100% !important; gap:4px !important;
+             }}
+             .st-key-retirement-top-next-clickable .retirement-top-next-caption {{
+                 align-self:flex-start !important; text-align:right !important; margin-left:auto !important;
+             }}
+             .st-key-retirement-top-next-clickable [data-testid="stButton"] {{ margin-top:auto !important; }}
+             .retirement-top-arrow {{
+                 display:flex !important; min-height:116px !important; height:100% !important;
+                 align-items:center !important; justify-content:center !important;
+             }}
+             .retirement-top-arrow svg {{
+                 display:block !important; width:100% !important; max-width:76px !important;
+                 height:26px !important; overflow:visible !important;
+             }}
+             /* 하단은 안내판의 연한 배경을 그대로 이어받고, 글자는 검정으로 */
+             .st-key-retirement-connection-read-list,
+             .st-key-retirement-connection-recommend-list {{
+                 background:transparent !important; background-color:transparent !important;
+                 border-color:transparent !important; box-shadow:none !important; color:#222222 !important;
+             }}
+             .st-key-retirement-connection-read-list [data-testid="stMarkdownContainer"],
+             .st-key-retirement-connection-recommend-list [data-testid="stMarkdownContainer"],
+             .st-key-retirement-connection-read-list h4,
+             .st-key-retirement-connection-recommend-list h4,
+             .st-key-retirement-connection-platform .retirement-history-item,
+             .st-key-retirement-connection-platform .retirement-history-title,
+             .st-key-retirement-connection-platform .retirement-recommendation-score {{
+                 color:#222222 !important; -webkit-text-fill-color:#222222 !important;
+             }}
+             .st-key-retirement-connection-platform .st-key-retirement-connection-choice-0 [data-testid="stButton"] button,
+             .st-key-retirement-connection-platform .st-key-retirement-connection-choice-1 [data-testid="stButton"] button,
+             .st-key-retirement-connection-platform .st-key-retirement-connection-choice-2 [data-testid="stButton"] button,
+             .st-key-retirement-connection-platform .st-key-retirement-connection-choice-0 [data-testid="stButton"] button *,
+             .st-key-retirement-connection-platform .st-key-retirement-connection-choice-1 [data-testid="stButton"] button *,
+             .st-key-retirement-connection-platform .st-key-retirement-connection-choice-2 [data-testid="stButton"] button *,
+             .st-key-retirement-connection-bottom .st-key-retirement-connection-choice-0 [data-testid="stButton"] button,
+             .st-key-retirement-connection-bottom .st-key-retirement-connection-choice-1 [data-testid="stButton"] button,
+             .st-key-retirement-connection-bottom .st-key-retirement-connection-choice-2 [data-testid="stButton"] button,
+             .st-key-retirement-connection-bottom .st-key-retirement-connection-choice-0 [data-testid="stButton"] button *,
+             .st-key-retirement-connection-bottom .st-key-retirement-connection-choice-1 [data-testid="stButton"] button *,
+             .st-key-retirement-connection-bottom .st-key-retirement-connection-choice-2 [data-testid="stButton"] button * {{
+                 color:#222222 !important; -webkit-text-fill-color:#222222 !important;
+             }}
+             .st-key-retirement-connection-bottom .st-key-retirement-connection-choice-0,
+             .st-key-retirement-connection-bottom .st-key-retirement-connection-choice-1,
+             .st-key-retirement-connection-bottom .st-key-retirement-connection-choice-2 {{
+                 border-bottom-color:rgba(34,34,34,.18) !important;
+             }}
+             @media (max-width:640px) {{
+                 .st-key-retirement-connection-platform > [data-testid="stVerticalBlock"] > [data-testid="stHorizontalBlock"]:has(.retirement-connection-stop.previous):has(.st-key-retirement-top-next-clickable) {{ gap:3px !important; }}
+                 .st-key-retirement-connection-platform > [data-testid="stVerticalBlock"] > [data-testid="stHorizontalBlock"]:has(.retirement-connection-stop.previous):has(.st-key-retirement-top-next-clickable) > [data-testid="stColumn"]:nth-child(2) {{
+                     flex-basis:52px !important; width:52px !important; max-width:52px !important; min-width:52px !important;
+                 }}
+                 .retirement-top-arrow svg {{ max-width:50px !important; height:22px !important; }}
+                 .retirement-connection-stop .stop-name {{ font-size:11px !important; }}
+             }}
+
              .st-key-retirement-connection-platform [data-testid="stButton"] button,
              .st-key-retirement-connection-platform [data-testid="stButton"] button *,
              .st-key-retirement-connection-platform [data-testid="stButton"] button p {{
@@ -2927,12 +3005,19 @@ def _show_retirement_connection_dialog():
                 unsafe_allow_html=True,
             )
         with _top_arrow_col:
-            st.markdown("<div class='retirement-top-arrow'>→</div>", unsafe_allow_html=True)
+            st.markdown(
+                "<div class='retirement-top-arrow' aria-hidden='true'>"
+                "<svg viewBox='0 0 100 24' role='presentation'>"
+                "<path d='M3 12 H91 M80 3 L91 12 L80 21' fill='none' "
+                "stroke='#222222' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'/>"
+                "</svg></div>",
+                unsafe_allow_html=True,
+            )
         with _top_next_col:
             with st.container(key="retirement-top-next-clickable"):
                 st.markdown(
-                    f"<div class='retirement-top-next-number'>{_next_number_html}</div>"
-                    f"<div class='retirement-top-next-caption'>다음 보고서</div>",
+                    f"<div class='retirement-top-next-header'>{_next_number_html}"
+                    f"<span class='retirement-top-next-caption'>다음 보고서</span></div>",
                     unsafe_allow_html=True,
                 )
                 if _next_record and st.button(
