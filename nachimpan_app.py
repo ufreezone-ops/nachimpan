@@ -3636,7 +3636,7 @@ def _show_retirement_report_dialog():
 
     st.markdown('<div class="retirement-connection-rail"></div>', unsafe_allow_html=True)
     with st.container(key="retirement-report-connection-cta"):
-        _button_spacer, _button_col = st.columns([4, 2])
+        _left_spacer, _button_col, _right_spacer = st.columns([1, 2, 1])
         with _button_col:
             if st.button("연결", key="retirement_report_open_connection", type="secondary", use_container_width=True):
                 st.session_state["_retirement_connection_open"] = True
@@ -4360,9 +4360,9 @@ def _show_retirement_connection_dialog():
                     else:
                         st.caption("현재 자료에서 이어지는 추천 자료가 없습니다.")
 
-        _close_spacer, _close_col = st.columns([7, 1])
+        _close_left, _close_col, _close_right = st.columns([1, 0.7, 1])
         with _close_col:
-            if st.button("닫기", key="retirement_connection_end"):
+            if st.button("닫기", key="retirement_connection_end", use_container_width=True):
                 st.session_state["_retirement_explorer_open"] = False
                 st.session_state["_retirement_entry_open"] = False
                 st.session_state["_retirement_connection_open"] = False
@@ -5806,7 +5806,7 @@ div.st-key-retirement-milestones-title-row [data-testid="stButton"] button p {
             with st.container(border=True, key="retirement-milestones-panel"):
                 with st.container(key="retirement-milestones-title-row"):
                     if st.button(
-                        f"**{_master_report_title('6051100-00')}**　🧭",
+                        f"**{_master_report_title('6051100-00')}** 🧭",
                         key="source_retirement_milestones",
                         help="대한민국 3대 은퇴 분기점 보고서 보기",
                         type="tertiary",
@@ -10320,7 +10320,7 @@ font-variant-numeric: tabular-nums;
 }
 .st-key-retirement-report-connection-cta [data-testid="stButton"] button {
 min-height: 2.4rem !important;
-border: 2px solid #159447 !important;
+border: 6px solid #159447 !important;
 border-radius: 999px !important;
 background: #ffffff !important;
 color: #087b3c !important;
