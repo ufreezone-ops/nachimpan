@@ -3488,90 +3488,100 @@ def _show_retirement_connection_dialog():
     except Exception:
         _association_records = []
 
+    # 현재 자료뿐 아니라 지금까지 읽은 모든 자료의 연결망을 탐색한다.
+    # 미열람 자료를 먼저, 이미 읽은 자료는 다시 읽을 후보로 뒤에 배치한다.
+    _candidate_by_key = {}
+    _history_set = set(_history)
     _current_legacy_id = _current_record.get("legacy_id", "")
-    _related_rows = []
-    if _current_legacy_id:
-        for _row in _association_records:
-            if _row.get("id_a") == _current_legacy_id:
-                _other_legacy_id = _row.get("id_b")
-            elif _row.get("id_b") == _current_legacy_id:
-                _other_legacy_id = _row.get("id_a")
-            else:
-                continue
 
-            _other_record = _by_legacy.get(_other_legacy_id)
-            if not _other_record:
-                continue
-            _other_source_id = _other_record.get("source_id", "")
-            if (
-                not _other_source_id
-                or _other_source_id == _source_id
-                or _other_source_id in _history
-            ):
-                continue
+    def _add_connection_candidate(_record, _key, _score, _origin_key, _reason):
+        if not _record or not _key or _key == _current_key:
+            return
+        _candidate = {
+            "display_label": _record.get("display_label", ""),
+            "title": _record.get("title", ""),
+            "source_id": _record.get("source_id", "") if _record.get("source_id") else "",
+            "resource_id": _record.get("resource_id", "") if _record.get("resource_id") else "",
+            "resource_type": _record.get("resource_type", ""),
+            "raw_score": int(_score or 0),
+            "reason": _reason,
+            "_already_read": _key in _history_set,
+            "_direct": _origin_key == _current_key,
+            "_candidate_key": _key,
+        }
+        _old = _candidate_by_key.get(_key)
+        _rank = ( _candidate["_already_read"], not _candidate["_direct"], -_candidate["raw_score"], _candidate["title"] )
+        _old_rank = (
+            (_old["_already_read"], not _old["_direct"], -_old["raw_score"], _old["title"])
+            if _old else None
+        )
+        if _old is None or _rank < _old_rank:
+            _candidate_by_key[_key] = _candidate
 
-            _related_rows.append({
-                "display_label": _other_record.get("display_label", ""),
-                "title": _other_record.get("title", ""),
-                "source_id": _other_source_id,
-                "raw_score": int(_row.get("score", 0) or 0),
-                "reason": _row.get("reason") or _row.get("relation") or "주제상 연결되는 자료입니다.",
-            })
-    # 보고서와 CSV 사이의 연결을 추가한다. CSV는 resource_id로 식별한다.
-    _csv_links_for_current = _RETIREMENT_CSV_REPORT_LINKS.get(_resource_id, []) if _resource_id else ([_source_id] if _source_id else [])
-    if _source_id:
-        for _csv_id, _linked_sources in _RETIREMENT_CSV_REPORT_LINKS.items():
-            if _source_id in _linked_sources and _csv_id not in _history:
-                _csv_record = _by_resource.get(_csv_id)
-                if _csv_record:
-                    _related_rows.append({
-                        "display_label": _csv_record.get("display_label", ""),
-                        "title": _csv_record.get("title", ""),
-                        "source_id": "", "resource_id": _csv_id,
-                        "resource_type": _csv_record.get("resource_type", ""),
-                        "raw_score": 0,
-                        "reason": "이 보고서의 통계 근거가 되는 원자료입니다.",
-                    })
-    else:
-        for _linked_source in _csv_links_for_current:
-            _report_record = _by_source.get(_linked_source)
-            if _report_record and _linked_source not in _history:
-                _related_rows.append({
-                    "display_label": _report_record.get("display_label", ""),
-                    "title": _report_record.get("title", ""),
-                    "source_id": _linked_source, "resource_id": "",
-                    "resource_type": "보고서", "raw_score": 1000,
-                    "reason": "이 원자료를 설명하거나 활용하는 보고서입니다.",
-                })
-        for _csv_id, _linked_sources in _RETIREMENT_CSV_REPORT_LINKS.items():
-            if _csv_id == _resource_id or _csv_id in _history:
-                continue
-            if set(_linked_sources).intersection(_csv_links_for_current):
-                _csv_record = _by_resource.get(_csv_id)
-                if _csv_record:
-                    _related_rows.append({
-                        "display_label": _csv_record.get("display_label", ""),
-                        "title": _csv_record.get("title", ""),
-                        "source_id": "", "resource_id": _csv_id,
-                        "resource_type": _csv_record.get("resource_type", ""),
-                        "raw_score": 900,
-                        "reason": "같은 보고서와 연결되는 관련 통계 원자료입니다.",
-                    })
+    # 최근에 읽은 자료부터 연결망을 확장하되, 후보의 우선순위는 읽음 여부와 직접성으로 결정한다.
+    for _origin_key in reversed(_history):
+        _origin_record = _by_source.get(_origin_key) or _by_resource.get(_origin_key)
+        if not _origin_record:
+            continue
+        _origin_source_id = _origin_record.get("source_id", "")
+        _origin_resource_id = _origin_record.get("resource_id", "")
+        _origin_legacy_id = _origin_record.get("legacy_id", "")
 
-    # 기존 보고서 추천의 최고 점수 항목은 상단 '다음 자료'에 유지하고,
-    # CSV 원자료는 그 바로 다음에 배치해 하단 추천 목록에서도 실제로 보이게 한다.
-    _report_rows = sorted(
-        [item for item in _related_rows if item.get("resource_type") != "기준데이터/원자료" and not item.get("resource_id")],
-        key=lambda item: (-item["raw_score"], item["title"]),
+        # 보고서 ↔ 보고서: 기존 쌍별 연관성 원장을 그대로 사용한다.
+        if _origin_legacy_id:
+            for _row in _association_records:
+                if _row.get("id_a") == _origin_legacy_id:
+                    _other_legacy_id = _row.get("id_b")
+                elif _row.get("id_b") == _origin_legacy_id:
+                    _other_legacy_id = _row.get("id_a")
+                else:
+                    continue
+                _other_record = _by_legacy.get(_other_legacy_id)
+                if _other_record:
+                    _other_key = _other_record.get("source_id", "")
+                    _add_connection_candidate(
+                        _other_record, _other_key, _row.get("score", 0), _origin_key,
+                        _row.get("reason") or _row.get("relation") or "주제상 연결되는 자료입니다.",
+                    )
+
+        # 보고서 ↔ CSV: 마스터의 별도 매핑을 사용한다.
+        if _origin_source_id:
+            for _csv_id, _linked_sources in _RETIREMENT_CSV_REPORT_LINKS.items():
+                if _origin_source_id in _linked_sources:
+                    _csv_record = _by_resource.get(_csv_id)
+                    _add_connection_candidate(
+                        _csv_record, _csv_id, 0, _origin_key,
+                        "이 보고서의 통계 근거가 되는 원자료입니다.",
+                    )
+
+        # CSV ↔ 보고서 및 CSV ↔ CSV: 같은 보고서를 공유하는 자료끼리 연결한다.
+        if _origin_resource_id:
+            _origin_linked_sources = _RETIREMENT_CSV_REPORT_LINKS.get(_origin_resource_id, [])
+            for _linked_source in _origin_linked_sources:
+                _report_record = _by_source.get(_linked_source)
+                _add_connection_candidate(
+                    _report_record, _linked_source, 1000, _origin_key,
+                    "이 원자료를 설명하거나 활용하는 보고서입니다.",
+                )
+            for _csv_id, _linked_sources in _RETIREMENT_CSV_REPORT_LINKS.items():
+                if _csv_id == _origin_resource_id:
+                    continue
+                if set(_linked_sources).intersection(_origin_linked_sources):
+                    _csv_record = _by_resource.get(_csv_id)
+                    _add_connection_candidate(
+                        _csv_record, _csv_id, 900, _origin_key,
+                        "같은 보고서와 연결되는 관련 통계 원자료입니다.",
+                    )
+
+    _related_rows = list(_candidate_by_key.values())
+    _related_rows.sort(
+        key=lambda item: (
+            item["_already_read"],
+            not item["_direct"],
+            -item["raw_score"],
+            item["title"],
+        )
     )
-    _csv_rows = sorted(
-        [item for item in _related_rows if item.get("resource_id")],
-        key=lambda item: item["title"],
-    )
-    if _report_rows:
-        _related_rows = [_report_rows[0]] + _csv_rows + _report_rows[1:]
-    else:
-        _related_rows = _csv_rows
     _past_records = []
     for _history_key in reversed(_history):
         _history_record = _by_source.get(_history_key) or _by_resource.get(_history_key)
