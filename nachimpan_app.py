@@ -4500,7 +4500,7 @@ if selected_page == "우리집 가계부":
                             # 소제목과 나침반을 하나의 실제 버튼 요소 안에 함께 배치한다.
                             # 따라서 별도 제목 요소와 아이콘 요소의 위치를 CSS로 맞출 필요가 없다.
                             if st.button(
-                                "대출 원리금 월상환액(원금+이자)　🧭",
+                                "대출 원리금 월상환액(원금+이자) 🧭",
                                 key="loan-payment-source-guide",
                                 help="대출 원리금의 산출 기준과 적용 방식 보기",
                                 type="tertiary",
@@ -4512,10 +4512,6 @@ if selected_page == "우리집 가계부":
                                 st.session_state["_retirement_explorer_source_id"] = "6050500-01"
                                 st.session_state["_retirement_explorer_history"] = ["6050500-01"]
                                 st.rerun()
-                            st.markdown(
-                                '<div id="loan-payment-label-origin"></div>',
-                                unsafe_allow_html=True,
-                            )
                             expense_loan = st.number_input(
                                 "",
                                 min_value=0,
@@ -11663,9 +11659,13 @@ st.markdown("""
 st.markdown("""
 <style>
 /* 제목과 나침반이 하나의 버튼 라벨이므로, 버튼 외형만 소제목처럼 정돈한다. */
+/* 소제목 버튼의 바깥 영역을 입력창과 같은 왼쪽 기준선에 맞춘다. */
+div.st-key-loan-payment-field {
+    gap: 0.25rem !important;
+}
 div.st-key-loan-payment-field div.st-key-loan-payment-source-guide,
 div.st-key-loan-payment-field div.st-key-loan-payment-source-guide [data-testid="stButton"] {
-    width: max-content !important;
+    width: 100% !important;
     max-width: 100% !important;
     min-width: 0 !important;
     margin: 0 !important;
