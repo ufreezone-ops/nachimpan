@@ -9861,7 +9861,7 @@ background-image: none !important;
 box-shadow: none !important;
 color: #38BDF8 !important;
 -webkit-text-fill-color: #38BDF8 !important;
-font-size: 1.8rem !important;
+font-size: 1.26rem !important;
 font-weight: 700 !important;
 line-height: 1 !important;
 display: inline-flex !important;
@@ -9873,7 +9873,7 @@ margin: 0 !important;
 padding: 0 !important;
 color: #38BDF8 !important;
 -webkit-text-fill-color: #38BDF8 !important;
-font-size: 1.8rem !important;
+font-size: 1.26rem !important;
 line-height: 1 !important;
 }
 div.st-key-loan-payment-title-row > div {
