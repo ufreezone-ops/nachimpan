@@ -2198,6 +2198,33 @@ st.components.v1.html(
                 nav.dataset.navScrollStateBound = "true";
             }
             updateNavState();
+
+            // 현재 선택된 탭이 가로 스크롤 영역 밖에 있으면 자연스럽게 화면 안으로 이동
+            const revealActiveTab = () => {
+                const target = getScrollTarget();
+                const activeButton = nav.querySelector('button[kind="primary"]');
+                if (!target || !activeButton) return;
+
+                const targetRect = target.getBoundingClientRect();
+                const buttonRect = activeButton.getBoundingClientRect();
+                const edgePadding = 36;
+                let delta = 0;
+
+                if (buttonRect.left < targetRect.left + edgePadding) {
+                    delta = buttonRect.left - (targetRect.left + edgePadding);
+                } else if (buttonRect.right > targetRect.right - edgePadding) {
+                    delta = buttonRect.right - (targetRect.right - edgePadding);
+                }
+
+                if (Math.abs(delta) > 2) {
+                    target.scrollTo({
+                        left: target.scrollLeft + delta,
+                        behavior: "smooth"
+                    });
+                }
+            };
+
+            requestAnimationFrame(() => requestAnimationFrame(revealActiveTab));
         } catch (e) {}
     })();
     </script>
