@@ -10442,9 +10442,9 @@ st.markdown("""
     margin:0 !important; padding:0 !important;
 }
 
-/* 상단 좌우 버튼의 좌우 패딩만 최소화: 상하 패딩은 기존 값 유지 */
-.st-key-retirement-top-previous-button [data-testid="stButton"] button,
-.st-key-retirement-top-next-button [data-testid="stButton"] button {
+/* 상단 좌우 버튼: 실제 Streamlit 버튼 요소에 좌우 패딩 직접 적용 */
+.st-key-retirement-top-previous-button button[data-testid="stBaseButton-secondary"],
+.st-key-retirement-top-next-button button[data-testid="stBaseButton-secondary"] {
     padding-left:1px !important;
     padding-right:1px !important;
     padding-inline:1px !important;
