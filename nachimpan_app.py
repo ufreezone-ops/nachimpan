@@ -3622,11 +3622,16 @@ def _show_retirement_connection_dialog():
                         "같은 보고서와 연결되는 관련 통계 원자료입니다.",
                     )
 
-    # 첫 진입은 이전 보고서가 없으므로 은퇴 후 생활비 주제의 시작 추천 자료를 배치한다.
+    # 첫 진입은 이전 보고서가 없으므로 아이콘이 지정한 주제의 시작 추천 자료를 배치한다.
     if _initial_connection:
         _entry_source_ids = st.session_state.get(
             "_retirement_connection_entry_source_ids",
             ["6050400-01", "6051400-00", "6051300-00"],
+        )
+        _entry_reason = (
+            "우리 가정 생애 소득곡선의 구성과 보정 방식을 이해하는 데 가장 직접적인 자료입니다."
+            if "6051200-00" in _entry_source_ids
+            else "은퇴 후 생활비와 지출 기준을 이해하는 데 도움이 되는 자료입니다."
         )
         for _index, _entry_source_id in enumerate(_entry_source_ids):
             _entry_record = _by_source.get(_entry_source_id)
@@ -3635,7 +3640,7 @@ def _show_retirement_connection_dialog():
                 _entry_source_id,
                 300 - _index,
                 None,
-                "은퇴 후 생활비와 지출 기준을 이해하는 데 도움이 되는 자료입니다.",
+                _entry_reason,
             )
 
     _related_rows = list(_candidate_by_key.values())
