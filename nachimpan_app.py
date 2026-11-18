@@ -3764,12 +3764,43 @@ def _show_retirement_connection_dialog():
                 display:-webkit-box; -webkit-box-orient:vertical; -webkit-line-clamp:2;
                 overflow:hidden; overflow-wrap:anywhere; line-height:1.4; max-height:2.8em;
             }}
-            .st-key-retirement-connection-choice-0 [data-testid="stButton"] button p,
-            .st-key-retirement-connection-choice-1 [data-testid="stButton"] button p,
-            .st-key-retirement-connection-choice-2 [data-testid="stButton"] button p {{
+            [class*="st-key-retirement-connection-choice-csv-"] [data-testid="stButton"] button p {{
                 display:-webkit-box !important; -webkit-box-orient:vertical !important;
                 -webkit-line-clamp:2 !important; overflow:hidden !important;
                 max-height:2.8em !important; line-height:1.4 !important;
+            }}
+            [class*="st-key-retirement-connection-choice-csv-"] {{
+                padding:6px 1px !important; border-bottom:0 !important;
+            }}
+            [class*="st-key-retirement-connection-choice-csv-"] [data-testid="stHorizontalBlock"] {{
+                display:flex !important; flex-wrap:nowrap !important; align-items:center !important;
+                gap:7px !important; width:100% !important;
+            }}
+            [class*="st-key-retirement-connection-choice-csv-"] [data-testid="stColumn"]:first-child {{
+                flex:0 0 27px !important; width:27px !important; min-width:27px !important;
+            }}
+            [class*="st-key-retirement-connection-choice-csv-"] [data-testid="stColumn"]:last-child {{
+                flex:1 1 0 !important; width:0 !important; min-width:0 !important;
+            }}
+            [class*="st-key-retirement-connection-choice-csv-"] [data-testid="stButton"] button {{
+                min-height:22px !important; height:auto !important; width:100% !important;
+                display:flex !important; align-items:center !important; justify-content:flex-start !important;
+                text-align:left !important; padding:0 1px !important; background:transparent !important;
+                border:0 !important; box-shadow:none !important; color:#222 !important;
+                -webkit-text-fill-color:#222 !important; font-size:12px !important;
+                font-weight:500 !important; line-height:1.4 !important; white-space:normal !important;
+            }}
+            [class*="st-key-retirement-connection-choice-csv-"] [data-testid="stButton"] button > div {{
+                width:100% !important; justify-content:flex-start !important; text-align:left !important;
+            }}
+            [class*="st-key-retirement-connection-choice-csv-"] [data-testid="stButton"] button *,
+            [class*="st-key-retirement-connection-choice-csv-"] [data-testid="stButton"] button p {{
+                color:#222 !important; -webkit-text-fill-color:#222 !important; text-align:left !important;
+            }}
+            [class*="st-key-retirement-connection-choice-csv-"] [data-testid="stButton"] button:hover {{
+                color:{_connection_panel_text_color} !important;
+                -webkit-text-fill-color:{_connection_panel_text_color} !important;
+                background:rgba(255,255,255,.16) !important;
             }}
             {_previous_csv_css}
             {_next_csv_css}
@@ -3942,7 +3973,9 @@ def _show_retirement_connection_dialog():
              .st-key-retirement-connection-bottom .st-key-retirement-connection-choice-2 [data-testid="stButton"] button,
              .st-key-retirement-connection-bottom .st-key-retirement-connection-choice-0 [data-testid="stButton"] button *,
              .st-key-retirement-connection-bottom .st-key-retirement-connection-choice-1 [data-testid="stButton"] button *,
-             .st-key-retirement-connection-bottom .st-key-retirement-connection-choice-2 [data-testid="stButton"] button * {{
+             .st-key-retirement-connection-bottom .st-key-retirement-connection-choice-2 [data-testid="stButton"] button *,
+             .st-key-retirement-connection-bottom [class*="st-key-retirement-connection-choice-csv-"] [data-testid="stButton"] button,
+             .st-key-retirement-connection-bottom [class*="st-key-retirement-connection-choice-csv-"] [data-testid="stButton"] button * {{
                  color:#222222 !important; -webkit-text-fill-color:#222222 !important;
              }}
              .st-key-retirement-connection-bottom .st-key-retirement-connection-choice-0,
@@ -4064,7 +4097,7 @@ def _show_retirement_connection_dialog():
                             _item_record = _by_source.get(_item.get("source_id", "")) if _item.get("source_id") else _by_resource.get(_item.get("resource_id", ""))
                             _item_color = _continent_color(_item_record)
                             _is_csv_item = bool(_item_record and _item_record.get("file_format", "").upper() == "CSV")
-                            _choice_key = f"retirement-connection-choice-{_index}"
+                            _choice_key = f"retirement-connection-choice-csv-{_index}" if _is_csv_item else f"retirement-connection-choice-{_index}"
                             with st.container(key=_choice_key):
                                 _number_col, _title_col = st.columns([0.12, 0.88], gap=None)
                                 with _number_col:
