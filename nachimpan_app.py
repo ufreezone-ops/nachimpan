@@ -10507,7 +10507,8 @@ st.markdown("""
 # 하단 '다음 추천보고서' 전체 컨테이너: 좌우 패딩만 1px, 상하는 15px 유지
 st.markdown("""
 <style>
-.stVerticalBlock.st-key-retirement-connection-recommend-list {
+.stVerticalBlock.st-key-retirement-connection-recommend-list,
+.stVerticalBlock.st-key-retirement-connection-read-list {
     padding-left:1px !important;
     padding-right:1px !important;
 }
