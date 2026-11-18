@@ -10318,22 +10318,35 @@ font-size: 0.82rem;
 font-weight: 800;
 font-variant-numeric: tabular-nums;
 }
-.st-key-retirement-report-connection-cta [data-testid="stButton"] {
+.st-key-retirement-report-connection-cta [data-testid="stElementContainer"] {
 width: 100% !important;
 display: flex !important;
 justify-content: center !important;
 }
+.st-key-retirement-report-connection-cta [data-testid="stButton"] {
+width: auto !important;
+display: flex !important;
+justify-content: center !important;
+}
 .st-key-retirement-report-connection-cta [data-testid="stButton"] button {
-width: 180px !important;
-min-width: 180px !important;
+width: 120px !important;
+min-width: 120px !important;
 max-width: 100% !important;
 min-height: 2.4rem !important;
+padding-left: 0.35rem !important;
+padding-right: 0.35rem !important;
 border: 6px solid #159447 !important;
 border-radius: 999px !important;
 background: #ffffff !important;
-color: #087b3c !important;
-font-weight: 750 !important;
+color: #111111 !important;
+-webkit-text-fill-color: #111111 !important;
+font-weight: 850 !important;
 box-shadow: none !important;
+}
+.st-key-retirement-report-connection-cta [data-testid="stButton"] button p {
+color: #111111 !important;
+-webkit-text-fill-color: #111111 !important;
+font-weight: 850 !important;
 }
 .st-key-retirement-report-connection-cta [data-testid="stButton"] button:hover {
 background: #e8f5ec !important;
