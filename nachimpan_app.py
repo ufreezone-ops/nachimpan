@@ -10464,14 +10464,14 @@ st.markdown("""
     min-width:15px !important;
 }
 
-/* 보고서 번호 원은 기존보다 약 1/3 작게, 숫자 글자 크기는 12px 그대로 유지 */
+/* 상단 보고서 번호 원을 하단 번호 원과 같은 크기·비율로 통일 */
 .st-key-retirement-top-previous-clickable [data-testid="stButton"] button::before,
 .st-key-retirement-top-next-clickable [data-testid="stButton"] button::before {
-    flex:0 0 17px !important;
-    width:17px !important;
-    min-width:17px !important;
-    height:17px !important;
-    font-size:12px !important;
+    flex:0 0 22px !important;
+    width:22px !important;
+    min-width:22px !important;
+    height:22px !important;
+    font-size:11px !important;
     line-height:1 !important;
 }
 
