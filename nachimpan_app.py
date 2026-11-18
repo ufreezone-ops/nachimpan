@@ -3060,7 +3060,7 @@ def _show_retirement_connection_dialog():
             _left, _right = st.columns(2, gap="small")
             with _left:
                 with st.container(key="retirement-connection-read-list", border=True):
-                    st.markdown("<h4 style='font-size:12px;font-weight:700;margin:0 0 9px;'>← 읽은 보고서</h4>", unsafe_allow_html=True)
+                    st.markdown("<h4 style='font-size:12px;font-weight:500;margin:0 0 9px;'>← 읽은 보고서</h4>", unsafe_allow_html=True)
                     if _past_records:
                         for _record in _past_records:
                             _number = _record.get("display_label", "")
@@ -10378,3 +10378,9 @@ st.markdown("""
 }
 </style>
 """, unsafe_allow_html=True)
+
+
+/* 읽은 보고서 헤더 굵기를 우측 추천 헤더와 시각적으로 맞춤 */
+.st-key-retirement-connection-read-list h4 {
+    font-weight:500 !important;
+}
