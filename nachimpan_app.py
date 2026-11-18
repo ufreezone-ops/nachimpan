@@ -10504,27 +10504,12 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 
-# 하단 추천 보고서 제목 버튼 좌우 패딩 최소화
+# 하단 '다음 추천보고서' 전체 컨테이너: 좌우 패딩만 1px, 상하는 15px 유지
 st.markdown("""
 <style>
-.st-key-retirement-connection-recommend-list .st-key-retirement-connection-choice-0 [data-testid="stButton"] button,
-.st-key-retirement-connection-recommend-list .st-key-retirement-connection-choice-1 [data-testid="stButton"] button,
-.st-key-retirement-connection-recommend-list .st-key-retirement-connection-choice-2 [data-testid="stButton"] button {
+.stVerticalBlock.st-key-retirement-connection-recommend-list {
     padding-left:1px !important;
     padding-right:1px !important;
-    padding-inline:1px !important;
-}
-</style>
-""", unsafe_allow_html=True)
-
-
-# 하단 추천 보고서 행: 번호 열과 제목 열 각각의 패딩을 1px로 통일
-st.markdown("""
-<style>
-.st-key-retirement-connection-recommend-list .st-key-retirement-connection-choice-0 [data-testid="stColumn"],
-.st-key-retirement-connection-recommend-list .st-key-retirement-connection-choice-1 [data-testid="stColumn"],
-.st-key-retirement-connection-recommend-list .st-key-retirement-connection-choice-2 [data-testid="stColumn"] {
-    padding:1px !important;
 }
 </style>
 """, unsafe_allow_html=True)
