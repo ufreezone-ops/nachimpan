@@ -420,6 +420,71 @@ div.st-key-source_retirement_expense_guide [data-testid="stButton"] button p {
 </style>
 """, unsafe_allow_html=True)
 
+# 연간 잉여자금 도움말 나침반: 제목 옆에 밀착하고 팝오버 버튼 외형·화살표 제거
+st.markdown("""
+<style>
+.st-key-annual-surplus-title-row {
+    display: flex !important;
+    align-items: center !important;
+    gap: 0.12rem !important;
+}
+.st-key-annual-surplus-title-row [data-testid="stMarkdownContainer"] p {
+    margin: 0 !important;
+    padding: 0 !important;
+    white-space: nowrap !important;
+    line-height: 1.2 !important;
+}
+.st-key-annual-surplus-title-row [data-testid="stPopover"],
+.st-key-annual-surplus-title-row [data-testid="stTooltipHoverTarget"],
+.st-key-annual-surplus-title-row [data-testid="stPopoverButton"] {
+    width: auto !important;
+    min-width: 0 !important;
+    max-width: max-content !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    border: 0 !important;
+    background: transparent !important;
+    background-color: transparent !important;
+    box-shadow: none !important;
+}
+.st-key-annual-surplus-title-row [data-testid="stPopoverButton"],
+.st-key-annual-surplus-title-row [data-testid="stPopoverButton"]:hover,
+.st-key-annual-surplus-title-row [data-testid="stPopoverButton"]:focus,
+.st-key-annual-surplus-title-row [data-testid="stPopoverButton"]:focus-visible,
+.st-key-annual-surplus-title-row [data-testid="stPopoverButton"]:active {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    min-height: 0 !important;
+    height: auto !important;
+    padding: 0 !important;
+    border: 0 !important;
+    outline: 0 !important;
+    background: transparent !important;
+    background-color: transparent !important;
+    background-image: none !important;
+    box-shadow: none !important;
+    border-radius: 0 !important;
+    transform: translateY(3px) !important;
+    color: #38BDF8 !important;
+    -webkit-text-fill-color: #38BDF8 !important;
+    font-size: 1.8rem !important;
+    line-height: 1 !important;
+}
+.st-key-annual-surplus-title-row [data-testid="stPopoverButton"] svg {
+    display: none !important;
+}
+.st-key-annual-surplus-title-row [data-testid="stPopoverButton"] p {
+    margin: 0 !important;
+    padding: 0 !important;
+    color: #38BDF8 !important;
+    -webkit-text-fill-color: #38BDF8 !important;
+    font-size: 1.8rem !important;
+    line-height: 1 !important;
+}
+</style>
+""", unsafe_allow_html=True)
+
 # 연결 플랫폼은 최초로 열리는 순간부터 2호선 녹색 테마를 적용한다.
 # 전역 CSS로 선언해 dialog 내부 첫 렌더링 시점에 스타일이 늦게 붙는 현상을 방지한다.
 st.markdown("""
@@ -4903,7 +4968,12 @@ if selected_page == "우리집 가계부":
         cols[1].metric("월 지출", money(s["expenses"]))
         bonus_help = f"연간 상여금 {money(s['annual_bonus'])} 및 연간 비정기 지출 {money(s['annual_other_expense'])} 반영"
         with cols[2]:
-            with st.container(horizontal=True, vertical_alignment="center", gap="small"):
+            with st.container(
+                key="annual-surplus-title-row",
+                horizontal=True,
+                vertical_alignment="center",
+                gap="small",
+            ):
                 st.markdown("연간 잉여자금")
                 with st.popover("🧭", help="연간 잉여자금 계산에 반영된 항목 보기"):
                     st.write(bonus_help)
