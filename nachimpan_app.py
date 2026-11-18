@@ -11770,7 +11770,9 @@ div.st-key-loan-payment-field div.st-key-loan-payment-source-guide [data-testid=
 # 연간 잉여자금 값: 기존 메트릭 타이포그래피 유지 + 월평균만 일반 서체
 st.markdown("""
 <style>
-div.st-key-annual-surplus-metric-stack .annual-surplus-inline-metric [data-testid="stMetricValue"] {
+div.st-key-annual-surplus-metric-stack .annual-surplus-inline-metric [data-testid="stMetricValue"],
+div.st-key-annual-surplus-metric-stack .annual-surplus-inline-metric [data-testid="stMetricValue"] * {
+    font-size: 17px !important;
     white-space: nowrap !important;
 }
 div.st-key-annual-surplus-metric-stack .annual-surplus-inline-metric .annual-surplus-monthly {
