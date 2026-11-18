@@ -11963,7 +11963,7 @@ div.st-key-income-wage-stats-note-row div.st-key-income_wage_stats_popup [data-t
     height: auto !important;
     margin: 0 !important;
     padding: 0 !important;
-    transform: translateY(3px) !important;
+    transform: translateY(9px) !important;
     border: 0 !important;
     outline: 0 !important;
     border-radius: 0 !important;
