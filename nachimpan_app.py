@@ -4097,11 +4097,13 @@ def _show_retirement_connection_dialog():
         )
         # 좌우에는 보고서 버튼만 배치하고, 버튼 자체를 동일한 높이의 영역 중앙에 정렬
         st.markdown(
-            f"<style>"
-            f".st-key-retirement-top-previous-clickable {{ --report-number:'{_previous_number}'; --report-color:{_previous_color}; }}"
-            f".st-key-retirement-top-next-clickable {{ --report-number:'{_next_number}'; --report-color:{_next_color}; }}"
-            + (".st-key-retirement-top-previous-clickable [data-testid='stButton'] button::before { display:none !important; }" if not _previous_record else "")
-            f"</style>",
+            (
+                f"<style>"
+                f".st-key-retirement-top-previous-clickable {{ --report-number:'{_previous_number}'; --report-color:{_previous_color}; }}"
+                f".st-key-retirement-top-next-clickable {{ --report-number:'{_next_number}'; --report-color:{_next_color}; }}"
+                + (".st-key-retirement-top-previous-clickable [data-testid='stButton'] button::before { display:none !important; }" if not _previous_record else "")
+                + f"</style>"
+            ),
             unsafe_allow_html=True,
         )
         _top_previous_col, _top_arrow_col, _top_next_col = st.columns([1, 0.12, 1], gap="small")
