@@ -10562,7 +10562,7 @@ st.markdown("""
 }
 .st-key-retirement-top-previous-button [data-testid="stButton"] button,
 .st-key-retirement-top-next-button [data-testid="stButton"] button {
-    width:115% !important;
+    width:120% !important;
     max-width:none !important;
     height:auto !important;
     min-height:0 !important;
