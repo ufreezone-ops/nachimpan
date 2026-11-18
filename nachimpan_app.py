@@ -10361,7 +10361,10 @@ width: auto !important;
 display: flex !important;
 justify-content: center !important;
 }
-.st-key-retirement-connection-close-cta [data-testid="stButton"] button {
+.st-key-retirement-connection-close-cta [data-testid="stButton"] button,
+.st-key-retirement-connection-close-cta [data-testid="stButton"] button:hover,
+.st-key-retirement-connection-close-cta [data-testid="stButton"] button:focus,
+.st-key-retirement-connection-close-cta [data-testid="stButton"] button:active {
 width: 120px !important;
 min-width: 120px !important;
 max-width: 100% !important;
@@ -10371,19 +10374,21 @@ padding-right: 0.35rem !important;
 border: 6px solid #159447 !important;
 border-radius: 999px !important;
 background: #ffffff !important;
-color: #111111 !important;
--webkit-text-fill-color: #111111 !important;
+background-color: #ffffff !important;
+color: #000000 !important;
+-webkit-text-fill-color: #000000 !important;
 font-weight: 850 !important;
 box-shadow: none !important;
 }
-.st-key-retirement-connection-close-cta [data-testid="stButton"] button p {
-color: #111111 !important;
--webkit-text-fill-color: #111111 !important;
+.st-key-retirement-connection-close-cta [data-testid="stButton"] button p,
+.st-key-retirement-connection-close-cta [data-testid="stButton"] button span,
+.st-key-retirement-connection-close-cta [data-testid="stButton"] button div {
+color: #000000 !important;
+-webkit-text-fill-color: #000000 !important;
 font-weight: 850 !important;
 }
 .st-key-retirement-connection-close-cta [data-testid="stButton"] button:hover {
-background: #e8f5ec !important;
-border-color: #087b3c !important;
+border-color: #159447 !important;
 }
 div[data-testid="stDialog"]:has(.st-key-retirement-connection-platform) [data-testid="stDialogContent"] {
 padding-top: 0.35rem !important;
