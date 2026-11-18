@@ -10569,12 +10569,14 @@ st.markdown("""
     margin:0 -5.396% 0 -5.396% !important;
 }
 
-/* 중앙 화살표 열: 실제 콘텐츠 영역까지 68px 높이를 전달해 수직 중앙 정렬 */
+/* 중앙 화살표 열의 바깥 영역을 좌우 보고서 버튼 상단과 맞춤 */
 .st-key-retirement-connection-platform [data-testid="stHorizontalBlock"]:has(.st-key-retirement-top-previous-clickable):has(.retirement-top-arrow):has(.st-key-retirement-top-next-clickable) > [data-testid="stColumn"]:nth-child(2) {
-    display:flex !important;
-    align-items:stretch !important;
-    justify-content:center !important;
+    align-self:flex-start !important;
+    position:relative !important;
+    top:-6px !important;
 }
+
+/* 중앙 열의 내부 컨테이너는 기존 68px 정렬을 유지 */
 .st-key-retirement-connection-platform [data-testid="stHorizontalBlock"]:has(.st-key-retirement-top-previous-clickable):has(.retirement-top-arrow):has(.st-key-retirement-top-next-clickable) > [data-testid="stColumn"]:nth-child(2) > [data-testid="stVerticalBlock"] {
     display:flex !important;
     align-items:stretch !important;
@@ -10583,15 +10585,9 @@ st.markdown("""
     height:68px !important;
     min-height:68px !important;
 }
-.st-key-retirement-connection-platform [data-testid="stColumn"]:nth-child(2) > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"]:has(.retirement-top-arrow) {
-    display:flex !important;
-    flex:1 1 auto !important;
-    align-items:center !important;
-    justify-content:center !important;
-    width:100% !important;
-    height:100% !important;
-    min-height:68px !important;
-}
+
+/* 화살표의 콘텐츠 래퍼는 중앙 열 안에서 그대로 유지 */
+.st-key-retirement-connection-platform [data-testid="stColumn"]:nth-child(2) > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"]:has(.retirement-top-arrow),
 .st-key-retirement-connection-platform [data-testid="stColumn"]:nth-child(2) [data-testid="stElementContainer"]:has(.retirement-top-arrow) [data-testid="stMarkdown"],
 .st-key-retirement-connection-platform [data-testid="stColumn"]:nth-child(2) [data-testid="stElementContainer"]:has(.retirement-top-arrow) [data-testid="stMarkdown"] > div,
 .st-key-retirement-connection-platform [data-testid="stColumn"]:nth-child(2) [data-testid="stElementContainer"]:has(.retirement-top-arrow) [data-testid="stMarkdownContainer"] {
@@ -10602,6 +10598,8 @@ st.markdown("""
     height:100% !important;
     min-height:68px !important;
 }
+
+/* 두 번째 DOM 안에서 화살표 SVG만 별도로 위쪽 보정 */
 .st-key-retirement-connection-platform .retirement-top-arrow {
     display:flex !important;
     align-items:center !important;
@@ -10616,6 +10614,7 @@ st.markdown("""
     display:block !important;
     height:24px !important;
     margin:0 !important;
+    transform:translateY(-4px) !important;
 }
 </style>
 """, unsafe_allow_html=True)
