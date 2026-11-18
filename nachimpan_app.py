@@ -5700,6 +5700,14 @@ elif selected_page == "삶과 생계수단":
 
             st.markdown("</div>", unsafe_allow_html=True)
 
+        # 고급 모드 하단 이동 버튼 — 중앙의 작은 버튼
+        st.markdown("<div style='height: 18px;'></div>", unsafe_allow_html=True)
+        _, next_col, _ = st.columns([1, 1, 1])
+        with next_col:
+            if st.button("다음 →", key="advanced_livelihood_next", type="primary"):
+                _navigate_to_page_top("인생의 사계절")
+                st.rerun()
+
 
 #########################################################
 # 6.03 | Tab 3 — 인생의 사계절
@@ -7893,8 +7901,13 @@ elif selected_page == "우리집 재정곡선":
             # 팝업 호출은 페이지 레이아웃 컨텍스트 밖의 최상위 영역에서 처리한다.
 
 
-
-
+        # 고급 모드 하단 이동 버튼 — 중앙의 작은 버튼
+        st.markdown("<div style='height: 18px;'></div>", unsafe_allow_html=True)
+        _, next_col, _ = st.columns([1, 1, 1])
+        with next_col:
+            if st.button("다음 →", key="advanced_finance_next", type="primary"):
+                _navigate_to_page_top("AI 시선")
+                st.rerun()
 
 
 #########################################################
