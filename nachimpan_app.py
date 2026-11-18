@@ -5898,7 +5898,7 @@ elif selected_page == "인생의 사계절":
         _, next_col = st.columns([5, 1])
         with next_col:
             if st.button("다음 →", key="basic_seasons_next", use_container_width=True, type="primary"):
-                _navigate_to_page_top("우리집 재정곡선")
+                _navigate_to_page_top("AI 시선")
                 st.rerun()
 
     else:
