@@ -10390,6 +10390,34 @@ font-weight: 850 !important;
 .st-key-retirement-connection-close-cta [data-testid="stButton"] button:hover {
 border-color: #159447 !important;
 }
+/* 닫기 버튼의 고유 위젯 키를 직접 지정해 Streamlit 기본 secondary 색상을 덮어쓴다. */
+.st-key-retirement_connection_end {
+width: 100% !important;
+display: flex !important;
+justify-content: center !important;
+}
+.st-key-retirement_connection_end [data-testid="stButton"] {
+width: auto !important;
+display: flex !important;
+justify-content: center !important;
+}
+.st-key-retirement_connection_end button[data-testid="stBaseButton-secondary"],
+.st-key-retirement_connection_end button[data-testid="stBaseButton-secondary"]:hover,
+.st-key-retirement_connection_end button[data-testid="stBaseButton-secondary"]:focus,
+.st-key-retirement_connection_end button[data-testid="stBaseButton-secondary"]:active {
+background: #ffffff !important;
+background-color: #ffffff !important;
+color: #000000 !important;
+-webkit-text-fill-color: #000000 !important;
+border: 6px solid #159447 !important;
+}
+.st-key-retirement_connection_end button[data-testid="stBaseButton-secondary"] p,
+.st-key-retirement_connection_end button[data-testid="stBaseButton-secondary"] span,
+.st-key-retirement_connection_end button[data-testid="stBaseButton-secondary"] div {
+color: #000000 !important;
+-webkit-text-fill-color: #000000 !important;
+font-weight: 850 !important;
+}
 div[data-testid="stDialog"]:has(.st-key-retirement-connection-platform) [data-testid="stDialogContent"] {
 padding-top: 0.35rem !important;
 padding-bottom: 0.45rem !important;
