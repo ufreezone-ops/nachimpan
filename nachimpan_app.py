@@ -4952,7 +4952,7 @@ if selected_page == "우리집 가계부":
         cols[1].metric("월 지출", money(s["expenses"]))
         bonus_help = f"연간 상여금 {money(s['annual_bonus'])} 및 연간 비정기 지출 {money(s['annual_other_expense'])} 반영"
         with cols[2]:
-            with st.container(gap="none", key="annual-surplus-metric-stack"):
+            with st.container(gap=None, key="annual-surplus-metric-stack"):
                 with st.popover(
                     "연간 잉여자금 🧭",
                     key="annual-surplus-source-guide",
