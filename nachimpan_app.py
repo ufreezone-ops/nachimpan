@@ -12328,3 +12328,15 @@ div.st-key-retirement-connection-close-cta [data-testid="stElementContainer"] {
 }
 </style>
 """, unsafe_allow_html=True)
+
+
+# 연결창 오른쪽 하단 패널 제목: '다음 추천 자료 →' 오른쪽 정렬
+st.markdown("""
+<style>
+.st-key-retirement-connection-recommend-list h4 {
+    display: block !important;
+    width: 100% !important;
+    text-align: right !important;
+}
+</style>
+""", unsafe_allow_html=True)
