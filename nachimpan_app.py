@@ -4960,10 +4960,12 @@ if selected_page == "우리집 가계부":
                     type="tertiary",
                 ):
                     st.write(bonus_help)
-                st.metric(
-                    "",
-                    f"{money(s['annual_net_surplus'])} (월평균 {money(s['monthly_effective_surplus'])})",
-                    label_visibility="collapsed",
+                st.markdown(
+                    f'<div style="font-size:26px; line-height:1.2; color:var(--nc-text); white-space:nowrap;">'
+                    f'<span style="font-weight:800;">{money(s["annual_net_surplus"])}</span> '
+                    f'<span style="font-weight:400;">(월평균 {money(s["monthly_effective_surplus"])})</span>'
+                    f'</div>',
+                    unsafe_allow_html=True,
                 )
         cols[3].metric("현재 파악된 금융자산", fmt_eok(s["net_worth"]))
 
