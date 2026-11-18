@@ -3001,21 +3001,30 @@ def _show_retirement_connection_dialog():
             f"<span class='retirement-number-circle' style='background:{_next_color};color:#fff;'>{_next_number}</span>"
             if _next_number else ""
         )
-        # 다음 보고서 번호는 클릭 버튼의 ::before 원형 마커로 표현해
-        # 이전 보고서와 동일한 '캡션 + 번호/제목 한 줄' 구조를 유지한다.
+        # 좌우 모두 동일한 Streamlit 컨테이너 구조: 캡션 + 번호/제목 통합 버튼
         st.markdown(
-            f"<style>.st-key-retirement-top-next-clickable "
-            f"{{ --next-report-number:'{_next_number}'; --next-report-color:{_next_color}; }}</style>",
+            f"<style>"
+            f".st-key-retirement-top-previous-clickable {{ --report-number:'{_previous_number}'; --report-color:{_previous_color}; }}"
+            f".st-key-retirement-top-next-clickable {{ --report-number:'{_next_number}'; --report-color:{_next_color}; }}"
+            f"</style>",
             unsafe_allow_html=True,
         )
         _top_previous_col, _top_arrow_col, _top_next_col = st.columns([1, 0.12, 1], gap="small")
         with _top_previous_col:
-            st.markdown(
-                f"<div class='retirement-connection-stop previous'>"
-                f"<span class='stop-caption'>이전 보고서</span>"
-                f"<div class='stop-main'>{_previous_number_html}<span class='stop-name'>{_previous_title}</span></div></div>",
-                unsafe_allow_html=True,
-            )
+            with st.container(key="retirement-top-previous-clickable"):
+                st.markdown(
+                    "<div class='retirement-top-next-header'>"
+                    "<span class='retirement-top-next-caption'>이전 보고서</span></div>",
+                    unsafe_allow_html=True,
+                )
+                _previous_clicked = st.button(
+                    _previous_title, key="retirement_connection_top_previous",
+                    use_container_width=True, type="secondary",
+                )
+                if _previous_clicked:
+                    st.session_state["_retirement_explorer_source_id"] = _previous_record.get("source_id")
+                    st.session_state["_retirement_connection_open"] = False
+                    st.rerun()
         with _top_arrow_col:
             st.markdown(
                 "<div class='retirement-top-arrow' aria-hidden='true'>"
@@ -10116,13 +10125,53 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 
-# 연결창 최종 정렬: 상단 좌우를 동일한 2단 구조로, 하단 추천 글자를 12px로 통일
+
+# 연결창 좌우 상단 버튼 구조 및 하단 추천 타이포그래피 최종 통일
 st.markdown("""
 <style>
-/* 상단 우측 버튼을 좌측 .stop-main과 같은 '번호 원 + 제목' 한 줄로 구성 */
+/* 좌우 카드: 캡션 + 단일 클릭 버튼, 불필요한 중간 여백 제거 */
+.st-key-retirement-top-previous-clickable,
+.st-key-retirement-top-next-clickable {
+    min-width:0 !important;
+    min-height:78px !important;
+    height:100% !important;
+    box-sizing:border-box !important;
+    display:flex !important;
+    flex-direction:column !important;
+    align-items:stretch !important;
+    justify-content:center !important;
+    gap:2px !important;
+    padding:6px !important;
+    border:2px solid var(--connection-panel-color, #159447) !important;
+    border-radius:12px !important;
+    background:var(--connection-panel-color, #159447) !important;
+    color:#fff !important;
+}
+.st-key-retirement-top-previous-clickable .retirement-top-next-header,
+.st-key-retirement-top-next-clickable .retirement-top-next-header {
+    width:100% !important;
+    margin:0 !important;
+    padding:0 !important;
+    line-height:1.2 !important;
+}
+.st-key-retirement-top-previous-clickable .retirement-top-next-caption,
+.st-key-retirement-top-next-clickable .retirement-top-next-caption {
+    display:block !important;
+    width:100% !important;
+    margin:0 !important;
+    padding:0 !important;
+    color:#fff !important;
+    -webkit-text-fill-color:#fff !important;
+    font-size:11px !important;
+    font-weight:700 !important;
+    text-align:left !important;
+}
+.st-key-retirement-top-previous-clickable [data-testid="stButton"],
 .st-key-retirement-top-next-clickable [data-testid="stButton"] {
     width:100% !important;
+    margin:0 !important;
 }
+.st-key-retirement-top-previous-clickable [data-testid="stButton"] button,
 .st-key-retirement-top-next-clickable [data-testid="stButton"] button {
     display:flex !important;
     flex-direction:row !important;
@@ -10133,13 +10182,17 @@ st.markdown("""
     min-width:0 !important;
     min-height:30px !important;
     height:auto !important;
-    padding:2px 4px !important;
-    white-space:normal !important;
+    margin:0 !important;
+    padding:2px 0 !important;
+    background:transparent !important;
+    border:0 !important;
+    box-shadow:none !important;
     text-align:left !important;
+    white-space:normal !important;
 }
+.st-key-retirement-top-previous-clickable [data-testid="stButton"] button::before,
 .st-key-retirement-top-next-clickable [data-testid="stButton"] button::before {
-    content:var(--next-report-number, "") !important;
-    background:var(--next-report-color, #6B4C3B) !important;
+    content:var(--report-number, "") !important;
     display:inline-flex !important;
     flex:0 0 25px !important;
     width:25px !important;
@@ -10147,12 +10200,14 @@ st.markdown("""
     align-items:center !important;
     justify-content:center !important;
     border-radius:50% !important;
+    background:var(--report-color, #6B4C3B) !important;
     color:#fff !important;
     -webkit-text-fill-color:#fff !important;
     font-size:12px !important;
     font-weight:900 !important;
     line-height:1 !important;
 }
+.st-key-retirement-top-previous-clickable [data-testid="stButton"] button > div,
 .st-key-retirement-top-next-clickable [data-testid="stButton"] button > div {
     display:flex !important;
     flex:1 1 auto !important;
@@ -10161,28 +10216,28 @@ st.markdown("""
     align-items:center !important;
     justify-content:flex-start !important;
 }
-.st-key-retirement-top-next-clickable [data-testid="stButton"] button [data-testid="stMarkdownContainer"],
-.st-key-retirement-top-next-clickable [data-testid="stButton"] button p {
-    min-width:0 !important;
-    margin:0 !important;
+.st-key-retirement-top-previous-clickable [data-testid="stButton"] button *,
+.st-key-retirement-top-next-clickable [data-testid="stButton"] button * {
+    color:#fff !important;
+    -webkit-text-fill-color:#fff !important;
+    font-family:inherit !important;
+    font-size:12px !important;
+    font-weight:800 !important;
+    line-height:1.25 !important;
     text-align:left !important;
     white-space:normal !important;
     overflow-wrap:anywhere !important;
-    font-size:13px !important;
-    font-weight:800 !important;
-    line-height:1.25 !important;
+    text-decoration:none !important;
 }
-/* 좌우 상단 카드의 내부를 동일한 높이 기준으로 늘리고 화살표는 전체 높이의 정중앙 */
-.st-key-retirement-connection-platform [data-testid="stHorizontalBlock"]:has(.retirement-connection-stop.previous):has(.st-key-retirement-top-next-clickable) {
+.st-key-retirement-top-previous-clickable [data-testid="stButton"] button:hover,
+.st-key-retirement-top-next-clickable [data-testid="stButton"] button:hover {
+    background:rgba(255,255,255,.12) !important;
+}
+/* 화살표 정중앙 유지 */
+.st-key-retirement-connection-platform [data-testid="stHorizontalBlock"]:has(.st-key-retirement-top-previous-clickable):has(.st-key-retirement-top-next-clickable) {
     align-items:stretch !important;
 }
-.st-key-retirement-connection-platform [data-testid="stHorizontalBlock"]:has(.retirement-connection-stop.previous):has(.st-key-retirement-top-next-clickable) > [data-testid="stColumn"] {
-    align-self:stretch !important;
-}
-.st-key-retirement-connection-platform [data-testid="stHorizontalBlock"]:has(.retirement-connection-stop.previous):has(.st-key-retirement-top-next-clickable) > [data-testid="stColumn"] > [data-testid="stVerticalBlock"] {
-    height:100% !important;
-}
-.st-key-retirement-connection-platform [data-testid="stHorizontalBlock"]:has(.retirement-connection-stop.previous):has(.st-key-retirement-top-next-clickable) > [data-testid="stColumn"]:nth-child(2) > [data-testid="stVerticalBlock"] {
+.st-key-retirement-connection-platform [data-testid="stHorizontalBlock"]:has(.st-key-retirement-top-previous-clickable):has(.st-key-retirement-top-next-clickable) > [data-testid="stColumn"]:nth-child(2) {
     display:flex !important;
     align-items:center !important;
     justify-content:center !important;
@@ -10191,33 +10246,29 @@ st.markdown("""
     display:flex !important;
     align-items:center !important;
     justify-content:center !important;
-    align-self:stretch !important;
     height:100% !important;
-    min-height:100% !important;
+    min-height:78px !important;
     margin:0 !important;
     padding:0 !important;
 }
-.st-key-retirement-connection-platform .retirement-top-arrow svg {
-    display:block !important;
-    margin:auto !important;
-}
-/* 하단 추천 보고서: 실제 Streamlit 위젯 키 기준으로 글자색·크기·굵기를 강제 */
-.st-key-retirement-connection-platform .st-key-retirement-connection-choice-0 [data-testid="stButton"] button,
-.st-key-retirement-connection-platform .st-key-retirement-connection-choice-1 [data-testid="stButton"] button,
-.st-key-retirement-connection-platform .st-key-retirement-connection-choice-2 [data-testid="stButton"] button,
-.st-key-retirement-connection-platform .st-key-retirement-connection-choice-0 [data-testid="stButton"] button *,
-.st-key-retirement-connection-platform .st-key-retirement-connection-choice-1 [data-testid="stButton"] button *,
-.st-key-retirement-connection-platform .st-key-retirement-connection-choice-2 [data-testid="stButton"] button *,
-.st-key-retirement-connection-platform .st-key-retirement-connection-choice-0 [data-testid="stButton"] p,
-.st-key-retirement-connection-platform .st-key-retirement-connection-choice-1 [data-testid="stButton"] p,
-.st-key-retirement-connection-platform .st-key-retirement-connection-choice-2 [data-testid="stButton"] p {
+/* 하단 우측: 추천 목록 컨테이너 안의 실제 버튼 텍스트에 직접 적용 */
+.st-key-retirement-connection-platform .st-key-retirement-connection-recommend-list [data-testid="stButton"] button,
+.st-key-retirement-connection-platform .st-key-retirement-connection-recommend-list [data-testid="stButton"] button *,
+.st-key-retirement-connection-platform .st-key-retirement-connection-recommend-list [data-testid="stButton"] p,
+.st-key-retirement-connection-platform .st-key-retirement-connection-recommend-list [data-testid^="stMarkdownContainer"] p {
     color:#222222 !important;
     -webkit-text-fill-color:#222222 !important;
+    font-family:inherit !important;
     font-size:12px !important;
     font-weight:500 !important;
-    font-family:inherit !important;
     line-height:1.4 !important;
     text-decoration:none !important;
+    border-bottom:0 !important;
+    background-image:none !important;
+}
+.st-key-retirement-connection-platform .st-key-retirement-connection-recommend-list [data-testid="stButton"] button {
+    justify-content:flex-start !important;
+    text-align:left !important;
 }
 </style>
 """, unsafe_allow_html=True)
