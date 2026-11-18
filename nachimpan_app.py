@@ -420,23 +420,12 @@ div.st-key-source_retirement_expense_guide [data-testid="stButton"] button p {
 </style>
 """, unsafe_allow_html=True)
 
-# 연간 잉여자금 도움말 나침반: 제목 옆에 밀착하고 팝오버 버튼 외형·화살표 제거
+# 연간 잉여자금 도움말: 제목과 나침반을 하나의 팝오버 버튼으로 통합
 st.markdown("""
 <style>
-.st-key-annual-surplus-title-row {
-    display: flex !important;
-    align-items: center !important;
-    gap: 0.12rem !important;
-}
-.st-key-annual-surplus-title-row [data-testid="stMarkdownContainer"] p {
-    margin: 0 !important;
-    padding: 0 !important;
-    white-space: nowrap !important;
-    line-height: 1.2 !important;
-}
-.st-key-annual-surplus-title-row [data-testid="stPopover"],
-.st-key-annual-surplus-title-row [data-testid="stTooltipHoverTarget"],
-.st-key-annual-surplus-title-row [data-testid="stPopoverButton"] {
+.st-key-annual-surplus-source-guide,
+.st-key-annual-surplus-source-guide [data-testid="stPopover"],
+.st-key-annual-surplus-source-guide [data-testid="stPopoverButton"] {
     width: auto !important;
     min-width: 0 !important;
     max-width: max-content !important;
@@ -447,14 +436,14 @@ st.markdown("""
     background-color: transparent !important;
     box-shadow: none !important;
 }
-.st-key-annual-surplus-title-row [data-testid="stPopoverButton"],
-.st-key-annual-surplus-title-row [data-testid="stPopoverButton"]:hover,
-.st-key-annual-surplus-title-row [data-testid="stPopoverButton"]:focus,
-.st-key-annual-surplus-title-row [data-testid="stPopoverButton"]:focus-visible,
-.st-key-annual-surplus-title-row [data-testid="stPopoverButton"]:active {
+.st-key-annual-surplus-source-guide [data-testid="stPopoverButton"],
+.st-key-annual-surplus-source-guide [data-testid="stPopoverButton"]:hover,
+.st-key-annual-surplus-source-guide [data-testid="stPopoverButton"]:focus,
+.st-key-annual-surplus-source-guide [data-testid="stPopoverButton"]:focus-visible,
+.st-key-annual-surplus-source-guide [data-testid="stPopoverButton"]:active {
     display: inline-flex !important;
     align-items: center !important;
-    justify-content: center !important;
+    justify-content: flex-start !important;
     min-height: 0 !important;
     height: auto !important;
     padding: 0 !important;
@@ -465,22 +454,17 @@ st.markdown("""
     background-image: none !important;
     box-shadow: none !important;
     border-radius: 0 !important;
-    transform: translateY(3px) !important;
-    color: #38BDF8 !important;
-    -webkit-text-fill-color: #38BDF8 !important;
-    font-size: 1.8rem !important;
-    line-height: 1 !important;
+    transform: none !important;
 }
-.st-key-annual-surplus-title-row [data-testid="stPopoverButton"] svg {
+.st-key-annual-surplus-source-guide [data-testid="stPopoverButton"] svg {
     display: none !important;
 }
-.st-key-annual-surplus-title-row [data-testid="stPopoverButton"] p {
+.st-key-annual-surplus-source-guide [data-testid="stPopoverButton"] p {
     margin: 0 !important;
     padding: 0 !important;
-    color: #38BDF8 !important;
-    -webkit-text-fill-color: #38BDF8 !important;
-    font-size: 1.8rem !important;
-    line-height: 1 !important;
+    white-space: nowrap !important;
+    line-height: 1.2 !important;
+    font-size: inherit !important;
 }
 </style>
 """, unsafe_allow_html=True)
@@ -4968,15 +4952,13 @@ if selected_page == "우리집 가계부":
         cols[1].metric("월 지출", money(s["expenses"]))
         bonus_help = f"연간 상여금 {money(s['annual_bonus'])} 및 연간 비정기 지출 {money(s['annual_other_expense'])} 반영"
         with cols[2]:
-            with st.container(
-                key="annual-surplus-title-row",
-                horizontal=True,
-                vertical_alignment="center",
-                gap="small",
+            with st.popover(
+                "연간 잉여자금 🧭",
+                key="annual-surplus-source-guide",
+                help="연간 잉여자금 계산에 반영된 항목 보기",
+                type="tertiary",
             ):
-                st.markdown("연간 잉여자금")
-                with st.popover("🧭", help="연간 잉여자금 계산에 반영된 항목 보기"):
-                    st.write(bonus_help)
+                st.write(bonus_help)
             st.metric("", money(s["annual_net_surplus"]), delta=f"월평균 {money(s['monthly_effective_surplus'])}")
         cols[3].metric("현재 파악된 금융자산", fmt_eok(s["net_worth"]))
 
