@@ -2652,11 +2652,11 @@ def _show_retirement_connection_dialog():
                 align-items:stretch; gap:8px; margin:2px 0 12px;
             }}
             .retirement-connection-stop {{
-                min-width:0; min-height:116px; height:100%; box-sizing:border-box;
+                min-width:0; min-height:78px; height:100%; box-sizing:border-box;
                 display:flex; flex-direction:column; align-items:center;
-                justify-content:center; text-align:center; gap:7px;
+                justify-content:center; text-align:center; gap:4px;
                 border:2px solid transparent; border-radius:12px;
-                padding:10px 7px; line-height:1.3;
+                padding:6px 6px; line-height:1.25;
             }}
             .retirement-connection-stop.previous {{
                 background:{_connection_panel_color}; border-color:{_connection_panel_color}; color:{_connection_panel_text_color};
@@ -2793,7 +2793,7 @@ def _show_retirement_connection_dialog():
             .retirement-number-circle {{
                 display:inline-flex; flex:0 0 22px; width:22px; height:22px;
                 align-items:center; justify-content:center; border-radius:50%;
-                background:{_previous_color}; box-sizing:border-box; color:#fff; font-size:11px; font-weight:850; border:0 !important; box-shadow:none !important;
+                background:{_previous_color}; box-sizing:border-box; color:#fff !important; -webkit-text-fill-color:#fff !important; font-size:11px; font-weight:850; border:0 !important; box-shadow:none !important;
             }}
             .retirement-connection-stop .retirement-number-circle {{ border:0 !important; box-shadow:none !important; box-sizing:border-box; }}
             .retirement-history-title {{ min-width:0; overflow-wrap:anywhere; font-size:12px; font-weight:500; line-height:1.4; }}
@@ -2806,7 +2806,7 @@ def _show_retirement_connection_dialog():
             .st-key-retirement-connection-platform .st-key-retirement-connection-choice-1,
             .st-key-retirement-connection-platform .st-key-retirement-connection-choice-2 {{
                 padding:6px 1px !important;
-                border-bottom:1px solid rgba(255,255,255,.22) !important;
+                border-bottom:0 !important;
             }}
             .st-key-retirement-connection-platform .st-key-retirement-connection-choice-0 [data-testid="stHorizontalBlock"],
             .st-key-retirement-connection-platform .st-key-retirement-connection-choice-1 [data-testid="stHorizontalBlock"],
@@ -2822,7 +2822,7 @@ def _show_retirement_connection_dialog():
                 text-align:left !important; padding:0 1px !important;
                 background:transparent !important; background-color:transparent !important;
                 border:0 !important; box-shadow:none !important;
-                color:#FFFFFF !important; -webkit-text-fill-color:#FFFFFF !important;
+                color:#222222 !important; -webkit-text-fill-color:#222222 !important;
                 font-size:12px !important; font-weight:500 !important; line-height:1.4 !important;
                 white-space:normal !important;
             }}
@@ -2863,14 +2863,14 @@ def _show_retirement_connection_dialog():
                 .retirement-connection-list {{ padding:8px 6px; }}
                 .retirement-connection-list h4 {{ font-size:12px; }}
             }}
-                         .retirement-top-arrow {{
-                 display:flex; height:100%; min-height:116px; align-items:center;
+                          .retirement-top-arrow {{
+                 display:flex; height:100%; min-height:78px; align-items:center;
                  justify-content:center; color:#222; font-size:38px; font-weight:900;
              }}
              .st-key-retirement-top-next-clickable {{
-                 min-width:0; min-height:116px; height:100%; box-sizing:border-box;
+                 min-width:0; min-height:78px; height:100%; box-sizing:border-box;
                  display:flex; flex-direction:column; align-items:center; justify-content:center;
-                 gap:7px; padding:10px 7px; border:2px solid {_connection_panel_color};
+                 gap:4px; padding:6px 6px; border:2px solid {_connection_panel_color};
                  border-radius:12px; background:{_connection_panel_color}; color:#fff;
              }}
              .st-key-retirement-top-next-clickable .retirement-top-next-number .retirement-number-circle {{
@@ -2886,7 +2886,12 @@ def _show_retirement_connection_dialog():
                  border-radius:0 !important; box-shadow:none !important; text-decoration:none !important;
                  background-image:none !important; color:#fff !important; -webkit-text-fill-color:#fff !important;
                  font-size:13px !important; font-weight:800 !important; line-height:1.3 !important;
+                 text-align:left !important; justify-content:flex-start !important;
                  white-space:normal !important;
+             }}
+              .st-key-retirement-top-next-clickable [data-testid="stButton"] button > div {{
+                 display:flex !important; width:100% !important; justify-content:flex-start !important;
+                 align-items:center !important; text-align:left !important;
              }}
              .st-key-retirement-top-next-clickable [data-testid="stButton"] button *,
              .st-key-retirement-top-next-clickable [data-testid="stButton"] button p {{
@@ -3008,8 +3013,8 @@ def _show_retirement_connection_dialog():
             st.markdown(
                 "<div class='retirement-top-arrow' aria-hidden='true'>"
                 "<svg viewBox='0 0 100 24' role='presentation'>"
-                "<path d='M26 12 H74 M64 5 L74 12 L64 19' fill='none' "
-                "stroke='#222222' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'/>"
+                "<path d='M8 12 H92 M78 3 L92 12 L78 21' fill='none' "
+                "stroke='#222222' stroke-width='4.5' stroke-linecap='round' stroke-linejoin='round'/>"
                 "</svg></div>",
                 unsafe_allow_html=True,
             )
@@ -9861,7 +9866,7 @@ st.markdown("""
 .st-key-retirement-connection-bottom .st-key-retirement-connection-choice-1,
 .st-key-retirement-connection-bottom .st-key-retirement-connection-choice-2 {
     padding:6px 1px !important;
-    border-bottom:1px solid rgba(255,255,255,.22) !important;
+    border-bottom:0 !important;
 }
 /* 좌측 번호 원과 동일한 22px 원형 번호 및 행 간격 */
 .st-key-retirement-connection-bottom .st-key-retirement-connection-choice-0 [data-testid="stHorizontalBlock"],
@@ -9914,8 +9919,8 @@ st.markdown("""
     border-bottom:0 !important;
     border-radius:0 !important;
     box-shadow:none !important;
-    color:#fff !important;
-    -webkit-text-fill-color:#fff !important;
+    color:#222222 !important;
+    -webkit-text-fill-color:#222222 !important;
     font-size:12px !important;
     font-weight:500 !important;
     line-height:1.4 !important;
@@ -9926,8 +9931,8 @@ st.markdown("""
 .st-key-retirement-connection-bottom .st-key-retirement-connection-choice-0 [data-testid="stButton"] button *,
 .st-key-retirement-connection-bottom .st-key-retirement-connection-choice-1 [data-testid="stButton"] button *,
 .st-key-retirement-connection-bottom .st-key-retirement-connection-choice-2 [data-testid="stButton"] button * {
-    color:#fff !important;
-    -webkit-text-fill-color:#fff !important;
+    color:#222222 !important;
+    -webkit-text-fill-color:#222222 !important;
     font-size:12px !important;
     line-height:1.4 !important;
     text-align:left !important;
