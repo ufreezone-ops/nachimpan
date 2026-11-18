@@ -5747,74 +5747,70 @@ elif selected_page == "삶과 생계수단":
 
             st.markdown("""
 <style>
-div.st-key-retirement-milestones-title-row [data-testid="stHorizontalBlock"] {
-    align-items: center !important;
-    gap: 0.12rem !important;
-}
-div.st-key-retirement-milestones-title-row div.st-key-source_retirement_milestones,
-div.st-key-retirement-milestones-title-row div.st-key-source_retirement_milestones [data-testid="stElementContainer"],
-div.st-key-retirement-milestones-title-row div.st-key-source_retirement_milestones [data-testid="stButton"],
-div.st-key-retirement-milestones-title-row div.st-key-source_retirement_milestones .stButton {
+/* 은퇴 분기점 제목과 나침반은 하나의 버튼 라벨로 함께 정렬 */
+div.st-key-retirement-milestones-title-row,
+div.st-key-retirement-milestones-title-row [data-testid="stElementContainer"],
+div.st-key-retirement-milestones-title-row [data-testid="stButton"] {
     width: auto !important;
     min-width: 0 !important;
     max-width: max-content !important;
-    min-height: 0 !important;
-    height: auto !important;
-    flex: 0 0 auto !important;
-    margin: 0 0 0 0.08rem !important;
-    padding: 0 !important;
-    border: 0 !important;
-    outline: 0 !important;
-    border-radius: 0 !important;
-    background: transparent !important;
-    background-color: transparent !important;
-    background-image: none !important;
-    box-shadow: none !important;
-}
-div.st-key-retirement-milestones-title-row div.st-key-source_retirement_milestones [data-testid="stButton"] button,
-div.st-key-retirement-milestones-title-row div.st-key-source_retirement_milestones [data-testid="stButton"] button:hover,
-div.st-key-retirement-milestones-title-row div.st-key-source_retirement_milestones [data-testid="stButton"] button:focus,
-div.st-key-retirement-milestones-title-row div.st-key-source_retirement_milestones [data-testid="stButton"] button:focus-visible,
-div.st-key-retirement-milestones-title-row div.st-key-source_retirement_milestones [data-testid="stButton"] button:active {
-    width: auto !important;
-    min-width: 0 !important;
-    max-width: max-content !important;
-    min-height: 0 !important;
-    height: auto !important;
     margin: 0 !important;
     padding: 0 !important;
-    transform: translateY(9px) !important;
-    border: 0 !important;
-    outline: 0 !important;
-    border-radius: 0 !important;
-    background: transparent !important;
-    background-color: transparent !important;
-    background-image: none !important;
-    box-shadow: none !important;
-    color: #38BDF8 !important;
-    -webkit-text-fill-color: #38BDF8 !important;
-    font-size: 1.55rem !important;
-    font-weight: 700 !important;
-    line-height: 1 !important;
+}
+div.st-key-retirement-milestones-title-row [data-testid="stButton"] button,
+div.st-key-retirement-milestones-title-row [data-testid="stButton"] button:hover,
+div.st-key-retirement-milestones-title-row [data-testid="stButton"] button:focus,
+div.st-key-retirement-milestones-title-row [data-testid="stButton"] button:focus-visible,
+div.st-key-retirement-milestones-title-row [data-testid="stButton"] button:active {
     display: inline-flex !important;
     align-items: center !important;
-    justify-content: center !important;
-}
-div.st-key-retirement-milestones-title-row div.st-key-source_retirement_milestones [data-testid="stButton"] button p {
+    justify-content: flex-start !important;
+    width: auto !important;
+    min-width: 0 !important;
+    max-width: max-content !important;
+    min-height: 0 !important;
+    height: auto !important;
     margin: 0 !important;
     padding: 0 !important;
-    color: #38BDF8 !important;
-    -webkit-text-fill-color: #38BDF8 !important;
-    font-size: 1.55rem !important;
-    line-height: 1 !important;
+    transform: none !important;
+    border: 0 !important;
+    outline: 0 !important;
+    border-radius: 0 !important;
+    background: transparent !important;
+    background-color: transparent !important;
+    background-image: none !important;
+    box-shadow: none !important;
+    color: var(--text-color) !important;
+    -webkit-text-fill-color: var(--text-color) !important;
+    font-size: 1rem !important;
+    font-weight: 600 !important;
+    line-height: 1.2 !important;
+    text-decoration: none !important;
+}
+div.st-key-retirement-milestones-title-row [data-testid="stButton"] button:hover,
+div.st-key-retirement-milestones-title-row [data-testid="stButton"] button:focus,
+div.st-key-retirement-milestones-title-row [data-testid="stButton"] button:focus-visible,
+div.st-key-retirement-milestones-title-row [data-testid="stButton"] button:active,
+div.st-key-retirement-milestones-title-row [data-testid="stButton"] button p,
+div.st-key-retirement-milestones-title-row [data-testid="stButton"] button:hover p {
+    text-decoration: none !important;
+}
+div.st-key-retirement-milestones-title-row [data-testid="stButton"] button p {
+    margin: 0 !important;
+    padding: 0 !important;
+    line-height: 1.2 !important;
 }
 </style>
 """, unsafe_allow_html=True)
             st.markdown('<div id="retirement-milestones-origin" style="scroll-margin-top: 150px;"></div>', unsafe_allow_html=True)
             with st.container(border=True, key="retirement-milestones-panel"):
-                with st.container(horizontal=True, vertical_alignment="center", gap=None, key="retirement-milestones-title-row"):
-                    st.markdown(f"**{_master_report_title('6051100-00')}**")
-                    if st.button("🧭", key="source_retirement_milestones", help="대한민국 3대 은퇴 분기점 보고서 보기", type="tertiary"):
+                with st.container(key="retirement-milestones-title-row"):
+                    if st.button(
+                        f"**{_master_report_title('6051100-00')}**　🧭",
+                        key="source_retirement_milestones",
+                        help="대한민국 3대 은퇴 분기점 보고서 보기",
+                        type="tertiary",
+                    ):
                         st.session_state["_retirement_explorer_open"] = True
                         st.session_state["_retirement_entry_open"] = False
                         st.session_state["_retirement_connection_open"] = False
