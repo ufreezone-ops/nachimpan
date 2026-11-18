@@ -10229,3 +10229,81 @@ st.markdown("""
 }
 </style>
 """, unsafe_allow_html=True)
+
+
+# 연결창 미세 조정: 상단 카드 높이 고정 및 하단 추천 글자 세부 통일
+st.markdown("""
+<style>
+/* 상단 좌우 카드: 제목 줄 수와 관계없이 동일한 외곽 높이 */
+.st-key-retirement-top-previous-clickable,
+.st-key-retirement-top-next-clickable {
+    height:92px !important;
+    min-height:92px !important;
+    max-height:92px !important;
+    flex:0 0 92px !important;
+    box-sizing:border-box !important;
+}
+.st-key-retirement-top-previous-clickable [data-testid="stButton"] button,
+.st-key-retirement-top-next-clickable [data-testid="stButton"] button {
+    height:auto !important;
+    min-height:0 !important;
+    padding:0 2px !important;
+    margin:0 !important;
+    transform:none !important;
+    transition:background-color .12s ease !important;
+}
+.st-key-retirement-top-previous-clickable [data-testid="stButton"] button > div,
+.st-key-retirement-top-next-clickable [data-testid="stButton"] button > div,
+.st-key-retirement-top-previous-clickable [data-testid="stButton"] button [data-testid="stMarkdownContainer"],
+.st-key-retirement-top-next-clickable [data-testid="stButton"] button [data-testid="stMarkdownContainer"] {
+    min-width:0 !important;
+    width:100% !important;
+    margin:0 !important;
+    padding:0 !important;
+    justify-content:flex-start !important;
+    text-align:left !important;
+}
+.st-key-retirement-top-previous-clickable [data-testid="stButton"] button:hover,
+.st-key-retirement-top-next-clickable [data-testid="stButton"] button:hover,
+.st-key-retirement-top-previous-clickable [data-testid="stButton"] button:focus,
+.st-key-retirement-top-next-clickable [data-testid="stButton"] button:focus {
+    transform:none !important;
+    border:0 !important;
+    outline:0 !important;
+    box-shadow:none !important;
+}
+
+/* 하단 오른쪽 제목 헤더도 왼쪽과 같은 12px */
+.st-key-retirement-connection-recommend-list h4 {
+    font-size:12px !important;
+    line-height:1.4 !important;
+    font-weight:700 !important;
+    text-align:left !important;
+    margin:0 0 9px !important;
+}
+
+/* 추천 보고서 번호 원은 제목 색상 규칙과 분리해 숫자를 흰색으로 고정 */
+.st-key-retirement-connection-recommend-list .retirement-number-circle {
+    color:#FFFFFF !important;
+    -webkit-text-fill-color:#FFFFFF !important;
+}
+
+/* 하단 추천 제목: 두 줄 이상이어도 항상 왼쪽 정렬 */
+.st-key-retirement-connection-recommend-list [data-testid="stButton"] button,
+.st-key-retirement-connection-recommend-list [data-testid="stButton"] button > div,
+.st-key-retirement-connection-recommend-list [data-testid="stButton"] button span,
+.st-key-retirement-connection-recommend-list [data-testid="stButton"] button p {
+    justify-content:flex-start !important;
+    text-align:left !important;
+    white-space:normal !important;
+}
+.st-key-retirement-connection-recommend-list [data-testid="stButton"] button > div {
+    width:100% !important;
+    min-width:0 !important;
+}
+.st-key-retirement-connection-recommend-list [data-testid="stButton"] button p {
+    width:100% !important;
+    margin:0 !important;
+}
+</style>
+""", unsafe_allow_html=True)
