@@ -2175,6 +2175,13 @@ if st.session_state.pop("_scroll_to_top_once", False):
         height=0,
     )
 
+# 고급모드 전환 등에서 첫 번째 탭을 보여줘야 할 때 메뉴 슬라이드를 맨 왼쪽으로 초기화
+if st.session_state.pop("_nav_scroll_to_start_once", False):
+    st.markdown(
+        "<div id='nav-scroll-to-start-once' style='display:none;'></div>",
+        unsafe_allow_html=True,
+    )
+
 # 메뉴의 실제 스크롤 위치를 읽고, 고정 shell에 좌우 화살표 상태 반영
 st.components.v1.html(
     """
@@ -2254,6 +2261,19 @@ st.components.v1.html(
                 nav.dataset.navScrollStateBound = "true";
             }
             updateNavState();
+
+            // 일회성 요청이 있으면 메뉴 슬라이드를 첫 번째 탭 위치로 초기화
+            const forceStartMarker = doc.getElementById("nav-scroll-to-start-once");
+            if (forceStartMarker) {
+                const target = getScrollTarget();
+                if (target) {
+                    target.scrollLeft = 0;
+                    if (typeof target.scrollTo === "function") {
+                        target.scrollTo({ left: 0, behavior: "instant" });
+                    }
+                }
+                forceStartMarker.remove();
+            }
 
             // 현재 선택된 탭이 가로 스크롤 영역 밖에 있으면 자연스럽게 화면 안으로 이동
             const revealActiveTab = () => {
@@ -8004,14 +8024,15 @@ elif selected_page == "AI 시선":
 <div style="font-size: 19px; font-weight: 850; color: #FDE68A; margin-bottom: 8px;">이게 다 일까요?</div>
 <div style="font-size: 14.5px; color: #E2E8F0; line-height: 1.7; word-break: keep-all; max-width: 650px; margin: 0 auto 18px auto;">
 만약 우리 집의 <b>진짜 순자산 궤적</b>과 <b>자녀 학자금·은퇴 타임라인</b>,<br>
-그리고 숨겨진 <b>파이프라인의 가능성</b>까지 시뮬레이션해보고 싶다면..., 아래 <b>'고급버튼'</b>을 눌러보세요.
+그리고 숨겨진 <b>파이프라인의 가능성</b>까지 시뮬레이션해보고 싶다면..., 아래 <b>'고급모드'</b> 버튼을 눌러보세요.
 </div>
 </div>
 """, unsafe_allow_html=True)
 
-        if st.button("고급버튼", type="primary", use_container_width=True, key="btn_unlock_advanced"):
+        if st.button("고급모드", type="primary", use_container_width=True, key="btn_unlock_advanced"):
             st.session_state["advanced_mode"] = True
-            st.session_state["_pending_nav"] = "우리집 가계부"
+            st.session_state["_nav_scroll_to_start_once"] = True
+            _navigate_to_page_top("우리집 가계부")
             st.rerun()
 
     else:
