@@ -10376,11 +10376,8 @@ st.markdown("""
 .st-key-retirement-connection-platform .st-key-retirement-connection-recommend-list .retirement-number-circle {
     color:#FFFFFF !important; -webkit-text-fill-color:#FFFFFF !important;
 }
-</style>
-""", unsafe_allow_html=True)
-
-
-/* 읽은 보고서 헤더 굵기를 우측 추천 헤더와 시각적으로 맞춤 */
 .st-key-retirement-connection-read-list h4 {
     font-weight:500 !important;
 }
+</style>
+""", unsafe_allow_html=True)
