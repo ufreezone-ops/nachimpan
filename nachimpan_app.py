@@ -10506,55 +10506,57 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 
-# 상단 이전/다음 보고서: 캡션 제거 후 버튼만 동일한 세로 중심에 정렬
+# 상단 이전/다음 보고서: 바깥 글상자 높이를 기준으로 내부 버튼을 수직 중앙정렬
 st.markdown("""
 <style>
+/* 좌우 바깥 글상자: 같은 높이와 동일한 내부 기준선 */
 .st-key-retirement-top-previous-clickable,
 .st-key-retirement-top-next-clickable {
     display:flex !important;
     flex-direction:column !important;
-    justify-content:center !important;
     align-items:stretch !important;
+    justify-content:center !important;
     height:92px !important;
     min-height:92px !important;
     max-height:92px !important;
     box-sizing:border-box !important;
     padding:6px !important;
 }
-.st-key-retirement-top-previous-clickable > [data-testid="stVerticalBlock"],
-.st-key-retirement-top-next-clickable > [data-testid="stVerticalBlock"] {
+
+/* DOM상 바깥 글상자와 버튼 영역 사이에 존재하는 Streamlit 레이아웃 래퍼 */
+.st-key-retirement-top-previous-clickable > [data-testid="stLayoutWrapper"],
+.st-key-retirement-top-next-clickable > [data-testid="stLayoutWrapper"] {
     display:flex !important;
-    flex-direction:column !important;
-    justify-content:center !important;
+    flex:1 1 auto !important;
     align-items:stretch !important;
+    justify-content:center !important;
     width:100% !important;
     height:100% !important;
     min-height:0 !important;
-    gap:0 !important;
 }
-.st-key-retirement-top-previous-clickable > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"]:has(.st-key-retirement-top-previous-button),
-.st-key-retirement-top-next-clickable > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"]:has(.st-key-retirement-top-next-button) {
-    flex:1 1 0% !important;
+
+/* 실제 버튼을 담는 내부 글상자: 바깥 글상자 높이를 전부 차지하고 버튼만 중앙에 둠 */
+.st-key-retirement-top-previous-clickable > [data-testid="stLayoutWrapper"] > .st-key-retirement-top-previous-button,
+.st-key-retirement-top-next-clickable > [data-testid="stLayoutWrapper"] > .st-key-retirement-top-next-button {
     display:flex !important;
-    align-items:center !important;
+    flex:1 1 auto !important;
+    flex-direction:column !important;
+    align-items:stretch !important;
     justify-content:center !important;
     width:100% !important;
+    height:100% !important;
     min-height:0 !important;
     margin:0 !important;
     padding:0 !important;
 }
-.st-key-retirement-top-previous-button,
-.st-key-retirement-top-next-button,
-.st-key-retirement-top-previous-button > [data-testid="stVerticalBlock"],
-.st-key-retirement-top-next-button > [data-testid="stVerticalBlock"],
+
+/* 버튼 요소 자체의 높이는 제목 줄 수에 맡기고, 좌우 폭만 채움 */
+.st-key-retirement-top-previous-button [data-testid="stElementContainer"],
+.st-key-retirement-top-next-button [data-testid="stElementContainer"],
 .st-key-retirement-top-previous-button [data-testid="stButton"],
 .st-key-retirement-top-next-button [data-testid="stButton"] {
-    display:flex !important;
-    align-items:center !important;
-    justify-content:center !important;
     width:100% !important;
     min-width:0 !important;
-    min-height:0 !important;
     margin:0 !important;
     padding:0 !important;
 }
