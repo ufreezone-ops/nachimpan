@@ -3558,7 +3558,20 @@ def _show_retirement_connection_dialog():
                         "reason": "같은 보고서와 연결되는 관련 통계 원자료입니다.",
                     })
 
-    _related_rows.sort(key=lambda item: (-item["raw_score"], item["title"]))
+    # 기존 보고서 추천의 최고 점수 항목은 상단 '다음 자료'에 유지하고,
+    # CSV 원자료는 그 바로 다음에 배치해 하단 추천 목록에서도 실제로 보이게 한다.
+    _report_rows = sorted(
+        [item for item in _related_rows if item.get("resource_type") != "기준데이터/원자료" and not item.get("resource_id")],
+        key=lambda item: (-item["raw_score"], item["title"]),
+    )
+    _csv_rows = sorted(
+        [item for item in _related_rows if item.get("resource_id")],
+        key=lambda item: item["title"],
+    )
+    if _report_rows:
+        _related_rows = [_report_rows[0]] + _csv_rows + _report_rows[1:]
+    else:
+        _related_rows = _csv_rows
     _past_records = []
     for _history_key in reversed(_history):
         _history_record = _by_source.get(_history_key) or _by_resource.get(_history_key)
