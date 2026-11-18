@@ -3638,7 +3638,7 @@ def _show_retirement_report_dialog():
     with st.container(key="retirement-report-connection-cta"):
         _button_spacer, _button_col = st.columns([4, 2])
         with _button_col:
-            if st.button("●  연결된 자료 살펴보기", key="retirement_report_open_connection", type="secondary", use_container_width=True):
+            if st.button("연결", key="retirement_report_open_connection", type="secondary", use_container_width=True):
                 st.session_state["_retirement_connection_open"] = True
                 st.rerun()
 
@@ -5745,12 +5745,83 @@ elif selected_page == "삶과 생계수단":
         if st.session_state.get("retire_age_saved_notice", False) or "retirement_age" in st.session_state:
             st.success(f"은퇴 예상 나이({st.session_state.get('retirement_age', retirement_input)}세)가 반영되었습니다.")
 
+            st.markdown("""
+<style>
+div.st-key-retirement-milestones-title-row [data-testid="stHorizontalBlock"] {
+    align-items: center !important;
+    gap: 0.12rem !important;
+}
+div.st-key-retirement-milestones-title-row div.st-key-source_retirement_milestones,
+div.st-key-retirement-milestones-title-row div.st-key-source_retirement_milestones [data-testid="stElementContainer"],
+div.st-key-retirement-milestones-title-row div.st-key-source_retirement_milestones [data-testid="stButton"],
+div.st-key-retirement-milestones-title-row div.st-key-source_retirement_milestones .stButton {
+    width: auto !important;
+    min-width: 0 !important;
+    max-width: max-content !important;
+    min-height: 0 !important;
+    height: auto !important;
+    flex: 0 0 auto !important;
+    margin: 0 0 0 0.08rem !important;
+    padding: 0 !important;
+    border: 0 !important;
+    outline: 0 !important;
+    border-radius: 0 !important;
+    background: transparent !important;
+    background-color: transparent !important;
+    background-image: none !important;
+    box-shadow: none !important;
+}
+div.st-key-retirement-milestones-title-row div.st-key-source_retirement_milestones [data-testid="stButton"] button,
+div.st-key-retirement-milestones-title-row div.st-key-source_retirement_milestones [data-testid="stButton"] button:hover,
+div.st-key-retirement-milestones-title-row div.st-key-source_retirement_milestones [data-testid="stButton"] button:focus,
+div.st-key-retirement-milestones-title-row div.st-key-source_retirement_milestones [data-testid="stButton"] button:focus-visible,
+div.st-key-retirement-milestones-title-row div.st-key-source_retirement_milestones [data-testid="stButton"] button:active {
+    width: auto !important;
+    min-width: 0 !important;
+    max-width: max-content !important;
+    min-height: 0 !important;
+    height: auto !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    transform: translateY(8px) !important;
+    border: 0 !important;
+    outline: 0 !important;
+    border-radius: 0 !important;
+    background: transparent !important;
+    background-color: transparent !important;
+    background-image: none !important;
+    box-shadow: none !important;
+    color: #38BDF8 !important;
+    -webkit-text-fill-color: #38BDF8 !important;
+    font-size: 1.55rem !important;
+    font-weight: 700 !important;
+    line-height: 1 !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+}
+div.st-key-retirement-milestones-title-row div.st-key-source_retirement_milestones [data-testid="stButton"] button p {
+    margin: 0 !important;
+    padding: 0 !important;
+    color: #38BDF8 !important;
+    -webkit-text-fill-color: #38BDF8 !important;
+    font-size: 1.55rem !important;
+    line-height: 1 !important;
+}
+</style>
+""", unsafe_allow_html=True)
             st.markdown('<div id="retirement-milestones-origin" style="scroll-margin-top: 150px;"></div>', unsafe_allow_html=True)
             with st.container(border=True, key="retirement-milestones-panel"):
-                with st.container(horizontal=True, vertical_alignment="center", gap=None):
-                    st.markdown(f"**{_master_report_display('6051100-00')}**")
-                    if st.button("🧭", key="source_retirement_milestones", help="대한민국 3대 은퇴 분기점 통계 리포트 보기", type="tertiary"):
-                        _open_source_reference("6051100-00", "삶과 생계수단", "retirement-milestones-origin")
+                with st.container(horizontal=True, vertical_alignment="center", gap=None, key="retirement-milestones-title-row"):
+                    st.markdown(f"**{_master_report_title('6051100-00')}**")
+                    if st.button("🧭", key="source_retirement_milestones", help="대한민국 3대 은퇴 분기점 보고서 보기", type="tertiary"):
+                        st.session_state["_retirement_explorer_open"] = True
+                        st.session_state["_retirement_entry_open"] = False
+                        st.session_state["_retirement_connection_open"] = False
+                        st.session_state["_retirement_explorer_source_id"] = "6051100-00"
+                        st.session_state.pop("_retirement_explorer_resource_id", None)
+                        st.session_state["_retirement_explorer_history"] = ["6051100-00"]
+                        st.rerun()
                 with st.container(horizontal=True, vertical_alignment="center", gap=None):
                     st.markdown(
                         '**"근로소득의 정점 및 본업 졸업" 관점이라면**  \n'
