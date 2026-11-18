@@ -3087,7 +3087,7 @@ def _show_retirement_connection_dialog():
                                 _number_col, _title_col = st.columns([0.12, 0.88], gap=None)
                                 with _number_col:
                                     st.markdown(
-                                        f"<span class='retirement-number-circle' style='background:{_item_color};color:#fff;"
+                                        f"<span class='retirement-number-circle' style='background:{_item_color};color:#fff !important;-webkit-text-fill-color:#fff !important;"
                                         f"'>{_number}</span>",
                                         unsafe_allow_html=True,
                                     )
