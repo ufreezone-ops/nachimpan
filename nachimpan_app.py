@@ -4138,7 +4138,6 @@ def _show_nta_pdf_dialog():
             st.error(f"국민이전계정 원문을 표시하지 못했습니다: {_error}")
 
     if st.button("닫기", key="nta_pdf_dialog_close", use_container_width=False):
-        st.session_state["_nta_pdf_dialog_open"] = False
         st.rerun()
 
 
@@ -6668,8 +6667,7 @@ elif selected_page == "인생의 사계절":
             _, nta_pdf_col, _ = st.columns([1, 4, 1])
             with nta_pdf_col:
                 if st.button("2024년 국민이전계정 PDF 원문", key="nta_pdf_open", use_container_width=False, type="primary"):
-                    st.session_state["_nta_pdf_dialog_open"] = True
-                    st.rerun()
+                    _show_nta_pdf_dialog()
 
         st.markdown("### 생애 통계 지표")
         st.caption("(2024년 국민이전계정 · 대한민국 1인당 평균 기준)")
@@ -10650,10 +10648,6 @@ if st.session_state.get("_retirement_explorer_open", False):
         _show_retirement_connection_dialog()
     else:
         _show_retirement_report_dialog()
-
-if st.session_state.get("_nta_pdf_dialog_open", False):
-    _show_nta_pdf_dialog()
-
 
 #--------------------------------------------------------
 # 5.01.02 | 부동산 적용 기준 팝업 — 최상위 레이아웃에서 호출
