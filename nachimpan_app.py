@@ -4020,8 +4020,12 @@ def _show_nta_pdf_dialog():
                         const nextZoom = Math.max(1, Math.min(3, pinchStartZoom * ratio));
                         pinchCurrentRatio = nextZoom / Math.max(0.01, zoomFactor);
                         viewer.querySelectorAll('.page').forEach((page) => {
+                          // 모든 페이지는 같은 비율로 확대하되, 위쪽을 기준으로 키우고
+                          // 늘어난 높이만큼 다음 페이지의 시작 위치도 아래로 밀어 겹침을 막는다.
                           page.style.transform = 'scale(' + pinchCurrentRatio + ')';
-                          page.style.transformOrigin = 'center center';
+                          page.style.transformOrigin = 'top center';
+                          const expandedHeight = page.offsetHeight * pinchCurrentRatio;
+                          page.style.marginBottom = Math.max(0, 12 + expandedHeight - page.offsetHeight) + 'px';
                         });
                         zoomLabel.textContent = Math.round(nextZoom * 100) + '%';
                       }
@@ -4051,6 +4055,7 @@ def _show_nta_pdf_dialog():
                       viewer.querySelectorAll('.page').forEach((page) => {
                         page.style.transform = '';
                         page.style.transformOrigin = '';
+                        page.style.marginBottom = '12px';
                       });
                       if (Math.abs(nextZoom - zoomFactor) > 0.015) {
                         zoomFactor = nextZoom;
