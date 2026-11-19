@@ -12459,8 +12459,8 @@ div.st-key-retirement-title-row [data-testid="stPopoverButton"]:active {
     background-color: transparent !important;
     background-image: none !important;
     box-shadow: none !important;
-    color: inherit !important;
-    -webkit-text-fill-color: currentColor !important;
+    color: var(--text-color) !important;
+    -webkit-text-fill-color: var(--text-color) !important;
     font-size: 1.25rem !important;
     font-weight: 650 !important;
     line-height: 1.4 !important;
@@ -12472,6 +12472,8 @@ div.st-key-retirement-title-row [data-testid="stPopoverButton"]:active {
 div.st-key-retirement-title-row [data-testid="stPopoverButton"] p {
     margin: 0 !important;
     padding: 0 !important;
+    color: var(--text-color) !important;
+    -webkit-text-fill-color: var(--text-color) !important;
     font-size: inherit !important;
     font-weight: inherit !important;
     line-height: inherit !important;
