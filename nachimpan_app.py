@@ -4409,7 +4409,7 @@ def _show_retirement_connection_dialog():
             st.markdown(
                 "<div class='retirement-top-arrow' aria-hidden='true'>"
                 "<svg viewBox='0 0 16 32' width='16' height='32' aria-hidden='true' style='display:block;'>"
-                "<path d='M 0 2 L 16 16 L 0 30' fill='none' stroke='#159447' stroke-width='2.0' stroke-linecap='round' stroke-linejoin='round'/>"
+                "<path d='M 0 2 L 8 16 L 0 30' fill='none' stroke='#159447' stroke-width='2.0' stroke-linecap='round' stroke-linejoin='round'/>"
                 "</svg>"
                 "</div>",
                 unsafe_allow_html=True,
