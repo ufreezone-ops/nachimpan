@@ -3723,10 +3723,19 @@ def _show_nta_pdf_dialog():
                 _nta_pdf_mimetype,
                 _nta_pdf_coordinates,
             )
-            st.iframe(
-                f"{_nta_pdf_url}#page=8&view=FitH",
-                height=800,
-                width="stretch",
+            # st.iframe은 내부 iframe에 sandbox 정책을 적용해
+            # Chrome 기본 PDF 뷰어가 로딩되지 않을 수 있다.
+            # 신뢰된 앱 내부 PDF 주소를 일반 HTML iframe으로 직접 표시한다.
+            st.markdown(
+                f"""
+                <iframe
+                    src="{_nta_pdf_url}#page=8&view=FitH"
+                    title="국민이전계정 원문 PDF"
+                    type="application/pdf"
+                    style="width:100%; height:800px; border:0;">
+                </iframe>
+                """,
+                unsafe_allow_html=True,
             )
         except Exception as _error:
             st.error(f"국민이전계정 원문을 표시하지 못했습니다: {_error}")
