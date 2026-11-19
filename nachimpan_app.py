@@ -12354,3 +12354,85 @@ st.markdown("""
 }
 </style>
 """, unsafe_allow_html=True)
+
+
+# 우리 가정 생애주기 재정곡선 제목과 나침반: 실제 DOM key 기준 최종 정렬
+st.markdown("""
+<style>
+/* 제목과 나침반 사이의 Streamlit 기본 여백 및 제목 자동 링크 제거 */
+div.st-key-retirement-title-row [data-testid="stHorizontalBlock"] {
+    align-items: center !important;
+    justify-content: flex-start !important;
+    gap: 0.04rem !important;
+}
+div.st-key-retirement-title-row [data-testid="stElementContainer"]:has(h3) {
+    width: auto !important;
+    min-width: 0 !important;
+    max-width: max-content !important;
+    flex: 0 0 auto !important;
+    margin: 0 !important;
+    padding: 0 !important;
+}
+div.st-key-retirement-title-row [data-testid="stElementContainer"]:has(h3) h3 {
+    margin: 0 !important;
+    padding: 0 !important;
+    white-space: nowrap !important;
+}
+div.st-key-retirement-title-row [data-testid="stHeaderActionElements"] {
+    display: none !important;
+}
+
+/* 실제 나침반은 source_retirement_expense key의 popover 버튼 */
+div.st-key-retirement-title-row div.st-key-source_retirement_expense,
+div.st-key-retirement-title-row div.st-key-source_retirement_expense [data-testid="stElementContainer"] {
+    width: auto !important;
+    min-width: 0 !important;
+    max-width: max-content !important;
+    flex: 0 0 auto !important;
+    margin: 0 0 0 0.02rem !important;
+    padding: 0 !important;
+    align-self: center !important;
+}
+div.st-key-retirement-title-row div.st-key-source_retirement_expense [data-testid="stPopoverButton"],
+div.st-key-retirement-title-row div.st-key-source_retirement_expense [data-testid="stPopoverButton"]:hover,
+div.st-key-retirement-title-row div.st-key-source_retirement_expense [data-testid="stPopoverButton"]:focus,
+div.st-key-retirement-title-row div.st-key-source_retirement_expense [data-testid="stPopoverButton"]:focus-visible,
+div.st-key-retirement-title-row div.st-key-source_retirement_expense [data-testid="stPopoverButton"]:active {
+    width: auto !important;
+    min-width: 0 !important;
+    min-height: 0 !important;
+    max-width: max-content !important;
+    height: auto !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    transform: translateY(4.2px) !important;
+    border: 0 !important;
+    outline: 0 !important;
+    border-radius: 0 !important;
+    background: transparent !important;
+    background-color: transparent !important;
+    background-image: none !important;
+    box-shadow: none !important;
+    color: #38BDF8 !important;
+    -webkit-text-fill-color: #38BDF8 !important;
+    font-size: 1.8rem !important;
+    font-weight: 700 !important;
+    line-height: 1 !important;
+    white-space: nowrap !important;
+    gap: 0 !important;
+}
+div.st-key-retirement-title-row div.st-key-source_retirement_expense [data-testid="stPopoverButton"] p {
+    margin: 0 !important;
+    padding: 0 !important;
+    color: #38BDF8 !important;
+    -webkit-text-fill-color: #38BDF8 !important;
+    font-size: 1.8rem !important;
+    line-height: 1 !important;
+}
+/* popover 버튼 오른쪽에 붙는 아래쪽 펼침 화살표 제거 */
+div.st-key-retirement-title-row div.st-key-source_retirement_expense [data-testid="stPopoverButton"] svg,
+div.st-key-retirement-title-row div.st-key-source_retirement_expense [data-testid="stPopoverButton"] [data-testid="stIconMaterial"] {
+    display: none !important;
+}
+</style>
+""", unsafe_allow_html=True)
