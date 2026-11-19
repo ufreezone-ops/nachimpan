@@ -6239,7 +6239,6 @@ elif selected_page == "인생의 사계절":
         fig_official_nta = build_official_nta_chart()
         st.plotly_chart(fig_official_nta, use_container_width=True, config={"displayModeBar": False, "scrollZoom": False, "doubleClick": False, "showAxisDragHandles": False})
         st.caption("출처: 국가데이터처 「2024년 국민이전계정」(2026. 9. 17. 발표). 28세 흑자 진입, 45세 최대 흑자(연 1,932만 원), 61세 적자 재진입 지표를 기준으로 표시합니다.")
-        st.caption("출처: 국가데이터처 「2024년 국민이전계정」(2026. 9. 17. 발표).")
         _, nta_pdf_col, nta_connection_col, _ = st.columns([2, 1, 1, 2])
         with nta_pdf_col:
             if st.button("📄 PDF 원문", key="nta_pdf_open", use_container_width=True):
