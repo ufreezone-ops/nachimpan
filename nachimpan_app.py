@@ -4383,6 +4383,7 @@ def _show_retirement_connection_dialog():
     _related_rows = list(_candidate_by_key.values())
     _related_rows.sort(
         key=lambda item: (
+            item["_already_read"],
             -item["raw_score"],
             not item["_direct"],
             item["title"],
@@ -4862,7 +4863,7 @@ def _show_retirement_connection_dialog():
                     ".st-key-retirement-connection-platform .st-key-retirement-top-next-button [data-testid='stButton'] button *, "
                     ".st-key-retirement-connection-platform .st-key-retirement-top-next-button [data-testid='stButton'] button [data-testid='stMarkdownContainer'], "
                     ".st-key-retirement-connection-platform .st-key-retirement-top-next-button [data-testid='stButton'] button [data-testid='stMarkdownContainer'] p "
-                    "{ color:#B23A6F !important; -webkit-text-fill-color:#B23A6F !important; }"
+                    "{ color:#8D7180 !important; -webkit-text-fill-color:#8D7180 !important; }"
                     if _next_is_read else ""
                 )
                 + f"</style>"
@@ -12630,8 +12631,8 @@ st.markdown("""
 .st-key-retirement-connection-recommend-list div[class*="st-key-retirement-connection-choice-read-"] button,
 .st-key-retirement-connection-recommend-list div[class*="st-key-retirement-connection-choice-read-"] button *,
 .st-key-retirement-connection-recommend-list div[class*="st-key-retirement-connection-choice-read-"] button p {
-    color:#B23A6F !important;
-    -webkit-text-fill-color:#B23A6F !important;
+    color:#8D7180 !important;
+    -webkit-text-fill-color:#8D7180 !important;
 }
 </style>
 """, unsafe_allow_html=True)
@@ -13339,8 +13340,8 @@ st.markdown("""
 .st-key-retirement-connection-platform .st-key-retirement-connection-recommend-list [class*="st-key-retirement-connection-choice-read-"] [data-testid="stButton"] button,
 .st-key-retirement-connection-platform .st-key-retirement-connection-recommend-list [class*="st-key-retirement-connection-choice-read-"] [data-testid="stButton"] button *,
 .st-key-retirement-connection-platform .st-key-retirement-connection-recommend-list [class*="st-key-retirement-connection-choice-read-"] [data-testid="stButton"] button p {
-    color:#B23A6F !important;
-    -webkit-text-fill-color:#B23A6F !important;
+    color:#8D7180 !important;
+    -webkit-text-fill-color:#8D7180 !important;
     font-weight:700 !important;
     text-align:left !important;
 }
