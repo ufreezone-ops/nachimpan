@@ -12026,9 +12026,9 @@ st.markdown("""
 /* 상단 좌우 버튼: 공통 버튼 규칙보다 높은 우선순위로 좌우 패딩만 조정 */
 .st-key-retirement-connection-platform .st-key-retirement-top-previous-button [data-testid="stButton"] button[kind="secondary"],
 .st-key-retirement-connection-platform .st-key-retirement-top-next-button [data-testid="stButton"] button[kind="secondary"] {
-    padding-left:1px !important;
-    padding-right:1px !important;
-    padding-inline:1px !important;
+    padding-left:6px !important;
+    padding-right:6px !important;
+    padding-inline:6px !important;
 }
 </style>
 """, unsafe_allow_html=True)
