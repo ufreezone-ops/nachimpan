@@ -12782,3 +12782,24 @@ div.st-key-housing-price-title-row div.st-key-housing_price_source_guide [data-t
 }
 </style>
 """, unsafe_allow_html=True)
+
+
+# 연결창 최종 글자 규칙: 보고서 제목은 왼쪽 정렬, 읽은 추천 자료는 청색 표시
+st.markdown("""
+<style>
+.st-key-retirement-connection-platform .st-key-retirement-connection-read-list .retirement-history-title,
+.st-key-retirement-connection-platform .st-key-retirement-connection-recommend-list [data-testid="stButton"] button,
+.st-key-retirement-connection-platform .st-key-retirement-connection-recommend-list [data-testid="stButton"] button *,
+.st-key-retirement-connection-platform .st-key-retirement-connection-recommend-list [data-testid="stButton"] button p {
+    text-align:left !important;
+    justify-content:flex-start !important;
+}
+.st-key-retirement-connection-platform .st-key-retirement-connection-recommend-list [class*="st-key-retirement-connection-choice-read-"] [data-testid="stButton"] button,
+.st-key-retirement-connection-platform .st-key-retirement-connection-recommend-list [class*="st-key-retirement-connection-choice-read-"] [data-testid="stButton"] button *,
+.st-key-retirement-connection-platform .st-key-retirement-connection-recommend-list [class*="st-key-retirement-connection-choice-read-"] [data-testid="stButton"] button p {
+    color:#2563A6 !important;
+    -webkit-text-fill-color:#2563A6 !important;
+    text-align:left !important;
+}
+</style>
+""", unsafe_allow_html=True)
