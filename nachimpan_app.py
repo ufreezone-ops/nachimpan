@@ -3919,12 +3919,20 @@ def _show_retirement_connection_dialog():
     _related_rows = list(_candidate_by_key.values())
     _related_rows.sort(
         key=lambda item: (
-            item["_already_read"],
-            not item["_direct"],
             -item["raw_score"],
+            not item["_direct"],
             item["title"],
         )
     )
+    # 추천 목록: 연관성 상위 3개는 읽음 여부와 무관하게 노출하고,
+    # 나머지 후보 중 최대 2개를 연결창 단위의 고정 난수로 추가한다.
+    _recommend_rows = list(_related_rows[:3])
+    _recommend_pool = list(_related_rows[3:])
+    if _recommend_pool:
+        _random_seed = "|".join([str(_current_key or "")] + [str(_key) for _key in _history])
+        _recommend_rows.extend(
+            random.Random(_random_seed).sample(_recommend_pool, min(2, len(_recommend_pool)))
+        )
     _past_records = []
     for _history_key in reversed(_history):
         _history_record = _by_source.get(_history_key) or _by_resource.get(_history_key)
@@ -4460,14 +4468,18 @@ def _show_retirement_connection_dialog():
             with _right:
                 with st.container(key="retirement-connection-recommend-list", border=True):
                     st.markdown("<h4 style='font-size:12px;font-weight:700;margin:0 0 9px;'>다음 추천 자료 →</h4>", unsafe_allow_html=True)
-                    if _related_rows:
-                        for _index, _item in enumerate(_related_rows[1:3]):
+                    if _recommend_rows:
+                        for _index, _item in enumerate(_recommend_rows):
                             _number = _item.get("display_label", "")
                             _title = _item.get("title", "자료")
                             _item_record = _by_source.get(_item.get("source_id", "")) if _item.get("source_id") else _by_resource.get(_item.get("resource_id", ""))
                             _item_color = _continent_color(_item_record)
                             _is_csv_item = bool(_item_record and _item_record.get("file_format", "").upper() == "CSV")
-                            _choice_key = f"retirement-connection-choice-csv-{_index}" if _is_csv_item else f"retirement-connection-choice-{_index}"
+                            _is_read_item = bool(_item.get("_already_read"))
+                            _choice_key = (
+                                f"retirement-connection-choice-read-{_index}" if _is_read_item
+                                else (f"retirement-connection-choice-csv-{_index}" if _is_csv_item else f"retirement-connection-choice-{_index}")
+                            )
                             with st.container(key=_choice_key):
                                 _number_col, _title_col = st.columns([0.12, 0.88], gap=None)
                                 with _number_col:
@@ -12092,6 +12104,13 @@ st.markdown("""
     padding-top:1px !important;
     padding-left:1px !important;
     padding-right:1px !important;
+}
+/* 이미 읽은 자료가 추천 목록에 다시 나타나면 제목을 청색 계열로 구분 */
+.st-key-retirement-connection-recommend-list div[class*="st-key-retirement-connection-choice-read-"] button,
+.st-key-retirement-connection-recommend-list div[class*="st-key-retirement-connection-choice-read-"] button *,
+.st-key-retirement-connection-recommend-list div[class*="st-key-retirement-connection-choice-read-"] button p {
+    color:#2563A6 !important;
+    -webkit-text-fill-color:#2563A6 !important;
 }
 </style>
 """, unsafe_allow_html=True)
