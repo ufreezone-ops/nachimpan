@@ -6454,9 +6454,8 @@ elif selected_page == "우리집 재정곡선":
 
         st.markdown("<div style='height: 24px;'></div>", unsafe_allow_html=True)
         with st.container(horizontal=True, vertical_alignment="center", gap=None, key="retirement-title-row"):
-            st.markdown("### 우리 가정 생애주기 재정곡선")
             with st.popover(
-                "🧭",
+                "우리 가정 생애주기 재정곡선 🧭",
                 key="source_retirement_expense",
                 help="이 재정곡선을 이해하는 안내와 통계 자료",
                 type="tertiary",
@@ -12432,6 +12431,53 @@ div.st-key-retirement-title-row div.st-key-source_retirement_expense [data-testi
 /* popover 버튼 오른쪽에 붙는 아래쪽 펼침 화살표 제거 */
 div.st-key-retirement-title-row div.st-key-source_retirement_expense [data-testid="stPopoverButton"] svg,
 div.st-key-retirement-title-row div.st-key-source_retirement_expense [data-testid="stPopoverButton"] [data-testid="stIconMaterial"] {
+    display: none !important;
+}
+</style>
+""", unsafe_allow_html=True)
+
+
+# 우리 가정 생애주기 재정곡선: 제목과 나침반을 하나의 popover 버튼으로 통합
+st.markdown("""
+<style>
+div.st-key-retirement-title-row [data-testid="stPopoverButton"],
+div.st-key-retirement-title-row [data-testid="stPopoverButton"]:hover,
+div.st-key-retirement-title-row [data-testid="stPopoverButton"]:focus,
+div.st-key-retirement-title-row [data-testid="stPopoverButton"]:focus-visible,
+div.st-key-retirement-title-row [data-testid="stPopoverButton"]:active {
+    width: auto !important;
+    min-width: 0 !important;
+    min-height: 0 !important;
+    height: auto !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    transform: none !important;
+    border: 0 !important;
+    outline: 0 !important;
+    border-radius: 0 !important;
+    background: transparent !important;
+    background-color: transparent !important;
+    background-image: none !important;
+    box-shadow: none !important;
+    color: inherit !important;
+    -webkit-text-fill-color: currentColor !important;
+    font-size: 1.25rem !important;
+    font-weight: 650 !important;
+    line-height: 1.4 !important;
+    white-space: nowrap !important;
+    gap: 0.18rem !important;
+    display: inline-flex !important;
+    align-items: center !important;
+}
+div.st-key-retirement-title-row [data-testid="stPopoverButton"] p {
+    margin: 0 !important;
+    padding: 0 !important;
+    font-size: inherit !important;
+    font-weight: inherit !important;
+    line-height: inherit !important;
+}
+div.st-key-retirement-title-row [data-testid="stPopoverButton"] svg,
+div.st-key-retirement-title-row [data-testid="stPopoverButton"] [data-testid="stIconMaterial"] {
     display: none !important;
 }
 </style>
