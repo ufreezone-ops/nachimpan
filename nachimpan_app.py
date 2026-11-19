@@ -2234,6 +2234,16 @@ div.st-key-nta-generational-title-row div.st-key-source_nta_generational [data-t
 div.st-key-nta-generational-title-row div.st-key-source_nta_generational [data-testid="stButton"] button span {
     font-size: 28px !important;
     line-height: 1 !important;
+    text-decoration: none !important;
+}
+div.st-key-nta-generational-title-row div.st-key-source_nta_generational [data-testid="stButton"] button,
+div.st-key-nta-generational-title-row div.st-key-source_nta_generational [data-testid="stButton"] button:hover,
+div.st-key-nta-generational-title-row div.st-key-source_nta_generational [data-testid="stButton"] button:focus,
+div.st-key-nta-generational-title-row div.st-key-source_nta_generational [data-testid="stButton"] button:focus-visible,
+div.st-key-nta-generational-title-row div.st-key-source_nta_generational [data-testid="stButton"] button:active,
+div.st-key-nta-generational-title-row div.st-key-source_nta_generational [data-testid="stButton"] button:hover p,
+div.st-key-nta-generational-title-row div.st-key-source_nta_generational [data-testid="stButton"] button:hover span {
+    text-decoration: none !important;
 }
 </style>
 """, unsafe_allow_html=True)
