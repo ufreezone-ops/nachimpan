@@ -12448,9 +12448,9 @@ div.st-key-retirement-connection-close-cta div.stButton > button[data-testid="st
 div.st-key-retirement-connection-close-cta div.stButton > button[data-testid="stBaseButton-secondary"]:focus,
 div.st-key-retirement-connection-close-cta div.stButton > button[data-testid="stBaseButton-secondary"]:focus-visible,
 div.st-key-retirement-connection-close-cta div.stButton > button[data-testid="stBaseButton-secondary"]:active {
-    width: 120px !important;
-    min-width: 120px !important;
-    max-width: 100% !important;
+    width: 65px !important;
+    min-width: 65px !important;
+    max-width: 65px !important;
     min-height: 2.4rem !important;
     padding: 0.35rem !important;
     border: 6px solid #159447 !important;
