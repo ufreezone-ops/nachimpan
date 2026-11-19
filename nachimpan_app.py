@@ -25,6 +25,35 @@ import pandas as pd
 import numpy as np
 import plotly.graph_objects as go
 
+
+#--------------------------------------------------------
+# 1.01.01.02 | 국가데이터처 2024년 생명표 — 연령별 기대여명
+#--------------------------------------------------------
+def _get_remaining_life_expectancy(age, gender):
+    """2024년 생명표의 10세 단위 기대여명을 기준으로 연령별 값을 선형 보간."""
+    age = max(0.0, min(float(age or 0), 100.0))
+    is_female = "여성" in str(gender)
+
+    age_points = [0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100]
+    remaining_years = (
+        [86.6, 76.8, 66.9, 57.1, 47.4, 37.8, 28.4, 19.2, 10.9, 5.1, 2.3]
+        if is_female
+        else [80.8, 71.1, 61.2, 51.5, 41.9, 32.5, 23.7, 15.5, 8.5, 4.0, 1.9]
+    )
+
+    if age >= age_points[-1]:
+        return remaining_years[-1]
+
+    for idx in range(len(age_points) - 1):
+        lower_age, upper_age = age_points[idx], age_points[idx + 1]
+        if lower_age <= age <= upper_age:
+            ratio = (age - lower_age) / (upper_age - lower_age)
+            return remaining_years[idx] + ratio * (
+                remaining_years[idx + 1] - remaining_years[idx]
+            )
+
+    return remaining_years[-1]
+
 #--------------------------------------------------------
 # 1.01.02 | Streamlit 기본 페이지 및 레이아웃 설정
 #--------------------------------------------------------
@@ -5756,7 +5785,6 @@ if selected_page == "우리집 가계부":
         cur_age = int(st.session_state.get("person_age", 35) or 35)
         # 기대수명은 생애주기 탭보다 먼저 사용하는 소득 그래프에서 선행 정의
         user_gender = st.session_state.get("gender", "🙋‍♂️ 남성")
-        life_expectancy = 87 if "여성" in user_gender else 81
         spouse_age_input = int(st.session_state.get("spouse_age", 0) or 0)
 
         current_monthly_income = float(
@@ -5783,6 +5811,9 @@ if selected_page == "우리집 가계부":
         retire_age = int(
             st.session_state.get("retirement_age", 60) or 60
         )
+        life_expectancy = int(round(
+            retire_age + _get_remaining_life_expectancy(retire_age, user_gender)
+        ))
 
         # 확정된 국민연금: 싱글은 전액, 부부는 50:50
         monthly_pension = float(
@@ -6448,13 +6479,15 @@ elif selected_page == "인생의 사계절":
     cur_age = int(st.session_state.person_age)
     user_gender = st.session_state.get("gender", "🙋‍♂️ 남성")
     is_female = ("여성" in user_gender)
-    life_expectancy = 87 if is_female else 81
     retire_val = st.session_state.get("retirement_age")
     retire_age = int(retire_val) if retire_val is not None else 60
     retire_age = max(cur_age, min(retire_age, 90))
     years_left = max(0, retire_age - cur_age)
-    winter_years = max(0, life_expectancy - retire_age)
-    winter_months = winter_years * 12
+    winter_years_exact = _get_remaining_life_expectancy(retire_age, user_gender)
+    winter_years = max(0, int(round(winter_years_exact)))
+    # 생애주기 그래프의 종료 연령은 은퇴 예정 나이 + 해당 나이의 기대여명
+    life_expectancy = int(round(retire_age + winter_years_exact))
+    winter_months = winter_years_exact * 12
 
 #--------------------------------------------------------
 # 6.03.01 | 공통 — 공식 NTA 차트 빌더 함수
@@ -6746,8 +6779,10 @@ elif selected_page == "인생의 사계절":
         st.markdown(f"""
 <div style="background: rgba(30, 41, 59, 0.6); border: 1px solid #334155; border-radius: 12px; padding: 18px 20px; margin: 16px 0 24px 0;">
 <div style="font-size: 15px; color: #F8FAFC; line-height: 1.6; word-break: keep-all;">
-💡 <b>산책로의 질문</b><br>은퇴 후 기대수명까지 약 <b>{winter_years}년</b>이 남아 있습니다. (국가데이터처 {user_gender.split()[1]} 기대수명 {life_expectancy}세 기준)<br>
-<span style="color: #94A3B8;">이 긴 시간 동안 매달 무거운 물통을 지고 눈길을 걸을 것인가, 방 안에서 따뜻하게 흘러나오는 파이프라인을 맞이할 것인가는 <b>운명이 아니라 선택입니다.</span>
+💡 <b>산책로의 질문</b><br>
+내가 은퇴한 후에 살아갈 시간은 얼마나 될까요?<br>
+(약 <b>{winter_years}년</b>이 남아 있습니다. 국가데이터처 2024년 생명표 기준 · {user_gender.split()[1]} {retire_age}세의 기대여명)<br>
+<span style="color: #94A3B8;">긴 인생의 겨울을 어떤 모습으로 살아갈 것인가는 정해진 운명이 아니라, 지금부터 그려갈 나의 삶입니다.</span>
 </div></div>
 """, unsafe_allow_html=True)
 
@@ -6765,13 +6800,15 @@ elif selected_page == "우리집 재정곡선":
     cur_age = int(st.session_state.get("person_age", 35) or 35)
     user_gender = st.session_state.get("gender", "🙋‍♂️ 남성")
     is_female = ("여성" in user_gender)
-    life_expectancy = 87 if is_female else 81
     retire_val = st.session_state.get("retirement_age")
     retire_age = int(retire_val) if retire_val is not None else 60
     retire_age = max(cur_age, min(retire_age, 90))
     years_left = max(0, retire_age - cur_age)
-    winter_years = max(0, life_expectancy - retire_age)
-    winter_months = winter_years * 12
+    winter_years_exact = _get_remaining_life_expectancy(retire_age, user_gender)
+    winter_years = max(0, int(round(winter_years_exact)))
+    # 생애주기 그래프의 종료 연령은 은퇴 예정 나이 + 해당 나이의 기대여명
+    life_expectancy = int(round(retire_age + winter_years_exact))
+    winter_months = winter_years_exact * 12
 
     if not is_adv:
         st.caption("우리집 재정곡선과 가족의 미래를 살펴보려면 고급 모드로 전환해 주세요.")
@@ -8750,11 +8787,11 @@ elif selected_page == "AI 시선":
 # 6.05.03 | 고급 모드 — 재무 및 가족 생애 데이터 프롬프트 구성
 #--------------------------------------------------------
         sib_names = [f"{it['label']}({it.get('age',0)}세)" for it in st.session_state.get("sibling_items", []) if it.get("age", 0) > 0]
-        retire_age = st.session_state.get("retirement_age", 60)
+        retire_age = int(st.session_state.get("retirement_age", 60) or 60)
         user_gender = st.session_state.get("gender", "🙋‍♂️ 남성")
-        is_female = ("여성" in user_gender)
-        life_expectancy = 87 if is_female else 81
-        winter_years = max(0, life_expectancy - int(retire_age))
+        winter_years_exact = _get_remaining_life_expectancy(retire_age, user_gender)
+        winter_years = max(0, int(round(winter_years_exact)))
+        life_expectancy = int(round(retire_age + winter_years_exact))
         child_count_str = st.session_state.get("child_count", "입력 안 함")
 
         q_self = active_quadrant(st.session_state.get("job_form", "직장인"))
@@ -8785,7 +8822,7 @@ elif selected_page == "AI 시선":
             "연간 잉여자금": f"{summary['annual_net_surplus']:,.0f}만 원 (월환산 {summary['monthly_effective_surplus']:,.0f}만 원)",
             "현재 파악된 금융자산": f"{summary['net_worth']/10000:,.2f}억 원 (자산 {summary['assets']:,.0f}만 원 - 부채 {summary['debts']:,.0f}만 원)",
             "은퇴 후 예상 월연금": f"{getv('income_pension', 0):,.0f}만 원", "은퇴 후 월 생활비": f"{getv('retirement_monthly_expenses', 200):,.0f}만 원",
-            "희망 은퇴 나이": f"{retire_age}세 (은퇴 후 겨울 약 {winter_years}년, {user_gender.split()[1]} {life_expectancy}세 수명 기준)",
+            "희망 은퇴 나이": f"{retire_age}세 (은퇴 후 약 {winter_years}년, 국가데이터처 2024년 생명표 기준)",
             "가족 구성": family_desc if family_desc else "기본 정보만 등록됨",
             "가족 계획": {"결혼": st.session_state.get("marriage_plan", "미정"), "출산/자녀": st.session_state.get("child_plan", "미정"), "주거": st.session_state.get("housing_plan", "미정")}
         }
@@ -8873,7 +8910,7 @@ elif selected_page == "AI 시선":
 [은퇴 안정성]
 반드시 '은퇴 안정성 측면에서는'으로 시작하고 이름을 부르지 마세요.
 은퇴 후 월 희망 생활비와 예상 월연금의 차이를 설명하되, 입력된 값의 성격과 산출 근거가 불분명하면 안정성이 확보되었다고 단정하지 마세요. 두 금액의 단순 차액과 실제 은퇴 안정성은 구분하세요.
-은퇴 후 약 {winter_years}년은 국가데이터처 {user_gender.split()[1]} 기대수명({life_expectancy}세)에 기초한 계산상 가정으로 취급하세요. 현재 경력 단계와 순자산을 연결해 설명하되, 실제 현금 보유액이나 유동성 자료가 없다면 유동성 준비 상태를 평가하지 마세요. 결혼, 자녀, 주거 계획 등 확인되지 않은 미래 사건을 전제로 삼지 말고, 정중하고 담백하게 서술하세요."""
+은퇴 후 약 {winter_years}년은 국가데이터처 2024년 생명표의 {user_gender.split()[1]} {retire_age}세 기대여명에 기초한 계산상 가정으로 취급하세요. 현재 경력 단계와 순자산을 연결해 설명하되, 실제 현금 보유액이나 유동성 자료가 없다면 유동성 준비 상태를 평가하지 마세요. 결혼, 자녀, 주거 계획 등 확인되지 않은 미래 사건을 전제로 삼지 말고, 정중하고 담백하게 서술하세요."""
 
 #--------------------------------------------------------
 # 6.05.05 | 고급 모드 — Gemini AI 리포트 생성 버튼
@@ -8954,7 +8991,7 @@ elif selected_page == "AI 시선":
   - 월 현금지출: {money(s['expenses'])}
   - 연간 순저축: {money(s['annual_net_surplus'])} (월평균 {money(s['monthly_effective_surplus'])})
   - 순자산: {fmt_eok(s['net_worth'])}
-  - 희망 은퇴나이: {retire_age}세 (맞이할 겨울: 약 {winter_years}년, {user_gender.split()[1]} {life_expectancy}세 수명 기준)
+  - 희망 은퇴나이: {retire_age}세 (은퇴 후 약 {winter_years}년, 국가데이터처 2024년 생명표 기준)
 
 [소득 개선 & 파이프라인]
 {formatted_income}
