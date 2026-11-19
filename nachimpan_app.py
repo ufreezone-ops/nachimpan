@@ -12491,8 +12491,8 @@ st.markdown("""
 <style>
 div.st-key-retirement-title-row div.st-key-source_retirement_expense [data-testid="stPopoverButton"] div[data-testid="stMarkdownContainer"] p,
 div.st-key-retirement-title-row div.st-key-source_retirement_expense [data-testid="stPopoverButton"] div.stMarkdownContainer p {
-    color: var(--text-color) !important;
-    -webkit-text-fill-color: var(--text-color) !important;
+    color: #F8FAFC !important;
+    -webkit-text-fill-color: #F8FAFC !important;
 }
 </style>
 """, unsafe_allow_html=True)
