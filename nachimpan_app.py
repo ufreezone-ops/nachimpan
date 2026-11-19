@@ -3700,42 +3700,19 @@ def _show_nta_pdf_dialog():
             unsafe_allow_html=True,
         )
         try:
-            # data/원자료의 PDF를 Streamlit 미디어 저장소에 등록한다.
-            # 외부 GitHub URL이나 Base64 data URI를 브라우저에 직접 전달하지 않는다.
-            from streamlit import runtime as st_runtime
-
-            if not st_runtime.exists():
-                raise RuntimeError("Streamlit 실행 환경에서 PDF 뷰어를 초기화할 수 없습니다.")
-
-            from streamlit.runtime import caching
-
-            _nta_pdf_data = OFFICIAL_PDF_PATH.read_bytes()
-            _nta_pdf_mimetype = "application/pdf"
-            _nta_pdf_coordinates = st._main._get_delta_path_str()
-            _nta_pdf_url = st_runtime.get_instance().media_file_mgr.add(
-                _nta_pdf_data,
-                _nta_pdf_mimetype,
-                _nta_pdf_coordinates,
-            )
-            # Streamlit의 st.iframe 로컬 파일 처리와 동일하게 미디어 캐시에도 등록한다.
-            caching.save_media_data(
-                _nta_pdf_data,
-                _nta_pdf_mimetype,
-                _nta_pdf_coordinates,
-            )
-            # st.iframe은 내부 iframe에 sandbox 정책을 적용해
-            # Chrome 기본 PDF 뷰어가 로딩되지 않을 수 있다.
-            # 신뢰된 앱 내부 PDF 주소를 일반 HTML iframe으로 직접 표시한다.
-            st.markdown(
+            # 최초 아이폰에서 PDF 표시가 확인됐던 Base64 data URI 방식을 복원한다.
+            # PDF 원본은 계속 dev 저장소의 data/원자료에서 읽는다.
+            _pdf_base64 = base64.b64encode(OFFICIAL_PDF_PATH.read_bytes()).decode("ascii")
+            st.components.v1.html(
                 f"""
                 <iframe
-                    src="{_nta_pdf_url}#page=8&view=FitH"
-                    title="국민이전계정 원문 PDF"
-                    type="application/pdf"
-                    style="width:100%; height:800px; border:0;">
-                </iframe>
+                    title="2024년 국민이전계정 보도자료"
+                    src="data:application/pdf;base64,{_pdf_base64}#page=8&view=FitH"
+                    style="display:block; width:100%; height:80vh; min-height:560px; border:0; border-radius:8px;"
+                ></iframe>
                 """,
-                unsafe_allow_html=True,
+                height=800,
+                scrolling=False,
             )
         except Exception as _error:
             st.error(f"국민이전계정 원문을 표시하지 못했습니다: {_error}")
