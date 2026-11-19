@@ -8754,7 +8754,7 @@ elif selected_page == "AI 시선":
 #--------------------------------------------------------
         st.markdown("""
 <div style="background: radial-gradient(circle at top, #1e293b 0%, #0b1120 100%); border: 1.5px solid #F59E0B; border-radius: 16px; padding: 24px 22px; text-align: center; box-shadow: 0 4px 18px rgba(245, 158, 11, 0.2); margin: 16px 0;">
-<div style="font-size: 34px; margin-bottom: 6px;">📜</div>
+<div style="font-size: 34px; margin-bottom: 6px;">🧭</div>
 <div style="font-size: 19px; font-weight: 850; color: #FDE68A; margin-bottom: 8px;">이게 다 일까요?</div>
 <div style="font-size: 14.5px; color: #E2E8F0; line-height: 1.8; word-break: keep-all; max-width: 650px; margin: 0 auto 18px auto;">
 인생의 사계절은 혼자 걷는 길이 아닙니다.<br>
