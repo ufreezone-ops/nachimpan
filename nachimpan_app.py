@@ -7306,16 +7306,16 @@ elif selected_page == "우리집 재정곡선":
         raw_c_count = st.session_state.get("child_count", "입력 안 함")
         existing_child_ages = []
         if raw_c_count == "1명":
-            if int(getv("child_age", 0)) > 0: existing_child_ages.append(int(getv("child_age", 0)))
+            if int(getv("child_age", 0)) >= 0: existing_child_ages.append(int(getv("child_age", 0)))
         elif raw_c_count == "2명":
             for k in ["child_age", "child_age2"]:
-                if int(getv(k, 0)) > 0: existing_child_ages.append(int(getv(k, 0)))
+                if int(getv(k, 0)) >= 0: existing_child_ages.append(int(getv(k, 0)))
         elif raw_c_count == "3명":
             for k in ["child_age", "child_age2", "child_age3"]:
-                if int(getv(k, 0)) > 0: existing_child_ages.append(int(getv(k, 0)))
+                if int(getv(k, 0)) >= 0: existing_child_ages.append(int(getv(k, 0)))
         elif raw_c_count == "4명 이상":
             for k in ["child_age", "child_age2", "child_age3", "child_age4"]:
-                if int(getv(k, 0)) > 0: existing_child_ages.append(int(getv(k, 0)))
+                if int(getv(k, 0)) >= 0: existing_child_ages.append(int(getv(k, 0)))
 
         childcare_windows = []
         college_windows = []
@@ -7329,17 +7329,17 @@ elif selected_page == "우리집 재정곡선":
             w_start = cur_age + (30 - ca)
             wedding_windows.append((w_start, w_start + 5))
 
+        # 미래 출산은 기본 시뮬레이션에 포함한다.
+        # 사용자가 자녀 계획 없음을 명시한 경우에만 제외한다.
+        # 이미 자녀가 있는 가정의 "추가 자녀 계획 없음"도 추가 출산을 제외한다.
         future_birth_age = None
-        if (
-            has_future_or_current_spouse
-            and c_plan in ["자녀 계획 있음", "출산 예정", "추가 자녀 계획 있음"]
-        ):
+        if c_plan not in ["계획 없음", "추가 자녀 계획 없음"]:
             conf_b = int(st.session_state.get("target_birth_age", 0) or 0)
             if conf_b > cur_age:
                 future_birth_age = conf_b
             else:
                 base_m_age = cur_age if m_plan == "결혼함" else marriage_start
-                future_birth_age = base_m_age + 2
+                future_birth_age = (base_m_age + 2) if base_m_age is not None else (cur_age + 2)
 
         if future_birth_age is not None and future_birth_age <= 85:
             childcare_windows.append((future_birth_age, future_birth_age + 6))
