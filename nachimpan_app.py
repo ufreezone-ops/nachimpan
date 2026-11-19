@@ -4409,7 +4409,7 @@ def _show_retirement_connection_dialog():
             st.markdown(
                 "<div class='retirement-top-arrow' aria-hidden='true'>"
                 "<svg viewBox='0 0 100 48' preserveAspectRatio='none' role='presentation'>"
-                "<path d='M8 4 H70 V0 L96 24 L70 48 V44 H8 Z' "
+                "<path d='M8 14 H70 V0 L96 24 L70 48 V34 H8 Z' "
                 "fill='#159447' stroke='none'/>"
                 "</svg></div>",
                 unsafe_allow_html=True,
@@ -12064,16 +12064,16 @@ st.markdown("""
 @media (max-width:640px) {
     .st-key-retirement-connection-platform [data-testid="stHorizontalBlock"]:has(.st-key-retirement-top-previous-clickable):has(.retirement-top-arrow):has(.st-key-retirement-top-next-clickable) > [data-testid="stColumn"]:first-child,
     .st-key-retirement-connection-platform [data-testid="stHorizontalBlock"]:has(.st-key-retirement-top-previous-clickable):has(.retirement-top-arrow):has(.st-key-retirement-top-next-clickable) > [data-testid="stColumn"]:last-child {
-        width:calc((100% - 16.5px) / 2) !important;
+        width:calc((100% - 42px) / 2) !important;
     }
     .st-key-retirement-connection-platform [data-testid="stHorizontalBlock"]:has(.st-key-retirement-top-previous-clickable):has(.retirement-top-arrow):has(.st-key-retirement-top-next-clickable) > [data-testid="stColumn"]:nth-child(2) {
-        flex:0 0 12.5px !important;
-        width:12.5px !important;
-        max-width:12.5px !important;
-        min-width:12.5px !important;
+        flex:0 0 38px !important;
+        width:38px !important;
+        max-width:38px !important;
+        min-width:38px !important;
     }
     .st-key-retirement-connection-platform .retirement-top-arrow svg {
-        max-width:12.5px !important;
+        max-width:38px !important;
     }
 }
 </style>
