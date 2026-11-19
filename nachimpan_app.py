@@ -12064,16 +12064,16 @@ st.markdown("""
 @media (max-width:640px) {
     .st-key-retirement-connection-platform [data-testid="stHorizontalBlock"]:has(.st-key-retirement-top-previous-clickable):has(.retirement-top-arrow):has(.st-key-retirement-top-next-clickable) > [data-testid="stColumn"]:first-child,
     .st-key-retirement-connection-platform [data-testid="stHorizontalBlock"]:has(.st-key-retirement-top-previous-clickable):has(.retirement-top-arrow):has(.st-key-retirement-top-next-clickable) > [data-testid="stColumn"]:last-child {
-        width:calc((100% - 42px) / 2) !important;
+        width:calc((100% - 16.5px) / 2) !important;
     }
     .st-key-retirement-connection-platform [data-testid="stHorizontalBlock"]:has(.st-key-retirement-top-previous-clickable):has(.retirement-top-arrow):has(.st-key-retirement-top-next-clickable) > [data-testid="stColumn"]:nth-child(2) {
-        flex:0 0 38px !important;
-        width:38px !important;
-        max-width:38px !important;
-        min-width:38px !important;
+        flex:0 0 12.5px !important;
+        width:12.5px !important;
+        max-width:12.5px !important;
+        min-width:12.5px !important;
     }
     .st-key-retirement-connection-platform .retirement-top-arrow svg {
-        max-width:38px !important;
+        max-width:12.5px !important;
     }
 }
 </style>
