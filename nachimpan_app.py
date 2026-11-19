@@ -4858,9 +4858,10 @@ def _show_retirement_connection_dialog():
                 f".st-key-retirement-top-next-clickable {{ --report-number:'{_next_number}'; --report-color:{_next_color}; }}"
                 + (".st-key-retirement-top-previous-clickable [data-testid='stButton'] button::before { display:none !important; }" if not _previous_record else "")
                 + (
-                    ".st-key-retirement-top-next-clickable [data-testid='stButton'] button, "
-                    ".st-key-retirement-top-next-clickable [data-testid='stButton'] button *, "
-                    ".st-key-retirement-top-next-clickable [data-testid='stButton'] button p "
+                    ".st-key-retirement-connection-platform .st-key-retirement-top-next-button [data-testid='stButton'] button, "
+                    ".st-key-retirement-connection-platform .st-key-retirement-top-next-button [data-testid='stButton'] button *, "
+                    ".st-key-retirement-connection-platform .st-key-retirement-top-next-button [data-testid='stButton'] button [data-testid='stMarkdownContainer'], "
+                    ".st-key-retirement-connection-platform .st-key-retirement-top-next-button [data-testid='stButton'] button [data-testid='stMarkdownContainer'] p "
                     "{ color:#B23A6F !important; -webkit-text-fill-color:#B23A6F !important; }"
                     if _next_is_read else ""
                 )
