@@ -8756,9 +8756,13 @@ elif selected_page == "AI 시선":
 <div style="background: radial-gradient(circle at top, #1e293b 0%, #0b1120 100%); border: 1.5px solid #F59E0B; border-radius: 16px; padding: 24px 22px; text-align: center; box-shadow: 0 4px 18px rgba(245, 158, 11, 0.2); margin: 16px 0;">
 <div style="font-size: 34px; margin-bottom: 6px;">📜</div>
 <div style="font-size: 19px; font-weight: 850; color: #FDE68A; margin-bottom: 8px;">이게 다 일까요?</div>
-<div style="font-size: 14.5px; color: #E2E8F0; line-height: 1.7; word-break: keep-all; max-width: 650px; margin: 0 auto 18px auto;">
-만약 우리 집의 <b>진짜 순자산 궤적</b>과 <b>자녀 학자금·은퇴 타임라인</b>,<br>
-그리고 숨겨진 <b>파이프라인의 가능성</b>까지 시뮬레이션해보고 싶다면..., 아래 <b>'고급모드'</b> 버튼을 눌러보세요.
+<div style="font-size: 14.5px; color: #E2E8F0; line-height: 1.8; word-break: keep-all; max-width: 650px; margin: 0 auto 18px auto;">
+인생의 사계절은 혼자 걷는 길이 아닙니다.<br>
+생각보다 여러 세대에 걸친 수레바퀴입니다.<br>
+대한민국의 모든 국민들이 겪는 결혼과 출산, 양육. 그리고 자녀 결혼과 나의 은퇴까지...,<br>
+나보다 앞서서 그 길을 걸은 선배들의 발자취를 느껴보고 싶지 않나요?
+<br><br>
+그렇다면, 아래 <b>'고급모드'</b> 버튼을 눌러보세요.
 </div>
 </div>
 """, unsafe_allow_html=True)
