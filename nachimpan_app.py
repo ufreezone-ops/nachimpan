@@ -12484,3 +12484,15 @@ div.st-key-retirement-title-row [data-testid="stPopoverButton"] [data-testid="st
 }
 </style>
 """, unsafe_allow_html=True)
+
+
+# 우리 가정 생애주기 재정곡선: 내부 Markdown 제목 색상 최종 보정
+st.markdown("""
+<style>
+div.st-key-retirement-title-row div.st-key-source_retirement_expense [data-testid="stPopoverButton"] div[data-testid="stMarkdownContainer"] p,
+div.st-key-retirement-title-row div.st-key-source_retirement_expense [data-testid="stPopoverButton"] div.stMarkdownContainer p {
+    color: var(--text-color) !important;
+    -webkit-text-fill-color: var(--text-color) !important;
+}
+</style>
+""", unsafe_allow_html=True)
