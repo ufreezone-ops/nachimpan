@@ -8095,7 +8095,7 @@ elif selected_page == "우리집 재정곡선":
                 key="housing-price-title-row",
                 horizontal=True,
                 vertical_alignment="center",
-                gap="small",
+                gap=None,
             ):
                 st.markdown("### 부동산 적용기준")
                 if st.button(
@@ -12584,7 +12584,9 @@ div.st-key-housing-price-title-row[data-testid="stHorizontalBlock"] {
     flex-direction: row !important;
     align-items: center !important;
     justify-content: flex-start !important;
-    column-gap: 0.08rem !important;
+    gap: 0 !important;
+    column-gap: 0 !important;
+    row-gap: 0 !important;
     width: max-content !important;
     max-width: 100% !important;
 }
