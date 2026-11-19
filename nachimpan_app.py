@@ -12600,6 +12600,7 @@ div.st-key-housing-price-title-row [data-testid="stElementContainer"]:has(h3) [d
     padding: 0 !important;
 }
 div.st-key-housing-price-title-row h3 {
+    font-size: 17px !important;
     margin: 0 !important;
     padding: 0 !important;
     white-space: nowrap !important;
