@@ -3988,6 +3988,9 @@ def _show_nta_pdf_dialog():
                     let pinchTargetPage = 8;
                     let pinchCenterX = 0;
                     let pinchCenterY = 0;
+                    let pinchStartCenterX = 0;
+                    let pinchStartCenterY = 0;
+                    let pinchPageRects = new Map();
                     function touchDistance(touches) {
                       const dx = touches[0].clientX - touches[1].clientX;
                       const dy = touches[0].clientY - touches[1].clientY;
@@ -4009,6 +4012,14 @@ def _show_nta_pdf_dialog():
                         pinchTargetPage = pageAtPinchCenter(event.touches);
                         pinchCenterX = (event.touches[0].clientX + event.touches[1].clientX) / 2;
                         pinchCenterY = (event.touches[0].clientY + event.touches[1].clientY) / 2;
+                        pinchStartCenterX = pinchCenterX;
+                        pinchStartCenterY = pinchCenterY;
+                        // 핀치가 시작된 순간의 페이지 좌표를 보관해 두어,
+                        // 매 움직임마다 확대 기준점이 페이지 상단으로 되돌아가지 않게 한다.
+                        pinchPageRects = new Map();
+                        viewer.querySelectorAll('.page').forEach((page) => {
+                          pinchPageRects.set(page, page.getBoundingClientRect());
+                        });
                       }
                     }, {passive:true});
                     viewer.addEventListener('touchmove', function (event) {
@@ -4020,11 +4031,16 @@ def _show_nta_pdf_dialog():
                         const nextZoom = Math.max(1, Math.min(3, pinchStartZoom * ratio));
                         pinchCurrentRatio = nextZoom / Math.max(0.01, zoomFactor);
                         viewer.querySelectorAll('.page').forEach((page) => {
-                          // 핀치 시작 페이지보다 앞쪽의 여백은 늘리지 않는다.
-                          // 앞 페이지들의 높이가 누적 증가하면 기준 페이지가 아래로 밀려
-                          // 화면에 이전 페이지(예: 7·6페이지)가 나타나는 현상을 막는다.
-                          page.style.transform = 'scale(' + pinchCurrentRatio + ')';
-                          page.style.transformOrigin = 'top center';
+                          // 핀치 시작 순간의 손가락 중심을 각 페이지의 동일한 화면 좌표에 대응시킨다.
+                          // 중심점이 이동하면 그 이동량만큼 페이지도 함께 이동시켜 손가락 아래의
+                          // 문서 지점이 유지되도록 한다.
+                          const startRect = pinchPageRects.get(page) || page.getBoundingClientRect();
+                          const originX = pinchStartCenterX - startRect.left;
+                          const originY = pinchStartCenterY - startRect.top;
+                          const moveX = pinchCenterX - pinchStartCenterX;
+                          const moveY = pinchCenterY - pinchStartCenterY;
+                          page.style.transformOrigin = originX + 'px ' + originY + 'px';
+                          page.style.transform = 'translate(' + moveX + 'px, ' + moveY + 'px) scale(' + pinchCurrentRatio + ')';
                           const pageNo = Number(page.dataset.page);
                           if (pageNo >= pinchTargetPage) {
                             const expandedHeight = page.offsetHeight * pinchCurrentRatio;
