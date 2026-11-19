@@ -2226,7 +2226,14 @@ div.st-key-nta-generational-title-row div.st-key-source_nta_generational [data-t
     background-color: transparent !important;
     background-image: none !important;
     box-shadow: none !important;
+    font-size: 28px !important;
+    line-height: 1 !important;
     transform: translateY(9px) !important;
+}
+div.st-key-nta-generational-title-row div.st-key-source_nta_generational [data-testid="stButton"] button p,
+div.st-key-nta-generational-title-row div.st-key-source_nta_generational [data-testid="stButton"] button span {
+    font-size: 28px !important;
+    line-height: 1 !important;
 }
 </style>
 """, unsafe_allow_html=True)
