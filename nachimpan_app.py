@@ -4877,7 +4877,7 @@ def _show_retirement_connection_dialog():
                     ".st-key-retirement-connection-platform .st-key-retirement-top-next-button [data-testid='stButton'] button *, "
                     ".st-key-retirement-connection-platform .st-key-retirement-top-next-button [data-testid='stButton'] button [data-testid='stMarkdownContainer'], "
                     ".st-key-retirement-connection-platform .st-key-retirement-top-next-button [data-testid='stButton'] button [data-testid='stMarkdownContainer'] p "
-                    "{ color:#F7F7F2 !important; -webkit-text-fill-color:#F7F7F2 !important; }"
+                    "{ color:#D8B4FE !important; -webkit-text-fill-color:#D8B4FE !important; }"
                     if _next_is_read else ""
                 )
                 + f"</style>"
@@ -12641,12 +12641,12 @@ st.markdown("""
     padding-left:1px !important;
     padding-right:1px !important;
 }
-/* 이미 읽은 자료가 추천 목록에 다시 나타나면 제목을 청색 계열로 구분 */
+/* 이미 읽은 자료가 추천 목록에 다시 나타나면 제목을 보라색 계열로 구분 */
 .st-key-retirement-connection-recommend-list div[class*="st-key-retirement-connection-choice-read-"] button,
 .st-key-retirement-connection-recommend-list div[class*="st-key-retirement-connection-choice-read-"] button *,
 .st-key-retirement-connection-recommend-list div[class*="st-key-retirement-connection-choice-read-"] button p {
-    color:#F7F7F2 !important;
-    -webkit-text-fill-color:#F7F7F2 !important;
+    color:#D8B4FE !important;
+    -webkit-text-fill-color:#D8B4FE !important;
 }
 </style>
 """, unsafe_allow_html=True)
@@ -13354,8 +13354,8 @@ st.markdown("""
 .st-key-retirement-connection-platform .st-key-retirement-connection-recommend-list [class*="st-key-retirement-connection-choice-read-"] [data-testid="stButton"] button,
 .st-key-retirement-connection-platform .st-key-retirement-connection-recommend-list [class*="st-key-retirement-connection-choice-read-"] [data-testid="stButton"] button *,
 .st-key-retirement-connection-platform .st-key-retirement-connection-recommend-list [class*="st-key-retirement-connection-choice-read-"] [data-testid="stButton"] button p {
-    color:#F7F7F2 !important;
-    -webkit-text-fill-color:#F7F7F2 !important;
+    color:#D8B4FE !important;
+    -webkit-text-fill-color:#D8B4FE !important;
     font-weight:700 !important;
     text-align:left !important;
 }
