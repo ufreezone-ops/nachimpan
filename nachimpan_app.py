@@ -6620,32 +6620,20 @@ elif selected_page == "인생의 사계절":
         st.markdown(
             """
             <style>
-            /* 국민이전계정 PDF 버튼: 문구가 줄바꿈되지 않는 콘텐츠 너비 + 기존 주황색 */
+            /* 국민이전계정 PDF 버튼: 다음 버튼과 동일한 primary 스타일, 문구 폭에 맞춤 */
             .st-key-nta_pdf_open {
                 width: max-content !important;
                 max-width: 100% !important;
                 margin: 0 auto !important;
+            }
+            .st-key-nta_pdf_open [data-testid="stButton"] {
+                width: max-content !important;
             }
             .st-key-nta_pdf_open button {
                 width: max-content !important;
                 min-width: max-content !important;
                 max-width: 100% !important;
                 white-space: nowrap !important;
-                background: linear-gradient(135deg, #EA580C 0%, #C2410C 100%) !important;
-                background-color: #EA580C !important;
-                border-color: #EA580C !important;
-                color: #FFFFFF !important;
-                -webkit-text-fill-color: #FFFFFF !important;
-                font-weight: 800 !important;
-            }
-            .st-key-nta_pdf_open button:hover,
-            .st-key-nta_pdf_open button:focus,
-            .st-key-nta_pdf_open button:active {
-                background: #C2410C !important;
-                background-color: #C2410C !important;
-                border-color: #C2410C !important;
-                color: #FFFFFF !important;
-                -webkit-text-fill-color: #FFFFFF !important;
             }
             </style>
             """,
@@ -6654,7 +6642,7 @@ elif selected_page == "인생의 사계절":
         with st.container(horizontal=True, vertical_alignment="center", gap=None):
             _, nta_pdf_col, _ = st.columns([1, 4, 1])
             with nta_pdf_col:
-                if st.button("2024년 국민이전계정 PDF 원문", key="nta_pdf_open", use_container_width=False):
+                if st.button("2024년 국민이전계정 PDF 원문", key="nta_pdf_open", use_container_width=False, type="primary"):
                     st.session_state["_nta_pdf_dialog_open"] = True
                     st.rerun()
 
