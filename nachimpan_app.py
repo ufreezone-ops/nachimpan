@@ -292,6 +292,57 @@ footer {
     text-align: left !important;
 }
 
+/* 부동산 적용기준 소제목과 나침반: 같은 행에 배치하고 아이콘 버튼 외형 제거 */
+.st-key-housing-price-title-row [data-testid="stHorizontalBlock"] {
+    align-items: center !important;
+    justify-content: flex-start !important;
+    gap: 0.25rem !important;
+}
+.st-key-housing-price-title-row [data-testid="stMarkdownContainer"] h3 {
+    margin: 0 !important;
+    white-space: nowrap !important;
+}
+.st-key-housing_price_source_guide,
+.st-key-housing_price_source_guide [data-testid="stButton"] {
+    width: auto !important;
+    min-width: 0 !important;
+    max-width: max-content !important;
+    flex: 0 0 auto !important;
+    margin: 0 !important;
+    padding: 0 !important;
+}
+.st-key-housing_price_source_guide [data-testid="stButton"] button,
+.st-key-housing_price_source_guide [data-testid="stButton"] button:hover,
+.st-key-housing_price_source_guide [data-testid="stButton"] button:focus,
+.st-key-housing_price_source_guide [data-testid="stButton"] button:focus-visible,
+.st-key-housing_price_source_guide [data-testid="stButton"] button:active {
+    width: auto !important;
+    min-width: 0 !important;
+    max-width: max-content !important;
+    min-height: 0 !important;
+    height: auto !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    border: 0 !important;
+    outline: 0 !important;
+    background: transparent !important;
+    background-color: transparent !important;
+    box-shadow: none !important;
+    color: #38BDF8 !important;
+    -webkit-text-fill-color: #38BDF8 !important;
+    font-size: 1.65rem !important;
+    line-height: 1 !important;
+    transform: translateY(3px) !important;
+}
+.st-key-housing_price_source_guide [data-testid="stButton"] button p {
+    margin: 0 !important;
+    padding: 0 !important;
+    color: #38BDF8 !important;
+    -webkit-text-fill-color: #38BDF8 !important;
+    font-size: inherit !important;
+    line-height: 1 !important;
+}
+
 .loan-payment-label-text {
     display: inline-block;
     margin: 0 !important;
@@ -3771,9 +3822,13 @@ def _show_retirement_connection_dialog():
             ["6050400-01", "6051400-00", "6051300-00"],
         )
         _entry_reason = (
-            "우리 가정 생애 소득곡선의 구성과 보정 방식을 이해하는 데 가장 직접적인 자료입니다."
-            if "6051200-00" in _entry_source_ids
-            else "은퇴 후 생활비와 지출 기준을 이해하는 데 도움이 되는 자료입니다."
+            "지역별 주택가격과 부동산 산정 기준을 이해하는 데 도움이 되는 자료입니다."
+            if "6051500-00" in _entry_source_ids
+            else (
+                "우리 가정 생애 소득곡선의 구성과 보정 방식을 이해하는 데 가장 직접적인 자료입니다."
+                if "6051200-00" in _entry_source_ids
+                else "은퇴 후 생활비와 지출 기준을 이해하는 데 도움이 되는 자료입니다."
+            )
         )
         for _index, _entry_source_id in enumerate(_entry_source_ids):
             _entry_record = _by_source.get(_entry_source_id)
@@ -4525,6 +4580,22 @@ def _show_housing_price_stats_dialog():
     ):
         st.session_state["_housing_dialog_view"] = "method"
         st.rerun()
+
+    st.markdown('<div class="retirement-connection-rail"></div>', unsafe_allow_html=True)
+    with st.container(key="retirement-report-connection-cta"):
+        _left_spacer, _button_col, _right_spacer = st.columns([1, 2, 1])
+        with _button_col:
+            if st.button("연결", key="housing_price_open_connection", type="secondary"):
+                st.session_state["_housing_price_dialog_open"] = False
+                st.session_state["_housing_dialog_view"] = "summary"
+                st.session_state["_retirement_explorer_open"] = True
+                st.session_state["_retirement_entry_open"] = False
+                st.session_state["_retirement_connection_open"] = True
+                st.session_state["_retirement_connection_entry_source_ids"] = ["6051500-00"]
+                st.session_state.pop("_retirement_explorer_source_id", None)
+                st.session_state.pop("_retirement_explorer_resource_id", None)
+                st.session_state.pop("_retirement_explorer_history", None)
+                st.rerun()
 
     if st.button(
         "닫기",
@@ -8020,14 +8091,21 @@ elif selected_page == "우리집 재정곡선":
                 """,
                 unsafe_allow_html=True,
             )
-            if st.button(
-                "🏠 부동산 적용 기준",
-                key="open_housing_price_stats_table",
-                use_container_width=True,
-                help="기본사례 가정값과 지역별 주택가격 통계 보기",
+            with st.container(
+                key="housing-price-title-row",
+                horizontal=True,
+                vertical_alignment="center",
+                gap="small",
             ):
-                st.session_state["_housing_dialog_view"] = "summary"
-                st.session_state["_housing_price_dialog_open"] = True
+                st.markdown("### 부동산 적용기준")
+                if st.button(
+                    "🧭",
+                    key="housing_price_source_guide",
+                    help="부동산 적용 기준과 지역별 주택가격 통계 보기",
+                    type="tertiary",
+                ):
+                    st.session_state["_housing_dialog_view"] = "summary"
+                    st.session_state["_housing_price_dialog_open"] = True
 
             # 팝업 호출은 페이지 레이아웃 컨텍스트 밖의 최상위 영역에서 처리한다.
 
