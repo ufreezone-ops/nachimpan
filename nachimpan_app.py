@@ -3707,10 +3707,21 @@ def _show_nta_pdf_dialog():
             if not st_runtime.exists():
                 raise RuntimeError("Streamlit 실행 환경에서 PDF 뷰어를 초기화할 수 없습니다.")
 
+            from streamlit.runtime import caching
+
+            _nta_pdf_data = OFFICIAL_PDF_PATH.read_bytes()
+            _nta_pdf_mimetype = "application/pdf"
+            _nta_pdf_coordinates = st._main._get_delta_path_str()
             _nta_pdf_url = st_runtime.get_instance().media_file_mgr.add(
-                OFFICIAL_PDF_PATH.read_bytes(),
-                "application/pdf",
-                st._main._get_delta_path_str(),
+                _nta_pdf_data,
+                _nta_pdf_mimetype,
+                _nta_pdf_coordinates,
+            )
+            # Streamlit의 st.iframe 로컬 파일 처리와 동일하게 미디어 캐시에도 등록한다.
+            caching.save_media_data(
+                _nta_pdf_data,
+                _nta_pdf_mimetype,
+                _nta_pdf_coordinates,
             )
             st.iframe(
                 f"{_nta_pdf_url}#page=8&view=FitH",
