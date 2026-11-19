@@ -4408,8 +4408,8 @@ def _show_retirement_connection_dialog():
         with _top_arrow_col:
             st.markdown(
                 "<div class='retirement-top-arrow' aria-hidden='true'>"
-                "<svg viewBox='0 0 16 32' width='16' height='32' aria-hidden='true' style='display:block;'>"
-                "<path d='M 0 2 L 8 16 L 0 30' fill='none' stroke='#159447' stroke-width='2.0' stroke-linecap='round' stroke-linejoin='round'/>"
+                "<svg viewBox='0 0 16 56' width='16' height='56' aria-hidden='true' style='display:block;'>"
+                "<path d='M 0 4 L 16 28 L 0 52' fill='none' stroke='#159447' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'/>"
                 "</svg>"
                 "</div>",
                 unsafe_allow_html=True,
@@ -11682,8 +11682,8 @@ st.markdown("""
     width:16px !important;
     min-width:16px !important;
     max-width:16px !important;
-    height:32px !important;
-    min-height:32px !important;
+    height:56px !important;
+    min-height:56px !important;
     margin:auto !important;
     transform:none !important;
     overflow:visible !important;
