@@ -3716,7 +3716,7 @@ def _show_nta_pdf_dialog():
                 #zoom-label { min-width:52px; text-align:center; color:#444; font-size:13px; }
                 #viewer { height:76vh; min-height:520px; overflow-x:auto; overflow-y:auto;
                           padding:10px 0 24px; box-sizing:border-box;
-                          -webkit-overflow-scrolling:touch; touch-action:auto;
+                          -webkit-overflow-scrolling:touch; touch-action:pan-x pan-y;
                           overscroll-behavior:contain; }
                 .page { margin:0 auto 12px; width:max-content; background:#fff;
                         box-shadow:0 1px 5px #0002; }
@@ -3854,31 +3854,65 @@ def _show_nta_pdf_dialog():
                     document.getElementById('zoom-out').addEventListener('click', () => changeZoom(-0.25));
                     await renderPages(8);
 
-                    // 아이폰 두 손가락 핀치 확대/축소 지원
+                    // 두 손가락 핀치: 움직이는 동안 즉시 화면을 확대/축소하고,
+                    // 손가락을 떼면 해당 배율로 PDF를 다시 선명하게 렌더링한다.
                     let pinchStartDistance = 0;
                     let pinchStartZoom = 1;
+                    let pinchCurrentRatio = 1;
+                    let pinchTargetPage = 8;
+                    function touchDistance(touches) {
+                      const dx = touches[0].clientX - touches[1].clientX;
+                      const dy = touches[0].clientY - touches[1].clientY;
+                      return Math.hypot(dx, dy);
+                    }
+                    function pageAtPinchCenter(touches) {
+                      const x = (touches[0].clientX + touches[1].clientX) / 2;
+                      const y = (touches[0].clientY + touches[1].clientY) / 2;
+                      const element = document.elementFromPoint(x, y);
+                      const pageElement = element && element.closest ? element.closest('.page') : null;
+                      return pageElement ? Number(pageElement.dataset.page) : Math.max(1, Math.min(pdf.numPages,
+                        Math.floor(viewer.scrollTop / Math.max(1, viewer.scrollHeight / pdf.numPages)) + 1));
+                    }
                     viewer.addEventListener('touchstart', function (event) {
                       if (event.touches.length === 2) {
-                        const dx = event.touches[0].clientX - event.touches[1].clientX;
-                        const dy = event.touches[0].clientY - event.touches[1].clientY;
-                        pinchStartDistance = Math.hypot(dx, dy);
+                        pinchStartDistance = touchDistance(event.touches);
                         pinchStartZoom = zoomFactor;
+                        pinchCurrentRatio = 1;
+                        pinchTargetPage = pageAtPinchCenter(event.touches);
                       }
                     }, {passive:true});
+                    viewer.addEventListener('touchmove', function (event) {
+                      if (pinchStartDistance && event.touches.length === 2) {
+                        event.preventDefault();
+                        const ratio = touchDistance(event.touches) / pinchStartDistance;
+                        const nextZoom = Math.max(1, Math.min(3, pinchStartZoom * ratio));
+                        pinchCurrentRatio = nextZoom / Math.max(0.01, zoomFactor);
+                        viewer.querySelectorAll('.page').forEach((page) => {
+                          page.style.transform = 'scale(' + pinchCurrentRatio + ')';
+                          page.style.transformOrigin = 'center center';
+                        });
+                        zoomLabel.textContent = Math.round(nextZoom * 100) + '%';
+                      }
+                    }, {passive:false});
+                    function finishPinch() {
+                      if (!pinchStartDistance) return;
+                      const nextZoom = Math.max(1, Math.min(3, pinchStartZoom * pinchCurrentRatio));
+                      pinchStartDistance = 0;
+                      viewer.querySelectorAll('.page').forEach((page) => {
+                        page.style.transform = '';
+                        page.style.transformOrigin = '';
+                      });
+                      if (Math.abs(nextZoom - zoomFactor) > 0.015) {
+                        zoomFactor = nextZoom;
+                        renderPages(pinchTargetPage);
+                      } else {
+                        zoomLabel.textContent = Math.round(zoomFactor * 100) + '%';
+                      }
+                    }
                     viewer.addEventListener('touchend', function (event) {
-                      if (pinchStartDistance && event.changedTouches.length === 2) {
-                        const dx = event.changedTouches[0].clientX - event.changedTouches[1].clientX;
-                        const dy = event.changedTouches[0].clientY - event.changedTouches[1].clientY;
-                        const distance = Math.hypot(dx, dy);
-                        const ratio = distance / pinchStartDistance;
-                        const newZoom = Math.max(1, Math.min(3, pinchStartZoom * ratio));
-                        if (Math.abs(newZoom - zoomFactor) > 0.08) {
-                          zoomFactor = newZoom;
-                          renderPages(8);
-                        }
-                        pinchStartDistance = 0;
-                      }
+                      if (event.touches.length < 2) finishPinch();
                     }, {passive:true});
+                    viewer.addEventListener('touchcancel', finishPinch, {passive:true});
                     status.textContent = '총 ' + pdf.numPages + '페이지 · 8페이지부터 표시';
                   } catch (err) {
                     errorBox.style.display = 'block';
