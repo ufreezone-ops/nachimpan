@@ -3714,9 +3714,11 @@ def _show_nta_pdf_dialog():
                 #toolbar button { min-width:42px; min-height:36px; border:1px solid #bbb;
                                   border-radius:7px; background:#fff; color:#333; font-size:20px; }
                 #zoom-label { min-width:52px; text-align:center; color:#444; font-size:13px; }
-                #viewer { height:76vh; min-height:520px; overflow:auto; padding:10px 0 24px;
-                          box-sizing:border-box; -webkit-overflow-scrolling:touch; touch-action:pan-y; }
-                .page { margin:0 auto 12px; width:fit-content; background:#fff;
+                #viewer { height:76vh; min-height:520px; overflow-x:auto; overflow-y:auto;
+                          padding:10px 0 24px; box-sizing:border-box;
+                          -webkit-overflow-scrolling:touch; touch-action:auto;
+                          overscroll-behavior:contain; }
+                .page { margin:0 auto 12px; width:max-content; background:#fff;
                         box-shadow:0 1px 5px #0002; }
                 .page canvas { display:block; height:auto; }
                 #status { padding:5px 10px; text-align:center; background:#fff; color:#666; font-size:12px; }
