@@ -3764,12 +3764,13 @@ def _show_nta_pdf_dialog():
                 #toolbar button { min-width:42px; min-height:36px; border:1px solid #bbb;
                                   border-radius:7px; background:#fff; color:#333; font-size:20px; }
                 #zoom-label { min-width:52px; text-align:center; color:#444; font-size:13px; }
-                #viewer { height:calc(100dvh - 82px); min-height:0; overflow-x:auto; overflow-y:auto;
-                          padding:10px 0 24px; box-sizing:border-box;
-                          -webkit-overflow-scrolling:touch; touch-action:pan-x pan-y;
-                          overscroll-behavior:contain; }
-                .page { margin:0 auto 12px; width:max-content; background:#fff;
-                        box-shadow:0 1px 5px #0002; }
+                #viewer { height:calc(100dvh - 82px); min-height:0; width:100%;
+                          overflow-x:auto; overflow-y:auto; padding:0 0 24px;
+                          box-sizing:border-box; -webkit-overflow-scrolling:touch;
+                          touch-action:pan-x pan-y; overscroll-behavior:contain; }
+                /* 확대 시 페이지가 가운데 정렬되며 왼쪽으로 숨는 현상을 방지 */
+                .page { margin:0 0 12px 0; width:max-content; background:#fff;
+                        box-shadow:none; }
                 .page canvas { display:block; height:auto; }
                 #status { padding:5px 10px; text-align:center; background:#fff; color:#666; font-size:12px; }
                 #error { display:none; padding:16px; color:#a00; white-space:pre-wrap; }
