@@ -4409,7 +4409,7 @@ def _show_retirement_connection_dialog():
             st.markdown(
                 "<div class='retirement-top-arrow' aria-hidden='true'>"
                 "<span style='display:block; color:#159447; font-size:28px; "
-                "font-weight:900; line-height:1; transform:translateY(-4px);'>›</span>"
+                "font-family:Arial,sans-serif; font-weight:700; line-height:1; text-align:center; transform:translateY(-4px);'>&gt;</span>"
                 "</div>",
                 unsafe_allow_html=True,
             )
