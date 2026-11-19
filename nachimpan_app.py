@@ -11678,10 +11678,14 @@ st.markdown("""
 }
 .st-key-retirement-connection-platform .retirement-top-arrow svg {
     display:block !important;
-    width:100% !important;
-    max-width:38px !important;
-    height:24px !important;
+    flex:0 0 25px !important;
+    width:25px !important;
+    min-width:25px !important;
+    max-width:25px !important;
+    height:25px !important;
+    min-height:25px !important;
     margin:auto !important;
+    overflow:visible !important;
 }
 
 /* 하단 추천 보고서: 원래 흰색을 강제하던 버튼 규칙을 검정·보통 굵기로 덮어씀 */
