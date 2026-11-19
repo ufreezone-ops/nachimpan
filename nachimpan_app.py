@@ -6304,7 +6304,7 @@ elif selected_page == "우리집 재정곡선":
     if not is_adv:
         st.caption("우리집 재정곡선과 가족의 미래를 살펴보려면 고급 모드로 전환해 주세요.")
     else:
-        st.markdown("## 우리집 재정곡선")
+        st.markdown("### 우리집 재정곡선")
         st.caption("우리 가족의 현재 조건과 생애 이벤트를 바탕으로 미래의 소득과 지출을 살펴봅니다.")
 
 #--------------------------------------------------------
@@ -8602,7 +8602,7 @@ elif selected_page == "통계":
         st.markdown("<div style='height: 42px;'></div>", unsafe_allow_html=True)
         st.caption(f"선택한 출처: {_source_labels[_active_source_id]}")
 
-    st.markdown("## 통계로 읽는 인생")
+    st.markdown("### 통계로 읽는 인생")
     st.caption("내 삶의 숫자를 사회 전체의 흐름과 나란히 놓고 살펴보는 자료실입니다. 통계는 정답이 아니라, 내 생각의 경계를 넓히는 참고선입니다.")
 
 
