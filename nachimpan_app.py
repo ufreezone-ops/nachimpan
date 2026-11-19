@@ -3697,29 +3697,52 @@ def _show_nta_pdf_dialog():
                 padding-right: 0.6rem !important;
             }
             @media (max-width: 640px) {
+                /* 대화상자 바깥 여백과 좌우 액자를 없애고 화면 폭 전체 사용 */
                 div[data-testid="stDialog"] {
-                    padding: 0 !important;
-                }
-                div[data-testid="stDialog"] > div[role="dialog"] {
                     position: fixed !important;
                     inset: 0 !important;
                     width: 100vw !important;
                     max-width: 100vw !important;
+                    padding: 0 !important;
+                    margin: 0 !important;
+                }
+                div[data-testid="stDialog"] > div[role="dialog"],
+                div[data-testid="stDialog"] [role="dialog"] {
+                    position: fixed !important;
+                    top: 0 !important;
+                    left: 0 !important;
+                    right: 0 !important;
+                    bottom: 0 !important;
+                    width: 100vw !important;
+                    min-width: 100vw !important;
+                    max-width: 100vw !important;
                     height: 100dvh !important;
                     max-height: 100dvh !important;
                     margin: 0 !important;
+                    padding: 0 !important;
+                    border: 0 !important;
                     border-radius: 0 !important;
+                    box-shadow: none !important;
                     overflow: hidden !important;
                 }
-                div[data-testid="stDialog"] div[data-testid="stDialogContent"] {
+                div[data-testid="stDialog"] [data-testid="stDialogContent"] {
+                    width: 100vw !important;
+                    max-width: 100vw !important;
                     padding: 0 !important;
                     margin: 0 !important;
+                    border: 0 !important;
+                    border-radius: 0 !important;
                     max-height: calc(100dvh - 3rem) !important;
                     overflow-y: auto !important;
                 }
                 div[data-testid="stDialog"] iframe {
+                    display: block !important;
+                    width: 100vw !important;
+                    max-width: 100vw !important;
                     height: calc(100dvh - 3.5rem) !important;
                     min-height: calc(100dvh - 3.5rem) !important;
+                    margin: 0 !important;
+                    border: 0 !important;
                 }
             }
             </style>
