@@ -4408,9 +4408,9 @@ def _show_retirement_connection_dialog():
         with _top_arrow_col:
             st.markdown(
                 "<div class='retirement-top-arrow' aria-hidden='true'>"
-<svg viewBox='0 0 25 25' width='25' height='25' aria-hidden='true' style='display:block; overflow:visible;'>
-<path d='M 7 2 L 13 12.5 L 7 23' fill='none' stroke='#159447' stroke-width='2.6' stroke-linecap='round' stroke-linejoin='round'/>
-</svg>
+                "<svg viewBox='0 0 25 25' width='25' height='25' aria-hidden='true' style='display:block; overflow:visible;'>"
+                "<path d='M 7 2 L 13 12.5 L 7 23' fill='none' stroke='#159447' stroke-width='2.6' stroke-linecap='round' stroke-linejoin='round'/>"
+                "</svg>"
                 "</div>",
                 unsafe_allow_html=True,
             )
