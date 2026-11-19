@@ -7352,7 +7352,9 @@ elif selected_page == "우리집 재정곡선":
         if conf_h > 0:
             housing_start = conf_h
             housing_end = housing_start + 4
-        elif h_plan in ["주택 구입 고려", "주거 계획 확정"]:
+        elif h_plan in ["미정", "주택 구입 고려", "주거 계획 확정"]:
+            # 주거 계획이 미정이면 기본 시뮬레이션에 주택구입 가능성을 포함한다.
+            # 현재 주거 유지 또는 전월세 이동을 명시한 경우에는 제외한다.
             housing_start = max(cur_age + 5, 20)
             housing_end = housing_start + 4
 
