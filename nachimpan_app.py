@@ -5236,18 +5236,9 @@ if selected_page == "우리집 가계부":
                         min_value=0, value=int(st.session_state.get("expense_living", 0) or 0), step=10,
                         placeholder="월 생활비"
                     )
-            save_basic = st.button(
-                "입력 내용 AI 점검",
-                use_container_width=True,
-                type="primary"
-            )
-
         # 입력값은 버튼을 누르지 않아도 매 실행마다 공통 세션에 반영
         st.session_state["income_self"] = basic_income
         st.session_state["expense_living"] = basic_expense
-
-        if save_basic:
-            st.rerun()
 
         surplus_val = int(st.session_state.get("income_self", 0) or 0) - int(st.session_state.get("expense_living", 0) or 0)
         st.markdown("<div style='height: 14px;'></div>", unsafe_allow_html=True)
