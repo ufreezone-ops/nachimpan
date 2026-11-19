@@ -13223,6 +13223,7 @@ st.markdown("""
 <style>
 /* key가 stHorizontalBlock 자체에 붙는 구조이므로 자식이 아닌 루트에 적용 */
 div.st-key-housing-price-title-row[data-testid="stHorizontalBlock"] {
+    margin-top: -2rem !important; /* 차트 아래 불필요한 빈 줄 두 칸 제거 */
     display: flex !important;
     flex-direction: row !important;
     align-items: center !important;
