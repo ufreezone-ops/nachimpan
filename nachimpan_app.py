@@ -1695,16 +1695,17 @@ if not st.session_state.started:
                 st.markdown("<div style='font-size: 18px; font-weight: 800; color: #F8FAFC; margin-bottom: 6px; text-align: center;'>나이</div>", unsafe_allow_html=True)
                 age_text = st.text_input("나이", placeholder="예: 38", key="start_person_age_text", max_chars=3, label_visibility="collapsed")
 
-            region_col, start_col = st.columns([2.0, 1.1])
-            with region_col:
-                st.markdown("<div style='font-size: 18px; font-weight: 800; color: #F8FAFC; margin-bottom: 6px; text-align: center;'>지역</div>", unsafe_allow_html=True)
-                residence_region = st.selectbox(
+            st.markdown("<div style='font-size: 18px; font-weight: 800; color: #F8FAFC; margin-bottom: 6px; text-align: center;'>지역</div>", unsafe_allow_html=True)
+            # iPhone에서 selectbox 검색창이 키보드를 띄워 지역 목록을 가리는 문제를 피한다.
+            # 고정 높이 컨테이너 안에 라디오 목록을 배치해 목록 자체를 독립 스크롤할 수 있게 한다.
+            with st.container(height=190, border=True, key="start-region-picker"):
+                residence_region = st.radio(
                     "지역", ["지역 선택"] + KOREA_REGION_OPTIONS,
                     key="start_person_region", label_visibility="collapsed"
                 )
 
+            _, start_col, _ = st.columns([1, 1, 1])
             with start_col:
-                st.markdown("<div style='font-size: 18px; font-weight: 800; margin-bottom: 6px; text-align: center;'>&nbsp;</div>", unsafe_allow_html=True)
                 submitted = st.form_submit_button("시작", use_container_width=True, type="primary")
 
             try:
