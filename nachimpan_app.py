@@ -3755,7 +3755,10 @@ def _show_nta_pdf_dialog():
                     if (rendering) { pendingZoom = scrollToPage; return; }
                     rendering = true;
                     const generation = ++renderGeneration;
+                    const oldScrollTop = viewer.scrollTop;
                     const oldScrollLeft = viewer.scrollLeft;
+                    const targetPage = scrollToPage || Math.max(1, Math.min(pdf.numPages,
+                      Math.floor(oldScrollTop / Math.max(1, viewer.scrollHeight / pdf.numPages)) + 1));
                     viewer.innerHTML = '';
                     renderedPages.clear();
                     if (pageObserver) pageObserver.disconnect();
