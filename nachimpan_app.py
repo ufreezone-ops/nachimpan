@@ -12673,7 +12673,7 @@ div.st-key-housing-price-title-row div.st-key-housing_price_source_guide [data-t
 div.st-key-housing-price-title-row div.st-key-housing_price_source_guide [data-testid="stButton"] button:focus,
 div.st-key-housing-price-title-row div.st-key-housing_price_source_guide [data-testid="stButton"] button:focus-visible,
 div.st-key-housing-price-title-row div.st-key-housing_price_source_guide [data-testid="stButton"] button:active {
-    transform: translateY(9px) !important;
+    transform: translateY(0px) !important;
 }
 </style>
 """, unsafe_allow_html=True)
