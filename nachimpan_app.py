@@ -12666,5 +12666,14 @@ div.st-key-housing-price-title-row .st-key-housing_price_source_guide button p {
     font-size: inherit !important;
     line-height: 1 !important;
 }
+
+/* 은퇴 후에는?에서 검증된 별도 아이콘 버튼 수직 보정값 적용 */
+div.st-key-housing-price-title-row div.st-key-housing_price_source_guide [data-testid="stButton"] button,
+div.st-key-housing-price-title-row div.st-key-housing_price_source_guide [data-testid="stButton"] button:hover,
+div.st-key-housing-price-title-row div.st-key-housing_price_source_guide [data-testid="stButton"] button:focus,
+div.st-key-housing-price-title-row div.st-key-housing_price_source_guide [data-testid="stButton"] button:focus-visible,
+div.st-key-housing-price-title-row div.st-key-housing_price_source_guide [data-testid="stButton"] button:active {
+    transform: translateY(9px) !important;
+}
 </style>
 """, unsafe_allow_html=True)
