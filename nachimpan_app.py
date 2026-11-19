@@ -3699,8 +3699,8 @@ def _show_nta_pdf_dialog():
 
             /* PDF 대화상자의 제목줄과 닫기 버튼은 항상 식별 가능하게 유지 */
             div[data-testid="stDialog"]:not(:has(.st-key-retirement-connection-platform)) [data-testid="stDialogHeader"] {
-                min-height: 2.8rem !important;
-                padding: 0.35rem 0.75rem !important;
+                min-height: 4.8rem !important;
+                padding: 0.4rem 0.75rem !important;
                 background: #0b1120 !important;
                 background-color: #0b1120 !important;
                 border-bottom: 1px solid #334155 !important;
@@ -3718,8 +3718,9 @@ def _show_nta_pdf_dialog():
                 background: #1e293b !important;
                 border: 1px solid #64748b !important;
                 border-radius: 7px !important;
-                min-width: 2rem !important;
-                min-height: 2rem !important;
+                min-width: 4rem !important;
+                min-height: 4rem !important;
+                padding: 0.5rem !important;
             }
 
             @media (max-width: 640px) {
@@ -6618,11 +6619,11 @@ elif selected_page == "인생의 사계절":
         st.caption(f"원문 발표 페이지: [국가데이터처 보도자료]({OFFICIAL_RELEASE_URL})")
         _, nta_pdf_col, _ = st.columns([2, 1, 2])
         with nta_pdf_col:
-            if st.button("📄 PDF 원문", key="nta_pdf_open", use_container_width=False):
+            if st.button("2024년 국민이전계정 PDF 원문", key="nta_pdf_open", use_container_width=False):
                 st.session_state["_nta_pdf_dialog_open"] = True
                 st.rerun()
 
-        st.markdown("### 국가데이터처 공식 생애 통계 지표")
+        st.markdown("### 생애 통계 지표")
         st.caption("(2024년 국민이전계정 · 대한민국 1인당 평균 기준)")
         c_m1, c_m2, c_m3 = st.columns(3)
         c_m1.metric("한국인 평균 흑자 진입", "28세", help="노동소득이 소비를 추월하는 연령")
