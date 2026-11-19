@@ -3679,7 +3679,7 @@ def _show_master_resource_dialog():
 
 @st.dialog("국민이전계정 원문", width="large")
 def _show_nta_pdf_dialog():
-    """PDF.js를 이용해 원문 전체 페이지를 모달 안에서 연속 표시한다."""
+    """PDF.js로 원문 전체 페이지를 연속 표시하고 확대/축소를 지원한다."""
     if not OFFICIAL_PDF_PATH.exists():
         st.error("국민이전계정 원문 PDF 파일을 찾을 수 없습니다.")
         st.caption(str(OFFICIAL_PDF_PATH))
@@ -3705,20 +3705,30 @@ def _show_nta_pdf_dialog():
             <!doctype html>
             <html>
             <head>
-              <meta name="viewport" content="width=device-width, initial-scale=1">
+              <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=4, user-scalable=yes">
               <style>
                 html, body { margin:0; padding:0; background:#f1f3f5; font-family:Arial,sans-serif; }
-                #status { position:sticky; top:0; z-index:5; padding:8px 12px; background:#fff;
-                          color:#444; border-bottom:1px solid #ddd; font-size:13px; }
-                #viewer { height:78vh; min-height:560px; overflow:auto; padding:10px 0 24px;
-                          box-sizing:border-box; -webkit-overflow-scrolling:touch; }
-                .page { margin:0 auto 12px; width:fit-content; max-width:calc(100% - 12px);
-                        background:#fff; box-shadow:0 1px 5px #0002; }
-                .page canvas { display:block; max-width:100%; height:auto; }
+                #toolbar { position:sticky; top:0; z-index:5; display:flex; align-items:center;
+                           justify-content:center; gap:14px; padding:8px; background:#fff;
+                           border-bottom:1px solid #ddd; }
+                #toolbar button { min-width:42px; min-height:36px; border:1px solid #bbb;
+                                  border-radius:7px; background:#fff; color:#333; font-size:20px; }
+                #zoom-label { min-width:52px; text-align:center; color:#444; font-size:13px; }
+                #viewer { height:76vh; min-height:520px; overflow:auto; padding:10px 0 24px;
+                          box-sizing:border-box; -webkit-overflow-scrolling:touch; touch-action:pan-y; }
+                .page { margin:0 auto 12px; width:fit-content; background:#fff;
+                        box-shadow:0 1px 5px #0002; }
+                .page canvas { display:block; height:auto; }
+                #status { padding:5px 10px; text-align:center; background:#fff; color:#666; font-size:12px; }
                 #error { display:none; padding:16px; color:#a00; white-space:pre-wrap; }
               </style>
             </head>
             <body>
+              <div id="toolbar">
+                <button id="zoom-out" type="button" aria-label="축소">−</button>
+                <span id="zoom-label">100%</span>
+                <button id="zoom-in" type="button" aria-label="확대">＋</button>
+              </div>
               <div id="status">PDF 원문을 불러오는 중입니다…</div>
               <div id="viewer"></div>
               <div id="error"></div>
@@ -3728,6 +3738,67 @@ def _show_nta_pdf_dialog():
                   const status = document.getElementById('status');
                   const viewer = document.getElementById('viewer');
                   const errorBox = document.getElementById('error');
+                  const zoomLabel = document.getElementById('zoom-label');
+                  let pdf = null;
+                  let zoomFactor = 1;
+                  let baseScale = 1;
+                  let rendering = false;
+                  let pendingZoom = null;
+
+                  async function renderPages(scrollToPage) {
+                    if (rendering) { pendingZoom = scrollToPage; return; }
+                    rendering = true;
+                    const oldScroll = viewer.scrollTop;
+                    const targetPage = scrollToPage || Math.max(1, Math.min(pdf.numPages,
+                      Math.floor(oldScroll / Math.max(1, viewer.scrollHeight / pdf.numPages)) + 1));
+                    viewer.innerHTML = '';
+                    try {
+                      for (let pageNo = 1; pageNo <= pdf.numPages; pageNo++) {
+                        const page = await pdf.getPage(pageNo);
+                        const baseViewport = page.getViewport({scale: 1});
+                        const availableWidth = Math.max(280, viewer.clientWidth - 24);
+                        if (pageNo === 1) baseScale = Math.min(availableWidth / baseViewport.width, 1.6);
+                        const scale = baseScale * zoomFactor;
+                        const viewport = page.getViewport({scale: scale});
+                        const wrapper = document.createElement('div');
+                        wrapper.className = 'page';
+                        wrapper.id = 'pdf-page-' + pageNo;
+                        const canvas = document.createElement('canvas');
+                        const context = canvas.getContext('2d');
+                        const pixelRatio = Math.min(window.devicePixelRatio || 1, 1.5);
+                        canvas.width = Math.floor(viewport.width * pixelRatio);
+                        canvas.height = Math.floor(viewport.height * pixelRatio);
+                        canvas.style.width = Math.floor(viewport.width) + 'px';
+                        canvas.style.height = Math.floor(viewport.height) + 'px';
+                        wrapper.appendChild(canvas);
+                        viewer.appendChild(wrapper);
+                        await page.render({
+                          canvasContext: context,
+                          viewport: viewport,
+                          transform: pixelRatio === 1 ? null : [pixelRatio, 0, 0, pixelRatio, 0, 0]
+                        }).promise;
+                        status.textContent = pageNo + ' / ' + pdf.numPages + '페이지';
+                      }
+                      zoomLabel.textContent = Math.round(zoomFactor * 100) + '%';
+                      const target = document.getElementById('pdf-page-' + targetPage);
+                      if (target) viewer.scrollTop = target.offsetTop - viewer.offsetTop;
+                    } finally {
+                      rendering = false;
+                      if (pendingZoom !== null) {
+                        const nextPage = pendingZoom;
+                        pendingZoom = null;
+                        renderPages(nextPage);
+                      }
+                    }
+                  }
+
+                  function changeZoom(delta) {
+                    const currentPage = Math.max(1, Math.min(pdf.numPages,
+                      Math.floor(viewer.scrollTop / Math.max(1, viewer.scrollHeight / pdf.numPages)) + 1));
+                    zoomFactor = Math.max(1, Math.min(3, zoomFactor + delta));
+                    renderPages(currentPage);
+                  }
+
                   try {
                     if (!window.pdfjsLib) throw new Error('PDF.js 라이브러리를 불러오지 못했습니다. 네트워크 연결을 확인해 주세요.');
                     pdfjsLib.GlobalWorkerOptions.workerSrc =
@@ -3735,40 +3806,37 @@ def _show_nta_pdf_dialog():
                     const binary = atob('__PDF_BASE64__');
                     const bytes = new Uint8Array(binary.length);
                     for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
-                    const pdf = await pdfjsLib.getDocument({data: bytes}).promise;
-                    status.textContent = '총 ' + pdf.numPages + '페이지 · 8페이지부터 볼 수 있습니다';
-                    const canvases = [];
-                    for (let pageNo = 1; pageNo <= pdf.numPages; pageNo++) {
-                      const page = await pdf.getPage(pageNo);
-                      const baseViewport = page.getViewport({scale: 1});
-                      const availableWidth = Math.max(280, viewer.clientWidth - 24);
-                      const scale = Math.min(availableWidth / baseViewport.width, 1.6);
-                      const viewport = page.getViewport({scale: scale});
-                      const wrapper = document.createElement('div');
-                      wrapper.className = 'page';
-                      wrapper.id = 'pdf-page-' + pageNo;
-                      const canvas = document.createElement('canvas');
-                      const context = canvas.getContext('2d');
-                      const pixelRatio = Math.min(window.devicePixelRatio || 1, 1.5);
-                      canvas.width = Math.floor(viewport.width * pixelRatio);
-                      canvas.height = Math.floor(viewport.height * pixelRatio);
-                      canvas.style.width = Math.floor(viewport.width) + 'px';
-                      canvas.style.height = Math.floor(viewport.height) + 'px';
-                      wrapper.appendChild(canvas);
-                      viewer.appendChild(wrapper);
-                      canvases.push(canvas);
-                      await page.render({
-                        canvasContext: context,
-                        viewport: viewport,
-                        transform: pixelRatio === 1 ? null : [pixelRatio, 0, 0, pixelRatio, 0, 0]
-                      }).promise;
-                      status.textContent = pageNo + ' / ' + pdf.numPages + '페이지 불러오는 중…';
-                    }
+                    pdf = await pdfjsLib.getDocument({data: bytes}).promise;
+                    document.getElementById('zoom-in').addEventListener('click', () => changeZoom(0.25));
+                    document.getElementById('zoom-out').addEventListener('click', () => changeZoom(-0.25));
+                    await renderPages(8);
+
+                    // 아이폰 두 손가락 핀치 확대/축소 지원
+                    let pinchStartDistance = 0;
+                    let pinchStartZoom = 1;
+                    viewer.addEventListener('touchstart', function (event) {
+                      if (event.touches.length === 2) {
+                        const dx = event.touches[0].clientX - event.touches[1].clientX;
+                        const dy = event.touches[0].clientY - event.touches[1].clientY;
+                        pinchStartDistance = Math.hypot(dx, dy);
+                        pinchStartZoom = zoomFactor;
+                      }
+                    }, {passive:true});
+                    viewer.addEventListener('touchend', function (event) {
+                      if (pinchStartDistance && event.changedTouches.length === 2) {
+                        const dx = event.changedTouches[0].clientX - event.changedTouches[1].clientX;
+                        const dy = event.changedTouches[0].clientY - event.changedTouches[1].clientY;
+                        const distance = Math.hypot(dx, dy);
+                        const ratio = distance / pinchStartDistance;
+                        const newZoom = Math.max(1, Math.min(3, pinchStartZoom * ratio));
+                        if (Math.abs(newZoom - zoomFactor) > 0.08) {
+                          zoomFactor = newZoom;
+                          renderPages(8);
+                        }
+                        pinchStartDistance = 0;
+                      }
+                    }, {passive:true});
                     status.textContent = '총 ' + pdf.numPages + '페이지 · 8페이지부터 표시';
-                    requestAnimationFrame(function () {
-                      const target = document.getElementById('pdf-page-8');
-                      if (target) viewer.scrollTop = target.offsetTop - viewer.offsetTop;
-                    });
                   } catch (err) {
                     errorBox.style.display = 'block';
                     errorBox.textContent = 'PDF 표시 오류: ' + (err && err.message ? err.message : String(err));
@@ -3780,7 +3848,7 @@ def _show_nta_pdf_dialog():
             </html>
             """
             _viewer_html = _viewer_html.replace("__PDF_BASE64__", _pdf_base64)
-            st.components.v1.html(_viewer_html, height=820, scrolling=False)
+            st.components.v1.html(_viewer_html, height=860, scrolling=False)
         except Exception as _error:
             st.error(f"국민이전계정 원문을 표시하지 못했습니다: {_error}")
 
