@@ -4408,8 +4408,8 @@ def _show_retirement_connection_dialog():
         with _top_arrow_col:
             st.markdown(
                 "<div class='retirement-top-arrow' aria-hidden='true'>"
-                "<svg viewBox='0 0 25 25' width='25' height='25' aria-hidden='true' style='display:block; overflow:visible;'>"
-                "<path d='M 7 2 L 13 12.5 L 7 23' fill='none' stroke='#159447' stroke-width='2.6' stroke-linecap='round' stroke-linejoin='round'/>"
+                "<svg viewBox='0 0 32 32' width='32' height='32' aria-hidden='true' style='display:block; overflow:visible;'>"
+                "<path d='M 10 2 L 18 16 L 10 30' fill='none' stroke='#159447' stroke-width='3.2' stroke-linecap='round' stroke-linejoin='round'/>"
                 "</svg>"
                 "</div>",
                 unsafe_allow_html=True,
@@ -11605,7 +11605,7 @@ st.markdown("""
  .st-key-retirement-connection-platform [data-testid="stHorizontalBlock"]:has(.retirement-connection-stop.previous):has(.st-key-retirement-top-next-clickable) > [data-testid="stColumn"]:nth-child(2) {
   flex-basis:25px !important; width:25px !important; max-width:25px !important; min-width:25px !important;
  }
- .retirement-top-arrow svg { max-width:25px !important; height:20px !important; }
+ .retirement-top-arrow svg { width:32px !important; min-width:32px !important; max-width:32px !important; height:32px !important; min-height:32px !important; transform:translateX(8px) !important; }
 }
 </style>
 """, unsafe_allow_html=True)
@@ -11678,13 +11678,14 @@ st.markdown("""
 }
 .st-key-retirement-connection-platform .retirement-top-arrow svg {
     display:block !important;
-    flex:0 0 25px !important;
-    width:25px !important;
-    min-width:25px !important;
-    max-width:25px !important;
-    height:25px !important;
-    min-height:25px !important;
-    margin:auto !important;
+    flex:0 0 32px !important;
+    width:32px !important;
+    min-width:32px !important;
+    max-width:32px !important;
+    height:32px !important;
+    min-height:32px !important;
+    margin:0 !important;
+    transform:translateX(8px) !important;
     overflow:visible !important;
 }
 
