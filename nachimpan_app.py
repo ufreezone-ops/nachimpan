@@ -12604,6 +12604,10 @@ div.st-key-housing-price-title-row h3 {
     padding: 0 !important;
     white-space: nowrap !important;
 }
+/* 제목 자체에 Streamlit이 자동 삽입하는 링크 영역이 간격을 만들지 않도록 제거 */
+div.st-key-housing-price-title-row h3 [data-testid="stHeaderActionElements"] {
+    display: none !important;
+}
 /* 아이콘 버튼의 바깥 래퍼부터 실제 button까지 모든 장식 제거 */
 div.st-key-housing-price-title-row .st-key-housing_price_source_guide,
 div.st-key-housing-price-title-row .st-key-housing_price_source_guide [data-testid="stElementContainer"],
@@ -12618,6 +12622,7 @@ div.st-key-housing-price-title-row .st-key-housing_price_source_guide [data-test
     max-width: max-content !important;
     flex: 0 0 auto !important;
     margin: 0 !important;
+    margin-left: -0.18rem !important;
     padding: 0 !important;
     border: 0 !important;
     outline: 0 !important;
@@ -12647,7 +12652,7 @@ div.st-key-housing-price-title-row .st-key-housing_price_source_guide button:act
     box-shadow: none !important;
     color: #38BDF8 !important;
     -webkit-text-fill-color: #38BDF8 !important;
-    font-size: 1.65rem !important;
+    font-size: 2rem !important;
     line-height: 1 !important;
     transform: translateY(3px) !important;
 }
