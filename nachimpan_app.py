@@ -8759,7 +8759,8 @@ elif selected_page == "AI 시선":
 <div style="font-size: 14.5px; color: #E2E8F0; line-height: 1.8; word-break: keep-all; max-width: 650px; margin: 0 auto 18px auto;">
 인생의 사계절은 혼자 걷는 길이 아닙니다.<br>
 생각보다 여러 세대에 걸친 수레바퀴입니다.<br>
-대한민국의 모든 국민들이 겪는 결혼과 출산, 양육. 그리고 자녀 결혼과 나의 은퇴까지...,<br>
+대한민국의 모든 국민들이 겪는 결혼과 출산, 양육.<br>
+그리고 자녀 결혼과 나의 은퇴까지...,<br>
 나보다 앞서서 그 길을 걸은 선배들의 발자취를 느껴보고 싶지 않나요?
 <br><br>
 그렇다면, 아래 <b>'고급모드'</b> 버튼을 눌러보세요.
