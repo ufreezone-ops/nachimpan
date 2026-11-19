@@ -6120,7 +6120,22 @@ elif selected_page == "인생의 사계절":
     #--------------------------------------------------------
 # 6.03.03 | 고급 모드 — NCH-0005
 #--------------------------------------------------------
-        st.markdown(f"### {_master_report_title('6051700-00')}")
+        with st.container(horizontal=True, vertical_alignment="center", gap=None, key="nta-generational-title-row"):
+            st.markdown(f"### {_master_report_title('6051700-00')}")
+            if not st.session_state.get("_retirement_explorer_open", False):
+                if st.button(
+                    "🧭",
+                    key="source_nta_generational",
+                    help="세대계승 생애주기 재정곡선 보고서와 연결 자료 살펴보기",
+                    type="tertiary",
+                ):
+                    st.session_state["_retirement_explorer_open"] = True
+                    st.session_state["_retirement_entry_open"] = False
+                    st.session_state["_retirement_connection_open"] = False
+                    st.session_state["_retirement_explorer_source_id"] = "6051700-00"
+                    st.session_state["_retirement_explorer_history"] = ["6051700-00"]
+                    st.session_state.pop("_retirement_explorer_resource_id", None)
+                    st.rerun()
 
         fig_official_nta = build_official_nta_chart()
         st.plotly_chart(fig_official_nta, use_container_width=True, config={"displayModeBar": False, "scrollZoom": False, "doubleClick": False, "showAxisDragHandles": False})
@@ -6128,17 +6143,6 @@ elif selected_page == "인생의 사계절":
         st.caption(
             "※ 국가데이터처 「2024년 국민이전계정」(2026. 9. 17. 발표)"
         )
-
-        if st.button(
-            f"🧭 {_master_report_display('6051700-00')} 리포트 보기",
-            key="open_nta_generational_report",
-            use_container_width=True,
-        ):
-            _open_source_reference(
-                "6051700-00",
-                "인생의 사계절",
-                "source-anchor-nta-generational",
-            )
 
         # [출처 ID: 6051700-00]
         st.markdown(
