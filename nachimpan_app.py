@@ -3687,62 +3687,115 @@ def _show_nta_pdf_dialog():
         st.markdown(
             """
             <style>
-            /* PC에서는 넓은 대화상자, 스마트폰에서는 화면 전체를 PDF에 개방 */
+            /* PDF 대화상자: PC에서는 넓게, 모바일에서는 화면 전체를 사용 */
             div[data-testid="stDialog"] > div[role="dialog"] {
                 width: min(96vw, 1400px) !important;
                 max-width: 96vw !important;
+                box-sizing: border-box !important;
             }
-            div[data-testid="stDialog"] div[data-testid="stDialogContent"] {
-                padding-left: 0.6rem !important;
-                padding-right: 0.6rem !important;
+            div[data-testid="stDialog"] [data-testid="stDialogContent"] {
+                box-sizing: border-box !important;
             }
+
+            /* PDF 대화상자의 제목줄과 닫기 버튼은 항상 식별 가능하게 유지 */
+            div[data-testid="stDialog"]:not(:has(.st-key-retirement-connection-platform)) [data-testid="stDialogHeader"] {
+                min-height: 2.8rem !important;
+                padding: 0.35rem 0.75rem !important;
+                background: #0b1120 !important;
+                background-color: #0b1120 !important;
+                border-bottom: 1px solid #334155 !important;
+                opacity: 1 !important;
+            }
+            div[data-testid="stDialog"]:not(:has(.st-key-retirement-connection-platform)) [data-testid="stDialogHeader"] h2,
+            div[data-testid="stDialog"]:not(:has(.st-key-retirement-connection-platform)) [data-testid="stDialogHeader"] button,
+            div[data-testid="stDialog"]:not(:has(.st-key-retirement-connection-platform)) [data-testid="stDialogHeader"] button *,
+            div[data-testid="stDialog"]:not(:has(.st-key-retirement-connection-platform)) [data-testid="stDialogHeader"] button svg {
+                color: #ffffff !important;
+                -webkit-text-fill-color: #ffffff !important;
+                opacity: 1 !important;
+            }
+            div[data-testid="stDialog"]:not(:has(.st-key-retirement-connection-platform)) [data-testid="stDialogHeader"] button {
+                background: #1e293b !important;
+                border: 1px solid #64748b !important;
+                border-radius: 7px !important;
+                min-width: 2rem !important;
+                min-height: 2rem !important;
+            }
+
             @media (max-width: 640px) {
-                /* 대화상자 바깥 여백과 좌우 액자를 없애고 화면 폭 전체 사용 */
+                /* 바깥 오버레이부터 뷰포트 기준으로 고정 */
                 div[data-testid="stDialog"] {
                     position: fixed !important;
                     inset: 0 !important;
+                    display: flex !important;
+                    align-items: stretch !important;
+                    justify-content: center !important;
                     width: 100vw !important;
                     max-width: 100vw !important;
-                    padding: 0 !important;
+                    height: 100dvh !important;
                     margin: 0 !important;
+                    padding: 0 !important;
+                    box-sizing: border-box !important;
                 }
+                /* 대화상자 자체의 좌우 위치를 0으로 고정하고 별도 이동값 제거 */
                 div[data-testid="stDialog"] > div[role="dialog"],
                 div[data-testid="stDialog"] [role="dialog"] {
                     position: fixed !important;
-                    top: 0 !important;
+                    inset: 0 !important;
                     left: 0 !important;
                     right: 0 !important;
+                    top: 0 !important;
                     bottom: 0 !important;
                     width: 100vw !important;
-                    min-width: 100vw !important;
+                    min-width: 0 !important;
                     max-width: 100vw !important;
                     height: 100dvh !important;
                     max-height: 100dvh !important;
                     margin: 0 !important;
                     padding: 0 !important;
+                    transform: none !important;
+                    box-sizing: border-box !important;
                     border: 0 !important;
                     border-radius: 0 !important;
                     box-shadow: none !important;
                     overflow: hidden !important;
                 }
+                /* 헤더 높이만 남기고 본문 콘텐츠는 좌우 100%로 통일 */
                 div[data-testid="stDialog"] [data-testid="stDialogContent"] {
-                    width: 100vw !important;
-                    max-width: 100vw !important;
-                    padding: 0 !important;
-                    margin: 0 !important;
-                    border: 0 !important;
-                    border-radius: 0 !important;
-                    max-height: calc(100dvh - 3rem) !important;
-                    overflow-y: auto !important;
-                }
-                div[data-testid="stDialog"] iframe {
                     display: block !important;
-                    width: 100vw !important;
-                    max-width: 100vw !important;
+                    width: 100% !important;
+                    min-width: 0 !important;
+                    max-width: 100% !important;
+                    height: calc(100dvh - 2.8rem) !important;
+                    max-height: calc(100dvh - 2.8rem) !important;
+                    margin: 0 !important;
+                    padding: 0 !important;
+                    box-sizing: border-box !important;
+                    overflow: hidden !important;
+                }
+                /* Streamlit이 iframe을 감싸는 요소도 같은 폭·좌측 원점으로 정렬 */
+                div[data-testid="stDialog"] [data-testid="stDialogContent"] [data-testid="stElementContainer"]:has(iframe),
+                div[data-testid="stDialog"] [data-testid="stDialogContent"] [data-testid="stCustomComponentV1"],
+                div[data-testid="stDialog"] [data-testid="stDialogContent"] [data-testid="stCustomComponentV1"] > div {
+                    display: block !important;
+                    width: 100% !important;
+                    min-width: 0 !important;
+                    max-width: 100% !important;
+                    margin: 0 !important;
+                    padding: 0 !important;
+                    box-sizing: border-box !important;
+                }
+                div[data-testid="stDialog"] [data-testid="stDialogContent"] iframe {
+                    display: block !important;
+                    width: 100% !important;
+                    min-width: 0 !important;
+                    max-width: 100% !important;
                     height: calc(100dvh - 3.5rem) !important;
                     min-height: calc(100dvh - 3.5rem) !important;
                     margin: 0 !important;
+                    padding: 0 !important;
                     border: 0 !important;
+                    box-sizing: border-box !important;
                 }
             }
             </style>
