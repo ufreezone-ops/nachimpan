@@ -12797,8 +12797,9 @@ st.markdown("""
 .st-key-retirement-connection-platform .st-key-retirement-connection-recommend-list [class*="st-key-retirement-connection-choice-read-"] [data-testid="stButton"] button,
 .st-key-retirement-connection-platform .st-key-retirement-connection-recommend-list [class*="st-key-retirement-connection-choice-read-"] [data-testid="stButton"] button *,
 .st-key-retirement-connection-platform .st-key-retirement-connection-recommend-list [class*="st-key-retirement-connection-choice-read-"] [data-testid="stButton"] button p {
-    color:#2563A6 !important;
-    -webkit-text-fill-color:#2563A6 !important;
+    color:#075E9E !important;
+    -webkit-text-fill-color:#075E9E !important;
+    font-weight:700 !important;
     text-align:left !important;
 }
 </style>
