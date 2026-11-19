@@ -2169,6 +2169,65 @@ div.st-key-loan-payment-title-row div.st-key-loan-payment-source-guide [data-tes
 :is(div.st-key-retirement-expense-title-row, div.st-key-lifetime-income-title-row) :is(div.st-key-source_retirement_expense_guide, div.st-key-source_lifetime_income_guide) [data-testid="stButton"] button:active {
     transform: translateY(9px) !important;
 }
+
+/* 세대계승 생애주기 재정곡선: 제목과 별도 나침반을 같은 기준으로 정렬 */
+div.st-key-nta-generational-title-row[data-testid="stHorizontalBlock"] {
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    justify-content: flex-start !important;
+    gap: 0.12rem !important;
+    column-gap: 0.12rem !important;
+    width: max-content !important;
+    max-width: 100% !important;
+}
+div.st-key-nta-generational-title-row [data-testid="stElementContainer"]:has(h3) {
+    width: auto !important;
+    min-width: 0 !important;
+    max-width: max-content !important;
+    flex: 0 1 auto !important;
+    margin: 0 !important;
+    padding: 0 !important;
+}
+div.st-key-nta-generational-title-row h3 {
+    margin: 0 !important;
+    padding: 0 !important;
+    white-space: nowrap !important;
+}
+div.st-key-nta-generational-title-row h3 [data-testid="stHeaderActionElements"] {
+    display: none !important;
+}
+div.st-key-nta-generational-title-row > div {
+    align-self: center !important;
+}
+div.st-key-nta-generational-title-row div.st-key-source_nta_generational {
+    width: auto !important;
+    min-width: 0 !important;
+    max-width: max-content !important;
+    flex: 0 0 auto !important;
+    margin: 0 0 0 0.08rem !important;
+    padding: 0 !important;
+}
+div.st-key-nta-generational-title-row div.st-key-source_nta_generational [data-testid="stButton"] button,
+div.st-key-nta-generational-title-row div.st-key-source_nta_generational [data-testid="stButton"] button:hover,
+div.st-key-nta-generational-title-row div.st-key-source_nta_generational [data-testid="stButton"] button:focus,
+div.st-key-nta-generational-title-row div.st-key-source_nta_generational [data-testid="stButton"] button:focus-visible,
+div.st-key-nta-generational-title-row div.st-key-source_nta_generational [data-testid="stButton"] button:active {
+    width: auto !important;
+    min-width: 0 !important;
+    max-width: max-content !important;
+    height: auto !important;
+    min-height: 0 !important;
+    margin: 0 !important;
+    padding: 0 0.12rem !important;
+    border: 0 !important;
+    outline: 0 !important;
+    background: transparent !important;
+    background-color: transparent !important;
+    background-image: none !important;
+    box-shadow: none !important;
+    transform: translateY(9px) !important;
+}
 </style>
 """, unsafe_allow_html=True)
 
