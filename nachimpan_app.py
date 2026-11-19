@@ -4020,12 +4020,18 @@ def _show_nta_pdf_dialog():
                         const nextZoom = Math.max(1, Math.min(3, pinchStartZoom * ratio));
                         pinchCurrentRatio = nextZoom / Math.max(0.01, zoomFactor);
                         viewer.querySelectorAll('.page').forEach((page) => {
-                          // 모든 페이지는 같은 비율로 확대하되, 위쪽을 기준으로 키우고
-                          // 늘어난 높이만큼 다음 페이지의 시작 위치도 아래로 밀어 겹침을 막는다.
+                          // 핀치 시작 페이지보다 앞쪽의 여백은 늘리지 않는다.
+                          // 앞 페이지들의 높이가 누적 증가하면 기준 페이지가 아래로 밀려
+                          // 화면에 이전 페이지(예: 7·6페이지)가 나타나는 현상을 막는다.
                           page.style.transform = 'scale(' + pinchCurrentRatio + ')';
                           page.style.transformOrigin = 'top center';
-                          const expandedHeight = page.offsetHeight * pinchCurrentRatio;
-                          page.style.marginBottom = Math.max(0, 12 + expandedHeight - page.offsetHeight) + 'px';
+                          const pageNo = Number(page.dataset.page);
+                          if (pageNo >= pinchTargetPage) {
+                            const expandedHeight = page.offsetHeight * pinchCurrentRatio;
+                            page.style.marginBottom = Math.max(0, 12 + expandedHeight - page.offsetHeight) + 'px';
+                          } else {
+                            page.style.marginBottom = '12px';
+                          }
                         });
                         zoomLabel.textContent = Math.round(nextZoom * 100) + '%';
                       }
