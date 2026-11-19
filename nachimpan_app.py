@@ -3679,7 +3679,7 @@ def _show_master_resource_dialog():
 
 @st.dialog("국민이전계정 원문", width="large")
 def _show_nta_pdf_dialog():
-    """국가데이터처 국민이전계정 원문 PDF를 넓은 인앱 뷰어에서 8페이지부터 보여준다."""
+    """앱 서버의 원자료 PDF를 브라우저 기본 뷰어로 8페이지부터 표시한다."""
     if not OFFICIAL_PDF_PATH.exists():
         st.error("국민이전계정 원문 PDF 파일을 찾을 수 없습니다.")
         st.caption(str(OFFICIAL_PDF_PATH))
@@ -3699,17 +3699,26 @@ def _show_nta_pdf_dialog():
             """,
             unsafe_allow_html=True,
         )
-        st.components.v1.html(
-            """
-            <iframe
-                title="2024년 국민이전계정 보도자료"
-                src="https://raw.githubusercontent.com/ufreezone-ops/nachimpan/dev/data/%EC%9B%90%EC%9E%90%EB%A3%8C/%EA%B5%AD%EA%B0%80%EB%8D%B0%EC%9D%B4%ED%84%B0%EC%B2%98_2024%EB%85%84_%EA%B5%AD%EB%AF%BC%EC%9D%B4%EC%A0%84%EA%B3%84%EC%A0%95_%EB%B3%B4%EB%8F%84%EC%9E%90%EB%A3%8C.pdf#page=8&view=FitH"
-                style="display:block; width:100%; height:80vh; min-height:560px; border:0; border-radius:8px;"
-            ></iframe>
-            """,
-            height=800,
-            scrolling=False,
-        )
+        try:
+            # data/원자료의 PDF를 Streamlit 미디어 저장소에 등록한다.
+            # 외부 GitHub URL이나 Base64 data URI를 브라우저에 직접 전달하지 않는다.
+            from streamlit import runtime as st_runtime
+
+            if not st_runtime.exists():
+                raise RuntimeError("Streamlit 실행 환경에서 PDF 뷰어를 초기화할 수 없습니다.")
+
+            _nta_pdf_url = st_runtime.get_instance().media_file_mgr.add(
+                OFFICIAL_PDF_PATH.read_bytes(),
+                "application/pdf",
+                st._main._get_delta_path_str(),
+            )
+            st.iframe(
+                f"{_nta_pdf_url}#page=8&view=FitH",
+                height=800,
+                width="stretch",
+            )
+        except Exception as _error:
+            st.error(f"국민이전계정 원문을 표시하지 못했습니다: {_error}")
 
     if st.button("닫기", key="nta_pdf_dialog_close", use_container_width=False):
         st.session_state["_nta_pdf_dialog_open"] = False
