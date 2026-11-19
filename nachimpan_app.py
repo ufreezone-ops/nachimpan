@@ -12657,7 +12657,6 @@ div.st-key-housing-price-title-row .st-key-housing_price_source_guide button:act
     -webkit-text-fill-color: #38BDF8 !important;
     font-size: 2rem !important;
     line-height: 1 !important;
-    transform: translateY(3px) !important;
 }
 div.st-key-housing-price-title-row .st-key-housing_price_source_guide button p {
     margin: 0 !important;
