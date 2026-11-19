@@ -12089,6 +12089,7 @@ st.markdown("""
 <style>
 .stVerticalBlock.st-key-retirement-connection-recommend-list,
 .stVerticalBlock.st-key-retirement-connection-read-list {
+    padding-top:1px !important;
     padding-left:1px !important;
     padding-right:1px !important;
 }
