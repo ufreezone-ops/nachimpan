@@ -12574,3 +12574,47 @@ div.st-key-retirement-title-row div.st-key-source_retirement_expense [data-testi
 }
 </style>
 """, unsafe_allow_html=True)
+
+# 부동산 적용기준 제목과 나침반: 간격 및 수직 위치 최종 보정
+st.markdown("""
+<style>
+/* 제목과 아이콘을 같은 행에 밀착시키고 Streamlit 기본 여백을 제거 */
+div.st-key-housing-price-title-row [data-testid="stHorizontalBlock"] {
+    align-items: center !important;
+    justify-content: flex-start !important;
+    gap: 0.02rem !important;
+}
+div.st-key-housing-price-title-row [data-testid="stElementContainer"]:has(h3) {
+    width: auto !important;
+    min-width: 0 !important;
+    max-width: max-content !important;
+    flex: 0 0 auto !important;
+    margin: 0 !important;
+    padding: 0 !important;
+}
+div.st-key-housing-price-title-row [data-testid="stElementContainer"]:has(h3) h3 {
+    margin: 0 !important;
+    padding: 0 !important;
+    white-space: nowrap !important;
+}
+div.st-key-housing-price-title-row div.st-key-housing_price_source_guide,
+div.st-key-housing-price-title-row div.st-key-housing_price_source_guide [data-testid="stElementContainer"],
+div.st-key-housing-price-title-row div.st-key-housing_price_source_guide [data-testid="stButton"] {
+    width: auto !important;
+    min-width: 0 !important;
+    max-width: max-content !important;
+    flex: 0 0 auto !important;
+    margin: 0 0 0 0.02rem !important;
+    padding: 0 !important;
+    align-self: center !important;
+}
+/* 별도 버튼 구조이므로 아이콘만 수직으로 미세 이동 */
+div.st-key-housing-price-title-row div.st-key-housing_price_source_guide [data-testid="stButton"] button,
+div.st-key-housing-price-title-row div.st-key-housing_price_source_guide [data-testid="stButton"] button:hover,
+div.st-key-housing-price-title-row div.st-key-housing_price_source_guide [data-testid="stButton"] button:focus,
+div.st-key-housing-price-title-row div.st-key-housing_price_source_guide [data-testid="stButton"] button:focus-visible,
+div.st-key-housing-price-title-row div.st-key-housing_price_source_guide [data-testid="stButton"] button:active {
+    transform: translateY(9px) !important;
+}
+</style>
+""", unsafe_allow_html=True)
