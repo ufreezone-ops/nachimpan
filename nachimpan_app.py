@@ -4234,7 +4234,7 @@ def _show_retirement_report_dialog():
                 st.rerun()
 
 
-@st.dialog("연결", width="large")
+@st.dialog("연결", width="large", dismissible=False)
 def _show_retirement_connection_dialog():
     """읽은 보고서 이력과 다음 추천 보고서를 좌우로 보여주는 연결창."""
     _by_source, _by_resource, _by_legacy = _nachimpan_master_resource_maps()
@@ -4699,7 +4699,20 @@ def _show_retirement_connection_dialog():
                 color:{_connection_panel_text_color} !important; -webkit-text-fill-color:{_connection_panel_text_color} !important;
                 background:rgba(255,255,255,.16) !important;
             }}
-            @media (max-width:480px) {{
+            /* 연결창의 제목은 화면 표시만 두 줄로 제한하고 원본 제목은 유지 */
+             .st-key-retirement-connection-platform .st-key-retirement-top-previous-button [data-testid="stButton"] button p,
+             .st-key-retirement-connection-platform .st-key-retirement-top-next-button [data-testid="stButton"] button p,
+             .st-key-retirement-connection-platform .st-key-retirement-connection-recommend-list [class*="st-key-retirement-connection-choice-"] [data-testid="stButton"] button p {{
+                 display:-webkit-box !important;
+                 -webkit-box-orient:vertical !important;
+                 -webkit-line-clamp:2 !important;
+                 overflow:hidden !important;
+                 max-height:2.8em !important;
+                 line-height:1.4 !important;
+                 white-space:normal !important;
+                 overflow-wrap:anywhere !important;
+             }}
+             @media (max-width:480px) {{
                 .retirement-connection-top {{ gap:5px; }}
                 .retirement-connection-stop {{ min-height:108px; padding:8px 4px; }}
                 .retirement-connection-stop .stop-main {{ gap:5px; }}
@@ -4863,7 +4876,7 @@ def _show_retirement_connection_dialog():
                     ".st-key-retirement-connection-platform .st-key-retirement-top-next-button [data-testid='stButton'] button *, "
                     ".st-key-retirement-connection-platform .st-key-retirement-top-next-button [data-testid='stButton'] button [data-testid='stMarkdownContainer'], "
                     ".st-key-retirement-connection-platform .st-key-retirement-top-next-button [data-testid='stButton'] button [data-testid='stMarkdownContainer'] p "
-                    "{ color:#8D7180 !important; -webkit-text-fill-color:#8D7180 !important; }"
+                    "{ color:#F7F7F2 !important; -webkit-text-fill-color:#F7F7F2 !important; }"
                     if _next_is_read else ""
                 )
                 + f"</style>"
@@ -12631,8 +12644,8 @@ st.markdown("""
 .st-key-retirement-connection-recommend-list div[class*="st-key-retirement-connection-choice-read-"] button,
 .st-key-retirement-connection-recommend-list div[class*="st-key-retirement-connection-choice-read-"] button *,
 .st-key-retirement-connection-recommend-list div[class*="st-key-retirement-connection-choice-read-"] button p {
-    color:#8D7180 !important;
-    -webkit-text-fill-color:#8D7180 !important;
+    color:#F7F7F2 !important;
+    -webkit-text-fill-color:#F7F7F2 !important;
 }
 </style>
 """, unsafe_allow_html=True)
@@ -13340,8 +13353,8 @@ st.markdown("""
 .st-key-retirement-connection-platform .st-key-retirement-connection-recommend-list [class*="st-key-retirement-connection-choice-read-"] [data-testid="stButton"] button,
 .st-key-retirement-connection-platform .st-key-retirement-connection-recommend-list [class*="st-key-retirement-connection-choice-read-"] [data-testid="stButton"] button *,
 .st-key-retirement-connection-platform .st-key-retirement-connection-recommend-list [class*="st-key-retirement-connection-choice-read-"] [data-testid="stButton"] button p {
-    color:#8D7180 !important;
-    -webkit-text-fill-color:#8D7180 !important;
+    color:#F7F7F2 !important;
+    -webkit-text-fill-color:#F7F7F2 !important;
     font-weight:700 !important;
     text-align:left !important;
 }
