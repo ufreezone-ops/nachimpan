@@ -3687,6 +3687,7 @@ def _show_nta_pdf_dialog():
         st.markdown(
             """
             <style>
+            /* PC에서는 넓은 대화상자, 스마트폰에서는 화면 전체를 PDF에 개방 */
             div[data-testid="stDialog"] > div[role="dialog"] {
                 width: min(96vw, 1400px) !important;
                 max-width: 96vw !important;
@@ -3694,6 +3695,32 @@ def _show_nta_pdf_dialog():
             div[data-testid="stDialog"] div[data-testid="stDialogContent"] {
                 padding-left: 0.6rem !important;
                 padding-right: 0.6rem !important;
+            }
+            @media (max-width: 640px) {
+                div[data-testid="stDialog"] {
+                    padding: 0 !important;
+                }
+                div[data-testid="stDialog"] > div[role="dialog"] {
+                    position: fixed !important;
+                    inset: 0 !important;
+                    width: 100vw !important;
+                    max-width: 100vw !important;
+                    height: 100dvh !important;
+                    max-height: 100dvh !important;
+                    margin: 0 !important;
+                    border-radius: 0 !important;
+                    overflow: hidden !important;
+                }
+                div[data-testid="stDialog"] div[data-testid="stDialogContent"] {
+                    padding: 0 !important;
+                    margin: 0 !important;
+                    max-height: calc(100dvh - 3rem) !important;
+                    overflow-y: auto !important;
+                }
+                div[data-testid="stDialog"] iframe {
+                    height: calc(100dvh - 3.5rem) !important;
+                    min-height: calc(100dvh - 3.5rem) !important;
+                }
             }
             </style>
             """,
@@ -3714,7 +3741,7 @@ def _show_nta_pdf_dialog():
                 #toolbar button { min-width:42px; min-height:36px; border:1px solid #bbb;
                                   border-radius:7px; background:#fff; color:#333; font-size:20px; }
                 #zoom-label { min-width:52px; text-align:center; color:#444; font-size:13px; }
-                #viewer { height:76vh; min-height:520px; overflow-x:auto; overflow-y:auto;
+                #viewer { height:calc(100dvh - 82px); min-height:0; overflow-x:auto; overflow-y:auto;
                           padding:10px 0 24px; box-sizing:border-box;
                           -webkit-overflow-scrolling:touch; touch-action:pan-x pan-y;
                           overscroll-behavior:contain; }
