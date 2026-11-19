@@ -12784,6 +12784,27 @@ div.st-key-housing-price-title-row div.st-key-housing_price_source_guide [data-t
 """, unsafe_allow_html=True)
 
 
+
+# 연결창 상단의 이전·다음 보고서 제목을 모두 왼쪽 정렬
+st.markdown("""
+<style>
+.st-key-retirement-connection-platform .st-key-retirement-top-previous-button [data-testid="stButton"] button,
+.st-key-retirement-connection-platform .st-key-retirement-top-next-button [data-testid="stButton"] button {
+    text-align:left !important;
+    justify-content:flex-start !important;
+}
+.st-key-retirement-connection-platform .st-key-retirement-top-previous-button [data-testid="stButton"] button [data-testid="stMarkdownContainer"],
+.st-key-retirement-connection-platform .st-key-retirement-top-previous-button [data-testid="stButton"] button [data-testid="stMarkdownContainer"] p,
+.st-key-retirement-connection-platform .st-key-retirement-top-next-button [data-testid="stButton"] button [data-testid="stMarkdownContainer"],
+.st-key-retirement-connection-platform .st-key-retirement-top-next-button [data-testid="stButton"] button [data-testid="stMarkdownContainer"] p {
+    text-align:left !important;
+    justify-content:flex-start !important;
+    width:100% !important;
+}
+</style>
+""", unsafe_allow_html=True)
+
+
 # 연결창 최종 글자 규칙: 보고서 제목은 왼쪽 정렬, 읽은 추천 자료는 청색 표시
 st.markdown("""
 <style>
