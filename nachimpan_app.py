@@ -4806,7 +4806,7 @@ if selected_page == "우리집 가계부":
 # 6.01.02 | 고급 모드 — ⓪ 우리집 소득 성격 입력 패널
 #--------------------------------------------------------       
             with st.container(border=True, key="job-panel"):
-                st.markdown("### ⓪ 우리집 소득 성격")
+                st.markdown("### 우리집 소득 성격")
                 gender_options = ["🙋‍♂️ 남성", "🙋‍♀️ 여성"]
                 prev_gender = st.session_state.get("gender", "🙋‍♂️ 남성")
                 if prev_gender not in gender_options: prev_gender = "🙋‍♂️ 남성"
@@ -4845,14 +4845,14 @@ if selected_page == "우리집 가계부":
             income_col, expense_col = st.columns(2)
             with income_col:
                 with st.container(border=True, key="income-panel"):
-                    st.markdown("### ① 들어오는 돈 (만원)")
+                    st.markdown("### 들어오는 돈 (만원)")
                     income_self = st.number_input("나의 월 실수령액 (월급·기본소득)", min_value=0, value=st.session_state.get("income_self"), step=10, placeholder="월 금액")
                     income_spouse = st.number_input("배우자 월 실수령액", min_value=0, value=st.session_state.get("income_spouse"), step=10, placeholder="월 금액")
                     income_other = st.number_input("그 밖의 월 정기소득 (임대·부업 등)", min_value=0, value=st.session_state.get("income_other"), step=10, placeholder="월 금액")
                     income_bonus = st.number_input("연간 비정기 소득 (상여금·성과급·연말수입)", min_value=0, value=st.session_state.get("income_bonus"), step=100, placeholder="1년 합계 금액 (없으면 빈칸)")
             with expense_col:
                 with st.container(border=True, key="expense-panel"):
-                    st.markdown("### ② 나가는 돈 (만원)")
+                    st.markdown("### 나가는 돈 (만원)")
                     expense_living = st.number_input("기본 월 생활비 (식비·관리비·통신비 등)", min_value=0, value=st.session_state.get("expense_living"), step=10, placeholder="월 생활 유지비")
                     representative_case_id_for_loan = st.session_state.get("_representative_case_id")
                     is_representative_case_for_loan = representative_case_id_for_loan in {"case_32_female", "case_45_female"}
@@ -4911,7 +4911,7 @@ if selected_page == "우리집 가계부":
             asset_col, debt_col = st.columns(2)
             with asset_col:
                 with st.container(border=True, key="asset-panel"):
-                    st.markdown("### ③ 가지고 있는 것 (만원)")
+                    st.markdown("### 가지고 있는 것 (만원)")
                     asset_cash = st.number_input("현금·예적금", min_value=0, value=st.session_state.get("asset_cash"), step=100, placeholder="금액")
                     asset_financial = st.number_input("주식·채권 등", min_value=0, value=st.session_state.get("asset_financial"), step=100, placeholder="금액")
                     asset_home = st.number_input("부동산 시세", min_value=0, value=st.session_state.get("asset_home"), step=100, placeholder="금액")
@@ -4919,7 +4919,7 @@ if selected_page == "우리집 가계부":
                     asset_other = st.number_input("그외 자산 (사업체·지분 등)", min_value=0, value=st.session_state.get("asset_other"), step=100, placeholder="금액")
             with debt_col:
                 with st.container(border=True, key="debt-panel"):
-                    st.markdown("### ④ 갚아야 할 돈 (만원)")
+                    st.markdown("### 갚아야 할 돈 (만원)")
                     debt_home = st.number_input("주택·전세 대출잔액", min_value=0, value=st.session_state.get("debt_home"), step=100, placeholder="금액")
                     debt_other = st.number_input("그외 부채 (신용·마이너스통장)", min_value=0, value=st.session_state.get("debt_other"), step=100, placeholder="금액")
 
