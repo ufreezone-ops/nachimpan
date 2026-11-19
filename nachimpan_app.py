@@ -6585,11 +6585,22 @@ elif selected_page == "인생의 사계절":
 #--------------------------------------------------------
     def render_official_nta_section():
         """기본모드와 고급모드에 동일한 공식 NTA 지표 영역을 표시"""
-        st.markdown("### 국가데이터처 공식 생애 통계 지표 (2024년 국민이전계정 · 대한민국 1인당 평균 기준)")
-        c_m1, c_m2, c_m3 = st.columns(3)
-        c_m1.metric("한국인 평균 흑자 진입", "28세", help="노동소득이 소비를 추월하는 연령")
-        c_m2.metric("최대 흑자 정점", "45세", "연 1,932만 원")
-        c_m3.metric("평균 적자 재전환", "61세", help="은퇴 후 소비가 노동소득을 다시 초과")
+        with st.container(horizontal=True, vertical_alignment="center", gap=None, key="nta-generational-title-row"):
+            st.markdown("### 세대 계승 생애주기 재정곡선")
+            if is_adv and not st.session_state.get("_retirement_explorer_open", False):
+                if st.button(
+                    "🧭",
+                    key="source_nta_generational",
+                    help="세대계승 생애주기 재정곡선 보고서와 연결 자료 살펴보기",
+                    type="tertiary",
+                ):
+                    st.session_state["_retirement_explorer_open"] = True
+                    st.session_state["_retirement_entry_open"] = False
+                    st.session_state["_retirement_connection_open"] = False
+                    st.session_state["_retirement_explorer_source_id"] = "6051700-00"
+                    st.session_state["_retirement_explorer_history"] = ["6051700-00"]
+                    st.session_state.pop("_retirement_explorer_resource_id", None)
+                    st.rerun()
 
         fig_official_nta = build_official_nta_chart()
         st.plotly_chart(
@@ -6602,13 +6613,21 @@ elif selected_page == "인생의 사계절":
                 "showAxisDragHandles": False,
             },
         )
-        st.caption("출처: 국가데이터처 「2024년 국민이전계정」(2026. 9. 17. 발표). 28세 흑자 진입, 45세 최대 흑자(연 1,932만 원), 61세 적자 재진입 지표를 기준으로 표시합니다.")
+
+        st.caption("출처: 국가데이터처 「2024년 국민이전계정」(2026. 9. 17. 발표).")
+        st.caption(f"원문 발표 페이지: [국가데이터처 보도자료]({OFFICIAL_RELEASE_URL})")
         _, nta_pdf_col, _ = st.columns([2, 1, 2])
         with nta_pdf_col:
             if st.button("📄 PDF 원문", key="nta_pdf_open", use_container_width=False):
                 st.session_state["_nta_pdf_dialog_open"] = True
                 st.rerun()
-        st.caption(f"원문 발표 페이지: [국가데이터처 보도자료]({OFFICIAL_RELEASE_URL})")
+
+        st.markdown("### 국가데이터처 공식 생애 통계 지표")
+        st.caption("(2024년 국민이전계정 · 대한민국 1인당 평균 기준)")
+        c_m1, c_m2, c_m3 = st.columns(3)
+        c_m1.metric("한국인 평균 흑자 진입", "28세", help="노동소득이 소비를 추월하는 연령")
+        c_m2.metric("최대 흑자 정점", "45세", "연 1,932만 원")
+        c_m3.metric("평균 적자 재전환", "61세", help="은퇴 후 소비가 노동소득을 다시 초과")
 
 #--------------------------------------------------------
 # 6.03.02 | 기본 모드 — 인생의 사계절 안내
@@ -6663,24 +6682,7 @@ elif selected_page == "인생의 사계절":
     #--------------------------------------------------------
 # 6.03.03 | 고급 모드 — NCH-0005
 #--------------------------------------------------------
-        with st.container(horizontal=True, vertical_alignment="center", gap=None, key="nta-generational-title-row"):
-            st.markdown(f"### {_master_report_title('6051700-00')}")
-            if not st.session_state.get("_retirement_explorer_open", False):
-                if st.button(
-                    "🧭",
-                    key="source_nta_generational",
-                    help="세대계승 생애주기 재정곡선 보고서와 연결 자료 살펴보기",
-                    type="tertiary",
-                ):
-                    st.session_state["_retirement_explorer_open"] = True
-                    st.session_state["_retirement_entry_open"] = False
-                    st.session_state["_retirement_connection_open"] = False
-                    st.session_state["_retirement_explorer_source_id"] = "6051700-00"
-                    st.session_state["_retirement_explorer_history"] = ["6051700-00"]
-                    st.session_state.pop("_retirement_explorer_resource_id", None)
-                    st.rerun()
-
-        # 기본모드와 동일한 공식 NTA 지표·차트 영역
+        # 기본모드와 동일한 제목·차트·출처·PDF·공식 지표 영역
         render_official_nta_section()
 
         # [출처 ID: 6051700-00]
