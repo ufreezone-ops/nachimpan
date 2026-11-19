@@ -12609,6 +12609,9 @@ div.st-key-housing-price-title-row h3 [data-testid="stHeaderActionElements"] {
     display: none !important;
 }
 /* 아이콘 버튼의 바깥 래퍼부터 실제 button까지 모든 장식 제거 */
+div.st-key-housing-price-title-row > .st-key-housing_price_source_guide {
+    margin-left: -0.18rem !important;
+}
 div.st-key-housing-price-title-row .st-key-housing_price_source_guide,
 div.st-key-housing-price-title-row .st-key-housing_price_source_guide [data-testid="stElementContainer"],
 div.st-key-housing-price-title-row .st-key-housing_price_source_guide [data-testid="stButton"],
@@ -12622,7 +12625,6 @@ div.st-key-housing-price-title-row .st-key-housing_price_source_guide [data-test
     max-width: max-content !important;
     flex: 0 0 auto !important;
     margin: 0 !important;
-    margin-left: -0.18rem !important;
     padding: 0 !important;
     border: 0 !important;
     outline: 0 !important;
