@@ -6205,7 +6205,7 @@ elif selected_page == "삶과 생계수단":
 
 <div style="background: rgba(234, 88, 12, 0.14); border-left: 4px solid #EA580C; border-radius: 4px; padding: 14px 18px;">
 <div style="font-size: 15px; font-weight: 750; color: #F8FAFC; line-height: 1.6; word-break: keep-all;">
-<b>나침반의 성찰:</b><br>
+<b>🧭 나침반의 성찰</b><br><br>
 <b>누구의 선택을 두둔하는 얘기가 아닙니다.</b><br>
 <b>두 경우 모두 우리가 원하는 결과가 아니기 때문입니다.</b><br>
 돌쇠처럼 성실하게 당장의 가족 생계를 책임지면서도, 똘똘이가 구상한 파이프라인을 덧붙일 수 있는 길은 없을까요?
