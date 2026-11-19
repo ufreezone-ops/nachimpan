@@ -4404,9 +4404,11 @@ def _show_retirement_connection_dialog():
             _past_records.append(_history_record)
     _previous_record = None if _initial_connection else _current_record
     _next_record = None
+    _next_is_read = False
     if _related_rows:
         _first = _related_rows[0]
         _next_record = _by_source.get(_first.get("source_id", "")) if _first.get("source_id") else _by_resource.get(_first.get("resource_id", ""))
+        _next_is_read = bool(_first.get("_already_read"))
 
     def _continent_color(_record):
         _color = str((_record or {}).get("continent_color_hex", "")).strip()
@@ -4855,6 +4857,13 @@ def _show_retirement_connection_dialog():
                 f".st-key-retirement-top-previous-clickable {{ --report-number:'{_previous_number}'; --report-color:{_previous_color}; }}"
                 f".st-key-retirement-top-next-clickable {{ --report-number:'{_next_number}'; --report-color:{_next_color}; }}"
                 + (".st-key-retirement-top-previous-clickable [data-testid='stButton'] button::before { display:none !important; }" if not _previous_record else "")
+                + (
+                    ".st-key-retirement-top-next-clickable [data-testid='stButton'] button, "
+                    ".st-key-retirement-top-next-clickable [data-testid='stButton'] button *, "
+                    ".st-key-retirement-top-next-clickable [data-testid='stButton'] button p "
+                    "{ color:#B23A6F !important; -webkit-text-fill-color:#B23A6F !important; }"
+                    if _next_is_read else ""
+                )
                 + f"</style>"
             ),
             unsafe_allow_html=True,
@@ -12620,8 +12629,8 @@ st.markdown("""
 .st-key-retirement-connection-recommend-list div[class*="st-key-retirement-connection-choice-read-"] button,
 .st-key-retirement-connection-recommend-list div[class*="st-key-retirement-connection-choice-read-"] button *,
 .st-key-retirement-connection-recommend-list div[class*="st-key-retirement-connection-choice-read-"] button p {
-    color:#2563A6 !important;
-    -webkit-text-fill-color:#2563A6 !important;
+    color:#B23A6F !important;
+    -webkit-text-fill-color:#B23A6F !important;
 }
 </style>
 """, unsafe_allow_html=True)
@@ -13329,8 +13338,8 @@ st.markdown("""
 .st-key-retirement-connection-platform .st-key-retirement-connection-recommend-list [class*="st-key-retirement-connection-choice-read-"] [data-testid="stButton"] button,
 .st-key-retirement-connection-platform .st-key-retirement-connection-recommend-list [class*="st-key-retirement-connection-choice-read-"] [data-testid="stButton"] button *,
 .st-key-retirement-connection-platform .st-key-retirement-connection-recommend-list [class*="st-key-retirement-connection-choice-read-"] [data-testid="stButton"] button p {
-    color:#075E9E !important;
-    -webkit-text-fill-color:#075E9E !important;
+    color:#B23A6F !important;
+    -webkit-text-fill-color:#B23A6F !important;
     font-weight:700 !important;
     text-align:left !important;
 }
