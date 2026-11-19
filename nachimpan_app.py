@@ -3902,11 +3902,15 @@ def _show_nta_pdf_dialog():
                         if (restoreAnchor) {
                           // 확대 전 화면에서 손가락 중심 아래에 있던 페이지 내 지점을
                           // 새 렌더링에서도 같은 화면 좌표에 놓아 위치 점프를 방지한다.
+                          const targetRect = target.getBoundingClientRect();
+                          const viewerRect = viewer.getBoundingClientRect();
+                          const targetContentLeft = targetRect.left - viewerRect.left + viewer.scrollLeft;
+                          const targetContentTop = targetRect.top - viewerRect.top + viewer.scrollTop;
                           viewer.scrollLeft = Math.max(0,
-                            target.offsetLeft + restoreAnchor.xRatio * target.offsetWidth -
+                            targetContentLeft + restoreAnchor.xRatio * target.offsetWidth -
                             restoreAnchor.viewportX);
                           viewer.scrollTop = Math.max(0,
-                            target.offsetTop + restoreAnchor.yRatio * target.offsetHeight -
+                            targetContentTop + restoreAnchor.yRatio * target.offsetHeight -
                             restoreAnchor.viewportY);
                         } else {
                           viewer.scrollTop = target.offsetTop - viewer.offsetTop;
