@@ -3747,49 +3747,87 @@ def _show_nta_pdf_dialog():
                   let rendering = false;
                   let pendingZoom = null;
 
+                  let pageObserver = null;
+                  let renderGeneration = 0;
+                  const renderedPages = new Set();
+
                   async function renderPages(scrollToPage) {
                     if (rendering) { pendingZoom = scrollToPage; return; }
                     rendering = true;
-                    const oldScroll = viewer.scrollTop;
-                    const targetPage = scrollToPage || Math.max(1, Math.min(pdf.numPages,
-                      Math.floor(oldScroll / Math.max(1, viewer.scrollHeight / pdf.numPages)) + 1));
+                    const generation = ++renderGeneration;
+                    const oldScrollLeft = viewer.scrollLeft;
                     viewer.innerHTML = '';
+                    renderedPages.clear();
+                    if (pageObserver) pageObserver.disconnect();
+                    pageObserver = new IntersectionObserver((entries) => {
+                      entries.forEach((entry) => {
+                        if (entry.isIntersecting) {
+                          const pageNo = Number(entry.target.dataset.page);
+                          renderOnePage(pageNo, generation);
+                        }
+                      });
+                    }, {root: viewer, rootMargin: '900px 500px', threshold: 0});
                     try {
                       for (let pageNo = 1; pageNo <= pdf.numPages; pageNo++) {
                         const page = await pdf.getPage(pageNo);
                         const baseViewport = page.getViewport({scale: 1});
                         const availableWidth = Math.max(280, viewer.clientWidth - 24);
                         if (pageNo === 1) baseScale = Math.min(availableWidth / baseViewport.width, 1.6);
-                        const scale = baseScale * zoomFactor;
-                        const viewport = page.getViewport({scale: scale});
+                        const viewport = page.getViewport({scale: baseScale * zoomFactor});
                         const wrapper = document.createElement('div');
                         wrapper.className = 'page';
                         wrapper.id = 'pdf-page-' + pageNo;
-                        const canvas = document.createElement('canvas');
-                        const context = canvas.getContext('2d');
-                        const pixelRatio = Math.min(window.devicePixelRatio || 1, 1.5);
-                        canvas.width = Math.floor(viewport.width * pixelRatio);
-                        canvas.height = Math.floor(viewport.height * pixelRatio);
-                        canvas.style.width = Math.floor(viewport.width) + 'px';
-                        canvas.style.height = Math.floor(viewport.height) + 'px';
-                        wrapper.appendChild(canvas);
+                        wrapper.dataset.page = String(pageNo);
+                        wrapper.style.width = Math.ceil(viewport.width) + 'px';
+                        wrapper.style.height = Math.ceil(viewport.height) + 'px';
+                        wrapper.style.margin = '0 auto 12px';
                         viewer.appendChild(wrapper);
-                        await page.render({
-                          canvasContext: context,
-                          viewport: viewport,
-                          transform: pixelRatio === 1 ? null : [pixelRatio, 0, 0, pixelRatio, 0, 0]
-                        }).promise;
-                        status.textContent = pageNo + ' / ' + pdf.numPages + '페이지';
+                        pageObserver.observe(wrapper);
                       }
                       zoomLabel.textContent = Math.round(zoomFactor * 100) + '%';
                       const target = document.getElementById('pdf-page-' + targetPage);
-                      if (target) viewer.scrollTop = target.offsetTop - viewer.offsetTop;
+                      if (target) {
+                        viewer.scrollTop = target.offsetTop - viewer.offsetTop;
+                        viewer.scrollLeft = oldScrollLeft;
+                      }
                     } finally {
                       rendering = false;
                       if (pendingZoom !== null) {
                         const nextPage = pendingZoom;
                         pendingZoom = null;
                         renderPages(nextPage);
+                      }
+                    }
+                  }
+
+                  async function renderOnePage(pageNo, generation) {
+                    if (generation !== renderGeneration || renderedPages.has(pageNo)) return;
+                    renderedPages.add(pageNo);
+                    const wrapper = document.getElementById('pdf-page-' + pageNo);
+                    if (!wrapper) return;
+                    try {
+                      const page = await pdf.getPage(pageNo);
+                      const viewport = page.getViewport({scale: baseScale * zoomFactor});
+                      const canvas = document.createElement('canvas');
+                      const context = canvas.getContext('2d');
+                      const pixelRatio = Math.min(window.devicePixelRatio || 1, 1.5);
+                      canvas.width = Math.floor(viewport.width * pixelRatio);
+                      canvas.height = Math.floor(viewport.height * pixelRatio);
+                      canvas.style.width = Math.floor(viewport.width) + 'px';
+                      canvas.style.height = Math.floor(viewport.height) + 'px';
+                      wrapper.appendChild(canvas);
+                      await page.render({
+                        canvasContext: context,
+                        viewport: viewport,
+                        transform: pixelRatio === 1 ? null : [pixelRatio, 0, 0, pixelRatio, 0, 0]
+                      }).promise;
+                      if (generation === renderGeneration) {
+                        status.textContent = pageNo + ' / ' + pdf.numPages + '페이지';
+                      }
+                    } catch (err) {
+                      if (generation === renderGeneration) {
+                        renderedPages.delete(pageNo);
+                        console.warn('PDF 페이지 렌더링 실패:', pageNo, err);
                       }
                     }
                   }
