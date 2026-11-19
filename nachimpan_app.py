@@ -4702,6 +4702,7 @@ def _show_retirement_connection_dialog():
             /* 연결창의 제목은 화면 표시만 두 줄로 제한하고 원본 제목은 유지 */
              .st-key-retirement-connection-platform .st-key-retirement-top-previous-button [data-testid="stButton"] button p,
              .st-key-retirement-connection-platform .st-key-retirement-top-next-button [data-testid="stButton"] button p,
+             .st-key-retirement-connection-platform .st-key-retirement-connection-read-list .retirement-history-title,
              .st-key-retirement-connection-platform .st-key-retirement-connection-recommend-list [class*="st-key-retirement-connection-choice-"] [data-testid="stButton"] button p {{
                  display:-webkit-box !important;
                  -webkit-box-orient:vertical !important;
