@@ -6350,7 +6350,6 @@ elif selected_page == "삶과 생계수단":
             with r_col2:
                 retirement_saved = st.button(
                     "은퇴 나이 확인",
-                    use_container_width=True,
                     type="primary"
                 )
         # 은퇴 예상 나이는 입력 즉시 공통 세션에 반영
