@@ -6782,7 +6782,7 @@ elif selected_page == "인생의 사계절":
 💡 <b>산책로의 질문</b><br>
 내가 은퇴한 후에 살아갈 시간은 얼마나 될까?<br>
 (약 <b>{winter_years}년</b>이 남아 있습니다. 국가데이터처 2024년 생명표 기준 · {user_gender.split()[1]} {retire_age}세의 기대여명)<br>
-<span style="color: #94A3B8;">긴 인생의 겨울을 어떤 모습으로 살아갈 것인가는 정해진 운명이 아니라, 지금부터 그려갈 나의 삶입니다.</span>
+<span style="color: #94A3B8;">긴 인생의 겨울을 어떤 모습으로 살아갈 것인가는 정해진 운명이 아니라, 지금부터 그려갈 나의 삶이다!</span>
 </div></div>
 """, unsafe_allow_html=True)
 
