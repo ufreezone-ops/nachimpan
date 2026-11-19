@@ -986,7 +986,7 @@ LIFECYCLE_BENCHMARK = pd.DataFrame([
     {"age": 80, "labor_income": 10,  "consumption": 185},
 ])
 
-OFFICIAL_PDF_URL = "https://mods.go.kr/boardDownload.es?bid=11898&list_no=447028&seq=3#page=7"
+OFFICIAL_PDF_PATH = Path(__file__).resolve().parent / "data" / "원자료" / "국가데이터처_2024년_국민이전계정_보도자료.pdf"
 OFFICIAL_RELEASE_URL = "https://mods.go.kr/board.es?act=view&bid=11898&list_no=447028&mid=a10301130100"
 
 # 첫 화면에서 받는 현재 주거지역 선택지
@@ -3677,6 +3677,49 @@ def _show_master_resource_dialog():
 
 
 
+@st.dialog("국민이전계정 원문", width="large")
+def _show_nta_pdf_dialog():
+    """국가데이터처 국민이전계정 원문 PDF를 앱 안에서 8페이지부터 보여준다."""
+    if not OFFICIAL_PDF_PATH.exists():
+        st.error("국민이전계정 원문 PDF 파일을 찾을 수 없습니다.")
+        st.caption(str(OFFICIAL_PDF_PATH))
+    else:
+        try:
+            _pdf_base64 = base64.b64encode(OFFICIAL_PDF_PATH.read_bytes()).decode("ascii")
+            st.components.v1.html(
+                f"""
+                <iframe
+                    title="2024년 국민이전계정 보도자료"
+                    src="data:application/pdf;base64,{_pdf_base64}#page=8&view=FitH"
+                    style="width:100%; height:720px; border:0; border-radius:8px;"
+                ></iframe>
+                """,
+                height=730,
+                scrolling=False,
+            )
+            st.download_button(
+                "PDF 원본 내려받기",
+                OFFICIAL_PDF_PATH.read_bytes(),
+                file_name=OFFICIAL_PDF_PATH.name,
+                mime="application/pdf",
+                key="nta_pdf_download_original",
+                use_container_width=False,
+            )
+        except Exception as _error:
+            st.error(f"PDF를 표시하는 중 문제가 발생했습니다: {_error}")
+            st.download_button(
+                "PDF 원본 내려받기",
+                OFFICIAL_PDF_PATH.read_bytes(),
+                file_name=OFFICIAL_PDF_PATH.name,
+                mime="application/pdf",
+                key="nta_pdf_download_fallback",
+            )
+
+    if st.button("닫기", key="nta_pdf_dialog_close", use_container_width=False):
+        st.session_state["_nta_pdf_dialog_open"] = False
+        st.rerun()
+
+
 @st.dialog("연결", width="large")
 def _show_retirement_entry_dialog():
     """나침반 최초 클릭에서만 사용하는 연결 탐색 시작 화면."""
@@ -6196,7 +6239,22 @@ elif selected_page == "인생의 사계절":
         fig_official_nta = build_official_nta_chart()
         st.plotly_chart(fig_official_nta, use_container_width=True, config={"displayModeBar": False, "scrollZoom": False, "doubleClick": False, "showAxisDragHandles": False})
         st.caption("출처: 국가데이터처 「2024년 국민이전계정」(2026. 9. 17. 발표). 28세 흑자 진입, 45세 최대 흑자(연 1,932만 원), 61세 적자 재진입 지표를 기준으로 표시합니다.")
-        st.markdown(f"[📄 국가데이터처 2024년 국민이전계정 보도자료]({OFFICIAL_RELEASE_URL}) · [PDF 원문]({OFFICIAL_PDF_URL})")
+        st.caption("출처: 국가데이터처 「2024년 국민이전계정」(2026. 9. 17. 발표).")
+        _, nta_pdf_col, nta_connection_col, _ = st.columns([2, 1, 1, 2])
+        with nta_pdf_col:
+            if st.button("📄 PDF 원문", key="nta_pdf_open", use_container_width=True):
+                st.session_state["_nta_pdf_dialog_open"] = True
+                st.rerun()
+        with nta_connection_col:
+            if st.button("연결", key="nta_open_connection", use_container_width=True):
+                st.session_state["_retirement_explorer_open"] = True
+                st.session_state["_retirement_entry_open"] = False
+                st.session_state["_retirement_connection_open"] = True
+                st.session_state["_retirement_explorer_source_id"] = "6050200-00"
+                st.session_state.pop("_retirement_explorer_resource_id", None)
+                st.session_state["_retirement_explorer_history"] = ["6050200-00"]
+                st.rerun()
+        st.caption(f"원문 발표 페이지: [국가데이터처 보도자료]({OFFICIAL_RELEASE_URL})")
 
         if st.button("다음 →", key="basic_seasons_next", type="primary"):
                 _navigate_to_page_top("AI 시선")
@@ -10149,6 +10207,9 @@ if st.session_state.get("_retirement_explorer_open", False):
         _show_retirement_connection_dialog()
     else:
         _show_retirement_report_dialog()
+
+if st.session_state.get("_nta_pdf_dialog_open", False):
+    _show_nta_pdf_dialog()
 
 
 #--------------------------------------------------------
