@@ -12227,9 +12227,9 @@ st.markdown("""
     transform:translateY(-2px) !important;
 }
 .st-key-retirement-connection-platform .retirement-top-arrow svg path {
-    fill:none !important;
-    stroke:#000000 !important;
-    stroke-width:2.4 !important;
+    fill:#000000 !important;
+    stroke:none !important;
+    stroke-width:0 !important;
 }
 </style>
 """, unsafe_allow_html=True)
