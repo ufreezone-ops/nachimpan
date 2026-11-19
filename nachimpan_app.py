@@ -4408,8 +4408,8 @@ def _show_retirement_connection_dialog():
         with _top_arrow_col:
             st.markdown(
                 "<div class='retirement-top-arrow' aria-hidden='true'>"
-                "<svg viewBox='0 0 100 24' role='presentation'>"
-                "<path d='M8 8 H70 V0 L96 12 L70 24 V16 H8 Z' "
+                "<svg viewBox='0 0 100 48' preserveAspectRatio='none' role='presentation'>"
+                "<path d='M8 4 H70 V0 L96 24 L70 48 V44 H8 Z' "
                 "fill='#159447' stroke='none'/>"
                 "</svg></div>",
                 unsafe_allow_html=True,
@@ -12198,7 +12198,7 @@ st.markdown("""
 }
 .st-key-retirement-connection-platform .retirement-top-arrow svg {
     display:block !important;
-    height:24px !important;
+    height:18px !important;
     margin:0 !important;
     transform:translateY(-4px) !important;
 }
