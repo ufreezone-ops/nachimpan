@@ -3850,13 +3850,18 @@ def _show_nta_pdf_dialog():
                   let baseScale = 1;
                   let rendering = false;
                   let pendingZoom = null;
+                  let pendingZoomAnchor = null;
 
                   let pageObserver = null;
                   let renderGeneration = 0;
                   const renderedPages = new Set();
 
-                  async function renderPages(scrollToPage) {
-                    if (rendering) { pendingZoom = scrollToPage; return; }
+                  async function renderPages(scrollToPage, restoreAnchor = null) {
+                    if (rendering) {
+                      pendingZoom = scrollToPage;
+                      pendingZoomAnchor = restoreAnchor;
+                      return;
+                    }
                     rendering = true;
                     const generation = ++renderGeneration;
                     const oldScrollTop = viewer.scrollTop;
@@ -3894,15 +3899,28 @@ def _show_nta_pdf_dialog():
                       zoomLabel.textContent = Math.round(zoomFactor * 100) + '%';
                       const target = document.getElementById('pdf-page-' + targetPage);
                       if (target) {
-                        viewer.scrollTop = target.offsetTop - viewer.offsetTop;
-                        viewer.scrollLeft = oldScrollLeft;
+                        if (restoreAnchor) {
+                          // 확대 전 화면에서 손가락 중심 아래에 있던 페이지 내 지점을
+                          // 새 렌더링에서도 같은 화면 좌표에 놓아 위치 점프를 방지한다.
+                          viewer.scrollLeft = Math.max(0,
+                            target.offsetLeft + restoreAnchor.xRatio * target.offsetWidth -
+                            restoreAnchor.viewportX);
+                          viewer.scrollTop = Math.max(0,
+                            target.offsetTop + restoreAnchor.yRatio * target.offsetHeight -
+                            restoreAnchor.viewportY);
+                        } else {
+                          viewer.scrollTop = target.offsetTop - viewer.offsetTop;
+                          viewer.scrollLeft = oldScrollLeft;
+                        }
                       }
                     } finally {
                       rendering = false;
                       if (pendingZoom !== null) {
                         const nextPage = pendingZoom;
+                        const nextAnchor = pendingZoomAnchor;
                         pendingZoom = null;
-                        renderPages(nextPage);
+                        pendingZoomAnchor = null;
+                        renderPages(nextPage, nextAnchor);
                       }
                     }
                   }
@@ -3964,6 +3982,8 @@ def _show_nta_pdf_dialog():
                     let pinchStartZoom = 1;
                     let pinchCurrentRatio = 1;
                     let pinchTargetPage = 8;
+                    let pinchCenterX = 0;
+                    let pinchCenterY = 0;
                     function touchDistance(touches) {
                       const dx = touches[0].clientX - touches[1].clientX;
                       const dy = touches[0].clientY - touches[1].clientY;
@@ -3983,12 +4003,16 @@ def _show_nta_pdf_dialog():
                         pinchStartZoom = zoomFactor;
                         pinchCurrentRatio = 1;
                         pinchTargetPage = pageAtPinchCenter(event.touches);
+                        pinchCenterX = (event.touches[0].clientX + event.touches[1].clientX) / 2;
+                        pinchCenterY = (event.touches[0].clientY + event.touches[1].clientY) / 2;
                       }
                     }, {passive:true});
                     viewer.addEventListener('touchmove', function (event) {
                       if (pinchStartDistance && event.touches.length === 2) {
                         event.preventDefault();
                         const ratio = touchDistance(event.touches) / pinchStartDistance;
+                        pinchCenterX = (event.touches[0].clientX + event.touches[1].clientX) / 2;
+                        pinchCenterY = (event.touches[0].clientY + event.touches[1].clientY) / 2;
                         const nextZoom = Math.max(1, Math.min(3, pinchStartZoom * ratio));
                         pinchCurrentRatio = nextZoom / Math.max(0.01, zoomFactor);
                         viewer.querySelectorAll('.page').forEach((page) => {
@@ -4001,6 +4025,24 @@ def _show_nta_pdf_dialog():
                     function finishPinch() {
                       if (!pinchStartDistance) return;
                       const nextZoom = Math.max(1, Math.min(3, pinchStartZoom * pinchCurrentRatio));
+
+                      // 제스처가 끝나는 순간, 손가락 중심 아래에 보이던 페이지 내 위치를 저장한다.
+                      // CSS 임시 확대(transform)가 아직 적용된 상태에서 좌표를 읽어야 한다.
+                      const viewerRect = viewer.getBoundingClientRect();
+                      const element = document.elementFromPoint(pinchCenterX, pinchCenterY);
+                      const pageElement = element && element.closest ? element.closest('.page') : null;
+                      let restoreAnchor = null;
+                      if (pageElement) {
+                        const pageRect = pageElement.getBoundingClientRect();
+                        restoreAnchor = {
+                          page: Number(pageElement.dataset.page),
+                          xRatio: Math.max(0, Math.min(1, (pinchCenterX - pageRect.left) / Math.max(1, pageRect.width))),
+                          yRatio: Math.max(0, Math.min(1, (pinchCenterY - pageRect.top) / Math.max(1, pageRect.height))),
+                          viewportX: pinchCenterX - viewerRect.left,
+                          viewportY: pinchCenterY - viewerRect.top
+                        };
+                      }
+
                       pinchStartDistance = 0;
                       viewer.querySelectorAll('.page').forEach((page) => {
                         page.style.transform = '';
@@ -4008,7 +4050,7 @@ def _show_nta_pdf_dialog():
                       });
                       if (Math.abs(nextZoom - zoomFactor) > 0.015) {
                         zoomFactor = nextZoom;
-                        renderPages(pinchTargetPage);
+                        renderPages(restoreAnchor ? restoreAnchor.page : pinchTargetPage, restoreAnchor);
                       } else {
                         zoomLabel.textContent = Math.round(zoomFactor * 100) + '%';
                       }
