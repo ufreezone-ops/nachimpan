@@ -11416,8 +11416,7 @@ line-height: 1 !important;
 }
 @media (max-width: 640px) {
 .st-key-retirement-connection-platform {
-    padding-left: 0.25rem !important;
-    padding-right: 0.25rem !important;
+    padding: 0.25rem !important;
 }
 .st-key-retirement-connection-platform .retirement-station-previous,
 .st-key-retirement-connection-platform .retirement-station-current {
