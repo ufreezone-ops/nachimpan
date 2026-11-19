@@ -6162,6 +6162,9 @@ if selected_page == "우리집 가계부":
             ):
                 _show_income_wage_stats_dialog()
 
+        # 안내 문장과 다음 버튼 사이 여백
+        st.markdown("<div style='height: 1rem;'></div>", unsafe_allow_html=True)
+
         # 기존 다음 버튼 유지
         if st.button("다음 →", key="finance_next", type="primary"):
                 _navigate_to_page_top("삶과 생계수단")
