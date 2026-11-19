@@ -4408,7 +4408,7 @@ def _show_retirement_connection_dialog():
         with _top_arrow_col:
             st.markdown(
                 "<div class='retirement-top-arrow' aria-hidden='true'>"
-                "<span style='display:block; color:#159447; font-size:28px; "
+                "<span style='display:block; width:100%; color:#159447; font-size:25px; "
                 "font-family:Arial,sans-serif; font-weight:700; line-height:1; text-align:center; transform:translateY(-4px);'>&gt;</span>"
                 "</div>",
                 unsafe_allow_html=True,
