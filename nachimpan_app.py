@@ -3679,7 +3679,7 @@ def _show_master_resource_dialog():
 
 @st.dialog("국민이전계정 원문", width="large")
 def _show_nta_pdf_dialog():
-    """앱 서버의 원자료 PDF를 브라우저 기본 뷰어로 8페이지부터 표시한다."""
+    """PDF.js를 이용해 원문 전체 페이지를 모달 안에서 연속 표시한다."""
     if not OFFICIAL_PDF_PATH.exists():
         st.error("국민이전계정 원문 PDF 파일을 찾을 수 없습니다.")
         st.caption(str(OFFICIAL_PDF_PATH))
@@ -3700,20 +3700,87 @@ def _show_nta_pdf_dialog():
             unsafe_allow_html=True,
         )
         try:
-            # 최초 아이폰에서 PDF 표시가 확인됐던 Base64 data URI 방식을 복원한다.
-            # PDF 원본은 계속 dev 저장소의 data/원자료에서 읽는다.
             _pdf_base64 = base64.b64encode(OFFICIAL_PDF_PATH.read_bytes()).decode("ascii")
-            st.components.v1.html(
-                f"""
-                <iframe
-                    title="2024년 국민이전계정 보도자료"
-                    src="data:application/pdf;base64,{_pdf_base64}#page=8&view=FitH"
-                    style="display:block; width:100%; height:80vh; min-height:560px; border:0; border-radius:8px;"
-                ></iframe>
-                """,
-                height=800,
-                scrolling=False,
-            )
+            _viewer_html = """
+            <!doctype html>
+            <html>
+            <head>
+              <meta name="viewport" content="width=device-width, initial-scale=1">
+              <style>
+                html, body { margin:0; padding:0; background:#f1f3f5; font-family:Arial,sans-serif; }
+                #status { position:sticky; top:0; z-index:5; padding:8px 12px; background:#fff;
+                          color:#444; border-bottom:1px solid #ddd; font-size:13px; }
+                #viewer { height:78vh; min-height:560px; overflow:auto; padding:10px 0 24px;
+                          box-sizing:border-box; -webkit-overflow-scrolling:touch; }
+                .page { margin:0 auto 12px; width:fit-content; max-width:calc(100% - 12px);
+                        background:#fff; box-shadow:0 1px 5px #0002; }
+                .page canvas { display:block; max-width:100%; height:auto; }
+                #error { display:none; padding:16px; color:#a00; white-space:pre-wrap; }
+              </style>
+            </head>
+            <body>
+              <div id="status">PDF 원문을 불러오는 중입니다…</div>
+              <div id="viewer"></div>
+              <div id="error"></div>
+              <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+              <script>
+                (async function () {
+                  const status = document.getElementById('status');
+                  const viewer = document.getElementById('viewer');
+                  const errorBox = document.getElementById('error');
+                  try {
+                    if (!window.pdfjsLib) throw new Error('PDF.js 라이브러리를 불러오지 못했습니다. 네트워크 연결을 확인해 주세요.');
+                    pdfjsLib.GlobalWorkerOptions.workerSrc =
+                      'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+                    const binary = atob('__PDF_BASE64__');
+                    const bytes = new Uint8Array(binary.length);
+                    for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
+                    const pdf = await pdfjsLib.getDocument({data: bytes}).promise;
+                    status.textContent = '총 ' + pdf.numPages + '페이지 · 8페이지부터 볼 수 있습니다';
+                    const canvases = [];
+                    for (let pageNo = 1; pageNo <= pdf.numPages; pageNo++) {
+                      const page = await pdf.getPage(pageNo);
+                      const baseViewport = page.getViewport({scale: 1});
+                      const availableWidth = Math.max(280, viewer.clientWidth - 24);
+                      const scale = Math.min(availableWidth / baseViewport.width, 1.6);
+                      const viewport = page.getViewport({scale: scale});
+                      const wrapper = document.createElement('div');
+                      wrapper.className = 'page';
+                      wrapper.id = 'pdf-page-' + pageNo;
+                      const canvas = document.createElement('canvas');
+                      const context = canvas.getContext('2d');
+                      const pixelRatio = Math.min(window.devicePixelRatio || 1, 1.5);
+                      canvas.width = Math.floor(viewport.width * pixelRatio);
+                      canvas.height = Math.floor(viewport.height * pixelRatio);
+                      canvas.style.width = Math.floor(viewport.width) + 'px';
+                      canvas.style.height = Math.floor(viewport.height) + 'px';
+                      wrapper.appendChild(canvas);
+                      viewer.appendChild(wrapper);
+                      canvases.push(canvas);
+                      await page.render({
+                        canvasContext: context,
+                        viewport: viewport,
+                        transform: pixelRatio === 1 ? null : [pixelRatio, 0, 0, pixelRatio, 0, 0]
+                      }).promise;
+                      status.textContent = pageNo + ' / ' + pdf.numPages + '페이지 불러오는 중…';
+                    }
+                    status.textContent = '총 ' + pdf.numPages + '페이지 · 8페이지부터 표시';
+                    requestAnimationFrame(function () {
+                      const target = document.getElementById('pdf-page-8');
+                      if (target) viewer.scrollTop = target.offsetTop - viewer.offsetTop;
+                    });
+                  } catch (err) {
+                    errorBox.style.display = 'block';
+                    errorBox.textContent = 'PDF 표시 오류: ' + (err && err.message ? err.message : String(err));
+                    status.textContent = 'PDF를 표시하지 못했습니다';
+                  }
+                })();
+              </script>
+            </body>
+            </html>
+            """
+            _viewer_html = _viewer_html.replace("__PDF_BASE64__", _pdf_base64)
+            st.components.v1.html(_viewer_html, height=820, scrolling=False)
         except Exception as _error:
             st.error(f"국민이전계정 원문을 표시하지 못했습니다: {_error}")
 
