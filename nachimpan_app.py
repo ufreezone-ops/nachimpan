@@ -4402,15 +4402,16 @@ def _show_retirement_connection_dialog():
             item["title"],
         )
     )
-    # 추천 목록: 연관성 상위 3개는 읽음 여부와 무관하게 노출하고,
-    # 나머지 후보 중 최대 2개를 연결창 단위의 고정 난수로 추가한다.
-    _recommend_rows = list(_related_rows[:3])
-    _recommend_pool = list(_related_rows[3:])
-    if _recommend_pool:
-        _random_seed = "|".join([str(_current_key or "")] + [str(_key) for _key in _history])
-        _recommend_rows.extend(
-            random.Random(_random_seed).sample(_recommend_pool, min(2, len(_recommend_pool)))
-        )
+    # 하단 추천은 보고서 간 내용평가 순위만 사용한다.
+    # 상단 '다음' 칸에 이미 표시된 보고서는 중복하지 않고, 새로운 보고서 최대 5개를 보여준다.
+    _next_candidate_key = (
+        _related_rows[0].get("_candidate_key") if _related_rows else None
+    )
+    _recommend_rows = [
+        _item for _item in _related_rows
+        if _item.get("resource_type") == "보고서"
+        and _item.get("_candidate_key") != _next_candidate_key
+    ][:5]
     _past_records = []
     for _history_key in reversed(_history):
         _history_record = _by_source.get(_history_key) or _by_resource.get(_history_key)
@@ -5006,14 +5007,31 @@ def _show_retirement_connection_dialog():
                         st.caption("현재 자료에서 이어지는 추천 자료가 없습니다.")
 
         with st.container(key="retirement-connection-close-cta"):
-            if st.button("닫기", key="retirement_connection_end"):
-                st.session_state["_retirement_explorer_open"] = False
-                st.session_state["_retirement_entry_open"] = False
-                st.session_state["_retirement_connection_open"] = False
-                st.session_state.pop("_retirement_explorer_source_id", None)
-                st.session_state.pop("_retirement_explorer_resource_id", None)
-                st.session_state.pop("_retirement_explorer_history", None)
-                st.rerun()
+            _close_col, _stats_col = st.columns([1, 1], gap="small")
+            with _close_col:
+                if st.button("닫기", key="retirement_connection_end"):
+                    st.session_state["_retirement_explorer_open"] = False
+                    st.session_state["_retirement_entry_open"] = False
+                    st.session_state["_retirement_connection_open"] = False
+                    st.session_state.pop("_retirement_explorer_source_id", None)
+                    st.session_state.pop("_retirement_explorer_resource_id", None)
+                    st.session_state.pop("_retirement_explorer_history", None)
+                    st.rerun()
+            with _stats_col:
+                if st.button(
+                    "🧭",
+                    key="retirement_connection_open_stats",
+                    type="secondary",
+                    help="통계 자료실에서 전체 보고서와 자료 둘러보기",
+                ):
+                    st.session_state["_pending_nav"] = "통계"
+                    st.session_state["_retirement_explorer_open"] = False
+                    st.session_state["_retirement_entry_open"] = False
+                    st.session_state["_retirement_connection_open"] = False
+                    st.session_state.pop("_retirement_explorer_source_id", None)
+                    st.session_state.pop("_retirement_explorer_resource_id", None)
+                    st.session_state.pop("_retirement_explorer_history", None)
+                    st.rerun()
 
 
 HOUSING_PRICE_SOURCE = {
@@ -12986,6 +13004,27 @@ div.st-key-retirement-connection-close-cta [data-testid="stElementContainer"] {
     width: 100% !important;
     display: flex !important;
     justify-content: center !important;
+}
+div.st-key-retirement-connection-close-cta div.st-key-retirement-connection-open-stats [data-testid="stButton"] button,
+div.st-key-retirement-connection-close-cta div.st-key-retirement-connection-open-stats [data-testid="stButton"] button:hover,
+div.st-key-retirement-connection-close-cta div.st-key-retirement-connection-open-stats [data-testid="stButton"] button:focus,
+div.st-key-retirement-connection-close-cta div.st-key-retirement-connection-open-stats [data-testid="stButton"] button:focus-visible {
+    width: 48px !important;
+    min-width: 48px !important;
+    max-width: 48px !important;
+    min-height: 2.4rem !important;
+    padding: 0.15rem !important;
+    border: 2px solid #159447 !important;
+    border-radius: 999px !important;
+    background: #ffffff !important;
+    color: #159447 !important;
+    -webkit-text-fill-color: #159447 !important;
+    box-shadow: none !important;
+}
+div.st-key-retirement-connection-close-cta div.st-key-retirement-connection-open-stats [data-testid="stButton"] button p {
+    margin: 0 !important;
+    font-size: 23px !important;
+    line-height: 1 !important;
 }
 </style>
 """, unsafe_allow_html=True)
