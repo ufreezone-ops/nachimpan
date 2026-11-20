@@ -2352,6 +2352,12 @@ if st.session_state.pop("_nav_scroll_to_start_once", False):
         unsafe_allow_html=True,
     )
 
+if st.session_state.pop("_nav_scroll_to_end_once", False):
+    st.markdown(
+        "<div id='nav-scroll-to-end-once' style='display:none;'></div>",
+        unsafe_allow_html=True,
+    )
+
 # 메뉴의 실제 스크롤 위치를 읽고, 고정 shell에 좌우 화살표 상태 반영
 st.components.v1.html(
     """
@@ -2443,6 +2449,20 @@ st.components.v1.html(
                     }
                 }
                 forceStartMarker.remove();
+            }
+
+            // 일회성 요청이 있으면 메뉴 슬라이드를 마지막 탭 위치로 이동
+            const forceEndMarker = doc.getElementById("nav-scroll-to-end-once");
+            if (forceEndMarker) {
+                const target = getScrollTarget();
+                if (target) {
+                    const maxScroll = Math.max(0, target.scrollWidth - target.clientWidth);
+                    target.scrollLeft = maxScroll;
+                    if (typeof target.scrollTo === "function") {
+                        target.scrollTo({ left: maxScroll, behavior: "smooth" });
+                    }
+                }
+                forceEndMarker.remove();
             }
 
             // 현재 선택된 탭이 가로 스크롤 영역 밖에 있으면 자연스럽게 화면 안으로 이동
@@ -5036,7 +5056,8 @@ def _show_retirement_connection_dialog():
                     key="retirement_connection_open_stats",
                     type="tertiary",
                 ):
-                    # 다른 탭의 '다음' 버튼과 동일한 공통 이동 경로 사용
+                    # 상단 메뉴의 마지막 나침반 탭이 보이도록 가로 스크롤 이동 요청
+                    st.session_state["_nav_scroll_to_end_once"] = True
                     _navigate_to_page_top("통계")
                     st.session_state["_retirement_explorer_open"] = False
                     st.session_state["_retirement_entry_open"] = False
