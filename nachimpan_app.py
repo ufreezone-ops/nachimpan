@@ -2338,7 +2338,13 @@ if st.session_state.pop("_scroll_to_top_once", False):
                     window.parent.scrollTo(0, 0);
                 } catch (e) {}
             };
-            requestAnimationFrame(() => requestAnimationFrame(scrollToTop));
+            // 탭 전환 직후 Streamlit이 본문 높이를 다시 계산하므로
+            // 초기 렌더 직후와 레이아웃 안정화 후에 맨 위 위치를 재확인한다.
+            requestAnimationFrame(() => requestAnimationFrame(() => {
+                scrollToTop();
+                setTimeout(scrollToTop, 120);
+                setTimeout(scrollToTop, 280);
+            }));
         })();
         </script>
         """,
