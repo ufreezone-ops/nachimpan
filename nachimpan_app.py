@@ -1971,6 +1971,19 @@ div.st-key-main_nav_button_5 button p {
 div.st-key-main_nav_button_5 button:hover p {
     filter: brightness(1.25);
 }
+/* 통계 탭이 선택되면 나침반 아이콘에도 활성 상태를 명확히 표시 */
+div.st-key-main_nav_button_5 button[kind="primary"],
+div.st-key-main_nav_button_5 button[kind="primary"]:hover,
+div.st-key-main_nav_button_5 button[kind="primary"]:focus,
+div.st-key-main_nav_button_5 button[kind="primary"]:focus-visible {
+    background: #0F766E !important;
+    background-color: #0F766E !important;
+    border: 1px solid #5EEAD4 !important;
+    border-radius: 8px !important;
+    color: #FFFFFF !important;
+    -webkit-text-fill-color: #FFFFFF !important;
+    box-shadow: 0 0 0 1px rgba(94, 234, 212, 0.35) !important;
+}
 
 </style>
 """, unsafe_allow_html=True)
@@ -5023,6 +5036,9 @@ def _show_retirement_connection_dialog():
                     key="retirement_connection_open_stats",
                     type="tertiary",
                 ):
+                    # 연결창에서 통계로 이동할 때 상단 메뉴의 실제 선택 상태도 함께 갱신
+                    st.session_state["active_navigation_default"] = "통계"
+                    st.session_state["active_navigation_key"] = "main_navigation"
                     st.session_state["_pending_nav"] = "통계"
                     st.session_state["_retirement_explorer_open"] = False
                     st.session_state["_retirement_entry_open"] = False
@@ -12998,6 +13014,20 @@ div.st-key-retirement-connection-close-cta div.stButton > button[data-testid="st
     color: #000000 !important;
     -webkit-text-fill-color: #000000 !important;
     font-weight: 850 !important;
+}
+/* 하단 닫기·통계 이동 버튼은 좁은 화면에서도 반드시 한 줄 유지 */
+div.st-key-retirement-connection-close-cta [data-testid="stHorizontalBlock"] {
+    display: flex !important;
+    flex-direction: row !important;
+    flex-wrap: nowrap !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 0.75rem !important;
+}
+div.st-key-retirement-connection-close-cta [data-testid="column"] {
+    flex: 0 1 50% !important;
+    width: 50% !important;
+    min-width: 0 !important;
 }
 div.st-key-retirement-connection-close-cta [data-testid="stElementContainer"] {
     width: 100% !important;
