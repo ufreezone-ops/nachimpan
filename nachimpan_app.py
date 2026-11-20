@@ -5067,6 +5067,7 @@ def _show_retirement_connection_dialog():
                     st.session_state.pop("_retirement_explorer_source_id", None)
                     st.session_state.pop("_retirement_explorer_resource_id", None)
                     st.session_state.pop("_retirement_explorer_history", None)
+                    st.session_state.pop("_retirement_connection_origin_page", None)
                     st.rerun()
             with _stats_col:
                 if st.button(
