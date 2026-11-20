@@ -4294,9 +4294,9 @@ def _show_retirement_connection_dialog():
             "_candidate_key": _key,
         }
         _old = _candidate_by_key.get(_key)
-        _rank = ( _candidate["_already_read"], not _candidate["_direct"], -_candidate["raw_score"], _candidate["title"] )
+        _rank = (-_candidate["raw_score"], not _candidate["_direct"], _candidate["_already_read"], _candidate["title"])
         _old_rank = (
-            (_old["_already_read"], not _old["_direct"], -_old["raw_score"], _old["title"])
+            (-_old["raw_score"], not _old["_direct"], _old["_already_read"], _old["title"])
             if _old else None
         )
         if _old is None or _rank < _old_rank:
@@ -4396,9 +4396,9 @@ def _show_retirement_connection_dialog():
     _related_rows = list(_candidate_by_key.values())
     _related_rows.sort(
         key=lambda item: (
-            item["_already_read"],
             -item["raw_score"],
             not item["_direct"],
+            item["_already_read"],
             item["title"],
         )
     )
