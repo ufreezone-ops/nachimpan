@@ -4329,6 +4329,7 @@ def _show_retirement_report_dialog():
             if st.button("연결", key="retirement_report_open_connection", type="secondary"):
                 st.session_state["_retirement_connection_open"] = True
                 st.session_state["_retirement_connection_origin_page"] = selected_page
+                st.session_state["_retirement_connection_origin_anchor"] = ".st-key-retirement-report-connection-cta button"
                 st.rerun()
 
 
@@ -5298,6 +5299,7 @@ def _show_housing_price_stats_dialog():
                 st.session_state["_retirement_entry_open"] = False
                 st.session_state["_retirement_connection_open"] = True
                 st.session_state["_retirement_connection_origin_page"] = selected_page
+                st.session_state["_retirement_connection_origin_anchor"] = ".st-key-housing-price-title-row button"
                 st.session_state["_retirement_connection_entry_source_ids"] = ["6051500-00"]
                 st.session_state.pop("_retirement_explorer_source_id", None)
                 st.session_state.pop("_retirement_explorer_resource_id", None)
