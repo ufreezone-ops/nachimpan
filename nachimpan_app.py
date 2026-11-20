@@ -5081,9 +5081,7 @@ def _show_retirement_connection_dialog():
                     st.session_state["_retirement_explorer_open"] = False
                     st.session_state["_retirement_entry_open"] = False
                     st.session_state["_retirement_connection_open"] = False
-                    st.session_state.pop("_retirement_explorer_source_id", None)
-                    st.session_state.pop("_retirement_explorer_resource_id", None)
-                    st.session_state.pop("_retirement_explorer_history", None)
+                    # 보고서 선택과 읽은 이력은 통계 화면을 다녀온 뒤 연결창 복귀에 사용하므로 삭제하지 않는다.
                     st.rerun()
 
 
@@ -9106,7 +9104,7 @@ elif selected_page == "통계":
         left: 50% !important;
         transform: translateX(-50%) !important;
         width: max-content !important;
-        max-width: calc(100vw - 1rem) !important;
+        max-width: calc(100vw - 1.25rem) !important;
         box-sizing: border-box !important;
         z-index: 9999 !important;
         padding: 0 !important;
@@ -9115,29 +9113,52 @@ elif selected_page == "통계":
         box-shadow: none !important;
     }
     div.st-key-retirement-stats-return-bar [data-testid="stHorizontalBlock"] {
+        display: flex !important;
         flex-wrap: nowrap !important;
         align-items: center !important;
-        gap: 0.45rem !important;
+        justify-content: center !important;
+        gap: 0.7rem !important;
+        width: max-content !important;
+        max-width: calc(100vw - 1.25rem) !important;
+    }
+    div.st-key-retirement-stats-return-bar [data-testid="column"] {
+        flex: 0 1 auto !important;
+        width: auto !important;
+        min-width: 0 !important;
+    }
+    div.st-key-retirement-stats-return-bar [data-testid="stElementContainer"],
+    div.st-key-retirement-stats-return-bar [data-testid="stButton"] {
+        width: auto !important;
+        display: flex !important;
+        justify-content: center !important;
     }
     div.st-key-retirement-stats-return-bar [data-testid="stButton"] button {
-        width: auto !important;
-        min-width: max-content !important;
-        min-height: 2.35rem !important;
-        padding: 0.42rem 0.8rem !important;
-        border: 1.5px solid #159447 !important;
+        width: 120px !important;
+        min-width: 120px !important;
+        max-width: 120px !important;
+        min-height: 2.4rem !important;
+        padding: 0.3rem 0.25rem !important;
+        border: 6px solid #159447 !important;
         border-radius: 999px !important;
         background: #ffffff !important;
-        color: #17452a !important;
-        -webkit-text-fill-color: #17452a !important;
-        font-size: 0.86rem !important;
-        font-weight: 750 !important;
+        color: #000000 !important;
+        -webkit-text-fill-color: #000000 !important;
+        font-size: 0.84rem !important;
+        font-weight: 850 !important;
         white-space: nowrap !important;
-        box-shadow: 0 2px 8px rgba(20, 80, 45, 0.16) !important;
+        box-shadow: none !important;
         flex: 0 0 auto !important;
+    }
+    div.st-key-retirement-stats-return-bar [data-testid="stButton"] button p,
+    div.st-key-retirement-stats-return-bar [data-testid="stButton"] button span,
+    div.st-key-retirement-stats-return-bar [data-testid="stButton"] button div {
+        color: #000000 !important;
+        -webkit-text-fill-color: #000000 !important;
+        font-weight: 850 !important;
     }
     div.st-key-retirement-stats-return-bar [data-testid="stButton"] button:hover {
         background: #e8f5ec !important;
-        border-color: #087b3c !important;
+        border-color: #159447 !important;
     }
     </style>
     """, unsafe_allow_html=True)
