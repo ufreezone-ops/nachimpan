@@ -5307,6 +5307,9 @@ if (
     st.session_state.pop("_active_source_id", None)
     st.session_state.pop("_source_return_context", None)
     st.session_state.pop("_source_open_anchor", None)
+    # 연결창을 열어 둔 채 원래 탭으로 돌아가는 중에는 복귀 경로를 유지한다.
+    if not st.session_state.get("_retirement_explorer_open", False):
+        st.session_state.pop("_retirement_connection_origin_page", None)
 
 
 #########################################################
