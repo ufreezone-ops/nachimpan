@@ -5007,7 +5007,7 @@ def _show_retirement_connection_dialog():
                         st.caption("현재 자료에서 이어지는 추천 자료가 없습니다.")
 
         with st.container(key="retirement-connection-close-cta"):
-            _close_col, _stats_col = st.columns([1, 1], gap="small")
+            _left_spacer, _close_col, _stats_col, _right_spacer = st.columns([1, 0.8, 0.6, 1], gap="small")
             with _close_col:
                 if st.button("닫기", key="retirement_connection_end"):
                     st.session_state["_retirement_explorer_open"] = False
@@ -13005,10 +13005,10 @@ div.st-key-retirement-connection-close-cta [data-testid="stElementContainer"] {
     display: flex !important;
     justify-content: center !important;
 }
-div.st-key-retirement-connection-close-cta div.st-key-retirement-connection-open-stats [data-testid="stButton"] button,
-div.st-key-retirement-connection-close-cta div.st-key-retirement-connection-open-stats [data-testid="stButton"] button:hover,
-div.st-key-retirement-connection-close-cta div.st-key-retirement-connection-open-stats [data-testid="stButton"] button:focus,
-div.st-key-retirement-connection-close-cta div.st-key-retirement-connection-open-stats [data-testid="stButton"] button:focus-visible {
+div.st-key-retirement-connection-close-cta .st-key-retirement_connection_open_stats [data-testid="stButton"] button,
+div.st-key-retirement-connection-close-cta .st-key-retirement_connection_open_stats [data-testid="stButton"] button:hover,
+div.st-key-retirement-connection-close-cta .st-key-retirement_connection_open_stats [data-testid="stButton"] button:focus,
+div.st-key-retirement-connection-close-cta .st-key-retirement_connection_open_stats [data-testid="stButton"] button:focus-visible {
     width: 48px !important;
     min-width: 48px !important;
     max-width: 48px !important;
@@ -13021,7 +13021,7 @@ div.st-key-retirement-connection-close-cta div.st-key-retirement-connection-open
     -webkit-text-fill-color: #159447 !important;
     box-shadow: none !important;
 }
-div.st-key-retirement-connection-close-cta div.st-key-retirement-connection-open-stats [data-testid="stButton"] button p {
+div.st-key-retirement-connection-close-cta .st-key-retirement_connection_open_stats [data-testid="stButton"] button p {
     margin: 0 !important;
     font-size: 23px !important;
     line-height: 1 !important;
