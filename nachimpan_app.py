@@ -2543,6 +2543,40 @@ def _restore_source_return():
     st.session_state.pop("_source_open_anchor", None)
 
 
+def _return_to_retirement_connection():
+    """통계 자료실에서 직전 연결창으로 돌아간다."""
+    _origin_page = st.session_state.get("_retirement_connection_origin_page")
+    if not _origin_page:
+        return
+    st.session_state["active_navigation_default"] = _origin_page
+    st.session_state["active_navigation_key"] = "main_navigation"
+    st.session_state["_pending_nav"] = _origin_page
+    st.session_state["_scroll_to_top_once"] = True
+    st.session_state["_retirement_explorer_open"] = True
+    st.session_state["_retirement_entry_open"] = False
+    st.session_state["_retirement_connection_open"] = True
+    st.session_state["_retirement_connection_origin_page"] = selected_page
+
+
+def _return_to_retirement_origin():
+    """연결창을 처음 열었던 탭으로 돌아가고 연결 탐색 상태를 닫는다."""
+    _origin_page = st.session_state.get("_retirement_connection_origin_page")
+    if not _origin_page:
+        return
+    st.session_state["active_navigation_default"] = _origin_page
+    st.session_state["active_navigation_key"] = "main_navigation"
+    st.session_state["_pending_nav"] = _origin_page
+    st.session_state["_scroll_to_top_once"] = True
+    st.session_state["_retirement_explorer_open"] = False
+    st.session_state["_retirement_entry_open"] = False
+    st.session_state["_retirement_connection_open"] = False
+    st.session_state.pop("_retirement_connection_origin_page", None)
+    st.session_state.pop("_retirement_connection_entry_source_ids", None)
+    st.session_state.pop("_retirement_explorer_source_id", None)
+    st.session_state.pop("_retirement_explorer_resource_id", None)
+    st.session_state.pop("_retirement_explorer_history", None)
+
+
 def _render_retirement_explorer_report(source_id):
     """은퇴 생활비 나침반에서 여는 보고서 본문을 팝업 안에 표시한다."""
     if source_id == "6050500-01":
@@ -4248,6 +4282,7 @@ def _show_retirement_report_dialog():
         with _button_col:
             if st.button("연결", key="retirement_report_open_connection", type="secondary"):
                 st.session_state["_retirement_connection_open"] = True
+                st.session_state["_retirement_connection_origin_page"] = selected_page
                 st.rerun()
 
 
@@ -5217,6 +5252,7 @@ def _show_housing_price_stats_dialog():
                 st.session_state["_retirement_explorer_open"] = True
                 st.session_state["_retirement_entry_open"] = False
                 st.session_state["_retirement_connection_open"] = True
+                st.session_state["_retirement_connection_origin_page"] = selected_page
                 st.session_state["_retirement_connection_entry_source_ids"] = ["6051500-00"]
                 st.session_state.pop("_retirement_explorer_source_id", None)
                 st.session_state.pop("_retirement_explorer_resource_id", None)
@@ -5468,6 +5504,7 @@ if selected_page == "우리집 가계부":
                             st.session_state["_retirement_explorer_open"] = True
                             st.session_state["_retirement_entry_open"] = False
                             st.session_state["_retirement_connection_open"] = True
+                            st.session_state["_retirement_connection_origin_page"] = selected_page
                             st.session_state["_retirement_connection_entry_source_ids"] = ["6050400-01", "6051400-00", "6051300-00"]
                             st.session_state.pop("_retirement_explorer_source_id", None)
                             st.session_state.pop("_retirement_explorer_resource_id", None)
@@ -5840,6 +5877,7 @@ if selected_page == "우리집 가계부":
                     st.session_state["_retirement_explorer_open"] = True
                     st.session_state["_retirement_entry_open"] = False
                     st.session_state["_retirement_connection_open"] = True
+                    st.session_state["_retirement_connection_origin_page"] = selected_page
                     st.session_state["_retirement_connection_entry_source_ids"] = ["6051200-00", "6050700-00"]
                     st.session_state.pop("_retirement_explorer_source_id", None)
                     st.session_state.pop("_retirement_explorer_resource_id", None)
@@ -8636,6 +8674,7 @@ elif selected_page == "우리집 재정곡선":
             st.session_state["_retirement_explorer_open"] = True
             st.session_state["_retirement_entry_open"] = False
             st.session_state["_retirement_connection_open"] = True
+            st.session_state["_retirement_connection_origin_page"] = selected_page
             st.session_state["_retirement_connection_entry_source_ids"] = list(_entry_source_ids)
             st.session_state.pop("_retirement_explorer_source_id", None)
             st.session_state.pop("_retirement_explorer_resource_id", None)
@@ -9054,51 +9093,69 @@ elif selected_page == "AI 시선":
 #########################################################
 elif selected_page == "통계":
     #--------------------------------------------------------
-    # 6.06.01.00 | 출처 자료 표시 및 원위치 복귀
+    # 6.06.01.00 | 연결창 복귀 버튼 — 스크롤 고정형
     #--------------------------------------------------------
     st.markdown("""
     <style>
-    div.st-key-source-return-bar {
+    div.st-key-retirement-stats-return-bar {
         position: fixed !important;
         top: 7rem !important;
         left: 50% !important;
         transform: translateX(-50%) !important;
         width: max-content !important;
-        max-width: calc(100vw - 1.5rem) !important;
+        max-width: calc(100vw - 1rem) !important;
         box-sizing: border-box !important;
         z-index: 9999 !important;
-        background: transparent !important;
         padding: 0 !important;
         border: 0 !important;
+        background: transparent !important;
         box-shadow: none !important;
     }
-    div.st-key-source-return-bar [data-testid="stButton"] button {
+    div.st-key-retirement-stats-return-bar [data-testid="stHorizontalBlock"] {
+        flex-wrap: nowrap !important;
+        align-items: center !important;
+        gap: 0.45rem !important;
+    }
+    div.st-key-retirement-stats-return-bar [data-testid="stButton"] button {
         width: auto !important;
         min-width: max-content !important;
-        padding: 0.42rem 0.85rem !important;
+        min-height: 2.35rem !important;
+        padding: 0.42rem 0.8rem !important;
+        border: 1.5px solid #159447 !important;
         border-radius: 999px !important;
-        border: 1px solid #38BDF8 !important;
-        background: #0284C7 !important;
-        background-color: #0284C7 !important;
-        color: #FFFFFF !important;
-        -webkit-text-fill-color: #FFFFFF !important;
-        font-weight: 700 !important;
-        box-shadow: 0 2px 8px rgba(2, 132, 199, 0.25) !important;
+        background: #ffffff !important;
+        color: #17452a !important;
+        -webkit-text-fill-color: #17452a !important;
+        font-size: 0.86rem !important;
+        font-weight: 750 !important;
         white-space: nowrap !important;
+        box-shadow: 0 2px 8px rgba(20, 80, 45, 0.16) !important;
         flex: 0 0 auto !important;
     }
-    div.st-key-source-return-bar [data-testid="stButton"] button:hover {
-        background: #0369A1 !important;
-        background-color: #0369A1 !important;
-        border-color: #7DD3FC !important;
-        color: #FFFFFF !important;
-        -webkit-text-fill-color: #FFFFFF !important;
+    div.st-key-retirement-stats-return-bar [data-testid="stButton"] button:hover {
+        background: #e8f5ec !important;
+        border-color: #087b3c !important;
     }
     </style>
     """, unsafe_allow_html=True)
 
-    _active_source_id = st.session_state.get("_active_source_id")
+    if st.session_state.get("_retirement_connection_origin_page"):
+        with st.container(key="retirement-stats-return-bar"):
+            _back_connection_col, _back_origin_col = st.columns([1, 1], gap="small")
+            with _back_connection_col:
+                st.button(
+                    "← 연결창으로",
+                    key="stats_return_to_connection",
+                    on_click=_return_to_retirement_connection,
+                )
+            with _back_origin_col:
+                st.button(
+                    "↩ 처음 탭으로",
+                    key="stats_return_to_origin",
+                    on_click=_return_to_retirement_origin,
+                )
 
+    _active_source_id = st.session_state.get("_active_source_id")
     _source_by_id, _ = _nachimpan_master_report_maps()
     _source_labels = {
         _source_id: _record.get("title", "")
@@ -9108,14 +9165,6 @@ elif selected_page == "통계":
         "6030200-01": "국가데이터처 「2024년 국민이전계정」",
     })
     if _active_source_id in _source_labels:
-        with st.container(key="source-return-bar"):
-            st.button(
-                "← 이전 위치로 돌아가기",
-                key="source_return_button",
-                use_container_width=False,
-                on_click=_restore_source_return,
-            )
-
         st.markdown("<div style='height: 42px;'></div>", unsafe_allow_html=True)
         st.caption(f"선택한 출처: {_source_labels[_active_source_id]}")
 
