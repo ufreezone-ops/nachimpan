@@ -9152,7 +9152,7 @@ elif selected_page == "통계":
     <style>
     div.st-key-retirement-stats-return-bar {
         position: fixed !important;
-        top: calc(7rem - 3.75rem) !important;
+        top: calc(7rem - 2.55rem) !important;
         left: 50% !important;
         transform: translateX(-50%) !important;
         width: max-content !important;
