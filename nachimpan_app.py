@@ -2431,22 +2431,6 @@ st.components.v1.html(
             }
             updateNavState();
 
-            // 일회성 요청에 따라 실제 메뉴 스크롤 영역만 이동 (React 관리 DOM 직접 수정 없음)
-            if (forceStartScroll || forceEndScroll) {
-                const target = getScrollTarget();
-                if (target) {
-                    const maxScroll = Math.max(0, target.scrollWidth - target.clientWidth);
-                    const left = forceEndScroll ? maxScroll : 0;
-                    target.scrollLeft = left;
-                    if (typeof target.scrollTo === "function") {
-                        target.scrollTo({
-                            left,
-                            behavior: forceEndScroll ? "smooth" : "instant"
-                        });
-                    }
-                }
-            }
-
             // 현재 선택된 탭이 가로 스크롤 영역 밖에 있으면 자연스럽게 화면 안으로 이동
             const revealActiveTab = () => {
                 const target = getScrollTarget();
@@ -2472,7 +2456,24 @@ st.components.v1.html(
                 }
             };
 
-            requestAnimationFrame(() => requestAnimationFrame(revealActiveTab));
+            // 화면 전환 직후에는 이전 탭의 선택 상태가 잠시 남을 수 있으므로,
+            // 일회성 이동 요청은 렌더링이 끝난 뒤 실행하고 자동 탭 보정과 겹치지 않게 한다.
+            requestAnimationFrame(() => requestAnimationFrame(() => {
+                if (forceStartScroll || forceEndScroll) {
+                    const target = getScrollTarget();
+                    if (target) {
+                        const maxScroll = Math.max(0, target.scrollWidth - target.clientWidth);
+                        const left = forceEndScroll ? maxScroll : 0;
+                        target.scrollTo({
+                            left,
+                            behavior: forceEndScroll ? "smooth" : "instant"
+                        });
+                        updateNavState();
+                    }
+                } else {
+                    revealActiveTab();
+                }
+            }));
         } catch (e) {}
     })();
     </script>
