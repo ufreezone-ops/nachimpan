@@ -5007,7 +5007,7 @@ def _show_retirement_connection_dialog():
                         st.caption("현재 자료에서 이어지는 추천 자료가 없습니다.")
 
         with st.container(key="retirement-connection-close-cta"):
-            _left_spacer, _close_col, _stats_col, _right_spacer = st.columns([1, 0.8, 0.6, 1], gap="small")
+            _close_col, _stats_col = st.columns([1, 1], gap="small")
             with _close_col:
                 if st.button("닫기", key="retirement_connection_end"):
                     st.session_state["_retirement_explorer_open"] = False
@@ -5021,8 +5021,7 @@ def _show_retirement_connection_dialog():
                 if st.button(
                     "🧭",
                     key="retirement_connection_open_stats",
-                    type="secondary",
-                    help="통계 자료실에서 전체 보고서와 자료 둘러보기",
+                    type="tertiary",
                 ):
                     st.session_state["_pending_nav"] = "통계"
                     st.session_state["_retirement_explorer_open"] = False
@@ -13005,25 +13004,36 @@ div.st-key-retirement-connection-close-cta [data-testid="stElementContainer"] {
     display: flex !important;
     justify-content: center !important;
 }
+div.st-key-retirement-connection-close-cta .st-key-retirement_connection_open_stats,
+div.st-key-retirement-connection-close-cta .st-key-retirement_connection_open_stats [data-testid="stElementContainer"],
+div.st-key-retirement-connection-close-cta .st-key-retirement_connection_open_stats [data-testid="stButton"] {
+    width: auto !important;
+    min-width: 0 !important;
+    border: 0 !important;
+    outline: 0 !important;
+    background: transparent !important;
+    box-shadow: none !important;
+}
 div.st-key-retirement-connection-close-cta .st-key-retirement_connection_open_stats [data-testid="stButton"] button,
 div.st-key-retirement-connection-close-cta .st-key-retirement_connection_open_stats [data-testid="stButton"] button:hover,
 div.st-key-retirement-connection-close-cta .st-key-retirement_connection_open_stats [data-testid="stButton"] button:focus,
 div.st-key-retirement-connection-close-cta .st-key-retirement_connection_open_stats [data-testid="stButton"] button:focus-visible {
-    width: 48px !important;
-    min-width: 48px !important;
-    max-width: 48px !important;
+    width: auto !important;
+    min-width: 0 !important;
+    max-width: none !important;
     min-height: 2.4rem !important;
-    padding: 0.15rem !important;
-    border: 2px solid #159447 !important;
-    border-radius: 999px !important;
-    background: #ffffff !important;
-    color: #159447 !important;
-    -webkit-text-fill-color: #159447 !important;
+    padding: 0.15rem 0.3rem !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    outline: 0 !important;
+    background: transparent !important;
+    color: inherit !important;
+    -webkit-text-fill-color: currentColor !important;
     box-shadow: none !important;
 }
 div.st-key-retirement-connection-close-cta .st-key-retirement_connection_open_stats [data-testid="stButton"] button p {
     margin: 0 !important;
-    font-size: 23px !important;
+    font-size: 27px !important;
     line-height: 1 !important;
 }
 </style>
