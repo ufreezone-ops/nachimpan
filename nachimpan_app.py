@@ -5036,10 +5036,8 @@ def _show_retirement_connection_dialog():
                     key="retirement_connection_open_stats",
                     type="tertiary",
                 ):
-                    # 연결창에서 통계로 이동할 때 상단 메뉴의 실제 선택 상태도 함께 갱신
-                    st.session_state["active_navigation_default"] = "통계"
-                    st.session_state["active_navigation_key"] = "main_navigation"
-                    st.session_state["_pending_nav"] = "통계"
+                    # 다른 탭의 '다음' 버튼과 동일한 공통 이동 경로 사용
+                    _navigate_to_page_top("통계")
                     st.session_state["_retirement_explorer_open"] = False
                     st.session_state["_retirement_entry_open"] = False
                     st.session_state["_retirement_connection_open"] = False
