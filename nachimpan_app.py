@@ -4256,18 +4256,20 @@ def _show_retirement_connection_dialog():
     else:
         _history = []
 
-    # 연관성 자료는 내부 legacy_id로만 조회하고, 화면 표시는 마스터 원장을 따른다.
+    # 새 내용평가 원장을 기준으로 보고서 간 연결을 조회한다.
+    # resource_id로 마스터 원장과 연결하고, 기존 압축 원장은 참고 이력으로만 보존한다.
     _association_path = (
         Path(__file__).resolve().parent
-        / "data" / "연관성" / "보고서_쌍별연관성_1차.json.zlib.b64"
+        / "data" / "연관성" / "보고서_쌍별연관성_내용평가_v1.json"
     )
     try:
         _association_payload = json.loads(
-            zlib.decompress(
-                base64.b64decode(_association_path.read_text(encoding="utf-8"))
-            ).decode("utf-8")
+            _association_path.read_text(encoding="utf-8")
         )
-        _association_records = _association_payload.get("records", [])
+        _association_records = [
+            _row for _row in _association_payload.get("records", [])
+            if _row.get("resource_id_a") and _row.get("resource_id_b")
+        ]
     except Exception:
         _association_records = []
 
@@ -4309,21 +4311,27 @@ def _show_retirement_connection_dialog():
         _origin_resource_id = _origin_record.get("resource_id", "")
         _origin_legacy_id = _origin_record.get("legacy_id", "")
 
-        # 보고서 ↔ 보고서: 기존 쌍별 연관성 원장을 그대로 사용한다.
-        if _origin_legacy_id:
+        # 보고서 ↔ 보고서: 새 내용평가 원장을 resource_id 기준으로 조회한다.
+        if _origin_resource_id:
             for _row in _association_records:
-                if _row.get("id_a") == _origin_legacy_id:
-                    _other_legacy_id = _row.get("id_b")
-                elif _row.get("id_b") == _origin_legacy_id:
-                    _other_legacy_id = _row.get("id_a")
+                if _row.get("resource_id_a") == _origin_resource_id:
+                    _other_resource_id = _row.get("resource_id_b")
+                elif _row.get("resource_id_b") == _origin_resource_id:
+                    _other_resource_id = _row.get("resource_id_a")
                 else:
                     continue
-                _other_record = _by_legacy.get(_other_legacy_id)
+                _other_record = _by_resource.get(_other_resource_id)
                 if _other_record:
                     _other_key = _other_record.get("source_id", "")
+                    try:
+                        _content_score = float(_row.get("content_score", 0) or 0)
+                        _manual_adjustment = float(_row.get("manual_adjustment", 0) or 0)
+                        _effective_score = max(0, min(100, round(_content_score + _manual_adjustment)))
+                    except (TypeError, ValueError):
+                        _effective_score = 0
                     _add_connection_candidate(
-                        _other_record, _other_key, _row.get("score", 0), _origin_key,
-                        _row.get("reason") or _row.get("relation") or "주제상 연결되는 자료입니다.",
+                        _other_record, _other_key, _effective_score, _origin_key,
+                        _row.get("reason") or _row.get("relation_type") or "내용상 연결되는 자료입니다.",
                     )
 
         # 보고서 ↔ CSV: 마스터의 별도 매핑을 사용한다.
