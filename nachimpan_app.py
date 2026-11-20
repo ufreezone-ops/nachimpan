@@ -2555,7 +2555,6 @@ def _return_to_retirement_connection():
     st.session_state["_retirement_explorer_open"] = True
     st.session_state["_retirement_entry_open"] = False
     st.session_state["_retirement_connection_open"] = True
-    st.session_state["_retirement_connection_origin_page"] = selected_page
 
 
 def _return_to_retirement_origin():
