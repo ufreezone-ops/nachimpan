@@ -2345,23 +2345,16 @@ if st.session_state.pop("_scroll_to_top_once", False):
         height=0,
     )
 
-# 고급모드 전환 등에서 첫 번째 탭을 보여줘야 할 때 메뉴 슬라이드를 맨 왼쪽으로 초기화
-if st.session_state.pop("_nav_scroll_to_start_once", False):
-    st.markdown(
-        "<div id='nav-scroll-to-start-once' style='display:none;'></div>",
-        unsafe_allow_html=True,
-    )
-
-if st.session_state.pop("_nav_scroll_to_end_once", False):
-    st.markdown(
-        "<div id='nav-scroll-to-end-once' style='display:none;'></div>",
-        unsafe_allow_html=True,
-    )
+# 일회성 메뉴 이동 요청은 React가 관리하는 DOM 마커 대신 스크립트 값으로 전달
+_nav_scroll_to_start = st.session_state.pop("_nav_scroll_to_start_once", False)
+_nav_scroll_to_end = st.session_state.pop("_nav_scroll_to_end_once", False)
 
 # 메뉴의 실제 스크롤 위치를 읽고, 고정 shell에 좌우 화살표 상태 반영
 st.components.v1.html(
-    """
+    f"""
     <script>
+    const forceStartScroll = {"true" if _nav_scroll_to_start else "false"};
+    const forceEndScroll = {"true" if _nav_scroll_to_end else "false"};
     (() => {
         try {
             const doc = window.parent.document;
@@ -2438,31 +2431,20 @@ st.components.v1.html(
             }
             updateNavState();
 
-            // 일회성 요청이 있으면 메뉴 슬라이드를 첫 번째 탭 위치로 초기화
-            const forceStartMarker = doc.getElementById("nav-scroll-to-start-once");
-            if (forceStartMarker) {
-                const target = getScrollTarget();
-                if (target) {
-                    target.scrollLeft = 0;
-                    if (typeof target.scrollTo === "function") {
-                        target.scrollTo({ left: 0, behavior: "instant" });
-                    }
-                }
-                forceStartMarker.remove();
-            }
-
-            // 일회성 요청이 있으면 메뉴 슬라이드를 마지막 탭 위치로 이동
-            const forceEndMarker = doc.getElementById("nav-scroll-to-end-once");
-            if (forceEndMarker) {
+            // 일회성 요청에 따라 실제 메뉴 스크롤 영역만 이동 (React 관리 DOM 직접 수정 없음)
+            if (forceStartScroll || forceEndScroll) {
                 const target = getScrollTarget();
                 if (target) {
                     const maxScroll = Math.max(0, target.scrollWidth - target.clientWidth);
-                    target.scrollLeft = maxScroll;
+                    const left = forceEndScroll ? maxScroll : 0;
+                    target.scrollLeft = left;
                     if (typeof target.scrollTo === "function") {
-                        target.scrollTo({ left: maxScroll, behavior: "smooth" });
+                        target.scrollTo({
+                            left,
+                            behavior: forceEndScroll ? "smooth" : "instant"
+                        });
                     }
                 }
-                forceEndMarker.remove();
             }
 
             // 현재 선택된 탭이 가로 스크롤 영역 밖에 있으면 자연스럽게 화면 안으로 이동
