@@ -2351,10 +2351,10 @@ _nav_scroll_to_end = st.session_state.pop("_nav_scroll_to_end_once", False)
 
 # 메뉴의 실제 스크롤 위치를 읽고, 고정 shell에 좌우 화살표 상태 반영
 st.components.v1.html(
-    f"""
+    """
     <script>
-    const forceStartScroll = {"true" if _nav_scroll_to_start else "false"};
-    const forceEndScroll = {"true" if _nav_scroll_to_end else "false"};
+    const forceStartScroll = __NAV_START__;
+    const forceEndScroll = __NAV_END__;
     (() => {
         try {
             const doc = window.parent.document;
@@ -2476,7 +2476,8 @@ st.components.v1.html(
         } catch (e) {}
     })();
     </script>
-    """,
+    """.replace("__NAV_START__", "true" if _nav_scroll_to_start else "false")
+       .replace("__NAV_END__", "true" if _nav_scroll_to_end else "false"),
     height=0,
 )
 
