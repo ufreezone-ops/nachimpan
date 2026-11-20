@@ -2313,6 +2313,43 @@ def _navigate_to_page_top(page):
     st.session_state["_scroll_to_top_once"] = True
 
 
+_scroll_to_origin_anchor = st.session_state.pop("_scroll_to_origin_anchor_once", None)
+if _scroll_to_origin_anchor:
+    st.components.v1.html(
+        """
+        <script>
+        (() => {
+            const selector = __ORIGIN_SELECTOR__;
+            const restoreOrigin = () => {
+                try {
+                    const target = window.parent.document.querySelector(selector);
+                    if (target) {
+                        target.scrollIntoView({
+                            behavior: "instant",
+                            block: "center",
+                            inline: "nearest"
+                        });
+                        return true;
+                    }
+                } catch (e) {}
+                return false;
+            };
+            // Streamlit이 탭 본문을 다시 그린 뒤 원래 나침반 버튼을 찾아 위치를 복원한다.
+            requestAnimationFrame(() => requestAnimationFrame(() => {
+                restoreOrigin();
+                setTimeout(restoreOrigin, 180);
+                setTimeout(restoreOrigin, 420);
+                setTimeout(restoreOrigin, 760);
+            }));
+        })();
+        </script>
+        """.replace(
+            "__ORIGIN_SELECTOR__",
+            json.dumps(_scroll_to_origin_anchor if isinstance(_scroll_to_origin_anchor, str) else "")
+        ),
+        height=0,
+    )
+
 if st.session_state.pop("_scroll_to_top_once", False):
     st.components.v1.html(
         """
@@ -2564,18 +2601,22 @@ def _return_to_retirement_connection():
 
 
 def _return_to_retirement_origin():
-    """연결창을 처음 열었던 탭으로 돌아가고 연결 탐색 상태를 닫는다."""
+    """연결창을 처음 열었던 탭의 나침반 아이콘 위치로 돌아가고 연결 탐색 상태를 닫는다."""
     _origin_page = st.session_state.get("_retirement_connection_origin_page")
     if not _origin_page:
         return
     st.session_state["active_navigation_default"] = _origin_page
     st.session_state["active_navigation_key"] = "main_navigation"
     st.session_state["_pending_nav"] = _origin_page
-    st.session_state["_scroll_to_top_once"] = True
+    st.session_state["_scroll_to_origin_anchor_once"] = st.session_state.get(
+        "_retirement_connection_origin_anchor"
+    )
+
     st.session_state["_retirement_explorer_open"] = False
     st.session_state["_retirement_entry_open"] = False
     st.session_state["_retirement_connection_open"] = False
     st.session_state.pop("_retirement_connection_origin_page", None)
+    st.session_state.pop("_retirement_connection_origin_anchor", None)
     st.session_state.pop("_retirement_connection_entry_source_ids", None)
     st.session_state.pop("_retirement_explorer_source_id", None)
     st.session_state.pop("_retirement_explorer_resource_id", None)
@@ -5512,6 +5553,7 @@ if selected_page == "우리집 가계부":
                             st.session_state["_retirement_entry_open"] = False
                             st.session_state["_retirement_connection_open"] = True
                             st.session_state["_retirement_connection_origin_page"] = selected_page
+                            st.session_state["_retirement_connection_origin_anchor"] = ".st-key-retirement-expense-title-row button"
                             st.session_state["_retirement_connection_entry_source_ids"] = ["6050400-01", "6051400-00", "6051300-00"]
                             st.session_state.pop("_retirement_explorer_source_id", None)
                             st.session_state.pop("_retirement_explorer_resource_id", None)
@@ -5885,6 +5927,7 @@ if selected_page == "우리집 가계부":
                     st.session_state["_retirement_entry_open"] = False
                     st.session_state["_retirement_connection_open"] = True
                     st.session_state["_retirement_connection_origin_page"] = selected_page
+                    st.session_state["_retirement_connection_origin_anchor"] = ".st-key-lifetime-income-title-row button"
                     st.session_state["_retirement_connection_entry_source_ids"] = ["6051200-00", "6050700-00"]
                     st.session_state.pop("_retirement_explorer_source_id", None)
                     st.session_state.pop("_retirement_explorer_resource_id", None)
@@ -8682,6 +8725,7 @@ elif selected_page == "우리집 재정곡선":
             st.session_state["_retirement_entry_open"] = False
             st.session_state["_retirement_connection_open"] = True
             st.session_state["_retirement_connection_origin_page"] = selected_page
+            st.session_state["_retirement_connection_origin_anchor"] = ".st-key-life_cycle_finance_chart"
             st.session_state["_retirement_connection_entry_source_ids"] = list(_entry_source_ids)
             st.session_state.pop("_retirement_explorer_source_id", None)
             st.session_state.pop("_retirement_explorer_resource_id", None)
@@ -9106,7 +9150,7 @@ elif selected_page == "통계":
     <style>
     div.st-key-retirement-stats-return-bar {
         position: fixed !important;
-        top: 7rem !important;
+        top: calc(7rem - 3.75rem) !important;
         left: 50% !important;
         transform: translateX(-50%) !important;
         width: max-content !important;
