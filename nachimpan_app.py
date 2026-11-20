@@ -4362,12 +4362,16 @@ def _show_retirement_connection_dialog():
             ["6050400-01", "6051400-00", "6051300-00"],
         )
         _entry_reason = (
-            "지역별 주택가격과 부동산 산정 기준을 이해하는 데 도움이 되는 자료입니다."
-            if "6051500-00" in _entry_source_ids
+            "출산·육아 비용뿐 아니라 여성의 경력단절과 소득 경로 변화를 함께 살펴보는 자료입니다."
+            if "6051800-00" in _entry_source_ids or "6052100-00" in _entry_source_ids
             else (
-                "우리 가정 생애 소득곡선의 구성과 보정 방식을 이해하는 데 가장 직접적인 자료입니다."
-                if "6051200-00" in _entry_source_ids
-                else "은퇴 후 생활비와 지출 기준을 이해하는 데 도움이 되는 자료입니다."
+                "지역별 주택가격과 부동산 산정 기준을 이해하는 데 도움이 되는 자료입니다."
+                if "6051500-00" in _entry_source_ids
+                else (
+                    "우리 가정 생애 소득곡선의 구성과 보정 방식을 이해하는 데 가장 직접적인 자료입니다."
+                    if "6051200-00" in _entry_source_ids
+                    else "은퇴 후 생활비와 지출 기준을 이해하는 데 도움이 되는 자료입니다."
+                )
             )
         )
         for _index, _entry_source_id in enumerate(_entry_source_ids):
@@ -8608,7 +8612,10 @@ elif selected_page == "우리집 재정곡선":
 
         if _life_cycle_finance_click_bridge.clicked_event in _event_bubble_report_map:
             _active_event_name = _life_cycle_finance_click_bridge.clicked_event
-            _open_lifecycle_chart_connection([_event_bubble_report_map[_active_event_name]])
+            _event_entry_source_ids = [_event_bubble_report_map[_active_event_name]]
+            if _active_event_name == "출산·육아":
+                _event_entry_source_ids.append("6051800-00")
+            _open_lifecycle_chart_connection(_event_entry_source_ids)
             st.rerun()
         elif _life_cycle_finance_click_bridge.clicked_retirement_annotation:
             _open_lifecycle_chart_connection(["6051900-00", "6051000-00", "6051100-00"])
