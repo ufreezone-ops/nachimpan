@@ -8579,7 +8579,19 @@ elif selected_page == "우리집 재정곡선":
             config={"displayModeBar": False, "scrollZoom": False, "doubleClick": False, "showAxisDragHandles": False},
         )
 
-        # 차트 전체 영역 클릭 시 관련 통계자료 목록 열기
+        # 차트의 일반 요소·생애 사건·은퇴 주석 클릭을 모두 공통 연결창으로 연결
+        def _open_lifecycle_chart_connection(_entry_source_ids):
+            st.session_state["_life_cycle_finance_report_open"] = False
+            st.session_state["_event_bubble_report_open"] = False
+            st.session_state["_retirement_annotation_report_open"] = False
+            st.session_state["_retirement_explorer_open"] = True
+            st.session_state["_retirement_entry_open"] = False
+            st.session_state["_retirement_connection_open"] = True
+            st.session_state["_retirement_connection_entry_source_ids"] = list(_entry_source_ids)
+            st.session_state.pop("_retirement_explorer_source_id", None)
+            st.session_state.pop("_retirement_explorer_resource_id", None)
+            st.session_state.pop("_retirement_explorer_history", None)
+
         _life_cycle_finance_click_bridge = _EVENT_BUBBLE_CLICK_BRIDGE(
             data={
                 "graph_selector": ".st-key-life_cycle_finance_chart .js-plotly-plot",
@@ -8593,103 +8605,17 @@ elif selected_page == "우리집 재정곡선":
             on_clicked_retirement_annotation_change=lambda: None,
             on_clicked_cumulative_chart_change=lambda: None,
         )
-        if _life_cycle_finance_click_bridge.clicked_cumulative_chart:
-            st.session_state["_life_cycle_finance_report_open"] = True
-
-        if _life_cycle_finance_click_bridge.clicked_retirement_annotation:
-            st.session_state["_retirement_annotation_report_open"] = True
 
         if _life_cycle_finance_click_bridge.clicked_event in _event_bubble_report_map:
-            st.session_state["_event_bubble_last_selection"] = _life_cycle_finance_click_bridge.clicked_event
-            st.session_state["_event_bubble_report_open"] = True
-
-        if st.session_state.get("_life_cycle_finance_report_open", False):
-            @st.dialog("관련 통계자료")
-            def _show_life_cycle_finance_reports():
-                with st.container(key="life-cycle-finance-report-dialog"):
-                    st.caption("이 차트의 해석과 산출 근거를 함께 살펴볼 수 있는 자료입니다.")
-                    _life_cycle_finance_report_ids = [
-                        "6050200-00",
-                        "6051200-00",
-                        "6051400-00",
-                    ]
-                    for _report_id in _life_cycle_finance_report_ids:
-                        if st.button(
-                            f"🧭 {_master_report_display(_report_id)}",
-                            key=f"life_cycle_finance_report_{_report_id}",
-                            use_container_width=True,
-                        ):
-                            st.session_state["_life_cycle_finance_report_open"] = False
-                            _open_source_reference(
-                                _report_id,
-                                "우리집 재정곡선",
-                                "life-cycle-finance-chart-origin",
-                            )
-                            st.rerun()
-                    if st.button(
-                        "닫기",
-                        key="life_cycle_finance_report_close",
-                        use_container_width=True,
-                    ):
-                        st.session_state["_life_cycle_finance_report_open"] = False
-                        st.rerun()
-
-            _show_life_cycle_finance_reports()
-
-        # 일반 차트 클릭과 생애 사건 버블 클릭은 단일 브리지에서 구분한다.
-
-        if st.session_state.get("_event_bubble_report_open", False):
-            _active_event_name = st.session_state.get("_event_bubble_last_selection")
-            _active_event_report = _event_bubble_report_map.get(_active_event_name)
-            if _active_event_report:
-                @st.dialog("생애 사건 관련 자료")
-                def _show_event_bubble_report():
-                    st.markdown(f"**{_active_event_name}**")
-                    st.caption("이 그래프 요소의 산출 근거를 확인할 수 있습니다.")
-                    with st.container(key="event-bubble-report-dialog"):
-                        if st.button(
-                            f"🧭 {_master_report_display(_active_event_report)}",
-                            key="event_bubble_report_open_source",
-                            use_container_width=True,
-                        ):
-                            _open_source_reference(
-                                _active_event_report,
-                                "우리집 재정곡선",
-                                "life-cycle-finance-chart-origin",
-                            )
-                    if st.button("닫기", key="event_bubble_report_close", use_container_width=True):
-                        st.session_state["_event_bubble_report_open"] = False
-                        st.rerun()
-
-                _show_event_bubble_report()
-
-        if st.session_state.get("_retirement_annotation_report_open", False):
-            @st.dialog("은퇴 관련 통계 자료")
-            def _show_retirement_annotation_reports():
-                st.caption("은퇴 시점과 관련된 통계 리포트입니다.")
-                _retirement_annotation_report_ids = [
-                    "6051900-00",
-                    "6051000-00",
-                    "6051100-00",
-                ]
-                with st.container(key="retirement-annotation-report-list"):
-                    for _report_id in _retirement_annotation_report_ids:
-                        if st.button(
-                            f"🧭 {_master_report_display(_report_id)}",
-                            key=f"retirement_annotation_report_{_report_id}",
-                            use_container_width=True,
-                        ):
-                            st.session_state["_retirement_annotation_report_open"] = False
-                            _open_source_reference(
-                                _report_id,
-                                "우리집 재정곡선",
-                                "life-cycle-finance-chart-origin",
-                            )
-                if st.button("닫기", key="retirement_annotation_report_close", use_container_width=True):
-                    st.session_state["_retirement_annotation_report_open"] = False
-                    st.rerun()
-
-            _show_retirement_annotation_reports()
+            _active_event_name = _life_cycle_finance_click_bridge.clicked_event
+            _open_lifecycle_chart_connection([_event_bubble_report_map[_active_event_name]])
+            st.rerun()
+        elif _life_cycle_finance_click_bridge.clicked_retirement_annotation:
+            _open_lifecycle_chart_connection(["6051900-00", "6051000-00", "6051100-00"])
+            st.rerun()
+        elif _life_cycle_finance_click_bridge.clicked_cumulative_chart:
+            _open_lifecycle_chart_connection(["6050200-00", "6051200-00", "6051400-00"])
+            st.rerun()
 
         # 생애주기 누적 총액은 그래프 해석의 혼선을 줄이기 위해 표시하지 않는다.
 
