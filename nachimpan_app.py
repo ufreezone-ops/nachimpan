@@ -8868,6 +8868,15 @@ elif selected_page == "AI 시선":
 
         if st.button("고급모드", type="primary", use_container_width=True, key="btn_unlock_advanced"):
             st.session_state["advanced_mode"] = True
+
+            # 이전 출처/연결창에서 남은 위치 복원 요청이 탭 전환을 덮어쓰지 않도록 정리
+            st.session_state.pop("_scroll_to_origin_anchor_once", None)
+            st.session_state.pop("_source_restore_anchor", None)
+            st.session_state.pop("_source_open_anchor", None)
+            st.session_state.pop("_source_return_context", None)
+            st.session_state.pop("_active_source_id", None)
+
+            # 첫 번째 탭과 페이지 최상단으로 이동
             st.session_state["_nav_scroll_to_start_once"] = True
             _navigate_to_page_top("우리집 가계부")
             st.rerun()
