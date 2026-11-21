@@ -2192,6 +2192,67 @@ div.st-key-loan-payment-title-row div.st-key-loan-payment-source-guide [data-tes
     transform: translateY(9px) !important;
 }
 
+/* 은퇴 후 생활비 제목·기존 나침반: 대표 재정곡선과 동일한 단일 버튼 구조 */
+div.st-key-retirement-expense-title-row[data-testid="stHorizontalBlock"] {
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    justify-content: flex-start !important;
+    width: max-content !important;
+    max-width: 100% !important;
+}
+div.st-key-retirement-expense-title-row div.st-key-retirement_expense_title_open,
+div.st-key-retirement-expense-title-row div.st-key-retirement_expense_title_open [data-testid="stElementContainer"],
+div.st-key-retirement-expense-title-row div.st-key-retirement_expense_title_open [data-testid="stButton"] {
+    width: auto !important;
+    min-width: 0 !important;
+    max-width: max-content !important;
+    flex: 0 0 auto !important;
+    margin: 0 !important;
+    padding: 0 !important;
+}
+div.st-key-retirement-expense-title-row div.st-key-retirement_expense_title_open [data-testid="stButton"] button,
+div.st-key-retirement-expense-title-row div.st-key-retirement_expense_title_open [data-testid="stButton"] button:hover,
+div.st-key-retirement-expense-title-row div.st-key-retirement_expense_title_open [data-testid="stButton"] button:focus,
+div.st-key-retirement-expense-title-row div.st-key-retirement_expense_title_open [data-testid="stButton"] button:focus-visible,
+div.st-key-retirement-expense-title-row div.st-key-retirement_expense_title_open [data-testid="stButton"] button:active {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: flex-start !important;
+    width: auto !important;
+    min-width: 0 !important;
+    max-width: max-content !important;
+    height: auto !important;
+    min-height: 2.45rem !important;
+    margin: 0 !important;
+    padding: 0.12rem 0 !important;
+    transform: translateY(4.2px) !important;
+    border: 0 !important;
+    outline: 0 !important;
+    border-radius: 0 !important;
+    background: transparent !important;
+    background-color: transparent !important;
+    background-image: none !important;
+    box-shadow: none !important;
+    color: #F8FAFC !important;
+    -webkit-text-fill-color: #F8FAFC !important;
+    font-size: 1.8rem !important;
+    font-weight: 700 !important;
+    line-height: 1.2 !important;
+    white-space: nowrap !important;
+    gap: 0 !important;
+}
+div.st-key-retirement-expense-title-row div.st-key-retirement_expense_title_open [data-testid="stButton"] button p,
+div.st-key-retirement-expense-title-row div.st-key-retirement_expense_title_open [data-testid="stButton"] button span {
+    margin: 0 !important;
+    padding: 0 !important;
+    color: inherit !important;
+    -webkit-text-fill-color: inherit !important;
+    font-size: inherit !important;
+    font-weight: inherit !important;
+    line-height: inherit !important;
+}
+
 /* 세대계승 생애주기 재정곡선: 제목과 나침반을 하나의 버튼 라벨로 구성 */
 div.st-key-nta-generational-title-row[data-testid="stHorizontalBlock"] {
     display: flex !important;
@@ -5523,24 +5584,22 @@ if selected_page == "우리집 가계부":
 #--------------------------------------------------------
             with st.container(border=True, key="retirement-panel"):
                 with st.container(horizontal=True, vertical_alignment="center", gap=None, key="retirement-expense-title-row"):
-                    st.markdown("### 은퇴 후에는? (만원)")
-                    if not st.session_state.get("_retirement_explorer_open", False):
-                        if st.button(
-                            "🧭",
-                            key="source_retirement_expense_guide",
-                            help="연결된 보고서와 통계 자료 살펴보기",
-                            type="tertiary",
-                        ):
-                            st.session_state["_retirement_explorer_open"] = True
-                            st.session_state["_retirement_entry_open"] = False
-                            st.session_state["_retirement_connection_open"] = True
-                            st.session_state["_retirement_connection_origin_page"] = selected_page
-                            st.session_state["_retirement_connection_origin_anchor"] = ".st-key-retirement-expense-title-row button"
-                            st.session_state["_retirement_connection_entry_source_ids"] = ["6050400-01", "6051400-00", "6051300-00"]
-                            st.session_state.pop("_retirement_explorer_source_id", None)
-                            st.session_state.pop("_retirement_explorer_resource_id", None)
-                            st.session_state.pop("_retirement_explorer_history", None)
-                            st.rerun()
+                    if st.button(
+                        "은퇴 후에는? (만원) 🧭",
+                        key="retirement_expense_title_open",
+                        help="은퇴 후 생활비와 연결된 보고서 및 통계 자료 살펴보기",
+                        type="tertiary",
+                    ):
+                        st.session_state["_retirement_explorer_open"] = True
+                        st.session_state["_retirement_entry_open"] = False
+                        st.session_state["_retirement_connection_open"] = True
+                        st.session_state["_retirement_connection_origin_page"] = selected_page
+                        st.session_state["_retirement_connection_origin_anchor"] = ".st-key-retirement-expense-title-row button"
+                        st.session_state["_retirement_connection_entry_source_ids"] = ["6050400-01", "6051400-00", "6051300-00"]
+                        st.session_state.pop("_retirement_explorer_source_id", None)
+                        st.session_state.pop("_retirement_explorer_resource_id", None)
+                        st.session_state.pop("_retirement_explorer_history", None)
+                        st.rerun()
                 st.markdown(
                     '<div id="source-anchor-retirement-expense"></div>',
                     unsafe_allow_html=True,
