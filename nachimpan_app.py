@@ -7279,11 +7279,10 @@ elif selected_page == "우리집 재정곡선":
         st.markdown("<div style='height: 24px;'></div>", unsafe_allow_html=True)
         with st.container(horizontal=True, vertical_alignment="center", gap=None, key="retirement-title-row"):
             with st.popover(
-                "우리 가정 생애주기 재정곡선",
+                "우리 가정 생애주기 재정곡선 🧭",
                 key="source_retirement_expense",
                 help="이 재정곡선을 이해하는 안내와 통계 자료",
                 type="tertiary",
-                icon=":material/explore:",
                 width="content",
             ):
                 st.caption("재정곡선 이해하기")
@@ -13398,19 +13397,10 @@ div.st-key-retirement-title-row div.st-key-source_retirement_expense [data-testi
     line-height: 1 !important;
 }
 
-/* Popover 기본 펼침 화살표만 숨기고, 나침반 아이콘은 샴페인 골드로 표시 */
-div.st-key-retirement-title-row div.st-key-source_retirement_expense [data-testid="stPopoverButton"] > svg {
-    display: none !important;
-}
+/* Popover 기본 펼침 화살표 숨김 */
+div.st-key-retirement-title-row div.st-key-source_retirement_expense [data-testid="stPopoverButton"] svg,
 div.st-key-retirement-title-row div.st-key-source_retirement_expense [data-testid="stPopoverButton"] [data-testid="stIconMaterial"] {
-    display: inline-flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-    color: #D9B66D !important;
-    -webkit-text-fill-color: #D9B66D !important;
-    font-size: 1.55rem !important;
-    line-height: 1 !important;
-    margin-right: 0.12rem !important;
+    display: none !important;
 }
 </style>
 """, unsafe_allow_html=True)
