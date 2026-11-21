@@ -2236,7 +2236,7 @@ div.st-key-retirement-expense-title-row div.st-key-retirement_expense_title_open
     box-shadow: none !important;
     color: #F8FAFC !important;
     -webkit-text-fill-color: #F8FAFC !important;
-    font-size: 1.8rem !important;
+    font-size: 28.8px !important;
     font-weight: 700 !important;
     line-height: 1.2 !important;
     white-space: nowrap !important;
