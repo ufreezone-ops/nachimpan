@@ -9229,13 +9229,13 @@ elif selected_page == "통계":
             _back_connection_col, _back_origin_col = st.columns([1, 1], gap="small")
             with _back_connection_col:
                 st.button(
-                    "← 연결창으로",
+                    "연결창으로",
                     key="stats_return_to_connection",
                     on_click=_return_to_retirement_connection,
                 )
             with _back_origin_col:
                 st.button(
-                    "↩ 처음 탭으로",
+                    "처음 탭으로",
                     key="stats_return_to_origin",
                     on_click=_return_to_retirement_origin,
                 )
