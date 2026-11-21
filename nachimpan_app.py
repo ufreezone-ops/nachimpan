@@ -9161,13 +9161,13 @@ elif selected_page == "통계":
         flex-wrap: nowrap !important;
         align-items: center !important;
         justify-content: center !important;
-        gap: 0.7rem !important;
+        gap: 120px !important;
         width: max-content !important;
         max-width: calc(100vw - 1.25rem) !important;
     }
     div.st-key-retirement-stats-return-bar [data-testid="column"] {
-        flex: 0 1 auto !important;
-        width: auto !important;
+        flex: 0 0 120px !important;
+        width: 120px !important;
         min-width: 0 !important;
     }
     div.st-key-retirement-stats-return-bar [data-testid="stElementContainer"],
@@ -9203,6 +9203,23 @@ elif selected_page == "통계":
     div.st-key-retirement-stats-return-bar [data-testid="stButton"] button:hover {
         background: #e8f5ec !important;
         border-color: #159447 !important;
+    }
+    @media (max-width: 480px) {
+        div.st-key-retirement-stats-return-bar [data-testid="stHorizontalBlock"] {
+            gap: 104px !important;
+        }
+        div.st-key-retirement-stats-return-bar [data-testid="column"] {
+            flex: 0 0 104px !important;
+            width: 104px !important;
+        }
+        div.st-key-retirement-stats-return-bar [data-testid="stButton"] button {
+            width: 104px !important;
+            min-width: 104px !important;
+            max-width: 104px !important;
+            padding-left: 0.1rem !important;
+            padding-right: 0.1rem !important;
+            font-size: 0.76rem !important;
+        }
     }
     </style>
     """, unsafe_allow_html=True)
@@ -13213,11 +13230,15 @@ div.st-key-retirement-connection-close-cta [data-testid="stHorizontalBlock"] {
     flex-wrap: nowrap !important;
     align-items: center !important;
     justify-content: center !important;
-    gap: 0.75rem !important;
+    gap: 120px !important;
+    width: max-content !important;
+    max-width: calc(100vw - 1.25rem) !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
 }
 div.st-key-retirement-connection-close-cta [data-testid="column"] {
-    flex: 0 1 50% !important;
-    width: 50% !important;
+    flex: 0 0 120px !important;
+    width: 120px !important;
     min-width: 0 !important;
 }
 div.st-key-retirement-connection-close-cta [data-testid="stElementContainer"] {
