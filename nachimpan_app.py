@@ -9413,8 +9413,8 @@ elif selected_page == "통계":
         max-width: calc(100vw - 1.25rem) !important;
     }
     div.st-key-retirement-stats-return-bar [data-testid="column"] {
-        flex: 0 0 140px !important;
-        width: 140px !important;
+        flex: 0 0 auto !important;
+        width: auto !important;
         min-width: 0 !important;
     }
     div.st-key-retirement-stats-return-bar [data-testid="stElementContainer"],
@@ -9424,9 +9424,9 @@ elif selected_page == "통계":
         justify-content: center !important;
     }
     div.st-key-retirement-stats-return-bar [data-testid="stButton"] button {
-        width: 140px !important;
-        min-width: 140px !important;
-        max-width: 140px !important;
+        width: max-content !important;
+        min-width: 0 !important;
+        max-width: none !important;
         min-height: 2.4rem !important;
         padding: 0.3rem 0.25rem !important;
         border: 6px solid #159447 !important;
@@ -9456,16 +9456,14 @@ elif selected_page == "통계":
             gap: 0.3rem !important;
         }
         div.st-key-retirement-stats-return-bar [data-testid="column"] {
-            flex: 0 0 104px !important;
-            width: 104px !important;
+            flex: 0 0 auto !important;
+            width: auto !important;
+            min-width: 0 !important;
         }
         div.st-key-retirement-stats-return-bar [data-testid="stButton"] button {
-            width: 104px !important;
-            min-width: 104px !important;
-            max-width: 104px !important;
-            padding-left: 0.1rem !important;
-            padding-right: 0.1rem !important;
-            font-size: 0.76rem !important;
+            width: max-content !important;
+            min-width: 0 !important;
+            max-width: none !important;
         }
     }
     </style>
@@ -16026,11 +16024,7 @@ div.st-key-retirement-connection-close-cta div.stButton > button[data-testid="st
 div.st-key-retirement-connection-close-cta div.stButton > button[data-testid="stBaseButton-secondary"]:focus,
 div.st-key-retirement-connection-close-cta div.stButton > button[data-testid="stBaseButton-secondary"]:focus-visible,
 div.st-key-retirement-connection-close-cta div.stButton > button[data-testid="stBaseButton-secondary"]:active {
-    width: 65px !important;
-    min-width: 65px !important;
-    max-width: 65px !important;
     min-height: 2.4rem !important;
-    padding: 0.35rem !important;
     border: 6px solid #159447 !important;
     border-radius: 999px !important;
     background: #ffffff !important;
@@ -16260,24 +16254,13 @@ div.st-key-retirement-stats-return-bar [data-testid="stButton"] button:hover {
     border-color: var(--nachimpan-pill-border) !important;
 }
 
-/* 자료보기 창 버튼 폭은 유지하고, 통계 창 복귀 버튼만 전체 명칭이 보이도록 확장 */
-div.st-key-retirement-report-connection-cta [data-testid="stButton"] button {
-    width: 120px !important;
-    min-width: 120px !important;
-    max-width: 120px !important;
-}
+/* 버튼 폭은 문구와 공통 내부 여백에 따라 자동 결정 */
+div.st-key-retirement-report-connection-cta [data-testid="stButton"] button,
+div.st-key-retirement-connection-close-cta .st-key-retirement_connection_end [data-testid="stButton"] button,
 div.st-key-retirement-stats-return-bar [data-testid="stButton"] button {
-    width: 140px !important;
-    min-width: 140px !important;
-    max-width: 140px !important;
-}
-@media (max-width: 480px) {
-    div.st-key-retirement-report-connection-cta [data-testid="stButton"] button,
-    div.st-key-retirement-stats-return-bar [data-testid="stButton"] button {
-        width: 104px !important;
-        min-width: 104px !important;
-        max-width: 104px !important;
-    }
+    width: max-content !important;
+    min-width: 0 !important;
+    max-width: none !important;
 }
 </style>
 """, unsafe_allow_html=True)
