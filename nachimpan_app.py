@@ -343,10 +343,15 @@ footer {
     background-image: none !important;
     box-shadow: none !important;
 }
+.st-key-housing_price_source_guide button[data-testid^="stBaseButton-"],
 .st-key-housing_price_source_guide [data-testid="stButton"] button,
+.st-key-housing_price_source_guide button[data-testid^="stBaseButton-"],
 .st-key-housing_price_source_guide [data-testid="stButton"] button:hover,
+.st-key-housing_price_source_guide button[data-testid^="stBaseButton-"],
 .st-key-housing_price_source_guide [data-testid="stButton"] button:focus,
+.st-key-housing_price_source_guide button[data-testid^="stBaseButton-"],
 .st-key-housing_price_source_guide [data-testid="stButton"] button:focus-visible,
+.st-key-housing_price_source_guide button[data-testid^="stBaseButton-"],
 .st-key-housing_price_source_guide [data-testid="stButton"] button:active {
     appearance: none !important;
     -webkit-appearance: none !important;
@@ -375,13 +380,16 @@ footer {
     text-align: left !important;
     white-space: nowrap !important;
 }
+.st-key-housing_price_source_guide button[data-testid^="stBaseButton-"],
 .st-key-housing_price_source_guide [data-testid="stButton"] button::before,
+.st-key-housing_price_source_guide button[data-testid^="stBaseButton-"],
 .st-key-housing_price_source_guide [data-testid="stButton"] button::after {
     display: none !important;
     content: none !important;
     border: 0 !important;
     box-shadow: none !important;
 }
+.st-key-housing_price_source_guide button[data-testid^="stBaseButton-"],
 .st-key-housing_price_source_guide [data-testid="stButton"] button p {
     margin: 0 !important;
     padding: 0 !important;
