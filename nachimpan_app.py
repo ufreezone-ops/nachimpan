@@ -2192,7 +2192,7 @@ div.st-key-loan-payment-title-row div.st-key-loan-payment-source-guide [data-tes
     transform: translateY(9px) !important;
 }
 
-/* 세대계승 생애주기 재정곡선: 제목과 별도 나침반을 같은 기준으로 정렬 */
+/* 세대계승 생애주기 재정곡선: 제목과 나침반을 같은 제목 행에 배치 */
 div.st-key-nta-generational-title-row[data-testid="stHorizontalBlock"] {
     display: flex !important;
     flex-direction: row !important;
@@ -2203,7 +2203,9 @@ div.st-key-nta-generational-title-row[data-testid="stHorizontalBlock"] {
     width: max-content !important;
     max-width: 100% !important;
 }
-div.st-key-nta-generational-title-row [data-testid="stElementContainer"]:has(h3) {
+div.st-key-nta-generational-title-row div.st-key-nta_generational_title_open,
+div.st-key-nta-generational-title-row div.st-key-nta_generational_title_open [data-testid="stElementContainer"],
+div.st-key-nta-generational-title-row div.st-key-nta_generational_title_open [data-testid="stButton"] {
     width: auto !important;
     min-width: 0 !important;
     max-width: max-content !important;
@@ -2211,16 +2213,47 @@ div.st-key-nta-generational-title-row [data-testid="stElementContainer"]:has(h3)
     margin: 0 !important;
     padding: 0 !important;
 }
-div.st-key-nta-generational-title-row h3 {
+div.st-key-nta-generational-title-row div.st-key-nta_generational_title_open [data-testid="stButton"] button,
+div.st-key-nta-generational-title-row div.st-key-nta_generational_title_open [data-testid="stButton"] button:hover,
+div.st-key-nta-generational-title-row div.st-key-nta_generational_title_open [data-testid="stButton"] button:focus,
+div.st-key-nta-generational-title-row div.st-key-nta_generational_title_open [data-testid="stButton"] button:focus-visible,
+div.st-key-nta-generational-title-row div.st-key-nta_generational_title_open [data-testid="stButton"] button:active {
+    width: auto !important;
+    min-width: 0 !important;
+    max-width: max-content !important;
+    height: auto !important;
+    min-height: 2.45rem !important;
+    margin: 0 !important;
+    padding: 0.12rem 0 !important;
+    border: 0 !important;
+    outline: 0 !important;
+    border-radius: 0 !important;
+    background: transparent !important;
+    background-color: transparent !important;
+    background-image: none !important;
+    box-shadow: none !important;
+    color: #F8FAFC !important;
+    -webkit-text-fill-color: #F8FAFC !important;
+    font-size: 1.8rem !important;
+    font-weight: 700 !important;
+    line-height: 1.2 !important;
+    white-space: nowrap !important;
+    text-decoration: none !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    transform: translateY(4.2px) !important;
+}
+div.st-key-nta-generational-title-row div.st-key-nta_generational_title_open [data-testid="stButton"] button p,
+div.st-key-nta-generational-title-row div.st-key-nta_generational_title_open [data-testid="stButton"] button span {
     margin: 0 !important;
     padding: 0 !important;
-    white-space: nowrap !important;
-}
-div.st-key-nta-generational-title-row h3 [data-testid="stHeaderActionElements"] {
-    display: none !important;
-}
-div.st-key-nta-generational-title-row > div {
-    align-self: center !important;
+    color: inherit !important;
+    -webkit-text-fill-color: inherit !important;
+    font-size: inherit !important;
+    font-weight: inherit !important;
+    line-height: 1.2 !important;
+    text-decoration: none !important;
 }
 div.st-key-nta-generational-title-row div.st-key-source_nta_generational {
     width: auto !important;
@@ -2266,6 +2299,9 @@ div.st-key-nta-generational-title-row div.st-key-source_nta_generational [data-t
 div.st-key-nta-generational-title-row div.st-key-source_nta_generational [data-testid="stButton"] button:hover p,
 div.st-key-nta-generational-title-row div.st-key-source_nta_generational [data-testid="stButton"] button:hover span {
     text-decoration: none !important;
+}
+div.st-key-nta-generational-title-row > div {
+    align-self: center !important;
 }
 </style>
 """, unsafe_allow_html=True)
@@ -6777,21 +6813,35 @@ elif selected_page == "인생의 사계절":
     def render_official_nta_section():
         """기본모드와 고급모드에 동일한 공식 NTA 지표 영역을 표시"""
         with st.container(horizontal=True, vertical_alignment="center", gap=None, key="nta-generational-title-row"):
-            st.markdown("### 세대 계승 생애주기 재정곡선")
+            _nta_generational_title_clicked = st.button(
+                "세대 계승 생애주기 재정곡선",
+                key="nta_generational_title_open",
+                help="세대 계승 생애주기 재정곡선 대표 보고서 보기",
+                type="tertiary",
+            )
+            _nta_generational_compass_clicked = False
             if is_adv and not st.session_state.get("_retirement_explorer_open", False):
-                if st.button(
+                _nta_generational_compass_clicked = st.button(
                     "🧭",
                     key="source_nta_generational",
-                    help="세대계승 생애주기 재정곡선 보고서와 연결 자료 살펴보기",
+                    help="세대계승 생애주기 재정곡선 대표 보고서 보기",
                     type="tertiary",
-                ):
-                    st.session_state["_retirement_explorer_open"] = True
-                    st.session_state["_retirement_entry_open"] = False
-                    st.session_state["_retirement_connection_open"] = False
-                    st.session_state["_retirement_explorer_source_id"] = "6051700-00"
-                    st.session_state["_retirement_explorer_history"] = ["6051700-00"]
-                    st.session_state.pop("_retirement_explorer_resource_id", None)
-                    st.rerun()
+                )
+
+            # 제목과 나침반은 같은 대표 보고서·연결 이력·복귀 위치를 사용한다.
+            if _nta_generational_title_clicked or _nta_generational_compass_clicked:
+                st.session_state["_retirement_explorer_open"] = True
+                st.session_state["_retirement_entry_open"] = False
+                st.session_state["_retirement_connection_open"] = False
+                st.session_state["_retirement_explorer_source_id"] = "6051700-00"
+                st.session_state["_retirement_explorer_history"] = ["6051700-00"]
+                st.session_state.pop("_retirement_explorer_resource_id", None)
+                st.session_state.pop("_retirement_connection_entry_source_ids", None)
+                st.session_state["_retirement_connection_origin_page"] = selected_page
+                st.session_state["_retirement_connection_origin_anchor"] = (
+                    ".st-key-nta-generational-title-row"
+                )
+                st.rerun()
 
         fig_official_nta = build_official_nta_chart()
         st.plotly_chart(
