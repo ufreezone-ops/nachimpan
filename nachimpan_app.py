@@ -6351,20 +6351,13 @@ if selected_page == "우리집 가계부":
             }
         )
 
-        with st.container(
-            horizontal=True,
-            vertical_alignment="center",
-            gap=None,
-            key="income-wage-stats-note-row",
+        if st.button(
+            "보라색 점선은 통계 비교선입니다. 🧭",
+            key="income_wage_stats_popup",
+            help="통계 비교선의 자료와 산출 기준 보기",
+            type="tertiary",
         ):
-            st.markdown("보라색 점선은 통계 비교선입니다.")
-            if st.button(
-                "🧭",
-                key="income_wage_stats_popup",
-                help="통계 비교선의 자료와 산출 기준 보기",
-                type="tertiary",
-            ):
-                _show_income_wage_stats_dialog()
+            _show_income_wage_stats_dialog()
 
         # 안내 문장과 다음 버튼 사이 여백
         st.markdown("<div style='height: 1rem;'></div>", unsafe_allow_html=True)
@@ -13181,43 +13174,27 @@ div.st-key-annual-surplus-source-guide button p {
 </style>
 """, unsafe_allow_html=True)
 
-# 통계 비교선 안내문 옆 나침반: 문구에 자연스럽게 밀착
+# 통계 비교선 안내문과 나침반을 하나의 연결 버튼으로 구성
 st.markdown("""
 <style>
-div.st-key-income-wage-stats-note-row [data-testid="stHorizontalBlock"] {
-    align-items: center !important;
-    gap: 0.08rem !important;
-}
-div.st-key-income-wage-stats-note-row [data-testid="stMarkdownContainer"] p {
-    margin: 0 !important;
-    padding: 0 !important;
-    line-height: 1.35 !important;
-}
-div.st-key-income-wage-stats-note-row div.st-key-income_wage_stats_popup,
-div.st-key-income-wage-stats-note-row div.st-key-income_wage_stats_popup [data-testid="stElementContainer"],
-div.st-key-income-wage-stats-note-row div.st-key-income_wage_stats_popup [data-testid="stButton"],
-div.st-key-income-wage-stats-note-row div.st-key-income_wage_stats_popup .stButton {
+div.st-key-income_wage_stats_popup,
+div.st-key-income_wage_stats_popup [data-testid="stElementContainer"],
+div.st-key-income_wage_stats_popup [data-testid="stButton"],
+div.st-key-income_wage_stats_popup .stButton {
     display: inline-flex !important;
     align-items: center !important;
     width: auto !important;
     min-width: 0 !important;
     max-width: max-content !important;
     flex: 0 0 auto !important;
-    margin: 0 0 0 0.06rem !important;
+    margin: 0 !important;
     padding: 0 !important;
-    border: 0 !important;
-    background: transparent !important;
-    background-color: transparent !important;
-    box-shadow: none !important;
 }
-div.st-key-income-wage-stats-note-row div.st-key-income_wage_stats_popup [data-testid="stButton"] button,
-div.st-key-income-wage-stats-note-row div.st-key-income_wage_stats_popup [data-testid="stButton"] button:hover,
-div.st-key-income-wage-stats-note-row div.st-key-income_wage_stats_popup [data-testid="stButton"] button:focus,
-div.st-key-income-wage-stats-note-row div.st-key-income_wage_stats_popup [data-testid="stButton"] button:focus-visible,
-div.st-key-income-wage-stats-note-row div.st-key-income_wage_stats_popup [data-testid="stButton"] button:active {
-    display: inline-flex !important;
-    align-items: center !important;
-    justify-content: center !important;
+div.st-key-income_wage_stats_popup [data-testid="stButton"] button,
+div.st-key-income_wage_stats_popup [data-testid="stButton"] button:hover,
+div.st-key-income_wage_stats_popup [data-testid="stButton"] button:focus,
+div.st-key-income_wage_stats_popup [data-testid="stButton"] button:focus-visible,
+div.st-key-income_wage_stats_popup [data-testid="stButton"] button:active {
     width: auto !important;
     min-width: 0 !important;
     max-width: max-content !important;
@@ -13225,27 +13202,26 @@ div.st-key-income-wage-stats-note-row div.st-key-income_wage_stats_popup [data-t
     height: auto !important;
     margin: 0 !important;
     padding: 0 !important;
-    transform: translateY(9px) !important;
     border: 0 !important;
-    outline: 0 !important;
     border-radius: 0 !important;
     background: transparent !important;
     background-color: transparent !important;
     background-image: none !important;
     box-shadow: none !important;
-    color: #38BDF8 !important;
-    -webkit-text-fill-color: #38BDF8 !important;
-    font-size: 1.35rem !important;
-    font-weight: 700 !important;
-    line-height: 1 !important;
+    color: var(--nc-subtext) !important;
+    -webkit-text-fill-color: var(--nc-subtext) !important;
+    font-size: 14.4px !important;
+    font-weight: 400 !important;
+    line-height: 1.35 !important;
 }
-div.st-key-income-wage-stats-note-row div.st-key-income_wage_stats_popup [data-testid="stButton"] button p {
+div.st-key-income_wage_stats_popup [data-testid="stButton"] button p {
     margin: 0 !important;
     padding: 0 !important;
-    color: #38BDF8 !important;
-    -webkit-text-fill-color: #38BDF8 !important;
-    font-size: 1.35rem !important;
-    line-height: 1 !important;
+    color: var(--nc-subtext) !important;
+    -webkit-text-fill-color: var(--nc-subtext) !important;
+    font-size: 14.4px !important;
+    line-height: 1.35 !important;
+    white-space: nowrap !important;
 }
 </style>
 """, unsafe_allow_html=True)
