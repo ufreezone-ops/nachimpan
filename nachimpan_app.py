@@ -2248,7 +2248,7 @@ div.st-key-retirement-expense-title-row div.st-key-retirement_expense_title_open
     padding: 0 !important;
     color: inherit !important;
     -webkit-text-fill-color: inherit !important;
-    font-size: inherit !important;
+    font-size: 28.8px !important;
     font-weight: inherit !important;
     line-height: inherit !important;
 }
