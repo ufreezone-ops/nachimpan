@@ -4323,29 +4323,27 @@ def _show_retirement_report_dialog():
                 st.error(f"CSV 읽기 오류: {_error}")
 
     st.markdown('<div class="retirement-connection-rail"></div>', unsafe_allow_html=True)
+    st.divider()
     with st.container(key="retirement-report-connection-cta"):
-        _left_spacer, _button_col, _right_spacer = st.columns([1, 2, 1])
-        with _button_col:
+        _connect_col, _close_col = st.columns(2, gap="medium")
+        with _connect_col:
             if st.button("연결", key="retirement_report_open_connection", type="secondary"):
                 st.session_state["_retirement_connection_open"] = True
                 st.session_state["_retirement_connection_origin_page"] = selected_page
                 st.session_state["_retirement_connection_origin_anchor"] = ".st-key-retirement-report-connection-cta button"
                 st.rerun()
-
-    st.divider()
-    _close_col, _spacer_col = st.columns([1, 3])
-    with _close_col:
-        if st.button("닫기", key="retirement_report_dialog_close", type="secondary"):
-            if st.session_state.get("_retirement_connection_origin_page"):
-                _return_to_retirement_origin()
-            else:
-                st.session_state["_retirement_explorer_open"] = False
-                st.session_state["_retirement_entry_open"] = False
-                st.session_state["_retirement_connection_open"] = False
-                st.session_state.pop("_retirement_explorer_source_id", None)
-                st.session_state.pop("_retirement_explorer_resource_id", None)
-                st.session_state.pop("_retirement_explorer_history", None)
-            st.rerun()
+        with _close_col:
+            if st.button("닫기", key="retirement_report_dialog_close", type="secondary"):
+                if st.session_state.get("_retirement_connection_origin_page"):
+                    _return_to_retirement_origin()
+                else:
+                    st.session_state["_retirement_explorer_open"] = False
+                    st.session_state["_retirement_entry_open"] = False
+                    st.session_state["_retirement_connection_open"] = False
+                    st.session_state.pop("_retirement_explorer_source_id", None)
+                    st.session_state.pop("_retirement_explorer_resource_id", None)
+                    st.session_state.pop("_retirement_explorer_history", None)
+                st.rerun()
 
 
 @st.dialog("연결", width="large", dismissible=False)
