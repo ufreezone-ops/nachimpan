@@ -13366,11 +13366,11 @@ div.st-key-retirement-title-row div.st-key-source_retirement_expense [data-testi
     justify-content: flex-start !important;
     width: auto !important;
     min-width: 0 !important;
-    min-height: 0 !important;
+    min-height: 2.45rem !important;
     max-width: max-content !important;
     height: auto !important;
     margin: 0 !important;
-    padding: 0 !important;
+    padding: 0.12rem 0 !important;
     transform: translateY(4.2px) !important;
     border: 0 !important;
     outline: 0 !important;
@@ -13383,9 +13383,14 @@ div.st-key-retirement-title-row div.st-key-source_retirement_expense [data-testi
     -webkit-text-fill-color: #F8FAFC !important;
     font-size: 1.8rem !important;
     font-weight: 700 !important;
-    line-height: 1 !important;
+    line-height: 1.2 !important;
     white-space: nowrap !important;
     gap: 0 !important;
+}
+div.st-key-retirement-title-row div.st-key-source_retirement_expense [data-testid="stPopoverButton"] [data-testid="stMarkdownContainer"] {
+    min-height: 2.1rem !important;
+    height: auto !important;
+    overflow: visible !important;
 }
 div.st-key-retirement-title-row div.st-key-source_retirement_expense [data-testid="stPopoverButton"] p {
     margin: 0 !important;
