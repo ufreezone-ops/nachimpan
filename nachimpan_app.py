@@ -13319,10 +13319,10 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 
-# 우리 가정 생애주기 재정곡선 제목과 나침반: 실제 DOM key 기준 최종 정렬
+# 우리 가정 생애주기 재정곡선: 제목·나침반 CSS 단일 관리
 st.markdown("""
 <style>
-/* 제목과 나침반 사이의 Streamlit 기본 여백 및 제목 자동 링크 제거 */
+/* 제목 행: 제목과 연결 버튼을 한 줄에서 정렬 */
 div.st-key-retirement-title-row [data-testid="stHorizontalBlock"] {
     align-items: center !important;
     justify-content: flex-start !important;
@@ -13345,7 +13345,7 @@ div.st-key-retirement-title-row [data-testid="stHeaderActionElements"] {
     display: none !important;
 }
 
-/* 실제 나침반은 source_retirement_expense key의 popover 버튼 */
+/* 연결 버튼: source_retirement_expense Popover의 실제 버튼 */
 div.st-key-retirement-title-row div.st-key-source_retirement_expense,
 div.st-key-retirement-title-row div.st-key-source_retirement_expense [data-testid="stElementContainer"] {
     width: auto !important;
@@ -13361,6 +13361,9 @@ div.st-key-retirement-title-row div.st-key-source_retirement_expense [data-testi
 div.st-key-retirement-title-row div.st-key-source_retirement_expense [data-testid="stPopoverButton"]:focus,
 div.st-key-retirement-title-row div.st-key-source_retirement_expense [data-testid="stPopoverButton"]:focus-visible,
 div.st-key-retirement-title-row div.st-key-source_retirement_expense [data-testid="stPopoverButton"]:active {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: flex-start !important;
     width: auto !important;
     min-width: 0 !important;
     min-height: 0 !important;
@@ -13376,8 +13379,8 @@ div.st-key-retirement-title-row div.st-key-source_retirement_expense [data-testi
     background-color: transparent !important;
     background-image: none !important;
     box-shadow: none !important;
-    color: #38BDF8 !important;
-    -webkit-text-fill-color: #38BDF8 !important;
+    color: #F8FAFC !important;
+    -webkit-text-fill-color: #F8FAFC !important;
     font-size: 1.8rem !important;
     font-weight: 700 !important;
     line-height: 1 !important;
@@ -13387,12 +13390,14 @@ div.st-key-retirement-title-row div.st-key-source_retirement_expense [data-testi
 div.st-key-retirement-title-row div.st-key-source_retirement_expense [data-testid="stPopoverButton"] p {
     margin: 0 !important;
     padding: 0 !important;
-    color: #38BDF8 !important;
-    -webkit-text-fill-color: #38BDF8 !important;
+    color: #F8FAFC !important;
+    -webkit-text-fill-color: #F8FAFC !important;
     font-size: 1.8rem !important;
+    font-weight: 700 !important;
     line-height: 1 !important;
 }
-/* popover 버튼 오른쪽에 붙는 아래쪽 펼침 화살표 제거 */
+
+/* Popover 기본 펼침 화살표 숨김 */
 div.st-key-retirement-title-row div.st-key-source_retirement_expense [data-testid="stPopoverButton"] svg,
 div.st-key-retirement-title-row div.st-key-source_retirement_expense [data-testid="stPopoverButton"] [data-testid="stIconMaterial"] {
     display: none !important;
@@ -13400,66 +13405,6 @@ div.st-key-retirement-title-row div.st-key-source_retirement_expense [data-testi
 </style>
 """, unsafe_allow_html=True)
 
-
-# 우리 가정 생애주기 재정곡선: 제목과 나침반을 하나의 popover 버튼으로 통합
-st.markdown("""
-<style>
-div.st-key-retirement-title-row [data-testid="stPopoverButton"],
-div.st-key-retirement-title-row [data-testid="stPopoverButton"]:hover,
-div.st-key-retirement-title-row [data-testid="stPopoverButton"]:focus,
-div.st-key-retirement-title-row [data-testid="stPopoverButton"]:focus-visible,
-div.st-key-retirement-title-row [data-testid="stPopoverButton"]:active {
-    width: auto !important;
-    min-width: 0 !important;
-    min-height: 0 !important;
-    height: auto !important;
-    padding: 0 !important;
-    margin: 0 !important;
-    transform: none !important;
-    border: 0 !important;
-    outline: 0 !important;
-    border-radius: 0 !important;
-    background: transparent !important;
-    background-color: transparent !important;
-    background-image: none !important;
-    box-shadow: none !important;
-    color: var(--text-color) !important;
-    -webkit-text-fill-color: var(--text-color) !important;
-    font-size: 1.25rem !important;
-    font-weight: 650 !important;
-    line-height: 1.4 !important;
-    white-space: nowrap !important;
-    gap: 0.18rem !important;
-    display: inline-flex !important;
-    align-items: center !important;
-}
-div.st-key-retirement-title-row [data-testid="stPopoverButton"] p {
-    margin: 0 !important;
-    padding: 0 !important;
-    color: var(--text-color) !important;
-    -webkit-text-fill-color: var(--text-color) !important;
-    font-size: inherit !important;
-    font-weight: inherit !important;
-    line-height: inherit !important;
-}
-div.st-key-retirement-title-row [data-testid="stPopoverButton"] svg,
-div.st-key-retirement-title-row [data-testid="stPopoverButton"] [data-testid="stIconMaterial"] {
-    display: none !important;
-}
-</style>
-""", unsafe_allow_html=True)
-
-
-# 우리 가정 생애주기 재정곡선: 내부 Markdown 제목 색상 최종 보정
-st.markdown("""
-<style>
-div.st-key-retirement-title-row div.st-key-source_retirement_expense [data-testid="stPopoverButton"] div[data-testid="stMarkdownContainer"] p,
-div.st-key-retirement-title-row div.st-key-source_retirement_expense [data-testid="stPopoverButton"] div.stMarkdownContainer p {
-    color: #F8FAFC !important;
-    -webkit-text-fill-color: #F8FAFC !important;
-}
-</style>
-""", unsafe_allow_html=True)
 
 # 부동산 적용기준 제목·나침반: 실제 가로 컨테이너와 버튼 외곽 요소 보정
 st.markdown("""
