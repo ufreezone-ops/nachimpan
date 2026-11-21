@@ -2192,14 +2192,12 @@ div.st-key-loan-payment-title-row div.st-key-loan-payment-source-guide [data-tes
     transform: translateY(9px) !important;
 }
 
-/* 세대계승 생애주기 재정곡선: 제목과 나침반을 같은 제목 행에 배치 */
+/* 세대계승 생애주기 재정곡선: 제목과 나침반을 하나의 버튼 라벨로 구성 */
 div.st-key-nta-generational-title-row[data-testid="stHorizontalBlock"] {
     display: flex !important;
     flex-direction: row !important;
     align-items: center !important;
     justify-content: flex-start !important;
-    gap: 0.12rem !important;
-    column-gap: 0.12rem !important;
     width: max-content !important;
     max-width: 100% !important;
 }
@@ -2209,7 +2207,7 @@ div.st-key-nta-generational-title-row div.st-key-nta_generational_title_open [da
     width: auto !important;
     min-width: 0 !important;
     max-width: max-content !important;
-    flex: 0 1 auto !important;
+    flex: 0 0 auto !important;
     margin: 0 !important;
     padding: 0 !important;
 }
@@ -2218,6 +2216,9 @@ div.st-key-nta-generational-title-row div.st-key-nta_generational_title_open [da
 div.st-key-nta-generational-title-row div.st-key-nta_generational_title_open [data-testid="stButton"] button:focus,
 div.st-key-nta-generational-title-row div.st-key-nta_generational_title_open [data-testid="stButton"] button:focus-visible,
 div.st-key-nta-generational-title-row div.st-key-nta_generational_title_open [data-testid="stButton"] button:active {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: flex-start !important;
     width: auto !important;
     min-width: 0 !important;
     max-width: max-content !important;
@@ -2234,14 +2235,11 @@ div.st-key-nta-generational-title-row div.st-key-nta_generational_title_open [da
     box-shadow: none !important;
     color: #F8FAFC !important;
     -webkit-text-fill-color: #F8FAFC !important;
-    font-size: 1.8rem !important;
+    font-size: 28.8px !important;
     font-weight: 700 !important;
     line-height: 1.2 !important;
     white-space: nowrap !important;
     text-decoration: none !important;
-    display: inline-flex !important;
-    align-items: center !important;
-    justify-content: center !important;
     transform: translateY(4.2px) !important;
 }
 div.st-key-nta-generational-title-row div.st-key-nta_generational_title_open [data-testid="stButton"] button p,
@@ -2250,69 +2248,10 @@ div.st-key-nta-generational-title-row div.st-key-nta_generational_title_open [da
     padding: 0 !important;
     color: inherit !important;
     -webkit-text-fill-color: inherit !important;
-    font-size: inherit !important;
-    font-weight: inherit !important;
-    line-height: 1.2 !important;
-    text-decoration: none !important;
-}
-div.st-key-nta-generational-title-row div.st-key-source_nta_generational {
-    width: auto !important;
-    min-width: 0 !important;
-    max-width: max-content !important;
-    flex: 0 0 auto !important;
-    margin: 0 0 0 0.08rem !important;
-    padding: 0 !important;
-}
-div.st-key-nta-generational-title-row div.st-key-source_nta_generational [data-testid="stButton"] button,
-div.st-key-nta-generational-title-row div.st-key-source_nta_generational [data-testid="stButton"] button:hover,
-div.st-key-nta-generational-title-row div.st-key-source_nta_generational [data-testid="stButton"] button:focus,
-div.st-key-nta-generational-title-row div.st-key-source_nta_generational [data-testid="stButton"] button:focus-visible,
-div.st-key-nta-generational-title-row div.st-key-source_nta_generational [data-testid="stButton"] button:active {
-    width: auto !important;
-    min-width: 0 !important;
-    max-width: max-content !important;
-    height: auto !important;
-    min-height: 0 !important;
-    margin: 0 !important;
-    padding: 0 0.12rem !important;
-    border: 0 !important;
-    outline: 0 !important;
-    background: transparent !important;
-    background-color: transparent !important;
-    background-image: none !important;
-    box-shadow: none !important;
-    font-size: 28px !important;
-    line-height: 1 !important;
-    transform: translateY(9px) !important;
-}
-div.st-key-nta-generational-title-row div.st-key-source_nta_generational [data-testid="stButton"] button p,
-div.st-key-nta-generational-title-row div.st-key-source_nta_generational [data-testid="stButton"] button span {
-    font-size: 28px !important;
-    line-height: 1 !important;
-    text-decoration: none !important;
-}
-div.st-key-nta-generational-title-row div.st-key-source_nta_generational [data-testid="stButton"] button,
-div.st-key-nta-generational-title-row div.st-key-source_nta_generational [data-testid="stButton"] button:hover,
-div.st-key-nta-generational-title-row div.st-key-source_nta_generational [data-testid="stButton"] button:focus,
-div.st-key-nta-generational-title-row div.st-key-source_nta_generational [data-testid="stButton"] button:focus-visible,
-div.st-key-nta-generational-title-row div.st-key-source_nta_generational [data-testid="stButton"] button:active,
-div.st-key-nta-generational-title-row div.st-key-source_nta_generational [data-testid="stButton"] button:hover p,
-div.st-key-nta-generational-title-row div.st-key-source_nta_generational [data-testid="stButton"] button:hover span {
-    text-decoration: none !important;
-}
-div.st-key-nta-generational-title-row > div {
-    align-self: center !important;
-}
-
-/* 제목 버튼의 실제 라벨에도 기존 제목 크기 28.8px을 직접 지정한다.
-   전역 .stApp p의 17px 기본 규칙이나 rem 기준값에 영향을 받지 않도록 한다. */
-.st-key-nta_generational_title_open [data-testid="stButton"] button,
-.st-key-nta_generational_title_open [data-testid="stButton"] button *,
-.st-key-nta_generational_title_open button,
-.st-key-nta_generational_title_open button * {
     font-size: 28.8px !important;
     font-weight: 700 !important;
     line-height: 1.2 !important;
+    text-decoration: none !important;
 }
 </style>
 """, unsafe_allow_html=True)
@@ -6824,23 +6763,17 @@ elif selected_page == "인생의 사계절":
     def render_official_nta_section():
         """기본모드와 고급모드에 동일한 공식 NTA 지표 영역을 표시"""
         with st.container(horizontal=True, vertical_alignment="center", gap=None, key="nta-generational-title-row"):
+            # 첫 번째 사례와 동일하게 제목과 나침반을 하나의 버튼 라벨로 구성한다.
+            # 고급모드에서는 제목 끝에 나침반을 함께 표시하고, 두 요소가 하나의 클릭 영역을 공유한다.
             _nta_generational_title_clicked = st.button(
-                "세대 계승 생애주기 재정곡선",
+                "세대 계승 생애주기 재정곡선" + (" 🧭" if is_adv else ""),
                 key="nta_generational_title_open",
                 help="세대 계승 생애주기 재정곡선 대표 보고서 보기",
                 type="tertiary",
             )
-            _nta_generational_compass_clicked = False
-            if is_adv and not st.session_state.get("_retirement_explorer_open", False):
-                _nta_generational_compass_clicked = st.button(
-                    "🧭",
-                    key="source_nta_generational",
-                    help="세대계승 생애주기 재정곡선 대표 보고서 보기",
-                    type="tertiary",
-                )
 
-            # 제목과 나침반은 같은 대표 보고서·연결 이력·복귀 위치를 사용한다.
-            if _nta_generational_title_clicked or _nta_generational_compass_clicked:
+            # 제목과 나침반은 하나의 버튼에서 같은 대표 보고서·연결 이력·복귀 위치를 사용한다.
+            if _nta_generational_title_clicked:
                 st.session_state["_retirement_explorer_open"] = True
                 st.session_state["_retirement_entry_open"] = False
                 st.session_state["_retirement_connection_open"] = False
