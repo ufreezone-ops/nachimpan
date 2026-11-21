@@ -9166,8 +9166,8 @@ elif selected_page == "통계":
         max-width: calc(100vw - 1.25rem) !important;
     }
     div.st-key-retirement-stats-return-bar [data-testid="column"] {
-        flex: 0 0 120px !important;
-        width: 120px !important;
+        flex: 0 0 140px !important;
+        width: 140px !important;
         min-width: 0 !important;
     }
     div.st-key-retirement-stats-return-bar [data-testid="stElementContainer"],
@@ -9177,9 +9177,9 @@ elif selected_page == "통계":
         justify-content: center !important;
     }
     div.st-key-retirement-stats-return-bar [data-testid="stButton"] button {
-        width: 120px !important;
-        min-width: 120px !important;
-        max-width: 120px !important;
+        width: 140px !important;
+        min-width: 140px !important;
+        max-width: 140px !important;
         min-height: 2.4rem !important;
         padding: 0.3rem 0.25rem !important;
         border: 6px solid #159447 !important;
@@ -13673,9 +13673,9 @@ div.st-key-retirement-stats-return-bar [data-testid="stButton"] button:hover {
 /* 기존 두 버튼 묶음의 폭과 간격은 유지 */
 div.st-key-retirement-report-connection-cta [data-testid="stButton"] button,
 div.st-key-retirement-stats-return-bar [data-testid="stButton"] button {
-    width: 120px !important;
-    min-width: 120px !important;
-    max-width: 120px !important;
+    width: 140px !important;
+    min-width: 140px !important;
+    max-width: 140px !important;
 }
 @media (max-width: 480px) {
     div.st-key-retirement-report-connection-cta [data-testid="stButton"] button,
