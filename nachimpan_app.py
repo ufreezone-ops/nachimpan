@@ -13598,7 +13598,7 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 
-# 2호선형 공통 버튼 라이브러리: 연결창 닫기 버튼을 기준으로 외형 통일
+# 2호선형 공통 버튼 라이브러리: 연결창 닫기 버튼의 실제 글자 크기(14.4px)로 고정
 st.markdown("""
 <style>
 :root {
@@ -13611,7 +13611,7 @@ st.markdown("""
     --nachimpan-pill-height: 2.4rem;
     --nachimpan-pill-padding-y: 0.15rem;
     --nachimpan-pill-padding-x: 0.35rem;
-    --nachimpan-pill-font-size: 0.84rem;
+    --nachimpan-pill-font-size: 14.4px;
     --nachimpan-pill-font-weight: 850;
 }
 
@@ -13638,15 +13638,18 @@ st.markdown("""
     box-shadow: none !important;
 }
 
-/* 버튼 안쪽 텍스트도 같은 크기와 굵기로 고정 */
+/* Streamlit 내부 Markdown 요소까지 px 단위로 동일하게 지정 */
 .st-key-retirement-report-connection-cta [data-testid="stButton"] button *,
 .st-key-retirement-connection-close-cta .st-key-retirement_connection_end [data-testid="stButton"] button *,
-.st-key-retirement-stats-return-bar [data-testid="stButton"] button * {
+.st-key-retirement-stats-return-bar [data-testid="stButton"] button *,
+.st-key-retirement-report-connection-cta [data-testid="stButton"] button p,
+.st-key-retirement-connection-close-cta .st-key-retirement_connection_end [data-testid="stButton"] button p,
+.st-key-retirement-stats-return-bar [data-testid="stButton"] button p {
     color: var(--nachimpan-pill-text) !important;
     -webkit-text-fill-color: var(--nachimpan-pill-text) !important;
-    font-size: inherit !important;
+    font-size: 14.4px !important;
     font-weight: var(--nachimpan-pill-font-weight) !important;
-    line-height: inherit !important;
+    line-height: 1.1 !important;
 }
 
 /* hover 상태도 공통 색상 유지 */
@@ -13671,11 +13674,6 @@ st.markdown("""
         width: 104px !important;
         min-width: 104px !important;
         max-width: 104px !important;
-        font-size: 0.8rem !important;
-    }
-    .st-key-retirement-report-connection-cta [data-testid="stButton"] button *,
-    .st-key-retirement-stats-return-bar [data-testid="stButton"] button * {
-        font-size: inherit !important;
     }
 }
 </style>
