@@ -4325,7 +4325,7 @@ def _show_retirement_report_dialog():
     st.markdown('<div class="retirement-connection-rail"></div>', unsafe_allow_html=True)
     st.divider()
     with st.container(key="retirement-report-connection-cta"):
-        _connect_col, _close_col = st.columns(2, gap="medium")
+        _connect_col, _close_col = st.columns([1, 1], gap="small")
         with _connect_col:
             if st.button("연결", key="retirement_report_open_connection", type="secondary"):
                 st.session_state["_retirement_connection_open"] = True
@@ -11139,11 +11139,21 @@ font-size: 0.82rem;
 font-weight: 800;
 font-variant-numeric: tabular-nums;
 }
-.st-key-retirement-report-connection-cta [data-testid="stElementContainer"] {
-width: 100% !important;
+.st-key-retirement-report-connection-cta [data-testid="stHorizontalBlock"] {
 display: flex !important;
+flex-wrap: nowrap !important;
+align-items: center !important;
 justify-content: center !important;
+gap: 0.7rem !important;
+width: max-content !important;
+max-width: calc(100vw - 1.25rem) !important;
 }
+.st-key-retirement-report-connection-cta [data-testid="column"] {
+flex: 0 1 auto !important;
+width: auto !important;
+min-width: 0 !important;
+}
+.st-key-retirement-report-connection-cta [data-testid="stElementContainer"],
 .st-key-retirement-report-connection-cta [data-testid="stButton"] {
 width: auto !important;
 display: flex !important;
@@ -11152,26 +11162,30 @@ justify-content: center !important;
 .st-key-retirement-report-connection-cta [data-testid="stButton"] button {
 width: 120px !important;
 min-width: 120px !important;
-max-width: 100% !important;
+max-width: 120px !important;
 min-height: 2.4rem !important;
-padding-left: 0.35rem !important;
-padding-right: 0.35rem !important;
+padding: 0.3rem 0.25rem !important;
 border: 6px solid #159447 !important;
 border-radius: 999px !important;
 background: #ffffff !important;
-color: #111111 !important;
--webkit-text-fill-color: #111111 !important;
+color: #000000 !important;
+-webkit-text-fill-color: #000000 !important;
+font-size: 0.84rem !important;
 font-weight: 850 !important;
+white-space: nowrap !important;
 box-shadow: none !important;
+flex: 0 0 auto !important;
 }
-.st-key-retirement-report-connection-cta [data-testid="stButton"] button p {
-color: #111111 !important;
--webkit-text-fill-color: #111111 !important;
+.st-key-retirement-report-connection-cta [data-testid="stButton"] button p,
+.st-key-retirement-report-connection-cta [data-testid="stButton"] button span,
+.st-key-retirement-report-connection-cta [data-testid="stButton"] button div {
+color: #000000 !important;
+-webkit-text-fill-color: #000000 !important;
 font-weight: 850 !important;
 }
 .st-key-retirement-report-connection-cta [data-testid="stButton"] button:hover {
 background: #e8f5ec !important;
-border-color: #087b3c !important;
+border-color: #159447 !important;
 }
 .st-key-retirement-connection-close-cta [data-testid="stElementContainer"] {
 width: 100% !important;
