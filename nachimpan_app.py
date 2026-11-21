@@ -11417,7 +11417,7 @@ height: 2.4rem !important;
 min-height: 2.4rem !important;
 max-height: 2.4rem !important;
 box-sizing: border-box !important;
-padding: 0.3rem 0.25rem !important;
+padding: var(--nachimpan-pill-padding) !important;
 border: 6px solid #159447 !important;
 border-radius: 999px !important;
 background: #ffffff !important;
@@ -12395,7 +12395,7 @@ line-height: 1 !important;
 .st-key-retirement-connection-platform .retirement-station-previous,
 .st-key-retirement-connection-platform .retirement-station-current {
     min-height: 3.25rem !important;
-    padding: 0.3rem 0.25rem !important;
+    padding: var(--nachimpan-pill-padding) !important;
 }
 .st-key-retirement-connection-platform .retirement-station-previous {
     gap: 0.22rem !important;
@@ -13460,8 +13460,8 @@ div.st-key-retirement-connection-close-cta [data-testid="stHorizontalBlock"] {
     margin-right: auto !important;
 }
 div.st-key-retirement-connection-close-cta [data-testid="column"] {
-    flex: 0 0 120px !important;
-    width: 120px !important;
+    flex: 0 0 auto !important;
+    width: auto !important;
     min-width: 0 !important;
 }
 div.st-key-retirement-connection-close-cta [data-testid="stElementContainer"] {
@@ -14000,7 +14000,7 @@ height: 2.4rem !important;
 min-height: 2.4rem !important;
 max-height: 2.4rem !important;
 box-sizing: border-box !important;
-padding: 0.3rem 0.25rem !important;
+padding: var(--nachimpan-pill-padding) !important;
 border: 6px solid #159447 !important;
 border-radius: 999px !important;
 background: #ffffff !important;
@@ -14978,7 +14978,7 @@ line-height: 1 !important;
 .st-key-retirement-connection-platform .retirement-station-previous,
 .st-key-retirement-connection-platform .retirement-station-current {
     min-height: 3.25rem !important;
-    padding: 0.3rem 0.25rem !important;
+    padding: var(--nachimpan-pill-padding) !important;
 }
 .st-key-retirement-connection-platform .retirement-station-previous {
     gap: 0.22rem !important;
@@ -16060,8 +16060,8 @@ div.st-key-retirement-connection-close-cta [data-testid="stHorizontalBlock"] {
     margin-right: auto !important;
 }
 div.st-key-retirement-connection-close-cta [data-testid="column"] {
-    flex: 0 0 120px !important;
-    width: 120px !important;
+    flex: 0 0 auto !important;
+    width: auto !important;
     min-width: 0 !important;
 }
 div.st-key-retirement-connection-close-cta [data-testid="stElementContainer"] {
