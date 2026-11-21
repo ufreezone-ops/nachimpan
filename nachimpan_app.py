@@ -5610,7 +5610,7 @@ if selected_page == "우리집 가계부":
             with st.container(border=True, key="retirement-panel"):
                 with st.container(horizontal=True, vertical_alignment="center", gap=None, key="retirement-expense-title-row"):
                     if st.button(
-                        "은퇴 후에는? (만원)",
+                        "은퇴 후에는? (만원) 🧭",
                         key="retirement_expense_title_open",
                         help="은퇴 후 생활비와 연결된 보고서 및 통계 자료 살펴보기",
                         type="tertiary",
