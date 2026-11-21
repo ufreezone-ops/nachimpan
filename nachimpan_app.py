@@ -13424,11 +13424,7 @@ div.st-key-retirement-connection-close-cta div.stButton > button[data-testid="st
 div.st-key-retirement-connection-close-cta div.stButton > button[data-testid="stBaseButton-secondary"]:focus,
 div.st-key-retirement-connection-close-cta div.stButton > button[data-testid="stBaseButton-secondary"]:focus-visible,
 div.st-key-retirement-connection-close-cta div.stButton > button[data-testid="stBaseButton-secondary"]:active {
-    width: 65px !important;
-    min-width: 65px !important;
-    max-width: 65px !important;
     min-height: 2.4rem !important;
-    padding: 0.35rem !important;
     border: 6px solid #159447 !important;
     border-radius: 999px !important;
     background: #ffffff !important;
@@ -13631,6 +13627,9 @@ div.st-key-retirement-report-connection-cta [data-testid="stButton"] button:acti
 div.st-key-retirement-connection-close-cta .st-key-retirement_connection_end [data-testid="stButton"] button:active,
 div.st-key-retirement-stats-return-bar [data-testid="stButton"] button:active {
     box-sizing: border-box !important;
+    width: max-content !important;
+    min-width: 0 !important;
+    max-width: none !important;
     min-height: var(--nachimpan-pill-height) !important;
     height: var(--nachimpan-pill-height) !important;
     padding: var(--nachimpan-pill-padding) !important;
@@ -13747,24 +13746,13 @@ div.st-key-housing-price-dialog-actions [data-testid="stButton"] {
     justify-content: center !important;
 }
 
-/* 자료보기 창 버튼 폭은 유지하고, 통계 창 복귀 버튼만 전체 명칭이 보이도록 확장 */
-div.st-key-retirement-report-connection-cta [data-testid="stButton"] button {
-    width: 120px !important;
-    min-width: 120px !important;
-    max-width: 120px !important;
-}
+/* 버튼 폭은 문구와 공통 내부 여백에 따라 자동 결정 */
+div.st-key-retirement-report-connection-cta [data-testid="stButton"] button,
+div.st-key-retirement-connection-close-cta .st-key-retirement_connection_end [data-testid="stButton"] button,
 div.st-key-retirement-stats-return-bar [data-testid="stButton"] button {
-    width: 140px !important;
-    min-width: 140px !important;
-    max-width: 140px !important;
-}
-@media (max-width: 480px) {
-    div.st-key-retirement-report-connection-cta [data-testid="stButton"] button,
-    div.st-key-retirement-stats-return-bar [data-testid="stButton"] button {
-        width: 104px !important;
-        min-width: 104px !important;
-        max-width: 104px !important;
-    }
+    width: max-content !important;
+    min-width: 0 !important;
+    max-width: none !important;
 }
 </style>
 """, unsafe_allow_html=True)
