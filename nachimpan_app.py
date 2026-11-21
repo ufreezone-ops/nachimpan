@@ -13596,3 +13596,95 @@ st.markdown("""
 }
 </style>
 """, unsafe_allow_html=True)
+
+
+# 2호선형 공통 버튼 라이브러리: 흰색 바탕·초록 테두리 CTA
+st.markdown("""
+<style>
+:root {
+    --nachimpan-pill-border: #159447;
+    --nachimpan-pill-border-width: 3px;
+    --nachimpan-pill-radius: 999px;
+    --nachimpan-pill-background: #ffffff;
+    --nachimpan-pill-text: #17251b;
+    --nachimpan-pill-hover: #e8f5ec;
+    --nachimpan-pill-height: 2.4rem;
+    --nachimpan-pill-padding-y: 0.3rem;
+    --nachimpan-pill-padding-x: 0.75rem;
+    --nachimpan-pill-font-size: 0.84rem;
+    --nachimpan-pill-font-weight: 850;
+}
+
+/* 공통 외형: 실제 버튼 폭은 각 배치 규칙을 따르되, 긴 문구는 자연스럽게 줄바꿈 */
+.st-key-retirement-report-connection-cta [data-testid="stButton"] button,
+.st-key-retirement-connection-close-cta [data-testid="stButton"] button,
+.st-key-retirement_connection_end button[data-testid="stBaseButton-secondary"],
+.st-key-retirement-stats-return-bar [data-testid="stButton"] button {
+    box-sizing: border-box !important;
+    min-height: var(--nachimpan-pill-height) !important;
+    height: auto !important;
+    padding: var(--nachimpan-pill-padding-y) var(--nachimpan-pill-padding-x) !important;
+    border: var(--nachimpan-pill-border-width) solid var(--nachimpan-pill-border) !important;
+    border-radius: var(--nachimpan-pill-radius) !important;
+    background: var(--nachimpan-pill-background) !important;
+    background-color: var(--nachimpan-pill-background) !important;
+    background-image: none !important;
+    color: var(--nachimpan-pill-text) !important;
+    -webkit-text-fill-color: var(--nachimpan-pill-text) !important;
+    font-family: inherit !important;
+    font-size: var(--nachimpan-pill-font-size) !important;
+    font-weight: var(--nachimpan-pill-font-weight) !important;
+    line-height: 1.2 !important;
+    white-space: normal !important;
+    word-break: keep-all !important;
+    overflow-wrap: anywhere !important;
+    box-shadow: none !important;
+}
+
+/* 버튼 안쪽 텍스트에도 같은 글자 규칙을 적용 */
+.st-key-retirement-report-connection-cta [data-testid="stButton"] button *,
+.st-key-retirement-connection-close-cta [data-testid="stButton"] button *,
+.st-key-retirement_connection_end button[data-testid="stBaseButton-secondary"] *,
+.st-key-retirement-stats-return-bar [data-testid="stButton"] button * {
+    color: var(--nachimpan-pill-text) !important;
+    -webkit-text-fill-color: var(--nachimpan-pill-text) !important;
+    font-weight: var(--nachimpan-pill-font-weight) !important;
+}
+
+/* hover/focus 상태도 공통 색상으로 유지 */
+.st-key-retirement-report-connection-cta [data-testid="stButton"] button:hover,
+.st-key-retirement-connection-close-cta [data-testid="stButton"] button:hover,
+.st-key-retirement_connection_end button[data-testid="stBaseButton-secondary"]:hover,
+.st-key-retirement-stats-return-bar [data-testid="stButton"] button:hover {
+    background: var(--nachimpan-pill-hover) !important;
+    background-color: var(--nachimpan-pill-hover) !important;
+    border-color: var(--nachimpan-pill-border) !important;
+}
+
+/* 두 개씩 나란히 놓인 버튼은 기존 정렬·폭을 보존 */
+.st-key-retirement-report-connection-cta [data-testid="stButton"] button {
+    width: 120px !important;
+    min-width: 120px !important;
+    max-width: 120px !important;
+}
+.st-key-retirement-stats-return-bar [data-testid="stButton"] button {
+    width: 120px !important;
+    min-width: 120px !important;
+    max-width: 120px !important;
+}
+@media (max-width: 480px) {
+    .st-key-retirement-report-connection-cta [data-testid="stButton"] button {
+        width: 104px !important;
+        min-width: 104px !important;
+        max-width: 104px !important;
+        font-size: 0.8rem !important;
+    }
+    .st-key-retirement-stats-return-bar [data-testid="stButton"] button {
+        width: 104px !important;
+        min-width: 104px !important;
+        max-width: 104px !important;
+        font-size: 0.76rem !important;
+    }
+}
+</style>
+""", unsafe_allow_html=True)
