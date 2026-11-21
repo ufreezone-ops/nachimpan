@@ -2303,6 +2303,17 @@ div.st-key-nta-generational-title-row div.st-key-source_nta_generational [data-t
 div.st-key-nta-generational-title-row > div {
     align-self: center !important;
 }
+
+/* 제목 버튼의 실제 라벨에도 기존 제목 크기 28.8px을 직접 지정한다.
+   전역 .stApp p의 17px 기본 규칙이나 rem 기준값에 영향을 받지 않도록 한다. */
+.st-key-nta_generational_title_open [data-testid="stButton"] button,
+.st-key-nta_generational_title_open [data-testid="stButton"] button *,
+.st-key-nta_generational_title_open button,
+.st-key-nta_generational_title_open button * {
+    font-size: 28.8px !important;
+    font-weight: 700 !important;
+    line-height: 1.2 !important;
+}
 </style>
 """, unsafe_allow_html=True)
 
