@@ -13670,8 +13670,12 @@ div.st-key-retirement-stats-return-bar [data-testid="stButton"] button:hover {
     border-color: var(--nachimpan-pill-border) !important;
 }
 
-/* 기존 두 버튼 묶음의 폭과 간격은 유지 */
-div.st-key-retirement-report-connection-cta [data-testid="stButton"] button,
+/* 자료보기 창 버튼 폭은 유지하고, 통계 창 복귀 버튼만 전체 명칭이 보이도록 확장 */
+div.st-key-retirement-report-connection-cta [data-testid="stButton"] button {
+    width: 120px !important;
+    min-width: 120px !important;
+    max-width: 120px !important;
+}
 div.st-key-retirement-stats-return-bar [data-testid="stButton"] button {
     width: 140px !important;
     min-width: 140px !important;
