@@ -3220,9 +3220,7 @@ OECD 「Pensions at a Glance 2025: Korea」는 2024년 한국의 실질 노동�
 
 **나침반의 소득곡선 적용**
 
-나침반은 여성의 출산·육아 기간을 생애사건으로 설정하고, 해당 기간의 근로소득 감소와 경력 복귀 이후의 소득 수준 조정을 별도로 반영합니다. 현재 모델은 육아 기간 중 첫 2년은 기준소득의 35%, 이후 4년은 50%를 적용하고, 육아기간이 끝난 뒤에는 기준소득의 80%를 적용합니다. 이는 개인별 실제 경력과 임금 회복을 예측하는 값이 아니라, 통계에서 관찰되는 경력단절의 장기적 영향을 시뮬레이션하기 위한 단순화된 가정입니다.
-
-특히 조사에서 관찰한 7.5년은 결혼·임신·출산 등으로 경력단절을 경험한 여성 집단의 평균 재취업 기간입니다. 모든 여성의 경력 공백이 7.5년이라는 뜻은 아니며, 나침반의 육아기간 6년 가정과도 서로 다른 지표입니다.
+나침반의 소득곡선은 출산·육아로 인한 경력단절 기간을 평균 7.5년으로 적용합니다. 이 기간 중 첫 2년은 기준소득의 35%, 이후 5.5년은 50%를 적용하고, 재취업 후에는 기준소득의 80%를 적용합니다. 출산·육아 비용 이벤트의 산정 기간은 기존 6년을 유지합니다.
 
 **자료 출처**
 
@@ -7449,12 +7447,14 @@ elif selected_page == "우리집 재정곡선":
                 if int(getv(k, 0)) >= 0: existing_child_ages.append(int(getv(k, 0)))
 
         childcare_windows = []
+        career_break_windows = []
         college_windows = []
         wedding_windows = []
 
         for ca in existing_child_ages:
             birth_p_age = cur_age - ca
             childcare_windows.append((birth_p_age, birth_p_age + 6))
+            career_break_windows.append((birth_p_age, birth_p_age + 7.5))
             c_start = cur_age + (19 - ca)
             college_windows.append((c_start, c_start + 4))
             w_start = cur_age + (30 - ca)
@@ -7474,6 +7474,7 @@ elif selected_page == "우리집 재정곡선":
 
         if future_birth_age is not None and future_birth_age <= 85:
             childcare_windows.append((future_birth_age, future_birth_age + 6))
+            career_break_windows.append((future_birth_age, future_birth_age + 7.5))
             college_windows.append((future_birth_age + 19, future_birth_age + 19 + 4))
             wedding_windows.append((future_birth_age + 30, future_birth_age + 30 + 5))
 
@@ -7637,15 +7638,15 @@ elif selected_page == "우리집 재정곡선":
 
         # 현재 입력소득은 경력단절 후 실제소득일 수 있으므로,
         # 현재 연령에 적용되는 경력복귀 80% 감액을 기준곡선 배율 산정 전에 복원한다.
-        current_is_in_childcare = any(
-            c_start <= cur_age < c_end for c_start, c_end in childcare_windows
+        current_is_in_career_break = any(
+            c_start <= cur_age < c_end for c_start, c_end in career_break_windows
         )
-        current_has_completed_childcare = any(
-            cur_age >= c_end for c_start, c_end in childcare_windows
+        current_has_completed_career_break = any(
+            cur_age >= c_end for c_start, c_end in career_break_windows
         )
         current_career_recovery_ratio = (
             0.80
-            if is_female and current_has_completed_childcare and not current_is_in_childcare
+            if is_female and current_has_completed_career_break and not current_is_in_career_break
             else 1.0
         )
         normalized_monthly_income_self = monthly_income_self / current_career_recovery_ratio
@@ -7983,11 +7984,11 @@ elif selected_page == "우리집 재정곡선":
                 self_inc += normalized_annual_bonus
 
                 # 여성 출산·육아기 경력단절 및 80% 하향 복귀 모델링
-                if is_female and childcare_windows:
+                if is_female and career_break_windows:
                     is_in_childcare = False
                     has_completed_childcare = False
 
-                    for c_start, c_end in childcare_windows:
+                    for c_start, c_end in career_break_windows:
                         if c_start <= a < c_end:
                             is_in_childcare = True
                             years_in = a - c_start
@@ -8042,10 +8043,10 @@ elif selected_page == "우리집 재정곡선":
                     + normalized_annual_bonus
                 ) if self_base is not None else 0.0
 
-                if is_female and childcare_windows:
+                if is_female and career_break_windows:
                     stat_in_childcare = False
                     stat_completed_childcare = False
-                    for c_start, c_end in childcare_windows:
+                    for c_start, c_end in career_break_windows:
                         if c_start <= a < c_end:
                             stat_in_childcare = True
                             years_in = a - c_start
@@ -10459,9 +10460,7 @@ OECD 「Pensions at a Glance 2025: Korea」는 2024년 한국의 실질 노동�
 
 **나침반의 소득곡선 적용**
 
-나침반은 여성의 출산·육아 기간을 생애사건으로 설정하고, 해당 기간의 근로소득 감소와 경력 복귀 이후의 소득 수준 조정을 별도로 반영합니다. 현재 모델은 육아 기간 중 첫 2년은 기준소득의 35%, 이후 4년은 50%를 적용하고, 육아기간이 끝난 뒤에는 기준소득의 80%를 적용합니다. 이는 개인별 실제 경력과 임금 회복을 예측하는 값이 아니라, 통계에서 관찰되는 경력단절의 장기적 영향을 시뮬레이션하기 위한 단순화된 가정입니다.
-
-특히 조사에서 관찰한 7.5년은 결혼·임신·출산 등으로 경력단절을 경험한 여성 집단의 평균 재취업 기간입니다. 모든 여성의 경력 공백이 7.5년이라는 뜻은 아니며, 나침반의 육아기간 6년 가정과도 서로 다른 지표입니다.
+나침반의 소득곡선은 출산·육아로 인한 경력단절 기간을 평균 7.5년으로 적용합니다. 이 기간 중 첫 2년은 기준소득의 35%, 이후 5.5년은 50%를 적용하고, 재취업 후에는 기준소득의 80%를 적용합니다. 출산·육아 비용 이벤트의 산정 기간은 기존 6년을 유지합니다.
 
 **자료 출처**
 
