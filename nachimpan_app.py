@@ -5451,6 +5451,22 @@ _HOUSING_METHOD_REPORT_MD = """
 
 @st.dialog("🏠 부동산 적용 기준", width="large")
 def _show_housing_price_stats_dialog():
+    st.markdown(
+        """
+        <style>
+        div[data-testid="stDialog"] [data-testid="stDialogHeader"] h2 {
+            width: 100%;
+            text-align: left !important;
+        }
+        /* 부동산 적용 기준 창은 하단의 명시적 닫기 버튼으로만 종료 */
+        div[data-testid="stDialog"]:has(.st-key-housing-price-dialog-actions) [data-testid="stDialogHeader"] button {
+            display: none !important;
+        }
+        </style>
+        """,
+        unsafe_allow_html=True,
+    )
+
     _case_housing_region = st.session_state.get("housing_region")
     if not _case_housing_region or _case_housing_region == "지역 선택":
         _case_housing_region = st.session_state.get("residence_region", "지역 선택")
@@ -5471,22 +5487,6 @@ def _show_housing_price_stats_dialog():
     _case_is_representative = st.session_state.get("_representative_case_id") in {
         "case_32_female", "case_45_female"
     }
-
-    st.markdown(
-        """
-        <style>
-        div[data-testid="stDialog"] [data-testid="stDialogHeader"] h2 {
-            width: 100%;
-            text-align: left !important;
-        }
-        /* 부동산 적용 기준 창은 하단의 명시적 닫기 버튼으로만 종료 */
-        div[data-testid="stDialog"]:has(.st-key-housing-price-dialog-actions) [data-testid="stDialogHeader"] button {
-            display: none !important;
-        }
-        </style>
-        """,
-        unsafe_allow_html=True,
-    )
 
     if st.session_state.get("_housing_dialog_view", "summary") == "method":
         st.markdown(_HOUSING_METHOD_REPORT_MD)
