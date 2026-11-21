@@ -3754,7 +3754,7 @@ def _render_master_data_items(_continent_code):
                 st.info(f"미리보기를 지원하지 않는 파일 형식입니다: {_format}")
 
 
-@st.dialog("자료 보기", width="large")
+@st.dialog("자료 보기", width="large", dismissible=False)
 def _show_master_resource_dialog():
     _resource_id = st.session_state.get("_catalog_resource_id", "")
     _master = _load_nachimpan_master()
@@ -4285,7 +4285,7 @@ def _show_retirement_entry_dialog():
             st.rerun()
 
 
-@st.dialog("자료 보기", width="large")
+@st.dialog("자료 보기", width="large", dismissible=False)
 def _show_retirement_report_dialog():
     """보고서 본문 또는 CSV 미리보기를 전체 제목과 함께 표시한다."""
     _source_id = st.session_state.get("_retirement_explorer_source_id")
@@ -4331,6 +4331,21 @@ def _show_retirement_report_dialog():
                 st.session_state["_retirement_connection_origin_page"] = selected_page
                 st.session_state["_retirement_connection_origin_anchor"] = ".st-key-retirement-report-connection-cta button"
                 st.rerun()
+
+    st.divider()
+    _close_col, _spacer_col = st.columns([1, 3])
+    with _close_col:
+        if st.button("닫기", key="retirement_report_dialog_close", type="secondary"):
+            if st.session_state.get("_retirement_connection_origin_page"):
+                _return_to_retirement_origin()
+            else:
+                st.session_state["_retirement_explorer_open"] = False
+                st.session_state["_retirement_entry_open"] = False
+                st.session_state["_retirement_connection_open"] = False
+                st.session_state.pop("_retirement_explorer_source_id", None)
+                st.session_state.pop("_retirement_explorer_resource_id", None)
+                st.session_state.pop("_retirement_explorer_history", None)
+            st.rerun()
 
 
 @st.dialog("연결", width="large", dismissible=False)
