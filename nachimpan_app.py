@@ -13399,7 +13399,7 @@ div.st-key-retirement-title-row div.st-key-source_retirement_expense [data-testi
     -webkit-text-fill-color: #F8FAFC !important;
     font-size: 1.8rem !important;
     font-weight: 700 !important;
-    line-height: 1 !important;
+    line-height: 1.2 !important;
 }
 
 /* Popover 기본 펼침 화살표 숨김 */
