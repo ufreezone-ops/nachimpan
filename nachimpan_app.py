@@ -12901,11 +12901,13 @@ st.markdown("""
 }
 .st-key-retirement-top-previous-button [data-testid="stButton"] button,
 .st-key-retirement-top-next-button [data-testid="stButton"] button {
-    width:120% !important;
-    max-width:none !important;
+    width:100% !important;
+    max-width:100% !important;
+    min-width:0 !important;
+    box-sizing:border-box !important;
     height:auto !important;
     min-height:0 !important;
-    margin:0 -5.396% 0 -5.396% !important;
+    margin:0 !important;
 }
 
 /* 중앙 화살표 열의 바깥 영역을 좌우 보고서 버튼 상단과 맞춤 */
