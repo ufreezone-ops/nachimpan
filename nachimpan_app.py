@@ -2408,6 +2408,101 @@ div.st-key-retirement-title-row div.st-key-retirement_lifecycle_compass_open [da
 """, unsafe_allow_html=True)
 
 
+# 부동산 적용기준 소제목: 기존 17px 제목 레벨 복원
+st.markdown("""
+<style>
+/* 기존 제목 행에서 쓰던 위쪽 위치 조정은 최상위 래퍼에만 적용 */
+.stApp div.st-key-housing_price_source_guide {
+    width: max-content !important;
+    min-width: 0 !important;
+    max-width: 100% !important;
+    margin: -2rem 0 0 0 !important;
+    padding: 0 !important;
+    border: 0 !important;
+    background: transparent !important;
+    box-shadow: none !important;
+}
+
+/* Streamlit help 렌더링의 안쪽 래퍼는 크기와 장식을 갖지 않도록 */
+.stApp div.st-key-housing_price_source_guide [data-testid="stElementContainer"],
+.stApp div.st-key-housing_price_source_guide [data-testid="stButton"],
+.stApp div.st-key-housing_price_source_guide .stButton,
+.stApp div.st-key-housing_price_source_guide [data-testid="stTooltipHoverTarget"] {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: flex-start !important;
+    width: max-content !important;
+    min-width: 0 !important;
+    max-width: 100% !important;
+    flex: 0 0 auto !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    border: 0 !important;
+    outline: 0 !important;
+    background: transparent !important;
+    background-color: transparent !important;
+    background-image: none !important;
+    box-shadow: none !important;
+}
+
+/* 소제목 레벨: 17px / 600, 모든 상태에서 버튼 외형 제거 */
+.stApp div.st-key-housing_price_source_guide [data-testid="stButton"] button,
+.stApp div.st-key-housing_price_source_guide [data-testid="stButton"] button:hover,
+.stApp div.st-key-housing_price_source_guide [data-testid="stButton"] button:focus,
+.stApp div.st-key-housing_price_source_guide [data-testid="stButton"] button:focus-visible,
+.stApp div.st-key-housing_price_source_guide [data-testid="stButton"] button:active {
+    appearance: none !important;
+    -webkit-appearance: none !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: flex-start !important;
+    width: auto !important;
+    min-width: 0 !important;
+    min-height: 0 !important;
+    max-width: 100% !important;
+    height: auto !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    border: 0 !important;
+    border-width: 0 !important;
+    border-color: transparent !important;
+    outline: 0 !important;
+    outline-offset: 0 !important;
+    border-radius: 0 !important;
+    background: transparent !important;
+    background-color: transparent !important;
+    background-image: none !important;
+    box-shadow: none !important;
+    color: var(--text-color) !important;
+    -webkit-text-fill-color: var(--text-color) !important;
+    font-size: 17px !important;
+    font-weight: 600 !important;
+    line-height: 1.2 !important;
+    text-align: left !important;
+    white-space: nowrap !important;
+    gap: 0 !important;
+}
+.stApp div.st-key-housing_price_source_guide [data-testid="stButton"] button::before,
+.stApp div.st-key-housing_price_source_guide [data-testid="stButton"] button::after {
+    display: none !important;
+    content: none !important;
+    border: 0 !important;
+    box-shadow: none !important;
+}
+.stApp div.st-key-housing_price_source_guide [data-testid="stButton"] button p,
+.stApp div.st-key-housing_price_source_guide [data-testid="stButton"] button span {
+    margin: 0 !important;
+    padding: 0 !important;
+    color: inherit !important;
+    -webkit-text-fill-color: inherit !important;
+    font-size: 17px !important;
+    font-weight: 600 !important;
+    line-height: 1.2 !important;
+}
+</style>
+""", unsafe_allow_html=True)
+
+
 with st.container(key="main_navigation_shell"):
 
     with st.container(key="main_navigation", horizontal=True, wrap=False, gap=None):
