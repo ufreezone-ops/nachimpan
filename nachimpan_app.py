@@ -9137,7 +9137,8 @@ elif selected_page == "AI 시선":
         with adv_btm_col:
             if st.button("🌿 기본 모드로 전환", key="btn_lock_basic_bottom", use_container_width=True):
                 st.session_state["advanced_mode"] = False
-                st.session_state["_pending_nav"] = "우리집 가계부"
+                st.session_state["_nav_scroll_to_start_once"] = True
+                _navigate_to_page_top("우리집 가계부")
                 st.rerun()
 
 
