@@ -7284,7 +7284,7 @@ elif selected_page == "우리집 재정곡선":
         with st.container(horizontal=True, vertical_alignment="center", gap=None, key="retirement-title-row"):
             if st.button(
                 "우리 가정 생애주기 재정곡선 🧭",
-                key="source_retirement_expense",
+                key="retirement_lifecycle_compass_open",
                 help="우리 가정 생애주기 재정곡선의 대표 보고서 보기",
                 type="tertiary",
             ):
@@ -7298,7 +7298,7 @@ elif selected_page == "우리집 재정곡선":
                 st.session_state["_retirement_explorer_history"] = ["6051200-00"]
                 st.session_state["_retirement_connection_origin_page"] = selected_page
                 st.session_state["_retirement_connection_origin_anchor"] = (
-                    ".st-key-source_retirement_expense button"
+                    ".st-key-retirement_lifecycle_compass_open button"
                 )
                 st.session_state.pop("_retirement_connection_entry_source_ids", None)
                 st.rerun()
