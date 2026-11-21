@@ -2336,6 +2336,78 @@ div.st-key-nta-generational-title-row div.st-key-nta_generational_title_open [da
 </style>
 """, unsafe_allow_html=True)
 
+# 우리 가정 생애주기 재정곡선 제목·나침반: 기존 정상 제목형 규격 복원
+st.markdown("""
+<style>
+/* 제목 행과 버튼을 기존과 같이 한 줄에 정렬 */
+div.st-key-retirement-title-row[data-testid="stHorizontalBlock"] {
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    justify-content: flex-start !important;
+    gap: 0.04rem !important;
+    width: max-content !important;
+    max-width: 100% !important;
+}
+
+/* 버튼 래퍼는 제목 내용만큼만 차지 */
+div.st-key-retirement-title-row div.st-key-retirement_lifecycle_compass_open,
+div.st-key-retirement-title-row div.st-key-retirement_lifecycle_compass_open [data-testid="stElementContainer"],
+div.st-key-retirement-title-row div.st-key-retirement_lifecycle_compass_open [data-testid="stButton"] {
+    width: auto !important;
+    min-width: 0 !important;
+    max-width: max-content !important;
+    flex: 0 0 auto !important;
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+/* 제목 레벨: 기존 28.8px / 700 굵기와 장식 없는 클릭 영역 */
+div.st-key-retirement-title-row div.st-key-retirement_lifecycle_compass_open [data-testid="stButton"] button,
+div.st-key-retirement-title-row div.st-key-retirement_lifecycle_compass_open [data-testid="stButton"] button:hover,
+div.st-key-retirement-title-row div.st-key-retirement_lifecycle_compass_open [data-testid="stButton"] button:focus,
+div.st-key-retirement-title-row div.st-key-retirement_lifecycle_compass_open [data-testid="stButton"] button:focus-visible,
+div.st-key-retirement-title-row div.st-key-retirement_lifecycle_compass_open [data-testid="stButton"] button:active {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: flex-start !important;
+    width: auto !important;
+    min-width: 0 !important;
+    min-height: 2.45rem !important;
+    max-width: max-content !important;
+    height: auto !important;
+    margin: 0 !important;
+    padding: 0.12rem 0 !important;
+    transform: translateY(4.2px) !important;
+    border: 0 !important;
+    outline: 0 !important;
+    border-radius: 0 !important;
+    background: transparent !important;
+    background-color: transparent !important;
+    background-image: none !important;
+    box-shadow: none !important;
+    color: #F8FAFC !important;
+    -webkit-text-fill-color: #F8FAFC !important;
+    font-size: 1.8rem !important;
+    font-weight: 700 !important;
+    line-height: 1.2 !important;
+    white-space: nowrap !important;
+    gap: 0 !important;
+}
+div.st-key-retirement-title-row div.st-key-retirement_lifecycle_compass_open [data-testid="stButton"] button p,
+div.st-key-retirement-title-row div.st-key-retirement_lifecycle_compass_open [data-testid="stButton"] button span {
+    margin: 0 !important;
+    padding: 0 !important;
+    color: inherit !important;
+    -webkit-text-fill-color: inherit !important;
+    font-size: 1.8rem !important;
+    font-weight: 700 !important;
+    line-height: 1.2 !important;
+}
+</style>
+""", unsafe_allow_html=True)
+
+
 with st.container(key="main_navigation_shell"):
 
     with st.container(key="main_navigation", horizontal=True, wrap=False, gap=None):
