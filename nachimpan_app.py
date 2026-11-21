@@ -11193,16 +11193,24 @@ border-color: #159447 !important;
         box-sizing: border-box !important;
     }
     .st-key-retirement-report-connection-cta [data-testid="stHorizontalBlock"] {
-        width: 100% !important;
+        display: flex !important;
+        flex-wrap: nowrap !important;
+        width: max-content !important;
         max-width: 100% !important;
         gap: 0.25rem !important;
         justify-content: center !important;
         box-sizing: border-box !important;
+        margin-left: auto !important;
+        margin-right: auto !important;
     }
     .st-key-retirement-report-connection-cta [data-testid="column"] {
-        flex: 0 1 104px !important;
+        flex: 0 0 104px !important;
         width: 104px !important;
-        min-width: 0 !important;
+        min-width: 104px !important;
+        max-width: 104px !important;
+        padding-left: 0 !important;
+        padding-right: 0 !important;
+        box-sizing: border-box !important;
     }
     .st-key-retirement-report-connection-cta [data-testid="stButton"] button,
     .st-key-retirement-report-connection-cta [data-testid="stButton"] button:hover,
