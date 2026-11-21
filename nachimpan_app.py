@@ -321,23 +321,14 @@ footer {
     text-align: left !important;
 }
 
-/* 부동산 적용기준 소제목과 나침반: 같은 행에 배치하고 아이콘 버튼 외형 제거 */
-.st-key-housing-price-title-row [data-testid="stHorizontalBlock"] {
-    align-items: center !important;
-    justify-content: flex-start !important;
-    gap: 0.25rem !important;
-}
-.st-key-housing-price-title-row [data-testid="stMarkdownContainer"] h3 {
-    margin: 0 !important;
-    white-space: nowrap !important;
-}
+/* 부동산 적용기준 제목+나침반 통합 버튼 */
 .st-key-housing_price_source_guide,
 .st-key-housing_price_source_guide [data-testid="stButton"] {
-    width: auto !important;
+    width: max-content !important;
     min-width: 0 !important;
-    max-width: max-content !important;
+    max-width: 100% !important;
     flex: 0 0 auto !important;
-    margin: 0 !important;
+    margin: -2rem 0 0 0 !important;
     padding: 0 !important;
 }
 .st-key-housing_price_source_guide [data-testid="stButton"] button,
@@ -347,31 +338,34 @@ footer {
 .st-key-housing_price_source_guide [data-testid="stButton"] button:active {
     width: auto !important;
     min-width: 0 !important;
-    max-width: max-content !important;
+    max-width: 100% !important;
     min-height: 0 !important;
     height: auto !important;
     margin: 0 !important;
     padding: 0 !important;
     border: 0 !important;
     outline: 0 !important;
+    border-radius: 0 !important;
     background: transparent !important;
     background-color: transparent !important;
     box-shadow: none !important;
-    color: #38BDF8 !important;
-    -webkit-text-fill-color: #38BDF8 !important;
-    font-size: 1.65rem !important;
-    line-height: 1 !important;
-    transform: translateY(3px) !important;
+    color: var(--text-color) !important;
+    -webkit-text-fill-color: var(--text-color) !important;
+    font-size: 17px !important;
+    font-weight: 600 !important;
+    line-height: 1.2 !important;
+    text-align: left !important;
+    white-space: nowrap !important;
 }
 .st-key-housing_price_source_guide [data-testid="stButton"] button p {
     margin: 0 !important;
     padding: 0 !important;
-    color: #38BDF8 !important;
-    -webkit-text-fill-color: #38BDF8 !important;
+    color: inherit !important;
+    -webkit-text-fill-color: inherit !important;
     font-size: inherit !important;
-    line-height: 1 !important;
+    font-weight: inherit !important;
+    line-height: inherit !important;
 }
-
 .loan-payment-label-text {
     display: inline-block;
     margin: 0 !important;
@@ -8827,21 +8821,14 @@ elif selected_page == "우리집 재정곡선":
                 """,
                 unsafe_allow_html=True,
             )
-            with st.container(
-                key="housing-price-title-row",
-                horizontal=True,
-                vertical_alignment="center",
-                gap=None,
+            if st.button(
+                "부동산 적용기준 🧭",
+                key="housing_price_source_guide",
+                help="부동산 적용 기준과 지역별 주택가격 통계 보기",
+                type="tertiary",
             ):
-                st.markdown("### 부동산 적용기준")
-                if st.button(
-                    "🧭",
-                    key="housing_price_source_guide",
-                    help="부동산 적용 기준과 지역별 주택가격 통계 보기",
-                    type="tertiary",
-                ):
-                    st.session_state["_housing_dialog_view"] = "summary"
-                    st.session_state["_housing_price_dialog_open"] = True
+                st.session_state["_housing_dialog_view"] = "summary"
+                st.session_state["_housing_price_dialog_open"] = True
 
             # 팝업 호출은 페이지 레이아웃 컨텍스트 밖의 최상위 영역에서 처리한다.
 
