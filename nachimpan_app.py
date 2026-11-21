@@ -5456,6 +5456,13 @@ def _show_housing_price_stats_dialog():
         _case_housing_region = st.session_state.get("residence_region", "지역 선택")
     if _case_housing_region not in HOUSING_PRICE_DATA:
         st.info("선택한 지역의 주택가격 통계를 찾을 수 없습니다.")
+        with st.container(key="housing-price-dialog-actions"):
+            _missing_spacer, _missing_close_col = st.columns([1, 1])
+            with _missing_close_col:
+                if st.button("닫기", key="close_housing_price_method_dialog", type="secondary"):
+                    st.session_state["_housing_price_dialog_open"] = False
+                    st.session_state["_housing_dialog_view"] = "summary"
+                    st.rerun()
         return
 
     _case_housing_stats = HOUSING_PRICE_DATA[_case_housing_region]
@@ -5473,7 +5480,7 @@ def _show_housing_price_stats_dialog():
             text-align: left !important;
         }
         /* 부동산 적용 기준 창은 하단의 명시적 닫기 버튼으로만 종료 */
-        div[data-testid="stDialog"] [data-testid="stDialogHeader"] button {
+        div[data-testid="stDialog"]:has(.st-key-housing-price-dialog-actions) [data-testid="stDialogHeader"] button {
             display: none !important;
         }
         </style>
