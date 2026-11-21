@@ -9428,13 +9428,13 @@ elif selected_page == "통계":
         min-width: 0 !important;
         max-width: none !important;
         min-height: 2.4rem !important;
-        padding: 0.3rem 0.25rem !important;
+        padding: var(--nachimpan-pill-padding) !important;
         border: 6px solid #159447 !important;
         border-radius: 999px !important;
         background: #ffffff !important;
         color: #000000 !important;
         -webkit-text-fill-color: #000000 !important;
-        font-size: 0.84rem !important;
+        font-size: 14.4px !important;
         font-weight: 850 !important;
         white-space: nowrap !important;
         box-shadow: none !important;
@@ -11410,9 +11410,9 @@ justify-content: center !important;
 .st-key-retirement-report-connection-cta [data-testid="stButton"] button:hover,
 .st-key-retirement-report-connection-cta [data-testid="stButton"] button:focus,
 .st-key-retirement-report-connection-cta [data-testid="stButton"] button:active {
-width: 120px !important;
-min-width: 120px !important;
-max-width: 120px !important;
+width: max-content !important;
+min-width: 0 !important;
+max-width: none !important;
 height: 2.4rem !important;
 min-height: 2.4rem !important;
 max-height: 2.4rem !important;
@@ -11430,7 +11430,7 @@ font-weight: 850 !important;
 line-height: 1 !important;
 white-space: nowrap !important;
 box-shadow: none !important;
-flex: 0 0 120px !important;
+flex: 0 0 auto !important;
 display: inline-flex !important;
 align-items: center !important;
 justify-content: center !important;
@@ -11465,10 +11465,10 @@ border-color: #159447 !important;
         margin-right: auto !important;
     }
     .st-key-retirement-report-connection-cta [data-testid="column"] {
-        flex: 0 0 104px !important;
-        width: 104px !important;
-        min-width: 104px !important;
-        max-width: 104px !important;
+        flex: 0 0 auto !important;
+        width: auto !important;
+        min-width: 0 !important;
+        max-width: none !important;
         padding-left: 0 !important;
         padding-right: 0 !important;
         box-sizing: border-box !important;
@@ -11477,10 +11477,10 @@ border-color: #159447 !important;
     .st-key-retirement-report-connection-cta [data-testid="stButton"] button:hover,
     .st-key-retirement-report-connection-cta [data-testid="stButton"] button:focus,
     .st-key-retirement-report-connection-cta [data-testid="stButton"] button:active {
-        width: 104px !important;
-        min-width: 104px !important;
-        max-width: 104px !important;
-        flex: 0 0 104px !important;
+        width: max-content !important;
+        min-width: 0 !important;
+        max-width: none !important;
+        flex: 0 0 auto !important;
         font-size: 0.8rem !important;
     }
 }
@@ -11498,12 +11498,10 @@ justify-content: center !important;
 .st-key-retirement-connection-close-cta [data-testid="stButton"] button:hover,
 .st-key-retirement-connection-close-cta [data-testid="stButton"] button:focus,
 .st-key-retirement-connection-close-cta [data-testid="stButton"] button:active {
-width: 120px !important;
-min-width: 120px !important;
-max-width: 100% !important;
+width: max-content !important;
+min-width: 0 !important;
+max-width: none !important;
 min-height: 2.4rem !important;
-padding-left: 0.35rem !important;
-padding-right: 0.35rem !important;
 border: 6px solid #159447 !important;
 border-radius: 999px !important;
 background: #ffffff !important;
@@ -13995,9 +13993,9 @@ justify-content: center !important;
 .st-key-retirement-report-connection-cta [data-testid="stButton"] button:hover,
 .st-key-retirement-report-connection-cta [data-testid="stButton"] button:focus,
 .st-key-retirement-report-connection-cta [data-testid="stButton"] button:active {
-width: 120px !important;
-min-width: 120px !important;
-max-width: 120px !important;
+width: max-content !important;
+min-width: 0 !important;
+max-width: none !important;
 height: 2.4rem !important;
 min-height: 2.4rem !important;
 max-height: 2.4rem !important;
@@ -14015,7 +14013,7 @@ font-weight: 850 !important;
 line-height: 1 !important;
 white-space: nowrap !important;
 box-shadow: none !important;
-flex: 0 0 120px !important;
+flex: 0 0 auto !important;
 display: inline-flex !important;
 align-items: center !important;
 justify-content: center !important;
@@ -14050,10 +14048,10 @@ border-color: #159447 !important;
         margin-right: auto !important;
     }
     .st-key-retirement-report-connection-cta [data-testid="column"] {
-        flex: 0 0 104px !important;
-        width: 104px !important;
-        min-width: 104px !important;
-        max-width: 104px !important;
+        flex: 0 0 auto !important;
+        width: auto !important;
+        min-width: 0 !important;
+        max-width: none !important;
         padding-left: 0 !important;
         padding-right: 0 !important;
         box-sizing: border-box !important;
@@ -14062,10 +14060,10 @@ border-color: #159447 !important;
     .st-key-retirement-report-connection-cta [data-testid="stButton"] button:hover,
     .st-key-retirement-report-connection-cta [data-testid="stButton"] button:focus,
     .st-key-retirement-report-connection-cta [data-testid="stButton"] button:active {
-        width: 104px !important;
-        min-width: 104px !important;
-        max-width: 104px !important;
-        flex: 0 0 104px !important;
+        width: max-content !important;
+        min-width: 0 !important;
+        max-width: none !important;
+        flex: 0 0 auto !important;
         font-size: 0.8rem !important;
     }
 }
@@ -14083,12 +14081,10 @@ justify-content: center !important;
 .st-key-retirement-connection-close-cta [data-testid="stButton"] button:hover,
 .st-key-retirement-connection-close-cta [data-testid="stButton"] button:focus,
 .st-key-retirement-connection-close-cta [data-testid="stButton"] button:active {
-width: 120px !important;
-min-width: 120px !important;
-max-width: 100% !important;
+width: max-content !important;
+min-width: 0 !important;
+max-width: none !important;
 min-height: 2.4rem !important;
-padding-left: 0.35rem !important;
-padding-right: 0.35rem !important;
 border: 6px solid #159447 !important;
 border-radius: 999px !important;
 background: #ffffff !important;
