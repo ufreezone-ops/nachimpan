@@ -5523,12 +5523,11 @@ if selected_page == "우리집 가계부":
 #--------------------------------------------------------
             with st.container(border=True, key="retirement-panel"):
                 with st.container(horizontal=True, vertical_alignment="center", gap=None, key="retirement-expense-title-row"):
-                    st.markdown("### 은퇴 후에는? (만원)")
                     if not st.session_state.get("_retirement_explorer_open", False):
                         if st.button(
-                            "🧭",
-                            key="source_retirement_expense_guide",
-                            help="연결된 보고서와 통계 자료 살펴보기",
+                            "은퇴 후에는? (만원)",
+                            key="retirement_expense_title_open",
+                            help="은퇴 후 생활비와 연결된 보고서·통계 자료 살펴보기",
                             type="tertiary",
                         ):
                             st.session_state["_retirement_explorer_open"] = True
@@ -10928,6 +10927,83 @@ align-self: center !important;
 }
 </style>
 """, unsafe_allow_html=True)
+
+/* 은퇴 후에는?: 제목과 고정형 황금 나침반을 하나의 버튼으로 통합 */
+div.st-key-retirement-expense-title-row[data-testid="stHorizontalBlock"] {
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    justify-content: flex-start !important;
+    width: max-content !important;
+    max-width: 100% !important;
+}
+div.st-key-retirement_expense_title_open,
+div.st-key-retirement_expense_title_open [data-testid="stElementContainer"],
+div.st-key-retirement_expense_title_open [data-testid="stButton"],
+div.st-key-retirement_expense_title_open .stButton {
+    width: max-content !important;
+    min-width: 0 !important;
+    max-width: 100% !important;
+    flex: 0 0 auto !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    border: 0 !important;
+    background: transparent !important;
+    box-shadow: none !important;
+}
+div.st-key-retirement_expense_title_open [data-testid="stButton"] button,
+div.st-key-retirement_expense_title_open [data-testid="stButton"] button:hover,
+div.st-key-retirement_expense_title_open [data-testid="stButton"] button:focus,
+div.st-key-retirement_expense_title_open [data-testid="stButton"] button:focus-visible,
+div.st-key-retirement_expense_title_open [data-testid="stButton"] button:active {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: flex-start !important;
+    width: max-content !important;
+    min-width: 0 !important;
+    max-width: 100% !important;
+    min-height: 2.45rem !important;
+    height: auto !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    outline: 0 !important;
+    background: transparent !important;
+    box-shadow: none !important;
+    color: var(--text-color) !important;
+    -webkit-text-fill-color: var(--text-color) !important;
+    font-size: 1.8rem !important;
+    font-weight: 700 !important;
+    line-height: 1.2 !important;
+    text-decoration: none !important;
+}
+div.st-key-retirement_expense_title_open [data-testid="stButton"] button:focus-visible {
+    outline: 2px solid #E7B94E !important;
+    outline-offset: 3px !important;
+}
+div.st-key-retirement_expense_title_open [data-testid="stButton"] button p {
+    margin: 0 !important;
+    padding: 0 !important;
+    color: var(--text-color) !important;
+    -webkit-text-fill-color: var(--text-color) !important;
+    font-size: 1.8rem !important;
+    font-weight: 700 !important;
+    line-height: 1.2 !important;
+}
+div.st-key-retirement_expense_title_open [data-testid="stButton"] button::after {
+    content: "";
+    display: inline-block;
+    flex: 0 0 auto;
+    width: 1.85rem;
+    height: 1.85rem;
+    margin-left: 0.28rem;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ccircle cx='32' cy='32' r='26' fill='%231B302A' stroke='%23E7B94E' stroke-width='3.2'/%3E%3Ccircle cx='32' cy='32' r='21' fill='none' stroke='%23F6D77D' stroke-width='1.4'/%3E%3Cpath d='M32 8.5 37.1 26.9 55.5 32 37.1 37.1 32 55.5 26.9 37.1 8.5 32 26.9 26.9Z' fill='%23D9A93D' stroke='%23FFF0B0' stroke-width='1.25' stroke-linejoin='round'/%3E%3Cpath d='M32 12.5 35 29 32 32 29 29Z' fill='%23FFF2C1'/%3E%3Ccircle cx='32' cy='32' r='3.2' fill='%23263D34' stroke='%23F9DF93' stroke-width='1.2'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: contain;
+    transform: translateY(1px);
+}
 
 # 대출 원리금 나침반: 현재 일반 버튼 구조에 맞춘 최종 스타일
 st.markdown("""
