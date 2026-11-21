@@ -5451,6 +5451,7 @@ _HOUSING_METHOD_REPORT_MD = """
 
 @st.dialog("🏠 부동산 적용 기준", width="large")
 def _show_housing_price_stats_dialog():
+    st.markdown('<div class="housing-price-dialog-marker"></div>', unsafe_allow_html=True)
     st.markdown(
         """
         <style>
@@ -5459,8 +5460,15 @@ def _show_housing_price_stats_dialog():
             text-align: left !important;
         }
         /* 부동산 적용 기준 창은 하단의 명시적 닫기 버튼으로만 종료 */
-        div[data-testid="stDialog"]:has(.st-key-housing-price-dialog-actions) [data-testid="stDialogHeader"] button {
+        div[data-testid="stDialog"]:has(.housing-price-dialog-marker) [data-testid="stDialogHeader"] button,
+        div[data-testid="stDialog"]:has(.housing-price-dialog-marker) [data-testid="stDialogHeader"] [aria-label="Close"] {
             display: none !important;
+            visibility: hidden !important;
+            pointer-events: none !important;
+            width: 0 !important;
+            min-width: 0 !important;
+            padding: 0 !important;
+            margin: 0 !important;
         }
         </style>
         """,
@@ -13692,6 +13700,26 @@ div.st-key-housing-price-dialog-actions .st-key-close_housing_price_method_dialo
     max-width: 120px !important;
 }
 @media (max-width: 480px) {
+    div.st-key-housing-price-dialog-actions {
+        width: 100% !important;
+        max-width: 100% !important;
+        box-sizing: border-box !important;
+    }
+    div.st-key-housing-price-dialog-actions [data-testid="stHorizontalBlock"] {
+        width: max-content !important;
+        max-width: 100% !important;
+        gap: 0.25rem !important;
+        justify-content: center !important;
+        margin-left: auto !important;
+        margin-right: auto !important;
+    }
+    div.st-key-housing-price-dialog-actions [data-testid="column"] {
+        flex: 0 0 auto !important;
+        width: auto !important;
+        min-width: 0 !important;
+        padding-left: 0 !important;
+        padding-right: 0 !important;
+    }
     div.st-key-housing-price-dialog-actions .st-key-housing_price_open_connection [data-testid="stButton"] button,
     div.st-key-housing-price-dialog-actions .st-key-close_housing_price_stats_dialog [data-testid="stButton"] button,
     div.st-key-housing-price-dialog-actions .st-key-close_housing_price_method_dialog [data-testid="stButton"] button {
@@ -13700,10 +13728,35 @@ div.st-key-housing-price-dialog-actions .st-key-close_housing_price_method_dialo
         max-width: 104px !important;
     }
 }
+div.st-key-housing-price-dialog-actions {
+    width: max-content !important;
+    max-width: calc(100% - 1.25rem) !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+}
 div.st-key-housing-price-dialog-actions [data-testid="stHorizontalBlock"] {
+    display: flex !important;
+    flex-wrap: nowrap !important;
     align-items: center !important;
     justify-content: center !important;
-    gap: 0.75rem !important;
+    gap: 0.7rem !important;
+    width: max-content !important;
+    max-width: 100% !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+}
+div.st-key-housing-price-dialog-actions [data-testid="column"] {
+    flex: 0 1 auto !important;
+    width: auto !important;
+    min-width: 0 !important;
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+}
+div.st-key-housing-price-dialog-actions [data-testid="stElementContainer"],
+div.st-key-housing-price-dialog-actions [data-testid="stButton"] {
+    width: auto !important;
+    display: flex !important;
+    justify-content: center !important;
 }
 
 /* 자료보기 창 버튼 폭은 유지하고, 통계 창 복귀 버튼만 전체 명칭이 보이도록 확장 */
