@@ -13345,9 +13345,9 @@ div.st-key-retirement-title-row [data-testid="stHeaderActionElements"] {
     display: none !important;
 }
 
-/* 연결 버튼: source_retirement_expense Popover의 실제 버튼 */
-div.st-key-retirement-title-row div.st-key-source_retirement_expense,
-div.st-key-retirement-title-row div.st-key-source_retirement_expense [data-testid="stElementContainer"] {
+/* 대표 재정곡선 나침반: 직접 보고서를 여는 일반 버튼에 기존 제목형 규격 적용 */
+div.st-key-retirement-title-row div.st-key-retirement_lifecycle_compass_open,
+div.st-key-retirement-title-row div.st-key-retirement_lifecycle_compass_open [data-testid="stElementContainer"] {
     width: auto !important;
     min-width: 0 !important;
     max-width: max-content !important;
@@ -13356,11 +13356,11 @@ div.st-key-retirement-title-row div.st-key-source_retirement_expense [data-testi
     padding: 0 !important;
     align-self: center !important;
 }
-div.st-key-retirement-title-row div.st-key-source_retirement_expense [data-testid="stPopoverButton"],
-div.st-key-retirement-title-row div.st-key-source_retirement_expense [data-testid="stPopoverButton"]:hover,
-div.st-key-retirement-title-row div.st-key-source_retirement_expense [data-testid="stPopoverButton"]:focus,
-div.st-key-retirement-title-row div.st-key-source_retirement_expense [data-testid="stPopoverButton"]:focus-visible,
-div.st-key-retirement-title-row div.st-key-source_retirement_expense [data-testid="stPopoverButton"]:active {
+div.st-key-retirement-title-row div.st-key-retirement_lifecycle_compass_open [data-testid="stButton"] button,
+div.st-key-retirement-title-row div.st-key-retirement_lifecycle_compass_open [data-testid="stButton"] button:hover,
+div.st-key-retirement-title-row div.st-key-retirement_lifecycle_compass_open [data-testid="stButton"] button:focus,
+div.st-key-retirement-title-row div.st-key-retirement_lifecycle_compass_open [data-testid="stButton"] button:focus-visible,
+div.st-key-retirement-title-row div.st-key-retirement_lifecycle_compass_open [data-testid="stButton"] button:active {
     display: inline-flex !important;
     align-items: center !important;
     justify-content: flex-start !important;
@@ -13387,12 +13387,7 @@ div.st-key-retirement-title-row div.st-key-source_retirement_expense [data-testi
     white-space: nowrap !important;
     gap: 0 !important;
 }
-div.st-key-retirement-title-row div.st-key-source_retirement_expense [data-testid="stPopoverButton"] [data-testid="stMarkdownContainer"] {
-    min-height: 2.1rem !important;
-    height: auto !important;
-    overflow: visible !important;
-}
-div.st-key-retirement-title-row div.st-key-source_retirement_expense [data-testid="stPopoverButton"] p {
+div.st-key-retirement-title-row div.st-key-retirement_lifecycle_compass_open [data-testid="stButton"] button p {
     margin: 0 !important;
     padding: 0 !important;
     color: #F8FAFC !important;
@@ -13400,12 +13395,6 @@ div.st-key-retirement-title-row div.st-key-source_retirement_expense [data-testi
     font-size: 1.8rem !important;
     font-weight: 700 !important;
     line-height: 1.2 !important;
-}
-
-/* Popover 기본 펼침 화살표 숨김 */
-div.st-key-retirement-title-row div.st-key-source_retirement_expense [data-testid="stPopoverButton"] svg,
-div.st-key-retirement-title-row div.st-key-source_retirement_expense [data-testid="stPopoverButton"] [data-testid="stIconMaterial"] {
-    display: none !important;
 }
 </style>
 """, unsafe_allow_html=True)
