@@ -553,29 +553,8 @@ st.markdown("""
 # 전역 CSS로 선언해 dialog 내부 첫 렌더링 시점에 스타일이 늦게 붙는 현상을 방지한다.
 st.markdown("""
 <style>
-.st-key-retirement_report_open_connection [data-testid="stButton"] button {
-    width: 58px !important;
-    min-width: 58px !important;
-    height: 58px !important;
-    min-height: 58px !important;
-    padding: 0 !important;
-    border: 2px solid #00A84D !important;
-    border-radius: 50% !important;
-    background: #FFFFFF !important;
-    color: #006B35 !important;
-    -webkit-text-fill-color: #006B35 !important;
-    font-weight: 800 !important;
-    display: flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-}
-.st-key-retirement_report_open_connection [data-testid="stButton"] button:hover {
-    background: #E8F5EC !important;
-    background-color: #E8F5EC !important;
-    border-color: #008F42 !important;
-    color: #006B35 !important;
-    -webkit-text-fill-color: #006B35 !important;
-}
+/* 자료 보기 창의 '연결' 버튼은 하단 공통 버튼 스타일을 사용한다.
+   과거 58px 원형 버튼 규칙은 이 버튼의 크기를 달리하므로 제거했다. */
 
 .st-key-retirement-connection-platform {
     background: #E8F5EC !important;
@@ -11159,22 +11138,34 @@ width: auto !important;
 display: flex !important;
 justify-content: center !important;
 }
-.st-key-retirement-report-connection-cta [data-testid="stButton"] button {
+.st-key-retirement-report-connection-cta [data-testid="stButton"] button,
+.st-key-retirement-report-connection-cta [data-testid="stButton"] button:hover,
+.st-key-retirement-report-connection-cta [data-testid="stButton"] button:focus,
+.st-key-retirement-report-connection-cta [data-testid="stButton"] button:active {
 width: 120px !important;
 min-width: 120px !important;
 max-width: 120px !important;
+height: 2.4rem !important;
 min-height: 2.4rem !important;
+max-height: 2.4rem !important;
+box-sizing: border-box !important;
 padding: 0.3rem 0.25rem !important;
 border: 6px solid #159447 !important;
 border-radius: 999px !important;
 background: #ffffff !important;
+background-color: #ffffff !important;
 color: #000000 !important;
 -webkit-text-fill-color: #000000 !important;
+font-family: inherit !important;
 font-size: 0.84rem !important;
 font-weight: 850 !important;
+line-height: 1 !important;
 white-space: nowrap !important;
 box-shadow: none !important;
-flex: 0 0 auto !important;
+flex: 0 0 120px !important;
+display: inline-flex !important;
+align-items: center !important;
+justify-content: center !important;
 }
 .st-key-retirement-report-connection-cta [data-testid="stButton"] button p,
 .st-key-retirement-report-connection-cta [data-testid="stButton"] button span,
