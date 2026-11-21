@@ -4306,8 +4306,12 @@ def _show_retirement_report_dialog():
         with _connect_col:
             if st.button("연결", key="retirement_report_open_connection", type="secondary"):
                 st.session_state["_retirement_connection_open"] = True
-                st.session_state["_retirement_connection_origin_page"] = selected_page
-                st.session_state["_retirement_connection_origin_anchor"] = ".st-key-retirement-report-connection-cta button"
+                # 이미 나침반에서 시작한 탐색이면 최초 나침반 위치를 복귀 기준으로 보존한다.
+                st.session_state.setdefault("_retirement_connection_origin_page", selected_page)
+                st.session_state.setdefault(
+                    "_retirement_connection_origin_anchor",
+                    ".st-key-retirement-report-connection-cta button",
+                )
                 st.rerun()
         with _close_col:
             if st.button("닫기", key="retirement_report_dialog_close", type="secondary"):
@@ -7278,30 +7282,26 @@ elif selected_page == "우리집 재정곡선":
 
         st.markdown("<div style='height: 24px;'></div>", unsafe_allow_html=True)
         with st.container(horizontal=True, vertical_alignment="center", gap=None, key="retirement-title-row"):
-            with st.popover(
+            if st.button(
                 "우리 가정 생애주기 재정곡선 🧭",
                 key="source_retirement_expense",
-                help="이 재정곡선을 이해하는 안내와 통계 자료",
+                help="우리 가정 생애주기 재정곡선의 대표 보고서 보기",
                 type="tertiary",
-                width="content",
             ):
-                st.caption("재정곡선 이해하기")
-                _chart_guide_report_ids = [
-                    "6050200-00",
-                    "6051200-00",
-                    "6051400-00",
-                ]
-                for _guide_id in _chart_guide_report_ids:
-                    if st.button(
-                        _master_report_display(_guide_id),
-                        key=f"chart_title_guide_{_guide_id}",
-                        use_container_width=True,
-                    ):
-                        _open_source_reference(
-                            _guide_id,
-                            "우리집 재정곡선",
-                            "statistical-household-income-origin",
-                        )
+                # 대표 나침반은 통계 탭이 아니라 대표 보고서 창을 먼저 연다.
+                # 이후 보고서 하단의 '연결' 버튼에서 기존 연결창으로 진입한다.
+                st.session_state["_retirement_explorer_open"] = True
+                st.session_state["_retirement_entry_open"] = False
+                st.session_state["_retirement_connection_open"] = False
+                st.session_state["_retirement_explorer_source_id"] = "6051200-00"
+                st.session_state.pop("_retirement_explorer_resource_id", None)
+                st.session_state["_retirement_explorer_history"] = ["6051200-00"]
+                st.session_state["_retirement_connection_origin_page"] = selected_page
+                st.session_state["_retirement_connection_origin_anchor"] = (
+                    ".st-key-source_retirement_expense button"
+                )
+                st.session_state.pop("_retirement_connection_entry_source_ids", None)
+                st.rerun()
 
         # 기존 주거 유지·계획 확정이면 현재 주거지역을 사용하고,
         # 향후 주택구입 정보를 입력한 경우에는 예정지역을 사용한다.
