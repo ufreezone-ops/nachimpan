@@ -9161,7 +9161,7 @@ elif selected_page == "통계":
         flex-wrap: nowrap !important;
         align-items: center !important;
         justify-content: center !important;
-        gap: 120px !important;
+        gap: 0.3rem !important;
         width: max-content !important;
         max-width: calc(100vw - 1.25rem) !important;
     }
@@ -9206,7 +9206,7 @@ elif selected_page == "통계":
     }
     @media (max-width: 480px) {
         div.st-key-retirement-stats-return-bar [data-testid="stHorizontalBlock"] {
-            gap: 104px !important;
+            gap: 0.3rem !important;
         }
         div.st-key-retirement-stats-return-bar [data-testid="column"] {
             flex: 0 0 104px !important;
@@ -13230,7 +13230,7 @@ div.st-key-retirement-connection-close-cta [data-testid="stHorizontalBlock"] {
     flex-wrap: nowrap !important;
     align-items: center !important;
     justify-content: center !important;
-    gap: 120px !important;
+    gap: 0.3rem !important;
     width: max-content !important;
     max-width: calc(100vw - 1.25rem) !important;
     margin-left: auto !important;
