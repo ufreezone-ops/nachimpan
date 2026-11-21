@@ -10928,6 +10928,8 @@ align-self: center !important;
 </style>
 """, unsafe_allow_html=True)
 
+st.markdown("""
+<style>
 /* 은퇴 후에는?: 제목과 고정형 황금 나침반을 하나의 버튼으로 통합 */
 div.st-key-retirement-expense-title-row[data-testid="stHorizontalBlock"] {
     display: flex !important;
@@ -11004,6 +11006,9 @@ div.st-key-retirement_expense_title_open [data-testid="stButton"] button::after 
     background-size: contain;
     transform: translateY(1px);
 }
+</style>
+""", unsafe_allow_html=True)
+
 
 # 대출 원리금 나침반: 현재 일반 버튼 구조에 맞춘 최종 스타일
 st.markdown("""
