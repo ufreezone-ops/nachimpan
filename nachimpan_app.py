@@ -13397,9 +13397,13 @@ div.st-key-retirement-title-row div.st-key-source_retirement_expense [data-testi
     line-height: 1 !important;
 }
 
-/* Popover 기본 펼침 화살표 숨김 */
+/* Popover 기본 펼침 화살표 숨김: PC·모바일의 아이콘 렌더링 차이까지 차단 */
 div.st-key-retirement-title-row div.st-key-source_retirement_expense [data-testid="stPopoverButton"] svg,
-div.st-key-retirement-title-row div.st-key-source_retirement_expense [data-testid="stPopoverButton"] [data-testid="stIconMaterial"] {
+div.st-key-retirement-title-row div.st-key-source_retirement_expense [data-testid="stPopoverButton"] [data-testid="stIconMaterial"],
+div.st-key-retirement-title-row div.st-key-source_retirement_expense [data-testid="stPopoverButton"] [data-testid*="Icon"],
+div.st-key-retirement-title-row div.st-key-source_retirement_expense [data-testid="stPopoverButton"] > :not(p),
+div.st-key-retirement-title-row div.st-key-source_retirement_expense [data-testid="stPopoverButton"]::before,
+div.st-key-retirement-title-row div.st-key-source_retirement_expense [data-testid="stPopoverButton"]::after {
     display: none !important;
 }
 </style>
