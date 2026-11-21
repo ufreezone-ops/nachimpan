@@ -5472,6 +5472,10 @@ def _show_housing_price_stats_dialog():
             width: 100%;
             text-align: left !important;
         }
+        /* 부동산 적용 기준 창은 하단의 명시적 닫기 버튼으로만 종료 */
+        div[data-testid="stDialog"] [data-testid="stDialogHeader"] button {
+            display: none !important;
+        }
         </style>
         """,
         unsafe_allow_html=True,
@@ -5482,6 +5486,13 @@ def _show_housing_price_stats_dialog():
         if st.button("← 부동산 적용 기준으로 돌아가기", key="housing_method_back"):
             st.session_state["_housing_dialog_view"] = "summary"
             st.rerun()
+        with st.container(key="housing-price-dialog-actions"):
+            _method_close_col, _method_spacer = st.columns([1, 1])
+            with _method_close_col:
+                if st.button("닫기", key="close_housing_price_method_dialog", type="secondary"):
+                    st.session_state["_housing_price_dialog_open"] = False
+                    st.session_state["_housing_dialog_view"] = "summary"
+                    st.rerun()
         return
 
     if _case_is_representative:
@@ -5517,9 +5528,9 @@ def _show_housing_price_stats_dialog():
         st.rerun()
 
     st.markdown('<div class="retirement-connection-rail"></div>', unsafe_allow_html=True)
-    with st.container(key="retirement-report-connection-cta"):
-        _left_spacer, _button_col, _right_spacer = st.columns([1, 2, 1])
-        with _button_col:
+    with st.container(key="housing-price-dialog-actions"):
+        _connect_col, _close_col = st.columns(2)
+        with _connect_col:
             if st.button("연결", key="housing_price_open_connection", type="secondary"):
                 st.session_state["_housing_price_dialog_open"] = False
                 st.session_state["_housing_dialog_view"] = "summary"
@@ -5533,15 +5544,11 @@ def _show_housing_price_stats_dialog():
                 st.session_state.pop("_retirement_explorer_resource_id", None)
                 st.session_state.pop("_retirement_explorer_history", None)
                 st.rerun()
-
-    if st.button(
-        "닫기",
-        key="close_housing_price_stats_dialog",
-        use_container_width=False,
-    ):
-        st.session_state["_housing_price_dialog_open"] = False
-        st.session_state["_housing_dialog_view"] = "summary"
-        st.rerun()
+        with _close_col:
+            if st.button("닫기", key="close_housing_price_stats_dialog", type="secondary"):
+                st.session_state["_housing_price_dialog_open"] = False
+                st.session_state["_housing_dialog_view"] = "summary"
+                st.rerun()
 
 
 @st.dialog("통계 비교선", width="large")
@@ -13592,8 +13599,11 @@ st.markdown("""
     --nachimpan-pill-font-weight: 850;
 }
 
-/* 세 영역의 실제 버튼: 테두리·여백·높이·글자 규격을 동일하게 */
+/* 세 영역과 부동산 적용기준 창의 실제 버튼: 테두리·여백·높이·글자 규격을 동일하게 */
 div.st-key-retirement-report-connection-cta [data-testid="stButton"] button,
+div.st-key-housing-price-dialog-actions .st-key-housing_price_open_connection [data-testid="stButton"] button,
+div.st-key-housing-price-dialog-actions .st-key-close_housing_price_stats_dialog [data-testid="stButton"] button,
+div.st-key-housing-price-dialog-actions .st-key-close_housing_price_method_dialog [data-testid="stButton"] button,
 div.st-key-retirement-connection-close-cta .st-key-retirement_connection_end [data-testid="stButton"] button,
 div.st-key-retirement-stats-return-bar [data-testid="stButton"] button,
 div.st-key-retirement-report-connection-cta [data-testid="stButton"] button:hover,
@@ -13626,6 +13636,9 @@ div.st-key-retirement-stats-return-bar [data-testid="stButton"] button:active {
 
 /* 내부 텍스트의 기본 여백을 제거해 버튼마다 내용 높이가 달라지지 않도록 */
 div.st-key-retirement-report-connection-cta [data-testid="stButton"] button *,
+div.st-key-housing-price-dialog-actions .st-key-housing_price_open_connection [data-testid="stButton"] button *,
+div.st-key-housing-price-dialog-actions .st-key-close_housing_price_stats_dialog [data-testid="stButton"] button *,
+div.st-key-housing-price-dialog-actions .st-key-close_housing_price_method_dialog [data-testid="stButton"] button *,
 div.st-key-retirement-connection-close-cta .st-key-retirement_connection_end [data-testid="stButton"] button *,
 div.st-key-retirement-stats-return-bar [data-testid="stButton"] button * {
     box-sizing: border-box !important;
@@ -13641,11 +13654,37 @@ div.st-key-retirement-stats-return-bar [data-testid="stButton"] button * {
 
 /* hover 색상 */
 div.st-key-retirement-report-connection-cta [data-testid="stButton"] button:hover,
+div.st-key-housing-price-dialog-actions .st-key-housing_price_open_connection [data-testid="stButton"] button:hover,
+div.st-key-housing-price-dialog-actions .st-key-close_housing_price_stats_dialog [data-testid="stButton"] button:hover,
+div.st-key-housing-price-dialog-actions .st-key-close_housing_price_method_dialog [data-testid="stButton"] button:hover,
 div.st-key-retirement-connection-close-cta .st-key-retirement_connection_end [data-testid="stButton"] button:hover,
 div.st-key-retirement-stats-return-bar [data-testid="stButton"] button:hover {
     background: var(--nachimpan-pill-hover) !important;
     background-color: var(--nachimpan-pill-hover) !important;
     border-color: var(--nachimpan-pill-border) !important;
+}
+
+/* 자료보기 창 버튼 폭은 유지하고, 부동산 적용기준 창 버튼은 균등 폭으로 배치 */
+div.st-key-housing-price-dialog-actions .st-key-housing_price_open_connection [data-testid="stButton"] button,
+div.st-key-housing-price-dialog-actions .st-key-close_housing_price_stats_dialog [data-testid="stButton"] button,
+div.st-key-housing-price-dialog-actions .st-key-close_housing_price_method_dialog [data-testid="stButton"] button {
+    width: 120px !important;
+    min-width: 120px !important;
+    max-width: 120px !important;
+}
+@media (max-width: 480px) {
+    div.st-key-housing-price-dialog-actions .st-key-housing_price_open_connection [data-testid="stButton"] button,
+    div.st-key-housing-price-dialog-actions .st-key-close_housing_price_stats_dialog [data-testid="stButton"] button,
+    div.st-key-housing-price-dialog-actions .st-key-close_housing_price_method_dialog [data-testid="stButton"] button {
+        width: 104px !important;
+        min-width: 104px !important;
+        max-width: 104px !important;
+    }
+}
+div.st-key-housing-price-dialog-actions [data-testid="stHorizontalBlock"] {
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 0.75rem !important;
 }
 
 /* 자료보기 창 버튼 폭은 유지하고, 통계 창 복귀 버튼만 전체 명칭이 보이도록 확장 */
