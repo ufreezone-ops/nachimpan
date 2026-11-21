@@ -5449,26 +5449,14 @@ _HOUSING_METHOD_REPORT_MD = """
 """ 
 
 
-@st.dialog("🏠 부동산 적용 기준", width="large")
+@st.dialog("🏠 부동산 적용 기준", width="large", dismissible=False)
 def _show_housing_price_stats_dialog():
-    st.markdown('<div class="housing-price-dialog-marker"></div>', unsafe_allow_html=True)
     st.markdown(
         """
         <style>
         div[data-testid="stDialog"] [data-testid="stDialogHeader"] h2 {
             width: 100%;
             text-align: left !important;
-        }
-        /* 부동산 적용 기준 창은 하단의 명시적 닫기 버튼으로만 종료 */
-        div[data-testid="stDialog"]:has(.housing-price-dialog-marker) [data-testid="stDialogHeader"] button,
-        div[data-testid="stDialog"]:has(.housing-price-dialog-marker) [data-testid="stDialogHeader"] [aria-label="Close"] {
-            display: none !important;
-            visibility: hidden !important;
-            pointer-events: none !important;
-            width: 0 !important;
-            min-width: 0 !important;
-            padding: 0 !important;
-            margin: 0 !important;
         }
         </style>
         """,
