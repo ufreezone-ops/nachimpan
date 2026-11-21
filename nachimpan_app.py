@@ -11185,6 +11185,36 @@ font-weight: 850 !important;
 background: #e8f5ec !important;
 border-color: #159447 !important;
 }
+/* 아이폰 등 좁은 화면에서는 자료 보기 창의 실제 콘텐츠 폭에 맞춰 간격과 버튼 폭을 줄인다. */
+@media (max-width: 480px) {
+    div.st-key-retirement-report-connection-cta {
+        width: 100% !important;
+        max-width: 100% !important;
+        box-sizing: border-box !important;
+    }
+    .st-key-retirement-report-connection-cta [data-testid="stHorizontalBlock"] {
+        width: 100% !important;
+        max-width: 100% !important;
+        gap: 0.25rem !important;
+        justify-content: center !important;
+        box-sizing: border-box !important;
+    }
+    .st-key-retirement-report-connection-cta [data-testid="column"] {
+        flex: 0 1 104px !important;
+        width: 104px !important;
+        min-width: 0 !important;
+    }
+    .st-key-retirement-report-connection-cta [data-testid="stButton"] button,
+    .st-key-retirement-report-connection-cta [data-testid="stButton"] button:hover,
+    .st-key-retirement-report-connection-cta [data-testid="stButton"] button:focus,
+    .st-key-retirement-report-connection-cta [data-testid="stButton"] button:active {
+        width: 104px !important;
+        min-width: 104px !important;
+        max-width: 104px !important;
+        flex: 0 0 104px !important;
+        font-size: 0.8rem !important;
+    }
+}
 .st-key-retirement-connection-close-cta [data-testid="stElementContainer"] {
 width: 100% !important;
 display: flex !important;
