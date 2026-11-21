@@ -2317,30 +2317,6 @@ div.st-key-nta-generational-title-row div.st-key-nta_generational_title_open [da
 </style>
 """, unsafe_allow_html=True)
 
-# PC·모바일에서 동일하게 표시하는 고정 황금 나침반 이미지
-_NACHIMPAN_COMPASS_ASSET_PATH = Path(__file__).parent / "assets" / "nachimpan_compass_gold.webp"
-if _NACHIMPAN_COMPASS_ASSET_PATH.is_file():
-    _nachimpan_compass_b64 = base64.b64encode(
-        _NACHIMPAN_COMPASS_ASSET_PATH.read_bytes()
-    ).decode("ascii")
-    st.markdown(
-        f"""<style>
-        div.st-key-retirement-expense-title-row div.st-key-retirement_expense_title_open [data-testid="stButton"] button::after {{
-            content: "";
-            display: inline-block;
-            flex: 0 0 30px;
-            width: 30px;
-            height: 30px;
-            margin-left: 8px;
-            background-image: url("data:image/webp;base64,{_nachimpan_compass_b64}");
-            background-repeat: no-repeat;
-            background-position: center;
-            background-size: contain;
-        }}
-        </style>""",
-        unsafe_allow_html=True,
-    )
-
 with st.container(key="main_navigation_shell"):
 
     with st.container(key="main_navigation", horizontal=True, wrap=False, gap=None):
@@ -5610,7 +5586,7 @@ if selected_page == "우리집 가계부":
             with st.container(border=True, key="retirement-panel"):
                 with st.container(horizontal=True, vertical_alignment="center", gap=None, key="retirement-expense-title-row"):
                     if st.button(
-                        "은퇴 후에는? (만원)",
+                        "은퇴 후에는? (만원) 🧭",
                         key="retirement_expense_title_open",
                         help="은퇴 후 생활비와 연결된 보고서 및 통계 자료 살펴보기",
                         type="tertiary",
