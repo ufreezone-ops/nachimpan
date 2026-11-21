@@ -321,21 +321,35 @@ footer {
     text-align: left !important;
 }
 
-/* 부동산 적용기준 제목+나침반 통합 버튼 */
+/* 부동산 적용기준 제목+나침반 통합 버튼: 바깥 래퍼와 실제 버튼 모두 무장식 */
 .st-key-housing_price_source_guide,
-.st-key-housing_price_source_guide [data-testid="stButton"] {
+.st-key-housing_price_source_guide [data-testid="stElementContainer"],
+.st-key-housing_price_source_guide [data-testid="stButton"],
+.st-key-housing_price_source_guide .stButton,
+.st-key-housing_price_source_guide [data-testid="stTooltipHoverTarget"] {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: flex-start !important;
     width: max-content !important;
     min-width: 0 !important;
     max-width: 100% !important;
     flex: 0 0 auto !important;
     margin: -2rem 0 0 0 !important;
     padding: 0 !important;
+    border: 0 !important;
+    outline: 0 !important;
+    background: transparent !important;
+    background-color: transparent !important;
+    background-image: none !important;
+    box-shadow: none !important;
 }
 .st-key-housing_price_source_guide [data-testid="stButton"] button,
 .st-key-housing_price_source_guide [data-testid="stButton"] button:hover,
 .st-key-housing_price_source_guide [data-testid="stButton"] button:focus,
 .st-key-housing_price_source_guide [data-testid="stButton"] button:focus-visible,
 .st-key-housing_price_source_guide [data-testid="stButton"] button:active {
+    appearance: none !important;
+    -webkit-appearance: none !important;
     width: auto !important;
     min-width: 0 !important;
     max-width: 100% !important;
@@ -344,10 +358,14 @@ footer {
     margin: 0 !important;
     padding: 0 !important;
     border: 0 !important;
+    border-width: 0 !important;
+    border-color: transparent !important;
     outline: 0 !important;
+    outline-offset: 0 !important;
     border-radius: 0 !important;
     background: transparent !important;
     background-color: transparent !important;
+    background-image: none !important;
     box-shadow: none !important;
     color: var(--text-color) !important;
     -webkit-text-fill-color: var(--text-color) !important;
@@ -356,6 +374,13 @@ footer {
     line-height: 1.2 !important;
     text-align: left !important;
     white-space: nowrap !important;
+}
+.st-key-housing_price_source_guide [data-testid="stButton"] button::before,
+.st-key-housing_price_source_guide [data-testid="stButton"] button::after {
+    display: none !important;
+    content: none !important;
+    border: 0 !important;
+    box-shadow: none !important;
 }
 .st-key-housing_price_source_guide [data-testid="stButton"] button p {
     margin: 0 !important;
@@ -13338,189 +13363,7 @@ st.markdown("""
 
 
 # 우리 가정 생애주기 재정곡선: 제목·나침반 CSS 단일 관리
-st.markdown("""
-<style>
-/* 제목 행: 제목과 연결 버튼을 한 줄에서 정렬 */
-div.st-key-retirement-title-row [data-testid="stHorizontalBlock"] {
-    align-items: center !important;
-    justify-content: flex-start !important;
-    gap: 0.04rem !important;
-}
-div.st-key-retirement-title-row [data-testid="stElementContainer"]:has(h3) {
-    width: auto !important;
-    min-width: 0 !important;
-    max-width: max-content !important;
-    flex: 0 0 auto !important;
-    margin: 0 !important;
-    padding: 0 !important;
-}
-div.st-key-retirement-title-row [data-testid="stElementContainer"]:has(h3) h3 {
-    margin: 0 !important;
-    padding: 0 !important;
-    white-space: nowrap !important;
-}
-div.st-key-retirement-title-row [data-testid="stHeaderActionElements"] {
-    display: none !important;
-}
 
-/* 대표 재정곡선 나침반: 직접 보고서를 여는 일반 버튼에 기존 제목형 규격 적용 */
-div.st-key-retirement-title-row div.st-key-retirement_lifecycle_compass_open,
-div.st-key-retirement-title-row div.st-key-retirement_lifecycle_compass_open [data-testid="stElementContainer"] {
-    width: auto !important;
-    min-width: 0 !important;
-    max-width: max-content !important;
-    flex: 0 0 auto !important;
-    margin: 0 0 0 0.02rem !important;
-    padding: 0 !important;
-    align-self: center !important;
-}
-div.st-key-retirement-title-row div.st-key-retirement_lifecycle_compass_open [data-testid="stButton"] button,
-div.st-key-retirement-title-row div.st-key-retirement_lifecycle_compass_open [data-testid="stButton"] button:hover,
-div.st-key-retirement-title-row div.st-key-retirement_lifecycle_compass_open [data-testid="stButton"] button:focus,
-div.st-key-retirement-title-row div.st-key-retirement_lifecycle_compass_open [data-testid="stButton"] button:focus-visible,
-div.st-key-retirement-title-row div.st-key-retirement_lifecycle_compass_open [data-testid="stButton"] button:active {
-    display: inline-flex !important;
-    align-items: center !important;
-    justify-content: flex-start !important;
-    width: auto !important;
-    min-width: 0 !important;
-    min-height: 2.45rem !important;
-    max-width: max-content !important;
-    height: auto !important;
-    margin: 0 !important;
-    padding: 0.12rem 0 !important;
-    transform: translateY(4.2px) !important;
-    border: 0 !important;
-    outline: 0 !important;
-    border-radius: 0 !important;
-    background: transparent !important;
-    background-color: transparent !important;
-    background-image: none !important;
-    box-shadow: none !important;
-    color: #F8FAFC !important;
-    -webkit-text-fill-color: #F8FAFC !important;
-    font-size: 1.8rem !important;
-    font-weight: 700 !important;
-    line-height: 1.2 !important;
-    white-space: nowrap !important;
-    gap: 0 !important;
-}
-div.st-key-retirement-title-row div.st-key-retirement_lifecycle_compass_open [data-testid="stButton"] button p {
-    margin: 0 !important;
-    padding: 0 !important;
-    color: #F8FAFC !important;
-    -webkit-text-fill-color: #F8FAFC !important;
-    font-size: 1.8rem !important;
-    font-weight: 700 !important;
-    line-height: 1.2 !important;
-}
-</style>
-""", unsafe_allow_html=True)
-
-
-# 부동산 적용기준 제목·나침반: 실제 가로 컨테이너와 버튼 외곽 요소 보정
-st.markdown("""
-<style>
-/* key가 stHorizontalBlock 자체에 붙는 구조이므로 자식이 아닌 루트에 적용 */
-div.st-key-housing-price-title-row[data-testid="stHorizontalBlock"] {
-    margin-top: -2rem !important; /* 차트 아래 불필요한 빈 줄 두 칸 제거 */
-    display: flex !important;
-    flex-direction: row !important;
-    align-items: center !important;
-    justify-content: flex-start !important;
-    gap: 0 !important;
-    column-gap: 0 !important;
-    row-gap: 0 !important;
-    width: max-content !important;
-    max-width: 100% !important;
-}
-div.st-key-housing-price-title-row [data-testid="stElementContainer"]:has(h3),
-div.st-key-housing-price-title-row [data-testid="stElementContainer"]:has(h3) [data-testid="stMarkdownContainer"] {
-    width: auto !important;
-    min-width: 0 !important;
-    max-width: max-content !important;
-    flex: 0 0 auto !important;
-    margin: 0 !important;
-    padding: 0 !important;
-}
-div.st-key-housing-price-title-row h3 {
-    font-size: 17px !important;
-    margin: 0 !important;
-    padding: 0 !important;
-    white-space: nowrap !important;
-}
-/* 제목 자체에 Streamlit이 자동 삽입하는 링크 영역이 간격을 만들지 않도록 제거 */
-div.st-key-housing-price-title-row h3 [data-testid="stHeaderActionElements"] {
-    display: none !important;
-}
-/* 아이콘 버튼의 바깥 래퍼부터 실제 button까지 모든 장식 제거 */
-div.st-key-housing-price-title-row > .st-key-housing_price_source_guide {
-    margin-left: -0.18rem !important;
-}
-div.st-key-housing-price-title-row .st-key-housing_price_source_guide,
-div.st-key-housing-price-title-row .st-key-housing_price_source_guide [data-testid="stElementContainer"],
-div.st-key-housing-price-title-row .st-key-housing_price_source_guide [data-testid="stButton"],
-div.st-key-housing-price-title-row .st-key-housing_price_source_guide .stButton,
-div.st-key-housing-price-title-row .st-key-housing_price_source_guide [data-testid="stTooltipHoverTarget"] {
-    display: flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-    width: max-content !important;
-    min-width: 0 !important;
-    max-width: max-content !important;
-    flex: 0 0 auto !important;
-    margin: 0 !important;
-    padding: 0 !important;
-    border: 0 !important;
-    outline: 0 !important;
-    background: transparent !important;
-    background-color: transparent !important;
-    background-image: none !important;
-    box-shadow: none !important;
-}
-div.st-key-housing-price-title-row .st-key-housing_price_source_guide button,
-div.st-key-housing-price-title-row .st-key-housing_price_source_guide button:hover,
-div.st-key-housing-price-title-row .st-key-housing_price_source_guide button:focus,
-div.st-key-housing-price-title-row .st-key-housing_price_source_guide button:focus-visible,
-div.st-key-housing-price-title-row .st-key-housing_price_source_guide button:active {
-    width: auto !important;
-    min-width: 0 !important;
-    max-width: max-content !important;
-    min-height: 0 !important;
-    height: auto !important;
-    margin: 0 !important;
-    padding: 0 !important;
-    border: 0 !important;
-    outline: 0 !important;
-    border-radius: 0 !important;
-    background: transparent !important;
-    background-color: transparent !important;
-    background-image: none !important;
-    box-shadow: none !important;
-    color: #38BDF8 !important;
-    -webkit-text-fill-color: #38BDF8 !important;
-    font-size: 2rem !important;
-    line-height: 1 !important;
-}
-div.st-key-housing-price-title-row .st-key-housing_price_source_guide button p {
-    margin: 0 !important;
-    padding: 0 !important;
-    color: #38BDF8 !important;
-    -webkit-text-fill-color: #38BDF8 !important;
-    font-size: inherit !important;
-    line-height: 1 !important;
-}
-
-/* 은퇴 후에는?에서 검증된 별도 아이콘 버튼 수직 보정값 적용 */
-div.st-key-housing-price-title-row div.st-key-housing_price_source_guide [data-testid="stButton"] button,
-div.st-key-housing-price-title-row div.st-key-housing_price_source_guide [data-testid="stButton"] button:hover,
-div.st-key-housing-price-title-row div.st-key-housing_price_source_guide [data-testid="stButton"] button:focus,
-div.st-key-housing-price-title-row div.st-key-housing_price_source_guide [data-testid="stButton"] button:focus-visible,
-div.st-key-housing-price-title-row div.st-key-housing_price_source_guide [data-testid="stButton"] button:active {
-    transform: translateY(0px) !important;
-}
-</style>
-""", unsafe_allow_html=True)
 
 
 
@@ -16045,189 +15888,7 @@ st.markdown("""
 
 
 # 우리 가정 생애주기 재정곡선: 제목·나침반 CSS 단일 관리
-st.markdown("""
-<style>
-/* 제목 행: 제목과 연결 버튼을 한 줄에서 정렬 */
-div.st-key-retirement-title-row [data-testid="stHorizontalBlock"] {
-    align-items: center !important;
-    justify-content: flex-start !important;
-    gap: 0.04rem !important;
-}
-div.st-key-retirement-title-row [data-testid="stElementContainer"]:has(h3) {
-    width: auto !important;
-    min-width: 0 !important;
-    max-width: max-content !important;
-    flex: 0 0 auto !important;
-    margin: 0 !important;
-    padding: 0 !important;
-}
-div.st-key-retirement-title-row [data-testid="stElementContainer"]:has(h3) h3 {
-    margin: 0 !important;
-    padding: 0 !important;
-    white-space: nowrap !important;
-}
-div.st-key-retirement-title-row [data-testid="stHeaderActionElements"] {
-    display: none !important;
-}
 
-/* 대표 재정곡선 나침반: 직접 보고서를 여는 일반 버튼에 기존 제목형 규격 적용 */
-div.st-key-retirement-title-row div.st-key-retirement_lifecycle_compass_open,
-div.st-key-retirement-title-row div.st-key-retirement_lifecycle_compass_open [data-testid="stElementContainer"] {
-    width: auto !important;
-    min-width: 0 !important;
-    max-width: max-content !important;
-    flex: 0 0 auto !important;
-    margin: 0 0 0 0.02rem !important;
-    padding: 0 !important;
-    align-self: center !important;
-}
-div.st-key-retirement-title-row div.st-key-retirement_lifecycle_compass_open [data-testid="stButton"] button,
-div.st-key-retirement-title-row div.st-key-retirement_lifecycle_compass_open [data-testid="stButton"] button:hover,
-div.st-key-retirement-title-row div.st-key-retirement_lifecycle_compass_open [data-testid="stButton"] button:focus,
-div.st-key-retirement-title-row div.st-key-retirement_lifecycle_compass_open [data-testid="stButton"] button:focus-visible,
-div.st-key-retirement-title-row div.st-key-retirement_lifecycle_compass_open [data-testid="stButton"] button:active {
-    display: inline-flex !important;
-    align-items: center !important;
-    justify-content: flex-start !important;
-    width: auto !important;
-    min-width: 0 !important;
-    min-height: 2.45rem !important;
-    max-width: max-content !important;
-    height: auto !important;
-    margin: 0 !important;
-    padding: 0.12rem 0 !important;
-    transform: translateY(4.2px) !important;
-    border: 0 !important;
-    outline: 0 !important;
-    border-radius: 0 !important;
-    background: transparent !important;
-    background-color: transparent !important;
-    background-image: none !important;
-    box-shadow: none !important;
-    color: #F8FAFC !important;
-    -webkit-text-fill-color: #F8FAFC !important;
-    font-size: 1.8rem !important;
-    font-weight: 700 !important;
-    line-height: 1.2 !important;
-    white-space: nowrap !important;
-    gap: 0 !important;
-}
-div.st-key-retirement-title-row div.st-key-retirement_lifecycle_compass_open [data-testid="stButton"] button p {
-    margin: 0 !important;
-    padding: 0 !important;
-    color: #F8FAFC !important;
-    -webkit-text-fill-color: #F8FAFC !important;
-    font-size: 1.8rem !important;
-    font-weight: 700 !important;
-    line-height: 1.2 !important;
-}
-</style>
-""", unsafe_allow_html=True)
-
-
-# 부동산 적용기준 제목·나침반: 실제 가로 컨테이너와 버튼 외곽 요소 보정
-st.markdown("""
-<style>
-/* key가 stHorizontalBlock 자체에 붙는 구조이므로 자식이 아닌 루트에 적용 */
-div.st-key-housing-price-title-row[data-testid="stHorizontalBlock"] {
-    margin-top: -2rem !important; /* 차트 아래 불필요한 빈 줄 두 칸 제거 */
-    display: flex !important;
-    flex-direction: row !important;
-    align-items: center !important;
-    justify-content: flex-start !important;
-    gap: 0 !important;
-    column-gap: 0 !important;
-    row-gap: 0 !important;
-    width: max-content !important;
-    max-width: 100% !important;
-}
-div.st-key-housing-price-title-row [data-testid="stElementContainer"]:has(h3),
-div.st-key-housing-price-title-row [data-testid="stElementContainer"]:has(h3) [data-testid="stMarkdownContainer"] {
-    width: auto !important;
-    min-width: 0 !important;
-    max-width: max-content !important;
-    flex: 0 0 auto !important;
-    margin: 0 !important;
-    padding: 0 !important;
-}
-div.st-key-housing-price-title-row h3 {
-    font-size: 17px !important;
-    margin: 0 !important;
-    padding: 0 !important;
-    white-space: nowrap !important;
-}
-/* 제목 자체에 Streamlit이 자동 삽입하는 링크 영역이 간격을 만들지 않도록 제거 */
-div.st-key-housing-price-title-row h3 [data-testid="stHeaderActionElements"] {
-    display: none !important;
-}
-/* 아이콘 버튼의 바깥 래퍼부터 실제 button까지 모든 장식 제거 */
-div.st-key-housing-price-title-row > .st-key-housing_price_source_guide {
-    margin-left: -0.18rem !important;
-}
-div.st-key-housing-price-title-row .st-key-housing_price_source_guide,
-div.st-key-housing-price-title-row .st-key-housing_price_source_guide [data-testid="stElementContainer"],
-div.st-key-housing-price-title-row .st-key-housing_price_source_guide [data-testid="stButton"],
-div.st-key-housing-price-title-row .st-key-housing_price_source_guide .stButton,
-div.st-key-housing-price-title-row .st-key-housing_price_source_guide [data-testid="stTooltipHoverTarget"] {
-    display: flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-    width: max-content !important;
-    min-width: 0 !important;
-    max-width: max-content !important;
-    flex: 0 0 auto !important;
-    margin: 0 !important;
-    padding: 0 !important;
-    border: 0 !important;
-    outline: 0 !important;
-    background: transparent !important;
-    background-color: transparent !important;
-    background-image: none !important;
-    box-shadow: none !important;
-}
-div.st-key-housing-price-title-row .st-key-housing_price_source_guide button,
-div.st-key-housing-price-title-row .st-key-housing_price_source_guide button:hover,
-div.st-key-housing-price-title-row .st-key-housing_price_source_guide button:focus,
-div.st-key-housing-price-title-row .st-key-housing_price_source_guide button:focus-visible,
-div.st-key-housing-price-title-row .st-key-housing_price_source_guide button:active {
-    width: auto !important;
-    min-width: 0 !important;
-    max-width: max-content !important;
-    min-height: 0 !important;
-    height: auto !important;
-    margin: 0 !important;
-    padding: 0 !important;
-    border: 0 !important;
-    outline: 0 !important;
-    border-radius: 0 !important;
-    background: transparent !important;
-    background-color: transparent !important;
-    background-image: none !important;
-    box-shadow: none !important;
-    color: #38BDF8 !important;
-    -webkit-text-fill-color: #38BDF8 !important;
-    font-size: 2rem !important;
-    line-height: 1 !important;
-}
-div.st-key-housing-price-title-row .st-key-housing_price_source_guide button p {
-    margin: 0 !important;
-    padding: 0 !important;
-    color: #38BDF8 !important;
-    -webkit-text-fill-color: #38BDF8 !important;
-    font-size: inherit !important;
-    line-height: 1 !important;
-}
-
-/* 은퇴 후에는?에서 검증된 별도 아이콘 버튼 수직 보정값 적용 */
-div.st-key-housing-price-title-row div.st-key-housing_price_source_guide [data-testid="stButton"] button,
-div.st-key-housing-price-title-row div.st-key-housing_price_source_guide [data-testid="stButton"] button:hover,
-div.st-key-housing-price-title-row div.st-key-housing_price_source_guide [data-testid="stButton"] button:focus,
-div.st-key-housing-price-title-row div.st-key-housing_price_source_guide [data-testid="stButton"] button:focus-visible,
-div.st-key-housing-price-title-row div.st-key-housing_price_source_guide [data-testid="stButton"] button:active {
-    transform: translateY(0px) !important;
-}
-</style>
-""", unsafe_allow_html=True)
 
 
 
