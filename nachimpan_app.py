@@ -2722,7 +2722,7 @@ def _render_retirement_explorer_report(source_id):
 
 - 국토교통부 「2024년도 주거실태조사 결과」. [보도자료](https://www.molit.go.kr/USR/NEWS/dtl.jsp?id=95091415&lcmspage=2)
 - [가공 CSV — 생애최초 주택 구입자금 구성](https://github.com/ufreezone-ops/nachimpan/blob/dev/data/기준데이터/생애최초주택_구입자금구성_2024.csv)
-- [분석 README](https://github.com/ufreezone-ops/nachimpan/blob/dev/data/기준데이터/국토교통부_2024_주거실태조사_생애최초주택_구입자금구성_README.md)
+- [분석 README](https://github.com/ufreezone-ops/nachimpan/blob/dev/data/기준데이터/생애최초주택_구입자금구성_2024_README.md)
 """)
     elif source_id == "6050800-00":
         st.markdown("""
@@ -2903,7 +2903,7 @@ def _render_retirement_explorer_report(source_id):
 - [국가데이터처 — 2026년 5월 경제활동인구조사 고령층 부가조사 결과](https://www.mods.go.kr/board.es?act=view&bid=210&list_no=446335&mid=a10301010000)
 - [국가데이터처 — 2024년 임금근로일자리 소득(보수) 결과](https://www.mods.go.kr/board.es?act=view&bid=11113&list_no=443648&mid=a10301010000)
 - [가공 CSV — 연령별 임금근로일자리 평균보수](https://github.com/ufreezone-ops/nachimpan/blob/dev/data/기준데이터/연령별_임금근로소득_평균값_2024.csv)
-- [README — 출처·자료 범위·해석 기준](https://github.com/ufreezone-ops/nachimpan/blob/dev/data/기준데이터/국가데이터처_2024_연령별_임금근로일자리_평균보수_README.md)
+- [README — 출처·자료 범위·해석 기준](https://github.com/ufreezone-ops/nachimpan/blob/dev/data/기준데이터/연령별_임금근로소득_평균값_2024_README.md)
     """)
     elif source_id == "6051100-00":
         st.markdown("""
@@ -3575,7 +3575,7 @@ OECD 「Pensions at a Glance 2025: Korea」는 2024년 한국의 실질 노동�
 
 > **해석할 때 주의할 점:** 이 누적 노동잉여는 실제 개인의 예금·투자자산 잔액이나 순자산이 아닙니다. 연령별 1인당 평균 노동소득과 소비의 차이를 가상의 생애 경로로 합산한 값입니다. 공적·사적 이전, 자산소득, 투자수익, 주택 등 자산의 취득·처분은 포함하지 않습니다. 따라서 플러스 금액을 실제 보유자산으로 해석해서는 안 됩니다.
 
-자료: 국가데이터처 「2024년 국민이전계정」 연령별 1인 규모 원자료. 단위는 1인당 연간 천 원이며, 85세 이상은 집단 구간입니다. [원자료 CSV](https://github.com/ufreezone-ops/nachimpan/blob/dev/data/원자료/생애주기적자계정_1인규모__20261110084848.csv) · [가공 데이터 및 산출방법](https://github.com/ufreezone-ops/nachimpan/blob/dev/data/기준데이터/국가데이터처_2024_국민이전계정_연령별_누적노동잉여_README.md)
+자료: 국가데이터처 「2024년 국민이전계정」 연령별 1인 규모 원자료. 단위는 1인당 연간 천 원이며, 85세 이상은 집단 구간입니다. [원자료 CSV](https://github.com/ufreezone-ops/nachimpan/blob/dev/data/원자료/생애주기적자_1인규모_2024.csv) · [가공 데이터 및 산출방법](https://github.com/ufreezone-ops/nachimpan/blob/dev/data/기준데이터/연령별_누적노동잉여_2024_국민이전계정_README.md)
 """)
         else:
             st.info("국민이전계정 누적 노동잉여 기준데이터 파일을 찾지 못했습니다. data/기준데이터 파일을 확인해 주세요.")
@@ -5331,7 +5331,7 @@ def _show_income_wage_stats_dialog():
     )
     st.markdown(
         "[국가데이터처 원문 보고서](https://www.mods.go.kr/board.es?act=view&bid=11113&list_no=443648&mid=a10301010000) · "
-        "[자료 및 산출 기준](https://github.com/ufreezone-ops/nachimpan/blob/dev/data/기준데이터/국가데이터처_2024_연령별_임금근로일자리_평균보수_README.md)"
+        "[자료 및 산출 기준](https://github.com/ufreezone-ops/nachimpan/blob/dev/data/기준데이터/연령별_임금근로소득_평균값_2024_README.md)"
     )
 
 
@@ -9619,7 +9619,7 @@ elif selected_page == "통계":
 
 > **해석할 때 주의할 점:** 이 누적 노동잉여는 실제 개인의 예금·투자자산 잔액이나 순자산이 아닙니다. 연령별 1인당 평균 노동소득과 소비의 차이를 가상의 생애 경로로 합산한 값입니다. 공적·사적 이전, 자산소득, 투자수익, 주택 등 자산의 취득·처분은 포함하지 않습니다. 따라서 플러스 금액을 실제 보유자산으로 해석해서는 안 됩니다.
 
-자료: 국가데이터처 「2024년 국민이전계정」 연령별 1인 규모 원자료. 단위는 1인당 연간 천 원이며, 85세 이상은 집단 구간입니다. [원자료 CSV](https://github.com/ufreezone-ops/nachimpan/blob/dev/data/원자료/생애주기적자계정_1인규모__20261110084848.csv) · [가공 데이터 및 산출방법](https://github.com/ufreezone-ops/nachimpan/blob/dev/data/기준데이터/국가데이터처_2024_국민이전계정_연령별_누적노동잉여_README.md)
+자료: 국가데이터처 「2024년 국민이전계정」 연령별 1인 규모 원자료. 단위는 1인당 연간 천 원이며, 85세 이상은 집단 구간입니다. [원자료 CSV](https://github.com/ufreezone-ops/nachimpan/blob/dev/data/원자료/생애주기적자_1인규모_2024.csv) · [가공 데이터 및 산출방법](https://github.com/ufreezone-ops/nachimpan/blob/dev/data/기준데이터/연령별_누적노동잉여_2024_국민이전계정_README.md)
     """)
             else:
                 st.info("국민이전계정 누적 노동잉여 기준데이터 파일을 찾지 못했습니다. data/기준데이터 파일을 확인해 주세요.")
@@ -9742,7 +9742,7 @@ elif selected_page == "통계":
 - [국가데이터처 — 2026년 5월 경제활동인구조사 고령층 부가조사 결과](https://www.mods.go.kr/board.es?act=view&bid=210&list_no=446335&mid=a10301010000)
 - [국가데이터처 — 2024년 임금근로일자리 소득(보수) 결과](https://www.mods.go.kr/board.es?act=view&bid=11113&list_no=443648&mid=a10301010000)
 - [가공 CSV — 연령별 임금근로일자리 평균보수](https://github.com/ufreezone-ops/nachimpan/blob/dev/data/기준데이터/연령별_임금근로소득_평균값_2024.csv)
-- [README — 출처·자료 범위·해석 기준](https://github.com/ufreezone-ops/nachimpan/blob/dev/data/기준데이터/국가데이터처_2024_연령별_임금근로일자리_평균보수_README.md)
+- [README — 출처·자료 범위·해석 기준](https://github.com/ufreezone-ops/nachimpan/blob/dev/data/기준데이터/연령별_임금근로소득_평균값_2024_README.md)
     """)
 
         #--------------------------------------------------------
@@ -10266,7 +10266,7 @@ OECD 「Pensions at a Glance 2025: Korea」는 2024년 한국의 실질 노동�
 
 - 국토교통부 「2024년도 주거실태조사 결과」. [보도자료](https://www.molit.go.kr/USR/NEWS/dtl.jsp?id=95091415&lcmspage=2)
 - [가공 CSV — 생애최초 주택 구입자금 구성](https://github.com/ufreezone-ops/nachimpan/blob/dev/data/기준데이터/생애최초주택_구입자금구성_2024.csv)
-- [분석 README](https://github.com/ufreezone-ops/nachimpan/blob/dev/data/기준데이터/국토교통부_2024_주거실태조사_생애최초주택_구입자금구성_README.md)
+- [분석 README](https://github.com/ufreezone-ops/nachimpan/blob/dev/data/기준데이터/생애최초주택_구입자금구성_2024_README.md)
     """)
 
         #--------------------------------------------------------
