@@ -11118,6 +11118,13 @@ font-size: 0.82rem;
 font-weight: 800;
 font-variant-numeric: tabular-nums;
 }
+/* 버튼 묶음 자체를 부모 컨테이너 기준으로 중앙 정렬한다. */
+div.st-key-retirement-report-connection-cta {
+width: max-content !important;
+max-width: calc(100vw - 1.25rem) !important;
+margin-left: auto !important;
+margin-right: auto !important;
+}
 .st-key-retirement-report-connection-cta [data-testid="stHorizontalBlock"] {
 display: flex !important;
 flex-wrap: nowrap !important;
