@@ -13598,7 +13598,7 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 
-# 2호선형 공통 버튼 라이브러리: 연결창 닫기 버튼의 실제 글자 크기(14.4px)로 고정
+# 2호선형 공통 버튼 라이브러리: 연결창 닫기 버튼 기준으로 내부 여백 통일
 st.markdown("""
 <style>
 :root {
@@ -13609,20 +13609,28 @@ st.markdown("""
     --nachimpan-pill-text: #000000;
     --nachimpan-pill-hover: #e8f5ec;
     --nachimpan-pill-height: 2.4rem;
-    --nachimpan-pill-padding-y: 0.15rem;
-    --nachimpan-pill-padding-x: 0.35rem;
+    --nachimpan-pill-padding: 5.6px;
     --nachimpan-pill-font-size: 14.4px;
     --nachimpan-pill-font-weight: 850;
 }
 
-/* 보고서 하단, 연결창 닫기, 통계 상단 복귀 버튼의 공통 외형 */
-.st-key-retirement-report-connection-cta [data-testid="stButton"] button,
-.st-key-retirement-connection-close-cta .st-key-retirement_connection_end [data-testid="stButton"] button,
-.st-key-retirement-stats-return-bar [data-testid="stButton"] button {
+/* 세 영역의 실제 버튼: 테두리·여백·높이·글자 규격을 동일하게 */
+div.st-key-retirement-report-connection-cta [data-testid="stButton"] button,
+div.st-key-retirement-connection-close-cta .st-key-retirement_connection_end [data-testid="stButton"] button,
+div.st-key-retirement-stats-return-bar [data-testid="stButton"] button,
+div.st-key-retirement-report-connection-cta [data-testid="stButton"] button:hover,
+div.st-key-retirement-connection-close-cta .st-key-retirement_connection_end [data-testid="stButton"] button:hover,
+div.st-key-retirement-stats-return-bar [data-testid="stButton"] button:hover,
+div.st-key-retirement-report-connection-cta [data-testid="stButton"] button:focus,
+div.st-key-retirement-connection-close-cta .st-key-retirement_connection_end [data-testid="stButton"] button:focus,
+div.st-key-retirement-stats-return-bar [data-testid="stButton"] button:focus,
+div.st-key-retirement-report-connection-cta [data-testid="stButton"] button:active,
+div.st-key-retirement-connection-close-cta .st-key-retirement_connection_end [data-testid="stButton"] button:active,
+div.st-key-retirement-stats-return-bar [data-testid="stButton"] button:active {
     box-sizing: border-box !important;
     min-height: var(--nachimpan-pill-height) !important;
     height: var(--nachimpan-pill-height) !important;
-    padding: var(--nachimpan-pill-padding-y) var(--nachimpan-pill-padding-x) !important;
+    padding: var(--nachimpan-pill-padding) !important;
     border: var(--nachimpan-pill-border-width) solid var(--nachimpan-pill-border) !important;
     border-radius: var(--nachimpan-pill-radius) !important;
     background: var(--nachimpan-pill-background) !important;
@@ -13633,44 +13641,45 @@ st.markdown("""
     font-family: inherit !important;
     font-size: var(--nachimpan-pill-font-size) !important;
     font-weight: var(--nachimpan-pill-font-weight) !important;
-    line-height: 1.1 !important;
+    line-height: 1.0563 !important;
     white-space: nowrap !important;
     box-shadow: none !important;
 }
 
-/* Streamlit 내부 Markdown 요소까지 px 단위로 동일하게 지정 */
-.st-key-retirement-report-connection-cta [data-testid="stButton"] button *,
-.st-key-retirement-connection-close-cta .st-key-retirement_connection_end [data-testid="stButton"] button *,
-.st-key-retirement-stats-return-bar [data-testid="stButton"] button *,
-.st-key-retirement-report-connection-cta [data-testid="stButton"] button p,
-.st-key-retirement-connection-close-cta .st-key-retirement_connection_end [data-testid="stButton"] button p,
-.st-key-retirement-stats-return-bar [data-testid="stButton"] button p {
+/* 내부 텍스트의 기본 여백을 제거해 버튼마다 내용 높이가 달라지지 않도록 */
+div.st-key-retirement-report-connection-cta [data-testid="stButton"] button *,
+div.st-key-retirement-connection-close-cta .st-key-retirement_connection_end [data-testid="stButton"] button *,
+div.st-key-retirement-stats-return-bar [data-testid="stButton"] button * {
+    box-sizing: border-box !important;
+    margin-top: 0 !important;
+    margin-bottom: 0 !important;
+    padding: 0 !important;
     color: var(--nachimpan-pill-text) !important;
     -webkit-text-fill-color: var(--nachimpan-pill-text) !important;
     font-size: 14.4px !important;
     font-weight: var(--nachimpan-pill-font-weight) !important;
-    line-height: 1.1 !important;
+    line-height: 1.0563 !important;
 }
 
-/* hover 상태도 공통 색상 유지 */
-.st-key-retirement-report-connection-cta [data-testid="stButton"] button:hover,
-.st-key-retirement-connection-close-cta .st-key-retirement_connection_end [data-testid="stButton"] button:hover,
-.st-key-retirement-stats-return-bar [data-testid="stButton"] button:hover {
+/* hover 색상 */
+div.st-key-retirement-report-connection-cta [data-testid="stButton"] button:hover,
+div.st-key-retirement-connection-close-cta .st-key-retirement_connection_end [data-testid="stButton"] button:hover,
+div.st-key-retirement-stats-return-bar [data-testid="stButton"] button:hover {
     background: var(--nachimpan-pill-hover) !important;
     background-color: var(--nachimpan-pill-hover) !important;
     border-color: var(--nachimpan-pill-border) !important;
 }
 
-/* 기존 두 버튼 묶음의 가로 폭과 배치는 그대로 보존 */
-.st-key-retirement-report-connection-cta [data-testid="stButton"] button,
-.st-key-retirement-stats-return-bar [data-testid="stButton"] button {
+/* 기존 두 버튼 묶음의 폭과 간격은 유지 */
+div.st-key-retirement-report-connection-cta [data-testid="stButton"] button,
+div.st-key-retirement-stats-return-bar [data-testid="stButton"] button {
     width: 120px !important;
     min-width: 120px !important;
     max-width: 120px !important;
 }
 @media (max-width: 480px) {
-    .st-key-retirement-report-connection-cta [data-testid="stButton"] button,
-    .st-key-retirement-stats-return-bar [data-testid="stButton"] button {
+    div.st-key-retirement-report-connection-cta [data-testid="stButton"] button,
+    div.st-key-retirement-stats-return-bar [data-testid="stButton"] button {
         width: 104px !important;
         min-width: 104px !important;
         max-width: 104px !important;
