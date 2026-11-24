@@ -519,6 +519,72 @@ div.st-key-loan-payment-source-guide [data-testid="stPopoverButton"]:active {
     font-size: 1.8rem !important;
     line-height: 1 !important;
 }
+
+/* 연결창 검색 결과: 자료 제목은 버튼이 아닌 텍스트 링크처럼 보이되 클릭 기능은 유지 */
+.st-key-retirement-connection-search {
+    color: #222222 !important;
+    -webkit-text-fill-color: #222222 !important;
+}
+.st-key-retirement-connection-search [data-testid="stButton"] {
+    width: max-content !important;
+    max-width: 100% !important;
+    margin: 0 !important;
+}
+.st-key-retirement-connection-search [data-testid="stButton"] button,
+.st-key-retirement-connection-search [data-testid="stButton"] button:hover,
+.st-key-retirement-connection-search [data-testid="stButton"] button:focus,
+.st-key-retirement-connection-search [data-testid="stButton"] button:focus-visible,
+.st-key-retirement-connection-search [data-testid="stButton"] button:active {
+    width: auto !important;
+    min-width: 0 !important;
+    max-width: 100% !important;
+    min-height: 0 !important;
+    height: auto !important;
+    margin: 0 !important;
+    padding: 2px 0 !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    outline: 0 !important;
+    background: transparent !important;
+    background-color: transparent !important;
+    background-image: none !important;
+    box-shadow: none !important;
+    color: #222222 !important;
+    -webkit-text-fill-color: #222222 !important;
+    font-size: 14px !important;
+    font-weight: 650 !important;
+    line-height: 1.45 !important;
+    text-align: left !important;
+    white-space: normal !important;
+    justify-content: flex-start !important;
+}
+.st-key-retirement-connection-search [data-testid="stButton"] button > div {
+    width: 100% !important;
+    justify-content: flex-start !important;
+    text-align: left !important;
+}
+.st-key-retirement-connection-search [data-testid="stButton"] button p {
+    margin: 0 !important;
+    padding: 0 !important;
+    color: inherit !important;
+    -webkit-text-fill-color: inherit !important;
+    font-size: inherit !important;
+    font-weight: inherit !important;
+    line-height: inherit !important;
+    text-align: left !important;
+    white-space: normal !important;
+}
+.st-key-retirement-connection-search [data-testid="stButton"] button:hover,
+.st-key-retirement-connection-search [data-testid="stButton"] button:focus-visible {
+    color: #159447 !important;
+    -webkit-text-fill-color: #159447 !important;
+    text-decoration: underline !important;
+    text-underline-offset: 3px !important;
+}
+.st-key-retirement-connection-search [data-testid="stCaptionContainer"] {
+    color: #555555 !important;
+    -webkit-text-fill-color: #555555 !important;
+}
 </style>
 """, unsafe_allow_html=True)
 
@@ -5397,13 +5463,12 @@ def _show_retirement_connection_dialog():
                     elif not _next_record:
                         st.markdown("<div class='retirement-top-next-empty'>추천 자료 없음</div>", unsafe_allow_html=True)
 
-        # 자료실 전체 검색: 검색 결과는 기존 자료 보기·탐색 이력 경로를 재사용한다.
+        # 자료실 전체 검색: 제목을 눌러 기존 자료 보기·탐색 이력 경로로 이동한다.
         with st.container(key="retirement-connection-search", border=True):
             st.markdown(
-                "<div style='font-size:14px;font-weight:800;margin:0 0 4px;'>자료실 전체에서 찾아보기</div>",
+                "<div style='font-size:14px;font-weight:800;margin:0 0 8px;'>자료실 전체에서 찾아보기</div>",
                 unsafe_allow_html=True,
             )
-            st.caption("궁금한 내용을 질문하듯 입력해 보세요. 보고서와 통계 원자료를 함께 찾아봅니다.")
             with st.form("retirement_connection_search_form", clear_on_submit=False):
                 _search_query = st.text_input(
                     "질문 또는 검색어",
@@ -5421,24 +5486,26 @@ def _show_retirement_connection_dialog():
                 if _search_results:
                     st.caption(f"관련 자료 {len(_search_results)}건")
                     for _index, _result in enumerate(_search_results):
-                        _result_label = f"{_result.get('label', '')} · {_result.get('title', '자료')}".strip(" ·")
-                        with st.container(key=f"retirement-connection-search-result-{_index}", border=True):
-                            st.markdown(f"**{_result_label}**")
-                            st.caption(f"{_result.get('kind', '자료')} · 관련 내용: {_result.get('snippet', '')}")
-                            if st.button("자료 열기", key=f"retirement_connection_search_open_{_index}"):
-                                _result_key = _result.get("key")
-                                _history_now = list(st.session_state.get("_retirement_explorer_history", []))
-                                if _result_key and (not _history_now or _history_now[-1] != _result_key):
-                                    _history_now.append(_result_key)
-                                st.session_state["_retirement_explorer_history"] = _history_now
-                                if _result.get("source_id"):
-                                    st.session_state["_retirement_explorer_source_id"] = _result.get("source_id")
-                                    st.session_state.pop("_retirement_explorer_resource_id", None)
-                                else:
-                                    st.session_state["_retirement_explorer_resource_id"] = _result.get("resource_id")
-                                    st.session_state.pop("_retirement_explorer_source_id", None)
-                                st.session_state["_retirement_connection_open"] = False
-                                st.rerun()
+                        _result_title = _result.get("title", "자료")
+                        if st.button(
+                            _result_title,
+                            key=f"retirement_connection_search_title_{_index}",
+                            type="tertiary",
+                            use_container_width=False,
+                        ):
+                            _result_key = _result.get("key")
+                            _history_now = list(st.session_state.get("_retirement_explorer_history", []))
+                            if _result_key and (not _history_now or _history_now[-1] != _result_key):
+                                _history_now.append(_result_key)
+                            st.session_state["_retirement_explorer_history"] = _history_now
+                            if _result.get("source_id"):
+                                st.session_state["_retirement_explorer_source_id"] = _result.get("source_id")
+                                st.session_state.pop("_retirement_explorer_resource_id", None)
+                            else:
+                                st.session_state["_retirement_explorer_resource_id"] = _result.get("resource_id")
+                                st.session_state.pop("_retirement_explorer_source_id", None)
+                            st.session_state["_retirement_connection_open"] = False
+                            st.rerun()
                 else:
                     st.caption("일치하는 자료를 찾지 못했습니다. 다른 표현이나 핵심 단어로 다시 검색해 보세요.")
 
