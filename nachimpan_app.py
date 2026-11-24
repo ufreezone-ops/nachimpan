@@ -4568,7 +4568,6 @@ def _show_retirement_report_dialog():
 #--------------------------------------------------------
 # 6.04.01 | 연결창 자료실 전체 검색
 #--------------------------------------------------------
-@st.cache_data(show_spinner=False)
 def _retirement_connection_search_index():
     """보고서 본문과 사용 중인 CSV 자료의 제목·변수·내용을 검색용으로 구성한다."""
     _by_source, _by_resource, _ = _nachimpan_master_resource_maps()
@@ -4628,7 +4627,7 @@ def _retirement_connection_search_index():
             "title": _record.get("title", ""), "label": _record.get("display_label", ""),
             "kind": _record.get("resource_type", "통계 원자료"), "text": _text,
         })
-    return _documents
+    return _documents or []
 
 
 def _retirement_connection_search(query):
@@ -4657,7 +4656,7 @@ def _retirement_connection_search(query):
             if _part not in _terms:
                 _terms.append(_part)
     _results = []
-    for _doc in _retirement_connection_search_index():
+    for _doc in (_retirement_connection_search_index() or []):
         _title = str(_doc.get("title", ""))
         _body = str(_doc.get("text", ""))
         _haystack = (_title + " " + _body).lower()
