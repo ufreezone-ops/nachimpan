@@ -353,7 +353,7 @@ footer {
 .st-key-housing_price_source_guide [data-testid="stButton"] button:active {
     appearance: none !important;
     -webkit-appearance: none !important;
-    width: auto !important;
+    width: 100% !important;
     min-width: 0 !important;
     max-width: 100% !important;
     min-height: 0 !important;
@@ -525,8 +525,39 @@ div.st-key-loan-payment-source-guide [data-testid="stPopoverButton"]:active {
     color: #222222 !important;
     -webkit-text-fill-color: #222222 !important;
 }
+/* 검색 입력창: 어두운 앱 테마와 분리해 흰 배경·짙은 글자로 고정 */
+.st-key-retirement_connection_search_form input {
+    background: #FFFFFF !important;
+    background-color: #FFFFFF !important;
+    color: #111827 !important;
+    -webkit-text-fill-color: #111827 !important;
+    border: 1px solid #94A3B8 !important;
+}
+.st-key-retirement_connection_search_form input::placeholder {
+    color: #64748B !important;
+    -webkit-text-fill-color: #64748B !important;
+    opacity: 1 !important;
+}
+/* 자료 검색은 검색 실행용 주황색 primary 버튼 */
+.st-key-retirement_connection_search_form [data-testid="stFormSubmitButton"] button,
+.st-key-retirement_connection_search_form [data-testid="stFormSubmitButton"] button:hover,
+.st-key-retirement_connection_search_form [data-testid="stFormSubmitButton"] button:focus-visible {
+    background: #EA580C !important;
+    background-color: #EA580C !important;
+    border: 1px solid #EA580C !important;
+    color: #FFFFFF !important;
+    -webkit-text-fill-color: #FFFFFF !important;
+    font-weight: 800 !important;
+    box-shadow: none !important;
+}
+.st-key-retirement_connection_search_form [data-testid="stFormSubmitButton"] button:hover {
+    background: #C2410C !important;
+    background-color: #C2410C !important;
+    border-color: #C2410C !important;
+}
+/* 검색 결과 제목: 줄바꿈된 두 번째 줄도 첫 글자 위치에서 시작 */
 .st-key-retirement-connection-search [data-testid="stButton"] {
-    width: max-content !important;
+    width: 100% !important;
     max-width: 100% !important;
     margin: 0 !important;
 }
@@ -562,6 +593,8 @@ div.st-key-loan-payment-source-guide [data-testid="stPopoverButton"]:active {
 }
 .st-key-retirement-connection-search [data-testid="stButton"] button > div {
     display: flex !important;
+    flex: 1 1 auto !important;
+    min-width: 0 !important;
     width: 100% !important;
     align-items: flex-start !important;
     justify-content: flex-start !important;
@@ -5485,7 +5518,7 @@ def _show_retirement_connection_dialog():
                     placeholder="예: 결혼 비용 중 신혼집과 신혼살림 비용은 누가 부담하는가?",
                     label_visibility="collapsed",
                 )
-                _search_submit = st.form_submit_button("자료 검색", use_container_width=False)
+                _search_submit = st.form_submit_button("자료 검색", use_container_width=False, type="primary")
             if _search_submit:
                 st.session_state["_retirement_connection_search_results"] = _retirement_connection_search(_search_query)
                 st.session_state["_retirement_connection_search_executed"] = True
