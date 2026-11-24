@@ -903,6 +903,19 @@ button[kind="primary"], .stApp [data-testid="stFormSubmitButton"] button[kind="p
     min-width: 88px !important;
 }
 
+/* 연결창 자료검색 버튼은 탭 하단 '다음 →' 버튼과 같은 중앙·내용 기반 폭 규격 */
+.st-key-retirement_connection_search_form {
+    width: 100% !important;
+}
+.st-key-retirement_connection_search_form [data-testid="stFormSubmitButton"] {
+    width: 100% !important;
+    display: flex !important;
+    justify-content: center !important;
+}
+.st-key-retirement_connection_search_form [data-testid="stFormSubmitButton"] button {
+    width: auto !important;
+    min-width: 88px !important;
+}
 [data-testid="stSidebar"] { background-color: var(--nc-sidebar-bg) !important; border-right: 1px solid var(--nc-border) !important; }
 [data-testid="stSidebar"] * { color: var(--nc-text) !important; }
 
