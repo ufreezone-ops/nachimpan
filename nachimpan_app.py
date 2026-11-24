@@ -526,34 +526,24 @@ div.st-key-loan-payment-source-guide [data-testid="stPopoverButton"]:active {
     -webkit-text-fill-color: #222222 !important;
 }
 /* 검색 입력창: 어두운 앱 테마와 분리해 흰 배경·짙은 글자로 고정 */
+/* 연결창 검색 입력창: 부모의 text-fill 상속 및 전역 입력창 테마보다 우선 */
+.st-key-retirement-connection-search [data-testid="stTextInput"] input,
+.st-key-_retirement_connection_search_query input,
 .st-key-retirement_connection_search_form input {
     background: #FFFFFF !important;
     background-color: #FFFFFF !important;
     color: #111827 !important;
     -webkit-text-fill-color: #111827 !important;
+    caret-color: #111827 !important;
+    opacity: 1 !important;
     border: 1px solid #94A3B8 !important;
 }
+.st-key-retirement-connection-search [data-testid="stTextInput"] input::placeholder,
+.st-key-_retirement_connection_search_query input::placeholder,
 .st-key-retirement_connection_search_form input::placeholder {
     color: #64748B !important;
     -webkit-text-fill-color: #64748B !important;
     opacity: 1 !important;
-}
-/* 자료 검색은 검색 실행용 주황색 primary 버튼 */
-.st-key-retirement_connection_search_form [data-testid="stFormSubmitButton"] button,
-.st-key-retirement_connection_search_form [data-testid="stFormSubmitButton"] button:hover,
-.st-key-retirement_connection_search_form [data-testid="stFormSubmitButton"] button:focus-visible {
-    background: #EA580C !important;
-    background-color: #EA580C !important;
-    border: 1px solid #EA580C !important;
-    color: #FFFFFF !important;
-    -webkit-text-fill-color: #FFFFFF !important;
-    font-weight: 800 !important;
-    box-shadow: none !important;
-}
-.st-key-retirement_connection_search_form [data-testid="stFormSubmitButton"] button:hover {
-    background: #C2410C !important;
-    background-color: #C2410C !important;
-    border-color: #C2410C !important;
 }
 /* 검색 결과 제목: 줄바꿈된 두 번째 줄도 첫 글자 위치에서 시작 */
 .st-key-retirement-connection-search [data-testid="stButton"] {
@@ -591,14 +581,18 @@ div.st-key-loan-payment-source-guide [data-testid="stPopoverButton"]:active {
     white-space: normal !important;
     justify-content: flex-start !important;
 }
-.st-key-retirement-connection-search [data-testid="stButton"] button > div {
-    display: flex !important;
-    flex: 1 1 auto !important;
+.st-key-retirement-connection-search [data-testid="stButton"] button > div,
+.st-key-retirement-connection-search [data-testid="stButton"] button [data-testid="stMarkdownContainer"] {
+    display: block !important;
     min-width: 0 !important;
     width: 100% !important;
-    align-items: flex-start !important;
-    justify-content: flex-start !important;
     text-align: left !important;
+}
+.st-key-retirement-connection-search [data-testid="stButton"] button *,
+.st-key-retirement-connection-search [data-testid="stButton"] button p {
+    text-align: left !important;
+    justify-content: flex-start !important;
+    align-items: flex-start !important;
 }
 .st-key-retirement-connection-search [data-testid="stButton"] button p {
     width: 100% !important;
@@ -856,7 +850,8 @@ button[kind="primary"], .stApp [data-testid="stFormSubmitButton"] button[kind="p
     .st-key-advanced_livelihood_next,
     .st-key-basic_seasons_next,
     .st-key-seasons_next,
-    .st-key-advanced_finance_next
+    .st-key-advanced_finance_next,
+    .st-key-retirement_connection_search_form
 ) {
     width: 100% !important;
 }
@@ -867,7 +862,8 @@ button[kind="primary"], .stApp [data-testid="stFormSubmitButton"] button[kind="p
     .st-key-advanced_livelihood_next,
     .st-key-basic_seasons_next,
     .st-key-seasons_next,
-    .st-key-advanced_finance_next
+    .st-key-advanced_finance_next,
+    .st-key-retirement_connection_search_form
 ) [data-testid="stButton"],
 :is(
     .st-key-basic_fin_next,
@@ -876,7 +872,8 @@ button[kind="primary"], .stApp [data-testid="stFormSubmitButton"] button[kind="p
     .st-key-advanced_livelihood_next,
     .st-key-basic_seasons_next,
     .st-key-seasons_next,
-    .st-key-advanced_finance_next
+    .st-key-advanced_finance_next,
+    .st-key-retirement_connection_search_form
 ).stButton {
     width: 100% !important;
     display: flex !important;
@@ -889,7 +886,8 @@ button[kind="primary"], .stApp [data-testid="stFormSubmitButton"] button[kind="p
     .st-key-advanced_livelihood_next,
     .st-key-basic_seasons_next,
     .st-key-seasons_next,
-    .st-key-advanced_finance_next
+    .st-key-advanced_finance_next,
+    .st-key-retirement_connection_search_form
 ) [data-testid="stButton"] button,
 :is(
     .st-key-basic_fin_next,
@@ -898,7 +896,8 @@ button[kind="primary"], .stApp [data-testid="stFormSubmitButton"] button[kind="p
     .st-key-advanced_livelihood_next,
     .st-key-basic_seasons_next,
     .st-key-seasons_next,
-    .st-key-advanced_finance_next
+    .st-key-advanced_finance_next,
+    .st-key-retirement_connection_search_form
 ).stButton button {
     width: auto !important;
     min-width: 88px !important;
@@ -4738,10 +4737,22 @@ def _retirement_connection_search_index():
 
 
 def _retirement_connection_search(query):
-    """질문·키워드와 자료 본문을 대조해 상위 관련 자료와 발췌문을 반환한다."""
+    """띄어쓰기와 검색 요청 표현을 정규화해 질문·키워드와 자료 본문을 대조한다."""
     _query = str(query or "").strip()
     if not _query:
         return []
+
+    # '소득관련'과 '소득 관련'을 같은 핵심어로 처리하고,
+    # '자료를 찾아줘'처럼 검색 의도만 나타내는 표현은 검색어에서 제외한다.
+    _term_query = re.sub(r"[.!?,，。！？]", " ", _query)
+    _term_query = re.sub(
+        r"(?:자료|통계|정보)?\s*(?:를|을)?\s*(?:찾아줘|찾아주세요|찾아봐줘|검색해줘|검색해주세요|보여줘|알려줘|알려주세요)",
+        " ",
+        _term_query,
+    )
+    _term_query = re.sub(r"자료\s*(?:를|을)?", " ", _term_query)
+    _term_query = re.sub(r"관련", " 관련 ", _term_query)
+
     _synonyms = {
         "신혼집": ["주거자금", "주택", "집 마련", "주택자금"],
         "신혼살림": ["혼수", "내구소비재", "가전", "살림"],
@@ -4753,15 +4764,24 @@ def _retirement_connection_search(query):
         "부모": ["부모 지원", "친지 지원", "양가"],
         "자녀": ["자녀 결혼", "대학", "출산", "육아"],
     }
-    _expanded = [_query]
+    _expanded = [_term_query]
     for _key, _values in _synonyms.items():
-        if _key in _query:
+        if _key in _term_query:
             _expanded.extend([_key] + _values)
+
     _terms = []
+    _particles = ("으로부터", "에게서", "에서는", "으로", "에게", "부터", "까지", "처럼", "보다", "은", "는", "이", "가", "을", "를", "의", "과", "와", "도", "만", "에", "로")
     for _part in re.findall(r"[가-힣A-Za-z0-9]+", " ".join(_expanded)):
-        if len(_part) >= 2 and _part not in ("어떻게", "얼마나", "무엇을", "누가", "중에서", "그리고", "관련"):
-            if _part not in _terms:
-                _terms.append(_part)
+        if len(_part) >= 2:
+            _base = _part
+            for _particle in _particles:
+                if _base.endswith(_particle) and len(_base) - len(_particle) >= 2:
+                    _base = _base[:-len(_particle)]
+                    break
+            if _base not in ("어떻게", "얼마나", "무엇을", "누가", "중에서", "그리고", "관련", "자료", "찾아줘", "찾아주세요"):
+                if _base not in _terms:
+                    _terms.append(_base)
+
     _results = []
     for _doc in (_retirement_connection_search_index() or []):
         _title = str(_doc.get("title", ""))
@@ -4774,7 +4794,10 @@ def _retirement_connection_search(query):
             if _count:
                 _score += min(_count, 5) * (5 if _term in _title else 2)
                 _matched.append(_term)
-        if _query.lower() in _haystack:
+        # 공백·문장부호 차이만 있는 입력은 동일 문구로 인식한다.
+        _query_compact = re.sub(r"[^가-힣A-Za-z0-9]", "", _query).lower()
+        _haystack_compact = re.sub(r"[^가-힣A-Za-z0-9]", "", _haystack).lower()
+        if _query_compact and _query_compact in _haystack_compact:
             _score += 12
         if not _score:
             continue
@@ -4789,7 +4812,6 @@ def _retirement_connection_search(query):
         _results.append({**_doc, "score": _score, "snippet": _snippet[:220]})
     _results.sort(key=lambda _item: (-_item["score"], _item["title"]))
     return _results[:8]
-
 
 @st.dialog("연결", width="large", dismissible=False)
 def _show_retirement_connection_dialog():
