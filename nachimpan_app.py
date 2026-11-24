@@ -554,14 +554,23 @@ div.st-key-loan-payment-source-guide [data-testid="stPopoverButton"]:active {
     font-size: 14px !important;
     font-weight: 650 !important;
     line-height: 1.45 !important;
+    display: flex !important;
+    align-items: flex-start !important;
     text-align: left !important;
     white-space: normal !important;
     justify-content: flex-start !important;
 }
 .st-key-retirement-connection-search [data-testid="stButton"] button > div {
+    display: flex !important;
     width: 100% !important;
+    align-items: flex-start !important;
     justify-content: flex-start !important;
     text-align: left !important;
+}
+.st-key-retirement-connection-search [data-testid="stButton"] button p {
+    width: 100% !important;
+    text-align: left !important;
+    white-space: normal !important;
 }
 .st-key-retirement-connection-search [data-testid="stButton"] button p {
     margin: 0 !important;
@@ -5466,7 +5475,7 @@ def _show_retirement_connection_dialog():
         # 자료실 전체 검색: 제목을 눌러 기존 자료 보기·탐색 이력 경로로 이동한다.
         with st.container(key="retirement-connection-search", border=True):
             st.markdown(
-                "<div style='font-size:14px;font-weight:800;margin:0 0 8px;'>자료실 전체에서 찾아보기</div>",
+                "<div class='retirement-connection-search-title' style='font-size:14px;font-weight:800;margin:0 0 14px;'>자료실 전체에서 찾아보기</div>",
                 unsafe_allow_html=True,
             )
             with st.form("retirement_connection_search_form", clear_on_submit=False):
@@ -5486,9 +5495,11 @@ def _show_retirement_connection_dialog():
                 if _search_results:
                     st.caption(f"관련 자료 {len(_search_results)}건")
                     for _index, _result in enumerate(_search_results):
-                        _result_title = _result.get("title", "자료")
+                        _result_label = str(_result.get("label", "")).strip()
+                        _result_title = str(_result.get("title", "자료")).strip()
+                        _result_display = f"{_result_label}. {_result_title}" if _result_label else _result_title
                         if st.button(
-                            _result_title,
+                            _result_display,
                             key=f"retirement_connection_search_title_{_index}",
                             type="tertiary",
                             use_container_width=False,
