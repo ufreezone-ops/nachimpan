@@ -353,7 +353,7 @@ footer {
 .st-key-housing_price_source_guide [data-testid="stButton"] button:active {
     appearance: none !important;
     -webkit-appearance: none !important;
-    width: 100% !important;
+    width: auto !important;
     min-width: 0 !important;
     max-width: 100% !important;
     min-height: 0 !important;
@@ -566,7 +566,7 @@ div.st-key-loan-payment-source-guide [data-testid="stPopoverButton"]:active {
 .st-key-retirement-connection-search [data-testid="stButton"] button:focus,
 .st-key-retirement-connection-search [data-testid="stButton"] button:focus-visible,
 .st-key-retirement-connection-search [data-testid="stButton"] button:active {
-    width: auto !important;
+    width: 100% !important;
     min-width: 0 !important;
     max-width: 100% !important;
     min-height: 0 !important;
