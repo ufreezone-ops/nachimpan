@@ -19,6 +19,9 @@ import base64
 import zlib
 import requests
 import re
+import ast
+import inspect
+import textwrap
 from datetime import date
 import streamlit as st
 import pandas as pd
@@ -4562,6 +4565,126 @@ def _show_retirement_report_dialog():
 
 
 @st.dialog("연결", width="large", dismissible=False)
+#--------------------------------------------------------
+# 6.04.01 | 연결창 자료실 전체 검색
+#--------------------------------------------------------
+@st.cache_data(show_spinner=False)
+def _retirement_connection_search_index():
+    """보고서 본문과 사용 중인 CSV 자료의 제목·변수·내용을 검색용으로 구성한다."""
+    _by_source, _by_resource, _ = _nachimpan_master_resource_maps()
+    _documents = []
+    try:
+        _tree = ast.parse(textwrap.dedent(inspect.getsource(_render_retirement_explorer_report)))
+        def _collect_report_branches(_nodes):
+            for _node in _nodes:
+                if isinstance(_node, ast.If):
+                    _source_key = None
+                    if isinstance(_node.test, ast.Compare) and isinstance(_node.test.left, ast.Name) and _node.test.left.id == "source_id":
+                        if _node.test.comparators and isinstance(_node.test.comparators[0], ast.Constant):
+                            _source_key = str(_node.test.comparators[0].value)
+                    if _source_key:
+                        _body_text = " ".join(
+                            _child.value for _child in ast.walk(ast.Module(body=_node.body, type_ignores=[]))
+                            if isinstance(_child, ast.Constant) and isinstance(_child.value, str)
+                        )
+                        _record = _by_source.get(_source_key)
+                        if _record:
+                            _documents.append({
+                                "key": _source_key, "source_id": _source_key, "resource_id": "",
+                                "title": _record.get("title", ""), "label": _record.get("display_label", ""),
+                                "kind": "보고서", "text": _body_text,
+                            })
+                    _collect_report_branches(_node.orelse)
+        _collect_report_branches(_tree.body)
+    except Exception:
+        for _key, _record in _by_source.items():
+            _documents.append({
+                "key": _key, "source_id": _key, "resource_id": "",
+                "title": _record.get("title", ""), "label": _record.get("display_label", ""),
+                "kind": "보고서", "text": "",
+            })
+
+    for _resource_id, _record in _by_resource.items():
+        if str(_record.get("file_format", "")).upper() != "CSV":
+            continue
+        _text = " ".join([
+            _record.get("title", ""), _record.get("resource_type", ""),
+            _record.get("continent", ""), _record.get("file_path", ""),
+        ])
+        _relative_path = _record.get("file_path", "")
+        _file_path = Path(__file__).resolve().parent / _relative_path if _relative_path else None
+        if _file_path and _file_path.exists():
+            try:
+                try:
+                    _frame = pd.read_csv(_file_path, encoding="utf-8-sig", nrows=150, dtype=str)
+                except UnicodeDecodeError:
+                    _frame = pd.read_csv(_file_path, encoding="cp949", nrows=150, dtype=str)
+                _text += " " + " ".join(map(str, _frame.columns))
+                _text += " " + " ".join(_frame.fillna("").astype(str).values.ravel().tolist())
+            except Exception:
+                pass
+        _documents.append({
+            "key": _resource_id, "source_id": "", "resource_id": _resource_id,
+            "title": _record.get("title", ""), "label": _record.get("display_label", ""),
+            "kind": _record.get("resource_type", "통계 원자료"), "text": _text,
+        })
+    return _documents
+
+
+def _retirement_connection_search(query):
+    """질문·키워드와 자료 본문을 대조해 상위 관련 자료와 발췌문을 반환한다."""
+    _query = str(query or "").strip()
+    if not _query:
+        return []
+    _synonyms = {
+        "신혼집": ["주거자금", "주택", "집 마련", "주택자금"],
+        "신혼살림": ["혼수", "내구소비재", "가전", "살림"],
+        "결혼": ["신혼부부", "혼인", "결혼비용"],
+        "부담": ["자금 원천", "지원", "부모", "본인", "부담 주체"],
+        "은퇴": ["노후", "고령층", "근로", "퇴직"],
+        "생활비": ["가계지출", "소비지출", "지출"],
+        "주택구입": ["내 집 마련", "생애최초", "주택 취득"],
+        "부모": ["부모 지원", "친지 지원", "양가"],
+        "자녀": ["자녀 결혼", "대학", "출산", "육아"],
+    }
+    _expanded = [_query]
+    for _key, _values in _synonyms.items():
+        if _key in _query:
+            _expanded.extend([_key] + _values)
+    _terms = []
+    for _part in re.findall(r"[가-힣A-Za-z0-9]+", " ".join(_expanded)):
+        if len(_part) >= 2 and _part not in ("어떻게", "얼마나", "무엇을", "누가", "중에서", "그리고", "관련"):
+            if _part not in _terms:
+                _terms.append(_part)
+    _results = []
+    for _doc in _retirement_connection_search_index():
+        _title = str(_doc.get("title", ""))
+        _body = str(_doc.get("text", ""))
+        _haystack = (_title + " " + _body).lower()
+        _score = 0
+        _matched = []
+        for _term in _terms:
+            _count = _haystack.count(_term.lower())
+            if _count:
+                _score += min(_count, 5) * (5 if _term in _title else 2)
+                _matched.append(_term)
+        if _query.lower() in _haystack:
+            _score += 12
+        if not _score:
+            continue
+        _lines = [line.strip() for line in _body.splitlines() if line.strip()]
+        _snippet = ""
+        for _line in _lines:
+            if any(_term.lower() in _line.lower() for _term in _matched):
+                _snippet = re.sub(r"[*#|]", "", _line)
+                break
+        if not _snippet:
+            _snippet = " · ".join(_matched[:5])
+        _results.append({**_doc, "score": _score, "snippet": _snippet[:220]})
+    _results.sort(key=lambda _item: (-_item["score"], _item["title"]))
+    return _results[:8]
+
+
 def _show_retirement_connection_dialog():
     """읽은 보고서 이력과 다음 추천 보고서를 좌우로 보여주는 연결창."""
     _by_source, _by_resource, _by_legacy = _nachimpan_master_resource_maps()
@@ -5275,20 +5398,50 @@ def _show_retirement_connection_dialog():
                     elif not _next_record:
                         st.markdown("<div class='retirement-top-next-empty'>추천 자료 없음</div>", unsafe_allow_html=True)
 
-        # 자료실 전체 검색 UI: 실제 검색·자료 열기 연동은 다음 단계에서 연결한다.
+        # 자료실 전체 검색: 검색 결과는 기존 자료 보기·탐색 이력 경로를 재사용한다.
         with st.container(key="retirement-connection-search", border=True):
             st.markdown(
                 "<div style='font-size:14px;font-weight:800;margin:0 0 4px;'>자료실 전체에서 찾아보기</div>",
                 unsafe_allow_html=True,
             )
-            st.caption("궁금한 내용을 질문하듯 입력해 보세요. 보고서와 통계 원자료를 함께 찾아볼 수 있습니다.")
-            st.text_input(
-                "질문 또는 검색어",
-                key="_retirement_connection_search_query",
-                placeholder="예: 결혼 비용 중 신혼집과 신혼살림 비용은 누가 부담하는가?",
-                label_visibility="collapsed",
-            )
-            st.caption("검색 결과와 자료 연결 기능은 다음 단계에서 이어집니다.")
+            st.caption("궁금한 내용을 질문하듯 입력해 보세요. 보고서와 통계 원자료를 함께 찾아봅니다.")
+            with st.form("retirement_connection_search_form", clear_on_submit=False):
+                _search_query = st.text_input(
+                    "질문 또는 검색어",
+                    key="_retirement_connection_search_query",
+                    placeholder="예: 결혼 비용 중 신혼집과 신혼살림 비용은 누가 부담하는가?",
+                    label_visibility="collapsed",
+                )
+                _search_submit = st.form_submit_button("자료 검색", use_container_width=False)
+            if _search_submit:
+                st.session_state["_retirement_connection_search_results"] = _retirement_connection_search(_search_query)
+                st.session_state["_retirement_connection_search_executed"] = True
+
+            if st.session_state.get("_retirement_connection_search_executed", False):
+                _search_results = st.session_state.get("_retirement_connection_search_results", [])
+                if _search_results:
+                    st.caption(f"관련 자료 {len(_search_results)}건")
+                    for _index, _result in enumerate(_search_results):
+                        _result_label = f"{_result.get('label', '')} · {_result.get('title', '자료')}".strip(" ·")
+                        with st.container(key=f"retirement-connection-search-result-{_index}", border=True):
+                            st.markdown(f"**{_result_label}**")
+                            st.caption(f"{_result.get('kind', '자료')} · 관련 내용: {_result.get('snippet', '')}")
+                            if st.button("자료 열기", key=f"retirement_connection_search_open_{_index}"):
+                                _result_key = _result.get("key")
+                                _history_now = list(st.session_state.get("_retirement_explorer_history", []))
+                                if _result_key and (not _history_now or _history_now[-1] != _result_key):
+                                    _history_now.append(_result_key)
+                                st.session_state["_retirement_explorer_history"] = _history_now
+                                if _result.get("source_id"):
+                                    st.session_state["_retirement_explorer_source_id"] = _result.get("source_id")
+                                    st.session_state.pop("_retirement_explorer_resource_id", None)
+                                else:
+                                    st.session_state["_retirement_explorer_resource_id"] = _result.get("resource_id")
+                                    st.session_state.pop("_retirement_explorer_source_id", None)
+                                st.session_state["_retirement_connection_open"] = False
+                                st.rerun()
+                else:
+                    st.caption("일치하는 자료를 찾지 못했습니다. 다른 표현이나 핵심 단어로 다시 검색해 보세요.")
 
         with st.container(key="retirement-connection-bottom"):
             _left, _right = st.columns(2, gap="small")
