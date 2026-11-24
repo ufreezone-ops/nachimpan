@@ -4564,7 +4564,6 @@ def _show_retirement_report_dialog():
                 st.rerun()
 
 
-@st.dialog("연결", width="large", dismissible=False)
 #--------------------------------------------------------
 # 6.04.01 | 연결창 자료실 전체 검색
 #--------------------------------------------------------
@@ -4684,6 +4683,7 @@ def _retirement_connection_search(query):
     return _results[:8]
 
 
+@st.dialog("연결", width="large", dismissible=False)
 def _show_retirement_connection_dialog():
     """읽은 보고서 이력과 다음 추천 보고서를 좌우로 보여주는 연결창."""
     _by_source, _by_resource, _by_legacy = _nachimpan_master_resource_maps()
