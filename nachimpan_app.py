@@ -575,11 +575,9 @@ div.st-key-loan-payment-source-guide [data-testid="stPopoverButton"]:active {
     font-size: 14px !important;
     font-weight: 650 !important;
     line-height: 1.45 !important;
-    display: flex !important;
-    align-items: flex-start !important;
+    display: block !important;
     text-align: left !important;
     white-space: normal !important;
-    justify-content: flex-start !important;
 }
 .st-key-retirement-connection-search [data-testid="stButton"] button > div,
 .st-key-retirement-connection-search [data-testid="stButton"] button [data-testid="stMarkdownContainer"] {
