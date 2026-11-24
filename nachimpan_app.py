@@ -5275,6 +5275,21 @@ def _show_retirement_connection_dialog():
                     elif not _next_record:
                         st.markdown("<div class='retirement-top-next-empty'>추천 자료 없음</div>", unsafe_allow_html=True)
 
+        # 자료실 전체 검색 UI: 실제 검색·자료 열기 연동은 다음 단계에서 연결한다.
+        with st.container(key="retirement-connection-search", border=True):
+            st.markdown(
+                "<div style='font-size:14px;font-weight:800;margin:0 0 4px;'>자료실 전체에서 찾아보기</div>",
+                unsafe_allow_html=True,
+            )
+            st.caption("궁금한 내용을 질문하듯 입력해 보세요. 보고서와 통계 원자료를 함께 찾아볼 수 있습니다.")
+            st.text_input(
+                "질문 또는 검색어",
+                key="_retirement_connection_search_query",
+                placeholder="예: 결혼 비용 중 신혼집과 신혼살림 비용은 누가 부담하는가?",
+                label_visibility="collapsed",
+            )
+            st.caption("검색 결과와 자료 연결 기능은 다음 단계에서 이어집니다.")
+
         with st.container(key="retirement-connection-bottom"):
             _left, _right = st.columns(2, gap="small")
             with _left:
