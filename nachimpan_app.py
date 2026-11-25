@@ -4883,7 +4883,12 @@ def _retirement_connection_search(query):
             str(_row.get("핵심개념", "")).replace(";", " "),
         ])
         _core_tokens = _retirement_connection_search_terms(_core_text)["direct"]
-        _overlap = [_term for _term in _direct_terms if _term in _qa_tokens]
+        # '단절'처럼 여러 생애 맥락에서 쓰이는 단독 구성어는 QA 판정 근거로 삼지 않는다.
+        # '경력단절'·'소득단절'처럼 결합된 개념은 복합어 토큰으로 각각 비교한다.
+        _overlap = [
+            _term for _term in _direct_terms
+            if _term in _qa_tokens and _term != "단절"
+        ]
         _core_overlap = [_term for _term in _overlap if _term in _core_tokens]
         _qa_compact = re.sub(r"[^가-힣A-Za-z0-9]", "", str(_row.get("예상질문", ""))).lower()
         _exact_question = bool(_query_compact and _query_compact in _qa_compact)
