@@ -4808,7 +4808,14 @@ def _retirement_connection_search_terms(query):
                 _out.append(_base)
         return _out
 
-    _direct = _tokens(_clean)
+    _base_tokens = _tokens(_clean)
+    # 띄어쓰기로 분리된 복합 개념을 인접 토큰 결합형으로도 비교한다.
+    # 원래 토큰은 보존하고, 두 단어가 붙어 쓰인 사전·보고서 표현과 연결한다.
+    _direct = list(_base_tokens)
+    for _index in range(len(_base_tokens) - 1):
+        _joined = _base_tokens[_index] + _base_tokens[_index + 1]
+        if len(_joined) >= 3 and _joined not in _direct:
+            _direct.append(_joined)
     return {"clean": _clean, "direct": _direct, "tokens": list(_direct)}
 
 
@@ -4831,6 +4838,9 @@ def _retirement_connection_search(query):
     _qa_coverage = {}
     _query_compact = re.sub(r"[^가-힣A-Za-z0-9]", "", _query).lower()
 
+    def _compact_text(_value):
+        return re.sub(r"[^가-힣A-Za-z0-9]", "", str(_value or "")).lower()
+
     # 질문에 포함된 표현을 기준으로 동의어를 확장한다.
     for _row in _dictionary["synonyms"]:
         _canonical = str(_row.get("대표표현", "")).strip()
@@ -4838,9 +4848,9 @@ def _retirement_connection_search(query):
         _weight = pd.to_numeric(_row.get("가중치", 0.8), errors="coerce")
         _weight = float(_weight) if pd.notna(_weight) else 0.8
         _matched_side = ""
-        if _canonical and _canonical in _query:
+        if _canonical and _compact_text(_canonical) in _query_compact:
             _matched_side = _alternate
-        elif _alternate and _alternate in _query:
+        elif _alternate and _compact_text(_alternate) in _query_compact:
             _matched_side = _canonical
         if _matched_side and _matched_side not in _direct_terms:
             _expanded_terms.append((_matched_side, min(max(_weight, 0.0), 1.0), "동의어"))
@@ -4852,9 +4862,9 @@ def _retirement_connection_search(query):
         _direction = str(_row.get("방향성", "양방향")).strip()
         _weight = pd.to_numeric(_row.get("가중치", 0.5), errors="coerce")
         _weight = float(_weight) if pd.notna(_weight) else 0.5
-        if _left and _right and _left in _query:
+        if _left and _right and _compact_text(_left) in _query_compact:
             _relation_terms.append((_right, min(max(_weight, 0.0), 1.0), str(_row.get("기대자료ID", ""))))
-        elif _right and _left and _right in _query and _direction == "양방향":
+        elif _right and _left and _compact_text(_right) in _query_compact and _direction == "양방향":
             _relation_terms.append((_left, min(max(_weight, 0.0), 1.0), str(_row.get("기대자료ID", ""))))
 
     # QA의 예상질문뿐 아니라 의도·핵심개념·확장검색어를 함께 비교한다.
