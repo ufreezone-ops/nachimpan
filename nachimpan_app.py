@@ -5920,13 +5920,16 @@ def _show_retirement_connection_dialog():
                 unsafe_allow_html=True,
             )
             with st.form("retirement_connection_search_form", clear_on_submit=False):
-                _search_query = st.text_input(
-                    "질문 또는 검색어",
-                    key="_retirement_connection_search_query",
-                    placeholder="예: 결혼 비용 중 신혼집과 신혼살림 비용은 누가 부담하는가?",
-                    label_visibility="collapsed",
-                )
-                _search_submit = st.form_submit_button("자료 검색", use_container_width=False, type="primary")
+                _search_input_col, _search_button_col = st.columns([5, 1.25], gap="small")
+                with _search_input_col:
+                    _search_query = st.text_input(
+                        "질문 또는 검색어",
+                        key="_retirement_connection_search_query",
+                        placeholder="검색어를 입력하세요",
+                        label_visibility="collapsed",
+                    )
+                with _search_button_col:
+                    _search_submit = st.form_submit_button("검색", use_container_width=True, type="primary")
             if _search_submit:
                 st.session_state["_retirement_connection_search_results"] = _retirement_connection_search(_search_query)
                 st.session_state["_retirement_connection_search_executed"] = True
