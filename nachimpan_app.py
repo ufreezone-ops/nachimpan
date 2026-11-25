@@ -4867,13 +4867,24 @@ def _retirement_connection_search(query):
             str(_row.get("확장검색어", "")).replace(";", " "),
         ])
         _qa_tokens = _retirement_connection_search_terms(_qa_text)["direct"]
+        _core_text = " ".join([
+            str(_row.get("예상질문", "")),
+            str(_row.get("질문의도", "")),
+            str(_row.get("핵심개념", "")).replace(";", " "),
+        ])
+        _core_tokens = _retirement_connection_search_terms(_core_text)["direct"]
         _overlap = [
             _term for _term in _direct_terms
             if any(_term == _candidate or _term in _candidate or _candidate in _term for _candidate in _qa_tokens)
         ]
+        _core_overlap = [
+            _term for _term in _overlap
+            if any(_term == _candidate or _term in _candidate or _candidate in _term for _candidate in _core_tokens)
+        ]
         _qa_compact = re.sub(r"[^가-힣A-Za-z0-9]", "", str(_row.get("예상질문", ""))).lower()
         _exact_question = bool(_query_compact and _query_compact in _qa_compact)
-        if not _overlap and not _exact_question:
+        # 확장검색어 한 단어만 우연히 겹치는 QA는 제외한다.
+        if len(_overlap) < 2 and not _core_overlap and not _exact_question:
             continue
 
         _qa_id = str(_row.get("qa_id", "")).strip()
