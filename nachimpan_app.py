@@ -4923,6 +4923,34 @@ def _retirement_connection_search(query):
         if _source_id:
             _source_to_resource[_source_id] = _resource_id
 
+    # QA가 지정한 보고서가 AST 본문 색인에서 누락되더라도 검색 후보에서 빠지지 않게 한다.
+    # 본문 색인 생성 여부와 마스터 원장의 자료 ID 연결을 분리해 보장한다.
+    _indexed_source_ids = {
+        str(_doc.get("source_id", "")).strip()
+        for _doc in _documents if str(_doc.get("source_id", "")).strip()
+    }
+    for _target_id in _qa_targets:
+        _target_record = _by_master_resource.get(_target_id)
+        if not _target_record:
+            continue
+        _target_source_id = str(_target_record.get("source_id", "")).strip()
+        if (
+            _target_record.get("resource_type") == "보고서"
+            and _target_source_id
+            and _target_source_id not in _indexed_source_ids
+            and _target_source_id in _by_master_source
+        ):
+            _documents.append({
+                "key": _target_source_id,
+                "source_id": _target_source_id,
+                "resource_id": _target_id,
+                "title": _target_record.get("title", ""),
+                "label": _target_record.get("display_label", ""),
+                "kind": "보고서",
+                "text": "",
+            })
+            _indexed_source_ids.add(_target_source_id)
+
     _results = []
     for _doc in _documents:
         _title = str(_doc.get("title", ""))
@@ -5000,7 +5028,32 @@ def _retirement_connection_search(query):
         })
 
     _results.sort(key=lambda _item: (-_item["score"], _item["title"]))
-    return _results[:8]
+
+    # 여러 주제가 함께 든 질문은 각 주제를 대표하는 자료를 우선 한 건씩 확보한다.
+    # 검색 결과는 연결창에서 최대 3건만 간결하게 제시한다.
+    _selected = []
+    _selected_keys = set()
+    for _topic in _direct_terms:
+        if len(_selected) >= 3:
+            break
+        _candidate = next(
+            (
+                _item for _item in _results
+                if _topic in _item.get("matched_topics", [])
+                and _item.get("key") not in _selected_keys
+            ),
+            None,
+        )
+        if _candidate:
+            _selected.append(_candidate)
+            _selected_keys.add(_candidate.get("key"))
+    for _item in _results:
+        if len(_selected) >= 3:
+            break
+        if _item.get("key") not in _selected_keys:
+            _selected.append(_item)
+            _selected_keys.add(_item.get("key"))
+    return _selected[:3]
 
 @st.dialog("연결", width="large", dismissible=False)
 def _show_retirement_connection_dialog():
