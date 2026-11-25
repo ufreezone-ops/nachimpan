@@ -4747,71 +4747,213 @@ def _retirement_connection_search_index():
     return _documents or []
 
 
-def _retirement_connection_search(query):
-    """띄어쓰기와 검색 요청 표현을 정규화해 질문·키워드와 자료 본문을 대조한다."""
-    _query = str(query or "").strip()
-    if not _query:
-        return []
-
-    # '소득관련'과 '소득 관련'을 같은 핵심어로 처리하고,
-    # '자료를 찾아줘'처럼 검색 의도만 나타내는 표현은 검색어에서 제외한다.
-    _term_query = re.sub(r"[.!?,，。！？]", " ", _query)
-    _term_query = re.sub(
-        r"(?:자료|통계|정보)?\s*(?:를|을)?\s*(?:찾아줘|찾아주세요|찾아봐줘|검색해줘|검색해주세요|보여줘|알려줘|알려주세요)",
-        " ",
-        _term_query,
-    )
-    _term_query = re.sub(r"자료\s*(?:를|을)?", " ", _term_query)
-    _term_query = re.sub(r"관련", " 관련 ", _term_query)
-
-    _synonyms = {
-        "신혼집": ["주거자금", "주택", "집 마련", "주택자금"],
-        "신혼살림": ["혼수", "내구소비재", "가전", "살림"],
-        "결혼": ["신혼부부", "혼인", "결혼비용"],
-        "부담": ["자금 원천", "지원", "부모", "본인", "부담 주체"],
-        "은퇴": ["노후", "고령층", "근로", "퇴직"],
-        "생활비": ["가계지출", "소비지출", "지출"],
-        "주택구입": ["내 집 마련", "생애최초", "주택 취득"],
-        "부모": ["부모 지원", "친지 지원", "양가"],
-        "자녀": ["자녀 결혼", "대학", "출산", "육아"],
+#--------------------------------------------------------
+# 6.04.01.01 | 검색사전 CSV 로더
+#--------------------------------------------------------
+def _retirement_connection_search_dictionary():
+    """dev 자료 폴더의 검색사전을 안전하게 읽고, 유효한 자료 ID만 남긴다."""
+    _base = Path(__file__).resolve().parent / "data" / "연관성" / "검색사전"
+    _files = {
+        "qa": _base / "예상_QA_검색확장.csv",
+        "synonyms": _base / "동의어_사전.csv",
+        "relations": _base / "개념관계_사전.csv",
     }
-    _expanded = [_term_query]
-    for _key, _values in _synonyms.items():
-        if _key in _term_query:
-            _expanded.extend([_key] + _values)
+    _loaded = {"qa": [], "synonyms": [], "relations": []}
+    for _kind, _path in _files.items():
+        if not _path.exists():
+            continue
+        try:
+            try:
+                _frame = pd.read_csv(_path, encoding="utf-8-sig", dtype=str).fillna("")
+            except UnicodeDecodeError:
+                _frame = pd.read_csv(_path, encoding="cp949", dtype=str).fillna("")
+            _loaded[_kind] = _frame.to_dict("records")
+        except Exception:
+            # 사전 파일 하나의 오류가 연결창 전체 검색을 중단시키지 않도록 한다.
+            _loaded[_kind] = []
+    return _loaded
 
-    _terms = []
-    _particles = ("으로부터", "에게서", "에서는", "으로", "에게", "부터", "까지", "처럼", "보다", "은", "는", "이", "가", "을", "를", "의", "과", "와", "도", "만", "에", "로")
-    for _part in re.findall(r"[가-힣A-Za-z0-9]+", " ".join(_expanded)):
-        if len(_part) >= 2:
+
+#--------------------------------------------------------
+# 6.04.01.02 | 검색어 정규화 및 의미 확장
+#--------------------------------------------------------
+def _retirement_connection_search_terms(query):
+    """원문 검색어, 검토 중인 동의어, 제한된 개념관계 확장어를 분리해 만든다."""
+    _query = str(query or "").strip()
+    _clean = re.sub(r"[.!?,，。！？]", " ", _query)
+    _clean = re.sub(
+        r"(?:자료|통계|정보)?\s*(?:를|을)?\s*(?:찾아줘|찾아주세요|찾아봐줘|검색해줘|검색해주세요|보여줘|알려줘|알려주세요)",
+        " ", _clean,
+    )
+    _clean = re.sub(r"자료\s*(?:를|을)?", " ", _clean)
+    _particles = (
+        "으로부터", "에게서", "에서는", "으로", "에게", "부터", "까지", "처럼",
+        "보다", "은", "는", "이", "가", "을", "를", "의", "과", "와", "도", "만", "에", "로",
+    )
+    _stop = {
+        "어떻게", "얼마나", "무엇을", "무엇", "누가", "누구", "중에서", "그리고",
+        "관련", "자료", "찾아줘", "찾아주세요", "알고", "싶다", "싶어요", "있나",
+        "있을까", "어떤", "무슨", "하는", "대한", "대해", "비교", "가능",
+    }
+
+    def _tokens(_value):
+        _out = []
+        for _part in re.findall(r"[가-힣A-Za-z0-9]+", str(_value or "")):
             _base = _part
             for _particle in _particles:
                 if _base.endswith(_particle) and len(_base) - len(_particle) >= 2:
                     _base = _base[:-len(_particle)]
                     break
-            if _base not in ("어떻게", "얼마나", "무엇을", "누가", "중에서", "그리고", "관련", "자료", "찾아줘", "찾아주세요"):
-                if _base not in _terms:
-                    _terms.append(_base)
+            if len(_base) >= 2 and _base not in _stop and _base not in _out:
+                _out.append(_base)
+        return _out
+
+    _direct = _tokens(_clean)
+    return {"clean": _clean, "direct": _direct, "tokens": list(_direct)}
+
+
+#--------------------------------------------------------
+# 6.04.01.03 | 사전 기반 연결창 검색
+#--------------------------------------------------------
+def _retirement_connection_search(query):
+    """질문·동의어·개념관계로 검색어를 확장하되 원문 일치가 가장 높은 점수를 갖게 한다."""
+    _query = str(query or "").strip()
+    if not _query:
+        return []
+
+    _dictionary = _retirement_connection_search_dictionary()
+    _terms = _retirement_connection_search_terms(_query)
+    _direct_terms = list(_terms["direct"])
+    _expanded_terms = []
+    _relation_terms = []
+    _qa_targets = {}
+    _qa_evidence = {}
+
+    # 동의어는 질문에 실제로 등장한 대표표현/대체표현에 대해서만 양방향으로 확장한다.
+    for _row in _dictionary["synonyms"]:
+        _canonical = str(_row.get("대표표현", "")).strip()
+        _alternate = str(_row.get("대체표현", "")).strip()
+        _weight = pd.to_numeric(_row.get("가중치", 0.8), errors="coerce")
+        _weight = float(_weight) if pd.notna(_weight) else 0.8
+        _matched_side = ""
+        if _canonical and _canonical in _query:
+            _matched_side = _alternate
+        elif _alternate and _alternate in _query:
+            _matched_side = _canonical
+        if _matched_side and _matched_side not in _direct_terms:
+            _expanded_terms.append((_matched_side, min(max(_weight, 0.0), 1.0), "동의어"))
+
+    # 개념관계는 한 단계만 확장한다. 관계 개념 자체를 다시 확장하지 않는다.
+    for _row in _dictionary["relations"]:
+        _left = str(_row.get("출발개념", "")).strip()
+        _right = str(_row.get("연결개념", "")).strip()
+        _direction = str(_row.get("방향성", "양방향")).strip()
+        _weight = pd.to_numeric(_row.get("가중치", 0.5), errors="coerce")
+        _weight = float(_weight) if pd.notna(_weight) else 0.5
+        if _left and _right and _left in _query:
+            _relation_terms.append((_right, min(max(_weight, 0.0), 1.0), str(_row.get("기대자료ID", ""))))
+        elif _right and _left and _right in _query and _direction == "양방향":
+            _relation_terms.append((_left, min(max(_weight, 0.0), 1.0), str(_row.get("기대자료ID", ""))))
+
+    # 예상 Q&A는 질문의 표현을 기억하는 용도가 아니라, 질문 의도와 기대 자료를 연결하는 중간층이다.
+    for _row in _dictionary["qa"]:
+        _qa_text = " ".join([
+            str(_row.get("예상질문", "")),
+            str(_row.get("질문의도", "")),
+            str(_row.get("핵심개념", "")).replace(";", " "),
+            str(_row.get("확장검색어", "")).replace(";", " "),
+        ])
+        _qa_tokens = _retirement_connection_search_terms(_qa_text)["direct"]
+        _overlap = [term for term in _direct_terms if any(term in candidate or candidate in term for candidate in _qa_tokens)]
+        _query_compact = re.sub(r"[^가-힣A-Za-z0-9]", "", _query)
+        _qa_compact = re.sub(r"[^가-힣A-Za-z0-9]", "", str(_row.get("예상질문", "")))
+        _exact_question = bool(_query_compact and _query_compact in _qa_compact)
+        if len(_overlap) < 2 and not _exact_question:
+            continue
+        _qa_id = str(_row.get("qa_id", "")).strip()
+        _target_ids = [item.strip() for item in str(_row.get("기대자료ID", "")).split(";") if item.strip()]
+        _strength = min(1.0, 0.35 + 0.15 * len(_overlap) + (0.3 if _exact_question else 0.0))
+        for _target_id in _target_ids:
+            _qa_targets[_target_id] = max(_qa_targets.get(_target_id, 0.0), _strength)
+            _qa_evidence.setdefault(_target_id, []).append(_qa_id)
+
+    _all_terms = []
+    for _term in _direct_terms:
+        _all_terms.append((_term, 1.0, "원문"))
+    for _term, _weight, _kind in _expanded_terms:
+        _all_terms.append((_term, _weight, _kind))
+    for _term, _weight, _target_ids in _relation_terms:
+        _all_terms.append((_term, _weight, "개념관계"))
+
+    _documents = _retirement_connection_search_index() or []
+    _by_resource, _by_source = {}, {}
+    for _doc in _documents:
+        if _doc.get("resource_id"):
+            _by_resource[str(_doc["resource_id"])] = _doc
+        if _doc.get("source_id"):
+            _by_source[str(_doc["source_id"])] = _doc
+
+    # 보고서와 CSV는 마스터 원장의 resource_id 및 기존 직접 연결표를 통해 같은 자료 단위로 취급한다.
+    _resource_to_keys = {}
+    _by_master_source, _by_master_resource, _ = _nachimpan_master_resource_maps()
+    for _resource_id, _record in _by_master_resource.items():
+        _resource_to_keys.setdefault(_resource_id, set()).add(_resource_id)
+    for _source_id, _record in _by_master_source.items():
+        _resource_id = str(_record.get("resource_id", "")).strip()
+        if _resource_id:
+            _resource_to_keys.setdefault(_resource_id, set()).add(_source_id)
+    for _resource_id, _source_ids in _RETIREMENT_CSV_REPORT_LINKS.items():
+        _resource_to_keys.setdefault(_resource_id, set()).update(_source_ids)
 
     _results = []
-    for _doc in (_retirement_connection_search_index() or []):
+    for _doc in _documents:
         _title = str(_doc.get("title", ""))
         _body = str(_doc.get("text", ""))
         _haystack = (_title + " " + _body).lower()
-        _score = 0
+        _score = 0.0
         _matched = []
-        for _term in _terms:
+        _match_kinds = set()
+
+        for _term, _weight, _kind in _all_terms:
+            _term = str(_term or "").strip()
+            if len(_term) < 2:
+                continue
             _count = _haystack.count(_term.lower())
             if _count:
-                _score += min(_count, 5) * (5 if _term in _title else 2)
+                _base = min(_count, 4) * (7 if _term in _title else 2.2)
+                _multiplier = 1.0 if _kind == "원문" else (0.55 if _kind == "동의어" else 0.35)
+                _score += _base * _weight * _multiplier
                 _matched.append(_term)
-        # 공백·문장부호 차이만 있는 입력은 동일 문구로 인식한다.
+                _match_kinds.add(_kind)
+
+        # Q&A가 연결한 기대 자료에는 제한적인 의도 일치 보너스를 준다.
+        _doc_resource_id = str(_doc.get("resource_id", "")).strip()
+        _doc_source_id = str(_doc.get("source_id", "")).strip()
+        _doc_resource_ids = {_doc_resource_id} if _doc_resource_id else set()
+        if _doc_source_id:
+            for _resource_id, _keys in _resource_to_keys.items():
+                if _doc_source_id in _keys:
+                    _doc_resource_ids.add(_resource_id)
+        _qa_strength = max((_qa_targets.get(_rid, 0.0) for _rid in _doc_resource_ids), default=0.0)
+        if _qa_strength:
+            _score += 10.0 * _qa_strength
+            _match_kinds.add("예상 Q&A")
+
+        # 개념관계의 기대자료ID도 연결 자료에만 작은 보너스를 부여한다.
+        for _term, _weight, _target_ids in _relation_terms:
+            _targets = {item.strip() for item in str(_target_ids).split(";") if item.strip()}
+            if _targets.intersection(_doc_resource_ids):
+                _score += 2.5 * _weight
+                _match_kinds.add("개념관계 자료연결")
+
         _query_compact = re.sub(r"[^가-힣A-Za-z0-9]", "", _query).lower()
         _haystack_compact = re.sub(r"[^가-힣A-Za-z0-9]", "", _haystack).lower()
         if _query_compact and _query_compact in _haystack_compact:
-            _score += 12
-        if not _score:
+            _score += 12.0
+            _match_kinds.add("문구일치")
+        if _score <= 0:
             continue
+
         _lines = [line.strip() for line in _body.splitlines() if line.strip()]
         _snippet = ""
         for _line in _lines:
@@ -4819,8 +4961,16 @@ def _retirement_connection_search(query):
                 _snippet = re.sub(r"[*#|]", "", _line)
                 break
         if not _snippet:
-            _snippet = " · ".join(_matched[:5])
-        _results.append({**_doc, "score": _score, "snippet": _snippet[:220]})
+            _snippet = " · ".join(_matched[:5]) or "질문 의도와 연결된 자료"
+        _results.append({
+            **_doc,
+            "score": round(_score, 2),
+            "snippet": _snippet[:220],
+            "matched_terms": list(dict.fromkeys(_matched))[:8],
+            "match_kinds": sorted(_match_kinds),
+            "qa_ids": sorted({qa for rid in _doc_resource_ids for qa in _qa_evidence.get(rid, [])}),
+        })
+
     _results.sort(key=lambda _item: (-_item["score"], _item["title"]))
     return _results[:8]
 
