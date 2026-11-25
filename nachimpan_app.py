@@ -4816,7 +4816,7 @@ def _retirement_connection_search_terms(query):
 # 6.04.01.03 | 사전 기반 연결창 검색
 #--------------------------------------------------------
 def _retirement_connection_search(query):
-    """질문·동의어·개념관계로 검색어를 확장하되 원문 일치가 가장 높은 점수를 갖게 한다."""
+    """질문을 여러 주제로 해석하고, Q&A·개념관계의 자료 ID를 보고서와 CSV에 연결한다."""
     _query = str(query or "").strip()
     if not _query:
         return []
@@ -4828,8 +4828,10 @@ def _retirement_connection_search(query):
     _relation_terms = []
     _qa_targets = {}
     _qa_evidence = {}
+    _qa_coverage = {}
+    _query_compact = re.sub(r"[^가-힣A-Za-z0-9]", "", _query).lower()
 
-    # 동의어는 질문에 실제로 등장한 대표표현/대체표현에 대해서만 양방향으로 확장한다.
+    # 질문에 포함된 표현을 기준으로 동의어를 확장한다.
     for _row in _dictionary["synonyms"]:
         _canonical = str(_row.get("대표표현", "")).strip()
         _alternate = str(_row.get("대체표현", "")).strip()
@@ -4843,7 +4845,7 @@ def _retirement_connection_search(query):
         if _matched_side and _matched_side not in _direct_terms:
             _expanded_terms.append((_matched_side, min(max(_weight, 0.0), 1.0), "동의어"))
 
-    # 개념관계는 한 단계만 확장한다. 관계 개념 자체를 다시 확장하지 않는다.
+    # 개념관계는 질문에 직접 등장한 개념에서 한 단계만 확장한다.
     for _row in _dictionary["relations"]:
         _left = str(_row.get("출발개념", "")).strip()
         _right = str(_row.get("연결개념", "")).strip()
@@ -4855,7 +4857,8 @@ def _retirement_connection_search(query):
         elif _right and _left and _right in _query and _direction == "양방향":
             _relation_terms.append((_left, min(max(_weight, 0.0), 1.0), str(_row.get("기대자료ID", ""))))
 
-    # 예상 Q&A는 질문의 표현을 기억하는 용도가 아니라, 질문 의도와 기대 자료를 연결하는 중간층이다.
+    # QA의 예상질문뿐 아니라 의도·핵심개념·확장검색어를 함께 비교한다.
+    # 여러 주제가 들어온 질문은 겹치는 개념 수만큼 기대자료 후보를 넓힌다.
     for _row in _dictionary["qa"]:
         _qa_text = " ".join([
             str(_row.get("예상질문", "")),
@@ -4864,18 +4867,22 @@ def _retirement_connection_search(query):
             str(_row.get("확장검색어", "")).replace(";", " "),
         ])
         _qa_tokens = _retirement_connection_search_terms(_qa_text)["direct"]
-        _overlap = [term for term in _direct_terms if any(term in candidate or candidate in term for candidate in _qa_tokens)]
-        _query_compact = re.sub(r"[^가-힣A-Za-z0-9]", "", _query)
-        _qa_compact = re.sub(r"[^가-힣A-Za-z0-9]", "", str(_row.get("예상질문", "")))
+        _overlap = [
+            _term for _term in _direct_terms
+            if any(_term == _candidate or _term in _candidate or _candidate in _term for _candidate in _qa_tokens)
+        ]
+        _qa_compact = re.sub(r"[^가-힣A-Za-z0-9]", "", str(_row.get("예상질문", ""))).lower()
         _exact_question = bool(_query_compact and _query_compact in _qa_compact)
-        if len(_overlap) < 2 and not _exact_question:
+        if not _overlap and not _exact_question:
             continue
+
         _qa_id = str(_row.get("qa_id", "")).strip()
         _target_ids = [item.strip() for item in str(_row.get("기대자료ID", "")).split(";") if item.strip()]
-        _strength = min(1.0, 0.35 + 0.15 * len(_overlap) + (0.3 if _exact_question else 0.0))
+        _strength = min(1.0, 0.25 + 0.2 * len(_overlap) + (0.25 if _exact_question else 0.0))
         for _target_id in _target_ids:
             _qa_targets[_target_id] = max(_qa_targets.get(_target_id, 0.0), _strength)
             _qa_evidence.setdefault(_target_id, []).append(_qa_id)
+            _qa_coverage.setdefault(_target_id, set()).update(_overlap)
 
     _all_terms = []
     for _term in _direct_terms:
@@ -4886,22 +4893,18 @@ def _retirement_connection_search(query):
         _all_terms.append((_term, _weight, "개념관계"))
 
     _documents = _retirement_connection_search_index() or []
-    _by_resource, _by_source = {}, {}
-    for _doc in _documents:
-        if _doc.get("resource_id"):
-            _by_resource[str(_doc["resource_id"])] = _doc
-        if _doc.get("source_id"):
-            _by_source[str(_doc["source_id"])] = _doc
-
-    # 보고서와 CSV는 마스터 원장의 resource_id 및 기존 직접 연결표를 통해 같은 자료 단위로 취급한다.
-    _resource_to_keys = {}
     _by_master_source, _by_master_resource, _ = _nachimpan_master_resource_maps()
+
+    # 마스터 원장의 resource_id ↔ source_id를 직접 연결한다.
+    # 기존 보고서 맵에는 resource_id가 없으므로, resource 레코드에서 역방향 맵을 만든다.
+    _source_to_resource = {}
+    _resource_to_keys = {}
     for _resource_id, _record in _by_master_resource.items():
         _resource_to_keys.setdefault(_resource_id, set()).add(_resource_id)
-    for _source_id, _record in _by_master_source.items():
-        _resource_id = str(_record.get("resource_id", "")).strip()
-        if _resource_id:
-            _resource_to_keys.setdefault(_resource_id, set()).add(_source_id)
+        _source_id = str(_record.get("source_id", "")).strip()
+        if _source_id:
+            _source_to_resource[_source_id] = _resource_id
+            _resource_to_keys[_resource_id].add(_source_id)
     for _resource_id, _source_ids in _RETIREMENT_CSV_REPORT_LINKS.items():
         _resource_to_keys.setdefault(_resource_id, set()).update(_source_ids)
 
@@ -4913,6 +4916,7 @@ def _retirement_connection_search(query):
         _score = 0.0
         _matched = []
         _match_kinds = set()
+        _matched_topics = []
 
         for _term, _weight, _kind in _all_terms:
             _term = str(_term or "").strip()
@@ -4920,37 +4924,44 @@ def _retirement_connection_search(query):
                 continue
             _count = _haystack.count(_term.lower())
             if _count:
-                _base = min(_count, 4) * (7 if _term in _title else 2.2)
+                _base = min(_count, 4) * (7 if _term.lower() in _title.lower() else 2.2)
                 _multiplier = 1.0 if _kind == "원문" else (0.55 if _kind == "동의어" else 0.35)
                 _score += _base * _weight * _multiplier
                 _matched.append(_term)
                 _match_kinds.add(_kind)
+                if _kind == "원문":
+                    _matched_topics.append(_term)
 
-        # Q&A가 연결한 기대 자료에는 제한적인 의도 일치 보너스를 준다.
         _doc_resource_id = str(_doc.get("resource_id", "")).strip()
         _doc_source_id = str(_doc.get("source_id", "")).strip()
         _doc_resource_ids = {_doc_resource_id} if _doc_resource_id else set()
         if _doc_source_id:
-            for _resource_id, _keys in _resource_to_keys.items():
-                if _doc_source_id in _keys:
+            _mapped_resource = _source_to_resource.get(_doc_source_id)
+            if _mapped_resource:
+                _doc_resource_ids.add(_mapped_resource)
+            for _resource_id, _source_ids in _RETIREMENT_CSV_REPORT_LINKS.items():
+                if _doc_source_id in _source_ids:
                     _doc_resource_ids.add(_resource_id)
+
+        # QA가 지정한 자료는 본문 단어가 달라도 후보에 포함한다.
         _qa_strength = max((_qa_targets.get(_rid, 0.0) for _rid in _doc_resource_ids), default=0.0)
         if _qa_strength:
-            _score += 10.0 * _qa_strength
+            _score += 12.0 * _qa_strength
             _match_kinds.add("예상 Q&A")
+            for _rid in _doc_resource_ids:
+                _matched_topics.extend(sorted(_qa_coverage.get(_rid, set())))
 
-        # 개념관계의 기대자료ID도 연결 자료에만 작은 보너스를 부여한다.
+        # 개념관계의 기대자료 ID를 해당 보고서·CSV 양쪽에 연결한다.
         for _term, _weight, _target_ids in _relation_terms:
             _targets = {item.strip() for item in str(_target_ids).split(";") if item.strip()}
             if _targets.intersection(_doc_resource_ids):
-                _score += 2.5 * _weight
+                _score += 3.5 * _weight
                 _match_kinds.add("개념관계 자료연결")
 
-        _query_compact = re.sub(r"[^가-힣A-Za-z0-9]", "", _query).lower()
-        _haystack_compact = re.sub(r"[^가-힣A-Za-z0-9]", "", _haystack).lower()
-        if _query_compact and _query_compact in _haystack_compact:
+        if _query_compact and _query_compact in re.sub(r"[^가-힣A-Za-z0-9]", "", _haystack).lower():
             _score += 12.0
             _match_kinds.add("문구일치")
+
         if _score <= 0:
             continue
 
@@ -4961,12 +4972,14 @@ def _retirement_connection_search(query):
                 _snippet = re.sub(r"[*#|]", "", _line)
                 break
         if not _snippet:
-            _snippet = " · ".join(_matched[:5]) or "질문 의도와 연결된 자료"
+            _snippet = " · ".join(list(dict.fromkeys(_matched))[:5]) or "질문 의도와 연결된 자료"
+
         _results.append({
             **_doc,
             "score": round(_score, 2),
             "snippet": _snippet[:220],
             "matched_terms": list(dict.fromkeys(_matched))[:8],
+            "matched_topics": list(dict.fromkeys(_matched_topics))[:8],
             "match_kinds": sorted(_match_kinds),
             "qa_ids": sorted({qa for rid in _doc_resource_ids for qa in _qa_evidence.get(rid, [])}),
         })
@@ -5733,6 +5746,9 @@ def _show_retirement_connection_dialog():
                                 st.session_state.pop("_retirement_explorer_source_id", None)
                             st.session_state["_retirement_connection_open"] = False
                             st.rerun()
+                        _evidence = list(_result.get("matched_topics", []))
+                        if _evidence:
+                            st.caption("연결 근거: " + " · ".join(_evidence[:5]))
                 else:
                     st.caption("일치하는 자료를 찾지 못했습니다. 다른 표현이나 핵심 단어로 다시 검색해 보세요.")
 
