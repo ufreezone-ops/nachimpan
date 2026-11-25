@@ -5728,6 +5728,114 @@ def _show_retirement_connection_dialog():
             unsafe_allow_html=True,
         )
 
+        # 연결창 전체 균형: 제목·탐색·검색·자료 패널을 한 공간으로 정리
+        st.markdown("""
+        <style>
+        [data-testid="stDialog"] [data-testid="stDialogHeader"] {
+            background:linear-gradient(100deg,#F0F7F0 0%,#F8FAF7 72%,#E8F2E8 100%) !important;
+            color:#244B32 !important; padding:12px 20px 10px !important;
+            border-bottom:1px solid #C9DDCA !important; min-height:0 !important;
+        }
+        [data-testid="stDialog"] [data-testid="stDialogHeader"] * {
+            color:#244B32 !important; -webkit-text-fill-color:#244B32 !important;
+            font-size:20px !important; font-weight:800 !important;
+        }
+        [data-testid="stDialog"] [data-testid="stDialogHeader"]::after {
+            content:""; display:block; position:absolute; left:20px; bottom:0;
+            width:42px; height:3px; border-radius:3px; background:#159447;
+        }
+        /* 이전·다음 보고서: 높이를 줄인 가로 탐색 바 */
+        .st-key-retirement-connection-platform .st-key-retirement-top-previous-clickable [data-testid="stButton"] button,
+        .st-key-retirement-connection-platform .st-key-retirement-top-next-clickable [data-testid="stButton"] button {
+            min-height:48px !important; height:auto !important; padding:7px 9px !important;
+            border:1px solid #8DBB91 !important; border-radius:10px !important;
+            background:#F5FAF5 !important; color:#285C36 !important;
+            -webkit-text-fill-color:#285C36 !important; box-shadow:none !important;
+            font-size:12px !important; font-weight:750 !important; line-height:1.3 !important;
+            text-align:center !important; justify-content:center !important; white-space:normal !important;
+        }
+        .st-key-retirement-connection-platform .st-key-retirement-top-previous-clickable [data-testid="stButton"] button *,
+        .st-key-retirement-connection-platform .st-key-retirement-top-next-clickable [data-testid="stButton"] button * {
+            color:#285C36 !important; -webkit-text-fill-color:#285C36 !important; text-align:center !important;
+        }
+        .st-key-retirement-connection-platform .st-key-retirement-top-previous-clickable [data-testid="stButton"] button:disabled {
+            opacity:.48 !important; background:#F2F4F2 !important;
+        }
+        .retirement-top-arrow { min-height:48px !important; height:48px !important; }
+        .retirement-top-arrow svg { max-width:42px !important; height:20px !important; }
+        /* 검색 영역: 중첩 테두리와 과한 여백 축소 */
+        .st-key-retirement-connection-search {
+            padding:10px 11px !important; border:1px solid #C9D8C9 !important;
+            border-radius:12px !important; background:#F5F8F4 !important;
+        }
+        .retirement-connection-search-title {
+            font-size:12px !important; font-weight:700 !important;
+            margin:0 0 6px !important; color:#49634C !important;
+        }
+        .st-key-retirement-connection-search [data-testid="stForm"] {
+            border:0 !important; padding:0 !important; background:transparent !important;
+        }
+        .st-key-retirement-connection-search [data-testid="stTextInput"] input {
+            min-height:38px !important; height:38px !important;
+            font-size:13px !important; border-radius:8px !important;
+        }
+        .st-key-retirement-connection-search [data-testid="stFormSubmitButton"] button {
+            min-height:36px !important; height:36px !important;
+            padding:4px 13px !important; border-radius:8px !important; font-size:12px !important;
+        }
+        .st-key-retirement-connection-search [data-testid="stButton"] button,
+        .st-key-retirement-connection-search [data-testid="stButton"] button > div,
+        .st-key-retirement-connection-search [data-testid="stButton"] button p {
+            width:100% !important; text-align:left !important;
+            justify-content:flex-start !important; white-space:normal !important;
+        }
+        /* 읽은 자료·추천 자료: 중복 소제목 없이 색상으로 구분 */
+        .st-key-retirement-connection-read-list {
+            background:#F3E8FF !important; border:1px solid #D8B4FE !important;
+            border-radius:12px !important; padding:10px !important;
+        }
+        .st-key-retirement-connection-recommend-list {
+            background:#E8F3E8 !important; border:1px solid #9BC79F !important;
+            border-radius:12px !important; padding:10px !important;
+        }
+        .st-key-retirement-connection-read-list .retirement-history-item,
+        .st-key-retirement-connection-read-list .retirement-history-title {
+            color:#65418A !important; -webkit-text-fill-color:#65418A !important;
+        }
+        .st-key-retirement-connection-read-list .retirement-number-circle {
+            background:#D8B4FE !important; color:#4C286B !important;
+            -webkit-text-fill-color:#4C286B !important;
+        }
+        .st-key-retirement-connection-recommend-list [class*="st-key-retirement-connection-choice-"] [data-testid="stButton"] button,
+        .st-key-retirement-connection-recommend-list [class*="st-key-retirement-connection-choice-"] [data-testid="stButton"] button *,
+        .st-key-retirement-connection-recommend-list [class*="st-key-retirement-connection-choice-"] [data-testid="stButton"] button p {
+            color:#285C36 !important; -webkit-text-fill-color:#285C36 !important;
+        }
+        /* 모바일: 좌우 순서를 유지하고 한 패널씩 좌우 스와이프 */
+        .st-key-retirement-connection-bottom > [data-testid="stVerticalBlock"] > [data-testid="stHorizontalBlock"] {
+            scroll-snap-type:x mandatory !important; overscroll-behavior-x:contain !important;
+            scrollbar-width:thin;
+        }
+        @media (max-width:640px) {
+            .st-key-retirement-connection-bottom > [data-testid="stVerticalBlock"] > [data-testid="stHorizontalBlock"] {
+                display:flex !important; flex-direction:row !important; flex-wrap:nowrap !important;
+                overflow-x:auto !important; overflow-y:hidden !important; gap:10px !important;
+                padding-bottom:5px !important; scroll-snap-type:x mandatory !important;
+                -webkit-overflow-scrolling:touch !important;
+            }
+            .st-key-retirement-connection-bottom > [data-testid="stVerticalBlock"] > [data-testid="stHorizontalBlock"] > [data-testid="stColumn"] {
+                flex:0 0 88% !important; width:88% !important; max-width:88% !important;
+                min-width:0 !important; scroll-snap-align:start !important; box-sizing:border-box !important;
+            }
+        }
+        @media (min-width:641px) {
+            .st-key-retirement-connection-bottom > [data-testid="stVerticalBlock"] > [data-testid="stHorizontalBlock"] {
+                overflow:visible !important;
+            }
+        }
+        </style>
+        """, unsafe_allow_html=True)
+
         _previous_number_html = (
             f"<span class='retirement-number-circle'>{_previous_number}</span>"
             if _previous_number else ""
@@ -5826,7 +5934,6 @@ def _show_retirement_connection_dialog():
             if st.session_state.get("_retirement_connection_search_executed", False):
                 _search_results = st.session_state.get("_retirement_connection_search_results", [])
                 if _search_results:
-                    st.caption(f"관련 자료 {len(_search_results)}건")
                     for _index, _result in enumerate(_search_results):
                         _result_label = str(_result.get("label", "")).strip()
                         _result_title = str(_result.get("title", "자료")).strip()
@@ -5835,7 +5942,7 @@ def _show_retirement_connection_dialog():
                             _result_display,
                             key=f"retirement_connection_search_title_{_index}",
                             type="tertiary",
-                            use_container_width=False,
+                            use_container_width=True,
                         ):
                             _result_key = _result.get("key")
                             _history_now = list(st.session_state.get("_retirement_explorer_history", []))
@@ -5850,9 +5957,6 @@ def _show_retirement_connection_dialog():
                                 st.session_state.pop("_retirement_explorer_source_id", None)
                             st.session_state["_retirement_connection_open"] = False
                             st.rerun()
-                        _evidence = list(_result.get("matched_topics", []))
-                        if _evidence:
-                            st.caption("연결 근거: " + " · ".join(_evidence[:5]))
                 else:
                     st.caption("일치하는 자료를 찾지 못했습니다. 다른 표현이나 핵심 단어로 다시 검색해 보세요.")
 
@@ -5860,7 +5964,6 @@ def _show_retirement_connection_dialog():
             _left, _right = st.columns(2, gap="small")
             with _left:
                 with st.container(key="retirement-connection-read-list", border=True):
-                    st.markdown("<h4 style='font-size:12px;font-weight:500;margin:0 0 9px;'>← 읽은 자료</h4>", unsafe_allow_html=True)
                     if _past_records:
                         for _record in _past_records:
                             _number = _record.get("display_label", "")
@@ -5878,7 +5981,6 @@ def _show_retirement_connection_dialog():
 
             with _right:
                 with st.container(key="retirement-connection-recommend-list", border=True):
-                    st.markdown("<h4 style='font-size:12px;font-weight:700;margin:0 0 9px;'>다음 추천 자료 →</h4>", unsafe_allow_html=True)
                     if _recommend_rows:
                         for _index, _item in enumerate(_recommend_rows):
                             _number = _item.get("display_label", "")
