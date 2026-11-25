@@ -4903,15 +4903,10 @@ def _retirement_connection_search(query):
     # 마스터 원장의 resource_id ↔ source_id를 직접 연결한다.
     # 기존 보고서 맵에는 resource_id가 없으므로, resource 레코드에서 역방향 맵을 만든다.
     _source_to_resource = {}
-    _resource_to_keys = {}
     for _resource_id, _record in _by_master_resource.items():
-        _resource_to_keys.setdefault(_resource_id, set()).add(_resource_id)
         _source_id = str(_record.get("source_id", "")).strip()
         if _source_id:
             _source_to_resource[_source_id] = _resource_id
-            _resource_to_keys[_resource_id].add(_source_id)
-    for _resource_id, _source_ids in _RETIREMENT_CSV_REPORT_LINKS.items():
-        _resource_to_keys.setdefault(_resource_id, set()).update(_source_ids)
 
     _results = []
     for _doc in _documents:
