@@ -5030,11 +5030,11 @@ def _retirement_connection_search(query):
     _results.sort(key=lambda _item: (-_item["score"], _item["title"]))
 
     # 여러 주제가 함께 든 질문은 각 주제를 대표하는 자료를 우선 한 건씩 확보한다.
-    # 검색 결과는 연결창에서 최대 3건만 간결하게 제시한다.
+    # 검색 결과는 최대 8건까지 제시해 여러 주제의 탐색 폭을 보장한다.
     _selected = []
     _selected_keys = set()
     for _topic in _direct_terms:
-        if len(_selected) >= 3:
+        if len(_selected) >= 8:
             break
         _candidate = next(
             (
@@ -5048,12 +5048,12 @@ def _retirement_connection_search(query):
             _selected.append(_candidate)
             _selected_keys.add(_candidate.get("key"))
     for _item in _results:
-        if len(_selected) >= 3:
+        if len(_selected) >= 8:
             break
         if _item.get("key") not in _selected_keys:
             _selected.append(_item)
             _selected_keys.add(_item.get("key"))
-    return _selected[:3]
+    return _selected[:8]
 
 @st.dialog("연결", width="large", dismissible=False)
 def _show_retirement_connection_dialog():
