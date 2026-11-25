@@ -4816,7 +4816,12 @@ def _retirement_connection_search_terms(query):
         _joined = _base_tokens[_index] + _base_tokens[_index + 1]
         if len(_joined) >= 3 and _joined not in _direct:
             _direct.append(_joined)
-    return {"clean": _clean, "direct": _direct, "tokens": list(_direct)}
+    return {
+        "clean": _clean,
+        "direct": _direct,
+        "base": list(_base_tokens),
+        "tokens": list(_direct),
+    }
 
 
 #--------------------------------------------------------
@@ -4840,6 +4845,35 @@ def _retirement_connection_search(query):
 
     def _compact_text(_value):
         return re.sub(r"[^가-힣A-Za-z0-9]", "", str(_value or "")).lower()
+
+    # 검색 점수용 합성 복합어와 화면에 보여줄 연결 근거를 분리한다.
+    # 사전·QA·관계에 독립 개념으로 등록된 복합어만 근거 표현으로 노출한다.
+    _known_compounds = set()
+    for _row in _dictionary["synonyms"]:
+        for _field in ("대표표현", "대체표현"):
+            _value = _compact_text(_row.get(_field, ""))
+            if len(_value) >= 3:
+                _known_compounds.add(_value)
+    for _row in _dictionary["qa"]:
+        for _field in ("핵심개념", "확장검색어"):
+            for _value in str(_row.get(_field, "")).split(";"):
+                _value = _compact_text(_value)
+                if len(_value) >= 3:
+                    _known_compounds.add(_value)
+    for _row in _dictionary["relations"]:
+        for _field in ("출발개념", "연결개념"):
+            _value = _compact_text(_row.get(_field, ""))
+            if len(_value) >= 3:
+                _known_compounds.add(_value)
+
+    _base_terms = set(_terms.get("base", _direct_terms))
+    _evidence_terms = _base_terms | {
+        _term for _term in _direct_terms
+        if _compact_text(_term) in _known_compounds
+    }
+    # '경력단절'이 잡힌 경우 구성어 '단절'은 별도 근거로 중복 표시하지 않는다.
+    if "경력단절" in _evidence_terms:
+        _evidence_terms.discard("단절")
 
     # 질문에 포함된 표현을 기준으로 동의어를 확장한다.
     for _row in _dictionary["synonyms"]:
@@ -4902,7 +4936,9 @@ def _retirement_connection_search(query):
         for _target_id in _target_ids:
             _qa_targets[_target_id] = max(_qa_targets.get(_target_id, 0.0), _strength)
             _qa_evidence.setdefault(_target_id, []).append(_qa_id)
-            _qa_coverage.setdefault(_target_id, set()).update(_overlap)
+            _qa_coverage.setdefault(_target_id, set()).update(
+                _term for _term in _overlap if _term in _evidence_terms
+            )
 
     _all_terms = []
     for _term in _direct_terms:
@@ -4972,7 +5008,7 @@ def _retirement_connection_search(query):
                 _score += _base * _weight * _multiplier
                 _matched.append(_term)
                 _match_kinds.add(_kind)
-                if _kind == "원문":
+                if _kind == "원문" and _term in _evidence_terms:
                     _matched_topics.append(_term)
 
         _doc_resource_id = str(_doc.get("resource_id", "")).strip()
