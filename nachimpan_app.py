@@ -5864,6 +5864,42 @@ def _show_retirement_connection_dialog():
             line-height:1.35 !important;
             text-align:left !important;
         }
+
+        /* A. 제목은 중앙에 두고, 대화창은 과도하게 넓어지지 않도록 제한 */
+        body:has(.st-key-retirement-connection-platform) [data-testid="stDialogContent"] {
+            box-sizing:border-box !important;
+            width:min(960px, calc(100vw - 32px)) !important;
+            max-width:min(960px, calc(100vw - 32px)) !important;
+            margin-left:auto !important;
+            margin-right:auto !important;
+        }
+        body:has(.st-key-retirement-connection-platform) .retirement-connection-native-title {
+            width:100% !important;
+            text-align:center !important;
+        }
+
+        /* C. 검색 라벨과 입력창 사이 높이에 맞춰 검색 버튼 컬럼을 아래로 내린다 */
+        body:has(.st-key-retirement-connection-platform) .st-key-retirement-connection-search [data-testid="stForm"] [data-testid="stHorizontalBlock"] {
+            align-items:flex-start !important;
+        }
+        body:has(.st-key-retirement-connection-platform) .st-key-retirement-connection-search [data-testid="stForm"] [data-testid="stHorizontalBlock"] > [data-testid="stColumn"]:last-child {
+            box-sizing:border-box !important;
+            padding-top:20px !important;
+            align-self:stretch !important;
+        }
+        body:has(.st-key-retirement-connection-platform) .st-key-retirement-connection-search [data-testid="stForm"] [data-testid="stFormSubmitButton"] {
+            margin-top:0 !important;
+            transform:translateY(0) !important;
+        }
+
+        /* E. 읽은 자료 제목 글자 크기를 추천 자료와 동일한 12px로 고정 */
+        body:has(.st-key-retirement-connection-platform) .st-key-retirement-connection-read-list [class*="st-key-retirement-connection-choice-history-"] [data-testid="stButton"] button,
+        body:has(.st-key-retirement-connection-platform) .st-key-retirement-connection-read-list [class*="st-key-retirement-connection-choice-history-"] [data-testid="stButton"] button *,
+        body:has(.st-key-retirement-connection-platform) .st-key-retirement-connection-read-list [class*="st-key-retirement-connection-choice-history-"] [data-testid="stButton"] button p {
+            font-size:12px !important;
+            line-height:1.35 !important;
+            font-weight:600 !important;
+        }
         </style>
         """, unsafe_allow_html=True)
 
