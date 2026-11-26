@@ -5509,12 +5509,6 @@ def _show_retirement_connection_dialog():
                  gap:4px; padding:6px 6px; border:2px solid {_connection_panel_color};
                  border-radius:12px; background:{_connection_panel_color}; color:#fff;
              }}
-             .st-key-retirement-top-next-clickable .retirement-top-next-number .retirement-number-circle {{
-                 width:25px; height:25px; flex-basis:25px; font-size:12px;
-             }}
-             .st-key-retirement-top-next-clickable .retirement-top-next-caption {{
-                 font-size:11px; font-weight:700; line-height:1.3; color:#fff;
-             }}
              .st-key-retirement-top-next-clickable [data-testid="stButton"] {{ width:100%; }}
              .st-key-retirement-top-next-clickable [data-testid="stButton"] button {{
                  width:100%; min-height:30px; height:auto; padding:2px 4px;
@@ -5543,13 +5537,6 @@ def _show_retirement_connection_dialog():
              .retirement-top-next-empty {{ color:#fff; font-size:13px; font-weight:700; }}
              /* 상단 3개 역은 모바일에서도 한 줄의 좌→우 흐름을 유지 */
              .st-key-retirement-top-next-clickable {{ align-items:stretch !important; justify-content:space-between !important; }}
-             .st-key-retirement-top-next-clickable .retirement-top-next-header {{
-                 display:flex !important; align-items:flex-start !important; justify-content:space-between !important;
-                 width:100% !important; gap:4px !important;
-             }}
-             .st-key-retirement-top-next-clickable .retirement-top-next-caption {{
-                 align-self:flex-start !important; text-align:right !important; margin-left:auto !important;
-             }}
              .st-key-retirement-top-next-clickable [data-testid="stButton"] {{ margin-top:auto !important; }}
              .retirement-top-arrow {{
                  display:flex !important; min-height:68px !important; height:100% !important;
@@ -5704,14 +5691,6 @@ def _show_retirement_connection_dialog():
         </style>
         """, unsafe_allow_html=True)
 
-        _previous_number_html = (
-            f"<span class='retirement-number-circle'>{_previous_number}</span>"
-            if _previous_number else ""
-        )
-        _next_number_html = (
-            f"<span class='retirement-number-circle' style='background:{_next_color};color:#fff;'>{_next_number}</span>"
-            if _next_number else ""
-        )
         # 좌우에는 보고서 버튼만 배치하고, 버튼 자체를 동일한 높이의 영역 중앙에 정렬
         st.markdown(
             (
@@ -14997,15 +14976,6 @@ st.markdown("""
 st.markdown("""
 <style>
 .retirement-top-arrow svg { max-width:38px !important; height:22px !important; }
-.st-key-retirement-top-next-clickable .retirement-top-next-header {
- display:flex !important; justify-content:flex-end !important; width:100% !important;
-}
-.st-key-retirement-top-next-clickable .retirement-top-next-caption { text-align:right !important; margin-left:auto !important; }
-.st-key-retirement-top-next-clickable [data-testid="stHorizontalBlock"] {
- display:flex !important; flex-wrap:nowrap !important; align-items:center !important; gap:6px !important; width:100% !important;
-}
-.st-key-retirement-top-next-clickable [data-testid="stColumn"]:first-child { flex:0 0 22px !important; width:22px !important; min-width:22px !important; }
-.st-key-retirement-top-next-clickable [data-testid="stColumn"]:last-child { flex:1 1 0% !important; width:0 !important; min-width:0 !important; }
 .st-key-retirement-top-next-clickable [data-testid="stButton"] button,
 .st-key-retirement-top-next-clickable [data-testid="stButton"] button *,
 .st-key-retirement-top-next-clickable [data-testid="stButton"] p {
