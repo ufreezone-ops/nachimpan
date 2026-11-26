@@ -5922,7 +5922,7 @@ body:has(.st-key-retirement-connection-platform) .st-key-retirement-connection-s
         .st-key-retirement-connection-read-list [data-testid="stButton"] button *,
         .st-key-retirement-connection-read-list [data-testid="stButton"] button p {
             width:100% !important;
-            min-height:30px !important;
+            min-height:22px !important;
             height:auto !important;
             padding:2px 1px !important;
             background:transparent !important;
