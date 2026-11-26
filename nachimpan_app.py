@@ -15641,6 +15641,16 @@ div[data-testid="stDialog"]:has(.st-key-retirement-connection-platform) [data-te
     -webkit-text-fill-color: var(--report-title-color, #1F2937) !important; font-size: 12.5px !important;
     font-weight: 750 !important; line-height: 1.35 !important; text-align: left !important; white-space: normal !important;
 }
+.st-key-retirement-connection-platform .st-key-retirement-top-previous-clickable [data-testid="stButton"] button *,
+.st-key-retirement-connection-platform .st-key-retirement-top-next-clickable [data-testid="stButton"] button *,
+.st-key-retirement-connection-platform .st-key-retirement-top-previous-clickable [data-testid="stButton"] button [data-testid="stMarkdownContainer"],
+.st-key-retirement-connection-platform .st-key-retirement-top-next-clickable [data-testid="stButton"] button [data-testid="stMarkdownContainer"],
+.st-key-retirement-connection-platform .st-key-retirement-top-previous-clickable [data-testid="stButton"] button p,
+.st-key-retirement-connection-platform .st-key-retirement-top-next-clickable [data-testid="stButton"] button p {
+    color: var(--report-title-color, #1F2937) !important;
+    -webkit-text-fill-color: var(--report-title-color, #1F2937) !important;
+    text-align: left !important;
+}
 .st-key-retirement-connection-platform .st-key-retirement-top-previous-clickable [data-testid="stButton"] button::before,
 .st-key-retirement-connection-platform .st-key-retirement-top-next-clickable [data-testid="stButton"] button::before {
     content: var(--report-number, "") !important; display: inline-flex !important; flex: 0 0 22px !important;
