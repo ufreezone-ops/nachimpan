@@ -5597,11 +5597,11 @@ def _show_retirement_connection_dialog():
                 .retirement-connection-list h4 {{ font-size:12px; }}
             }}
                           .retirement-top-arrow {{
-                 display:flex; height:100%; min-height:78px; align-items:center;
+                 display:flex; height:100%; min-height:68px; align-items:center;
                  justify-content:center; color:#222; font-size:38px; font-weight:900;
              }}
              .st-key-retirement-top-next-clickable {{
-                 min-width:0; min-height:78px; height:100%; box-sizing:border-box;
+                 min-width:0; min-height:68px; height:100%; box-sizing:border-box;
                  display:flex; flex-direction:column; align-items:center; justify-content:center;
                  gap:4px; padding:6px 6px; border:2px solid {_connection_panel_color};
                  border-radius:12px; background:{_connection_panel_color}; color:#fff;
