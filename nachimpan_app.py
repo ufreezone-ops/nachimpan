@@ -5929,7 +5929,7 @@ def _show_retirement_connection_dialog():
                             _number = _record.get("display_label", "")
                             _title = _record.get("title", "자료")
                             _color = _continent_color(_record)
-                            _choice_key = f"retirement-connection-choice-read-{_index}"
+                            _choice_key = f"retirement-connection-history-choice-{_index}"
                             with st.container(key=_choice_key):
                                 _number_col, _title_col = st.columns([0.12, 0.88], gap=None)
                                 with _number_col:
