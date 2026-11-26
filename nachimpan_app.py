@@ -5747,7 +5747,7 @@ def _show_retirement_connection_dialog():
         /* 이전·다음 보고서: 높이를 줄인 가로 탐색 바 */
         .st-key-retirement-connection-platform .st-key-retirement-top-previous-clickable [data-testid="stButton"] button,
         .st-key-retirement-connection-platform .st-key-retirement-top-next-clickable [data-testid="stButton"] button {
-            min-height:48px !important; height:auto !important; padding:7px 9px !important;
+            min-height:48px !important; height:auto !important; padding:7px 6px !important;
             border:1px solid #8DBB91 !important; border-radius:10px !important;
             background:#F5FAF5 !important; color:#285C36 !important;
             -webkit-text-fill-color:#285C36 !important; box-shadow:none !important;
@@ -15616,13 +15616,7 @@ st.markdown("""
     margin:0 !important; padding:0 !important;
 }
 
-/* 상단 좌우 버튼: 공통 버튼 규칙보다 높은 우선순위로 좌우 패딩만 조정 */
-.st-key-retirement-connection-platform .st-key-retirement-top-previous-button [data-testid="stButton"] button[kind="secondary"],
-.st-key-retirement-connection-platform .st-key-retirement-top-next-button [data-testid="stButton"] button[kind="secondary"] {
-    padding-left:6px !important;
-    padding-right:6px !important;
-    padding-inline:6px !important;
-}
+
 </style>
 """
 
