@@ -5558,9 +5558,9 @@ def _show_retirement_connection_dialog():
              .st-key-retirement-connection-read-list h4,
              .st-key-retirement-connection-recommend-list h4,
              .st-key-retirement-connection-platform .retirement-history-item,
-             .st-key-retirement-connection-platform .retirement-history-title {
+             .st-key-retirement-connection-platform .retirement-history-title {{
                  color:#222222 !important; -webkit-text-fill-color:#222222 !important;
-             }
+             }}
              .st-key-retirement-connection-platform [class*="st-key-retirement-connection-choice-"] [data-testid="stButton"] button,
              .st-key-retirement-connection-platform [class*="st-key-retirement-connection-choice-"] [data-testid="stButton"] button *,
              .st-key-retirement-connection-bottom [class*="st-key-retirement-connection-choice-"] [data-testid="stButton"] button,
