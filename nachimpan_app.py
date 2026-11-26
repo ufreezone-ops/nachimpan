@@ -16825,7 +16825,7 @@ body:has(.st-key-retirement-connection-platform) .st-key-retirement-connection-r
     width:100% !important;
     height:auto !important;
     min-height:0 !important;
-    margin:0 0 9px !important;
+    margin:0 0 16px !important;
     padding:0 0 7px !important;
     border-bottom:1px solid #AAB7AE !important;
     color:#334155 !important;
@@ -16868,10 +16868,10 @@ body:has(.st-key-retirement-connection-platform) .st-key-retirement-connection-r
     align-items:stretch !important;
     gap:7px !important;
 }
-/* [6.04.02.04] 좌우 패널 소제목과 첫 목록 행 사이 간격 통일 */
+/* [6.04.02.05] 첫 행의 별도 상단 여백은 제거하고 소제목 아래 여백으로 간격 통일 */
 body:has(.st-key-retirement-connection-platform) .st-key-retirement-connection-read-list > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"]:nth-child(2),
 body:has(.st-key-retirement-connection-platform) .st-key-retirement-connection-recommend-list > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"]:nth-child(2) {
-    margin-top:10px !important;
+    margin-top:0 !important;
 }
 </style>
 """, unsafe_allow_html=True)
