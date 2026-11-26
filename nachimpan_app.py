@@ -16544,6 +16544,79 @@ body:has(.st-key-retirement-connection-platform) [data-testid="stDialogContent"]
     line-height: 1 !important;
 }
 
+/* E-1. 읽은 자료 행을 다음 추천 자료 행과 동일한 규격으로 통일 */
+.st-key-retirement-connection-read-list [class*="st-key-retirement-connection-choice-history-"] {
+    display:block !important;
+    box-sizing:border-box !important;
+    width:100% !important;
+    margin:0 !important;
+    padding:3px 0 !important;
+    border:0 !important;
+}
+.st-key-retirement-connection-read-list [class*="st-key-retirement-connection-choice-history-"] [data-testid="stHorizontalBlock"] {
+    display:flex !important;
+    flex-wrap:nowrap !important;
+    align-items:center !important;
+    gap:7px !important;
+    width:100% !important;
+}
+.st-key-retirement-connection-read-list [class*="st-key-retirement-connection-choice-history-"] [data-testid="stColumn"]:first-child {
+    display:flex !important;
+    flex:0 0 22px !important;
+    width:22px !important;
+    min-width:22px !important;
+    align-items:center !important;
+    justify-content:center !important;
+}
+.st-key-retirement-connection-read-list [class*="st-key-retirement-connection-choice-history-"] [data-testid="stColumn"]:last-child {
+    flex:1 1 0 !important;
+    width:0 !important;
+    min-width:0 !important;
+}
+.st-key-retirement-connection-read-list [class*="st-key-retirement-connection-choice-history-"] [data-testid="stButton"] {
+    display:block !important;
+    width:100% !important;
+}
+.st-key-retirement-connection-read-list [class*="st-key-retirement-connection-choice-history-"] [data-testid="stButton"] button {
+    display:flex !important;
+    align-items:center !important;
+    justify-content:flex-start !important;
+    box-sizing:border-box !important;
+    width:100% !important;
+    min-width:0 !important;
+    min-height:22px !important;
+    height:auto !important;
+    margin:0 !important;
+    padding:0 !important;
+    border:0 !important;
+    border-radius:0 !important;
+    background:transparent !important;
+    box-shadow:none !important;
+    color:#49345F !important;
+    -webkit-text-fill-color:#49345F !important;
+    font-size:12px !important;
+    font-weight:600 !important;
+    line-height:1.35 !important;
+    text-align:left !important;
+    text-decoration:none !important;
+    white-space:normal !important;
+}
+.st-key-retirement-connection-read-list [class*="st-key-retirement-connection-choice-history-"] [data-testid="stButton"] button > div {
+    display:flex !important;
+    align-items:center !important;
+    justify-content:flex-start !important;
+    width:100% !important;
+    min-width:0 !important;
+}
+.st-key-retirement-connection-read-list [class*="st-key-retirement-connection-choice-history-"] [data-testid="stButton"] p {
+    display:block !important;
+    width:100% !important;
+    margin:0 !important;
+    padding:0 !important;
+    line-height:1.35 !important;
+    text-align:left !important;
+}
+
 /* F. 하단 버튼은 현재의 내용 기반 폭·중앙 배치를 유지 */
 .st-key-retirement-connection-close-cta {
     width: 100% !important;
