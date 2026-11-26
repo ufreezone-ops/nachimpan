@@ -5707,7 +5707,7 @@ body:has(.st-key-retirement-connection-platform) .st-key-retirement-connection-r
 /* 검색 라벨은 폼 밖, 입력창과 버튼은 같은 행에서 중앙 정렬 */
 body:has(.st-key-retirement-connection-platform) .st-key-retirement-connection-search .retirement-connection-search-label {{
     display:block !important;
-    margin:0 0 6px !important;
+    margin:0 0 14px !important;
     padding:0 !important;
     color:#244B32 !important;
     -webkit-text-fill-color:#244B32 !important;
@@ -6025,7 +6025,7 @@ body:has(.st-key-retirement-connection-platform) .st-key-retirement-connection-s
             text-align:center !important;
         }
 
-        /* C. 검색 입력창과 검색 버튼 컬럼의 상하 여백을 0으로 통일하고 중앙 정렬 */
+        /* C. 검색 입력창과 검색 버튼의 상하 여백을 0으로 통일하고 중앙 정렬 */
         body:has(.st-key-retirement-connection-platform) .st-key-retirement-connection-search [data-testid="stForm"] [data-testid="stHorizontalBlock"] {
             align-items:center !important;
         }
@@ -6035,10 +6035,20 @@ body:has(.st-key-retirement-connection-platform) .st-key-retirement-connection-s
             padding-bottom:0 !important;
             align-self:center !important;
         }
+        body:has(.st-key-retirement-connection-platform) .st-key-retirement-connection-search [data-testid="stForm"] [data-testid="stHorizontalBlock"] > [data-testid="stColumn"]:first-child [data-testid="stTextInput"],
+        body:has(.st-key-retirement-connection-platform) .st-key-retirement-connection-search [data-testid="stForm"] [data-testid="stHorizontalBlock"] > [data-testid="stColumn"]:first-child [data-testid="stTextInput"] [data-testid="stTextInputRootElement"],
+        body:has(.st-key-retirement-connection-platform) .st-key-retirement-connection-search [data-testid="stForm"] [data-testid="stHorizontalBlock"] > [data-testid="stColumn"]:first-child [data-testid="stTextInput"] input {
+            margin-top:0 !important;
+            margin-bottom:0 !important;
+            padding-top:0 !important;
+            padding-bottom:0 !important;
+        }
         body:has(.st-key-retirement-connection-platform) .st-key-retirement-connection-search [data-testid="stForm"] [data-testid="stFormSubmitButton"],
         body:has(.st-key-retirement-connection-platform) .st-key-retirement-connection-search [data-testid="stForm"] [data-testid="stFormSubmitButton"] button {
             margin-top:0 !important;
             margin-bottom:0 !important;
+            padding-top:0 !important;
+            padding-bottom:0 !important;
             transform:translateY(0) !important;
         }
 
