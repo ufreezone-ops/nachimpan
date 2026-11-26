@@ -5695,8 +5695,8 @@ def _show_retirement_connection_dialog():
         st.markdown(
             (
                 f"<style>"
-                f".st-key-retirement-top-previous-clickable {{ --report-number:'{_previous_number}'; --report-color:{_previous_color}; --report-title-color:#1F2937; --report-card-bg:#F8FAFC; }}"
-                f".st-key-retirement-top-next-clickable {{ --report-number:'{_next_number}'; --report-color:{_next_color}; --report-title-color:{'#65418A' if _next_is_read else '#1F2937'}; --report-card-bg:{'#F3E8FF' if _next_is_read else '#F8FAFC'}; }}"
+                f".st-key-retirement-top-previous-clickable {{ --report-number:'{_previous_number}'; --report-color:{_previous_color}; --report-title-color:#FFFFFF; --report-card-bg:{_connection_panel_color}; }}"
+                f".st-key-retirement-top-next-clickable {{ --report-number:'{_next_number}'; --report-color:{_next_color}; --report-title-color:#FFFFFF; --report-card-bg:{_connection_panel_color}; }}"
                 + (".st-key-retirement-top-previous-clickable [data-testid='stButton'] button::before { display:none !important; }" if not _previous_record else "")
                 + (
                     ".st-key-retirement-connection-platform .st-key-retirement-top-next-button [data-testid='stButton'] button, "
@@ -5763,7 +5763,7 @@ def _show_retirement_connection_dialog():
         # 자료실 전체 검색: 제목을 눌러 기존 자료 보기·탐색 이력 경로로 이동한다.
         with st.container(key="retirement-connection-search", border=True):
             st.markdown(
-                "<div class='retirement-connection-search-title'>자료실 전체에서 찾아보기</div>",
+                "**자료실 전체에서 찾아보기**",
                 unsafe_allow_html=True,
             )
             with st.form("retirement_connection_search_form", clear_on_submit=False):
@@ -15825,6 +15825,423 @@ div[data-testid="stDialog"]:has(.st-key-retirement-connection-platform) [data-te
     padding: 0 4px !important; border: 0 !important; border-radius: 0 !important; background: transparent !important;
     box-shadow: none !important; color: inherit !important; -webkit-text-fill-color: currentColor !important;
     font-size: 27px !important; line-height: 1 !important;
+}
+</style>
+""", unsafe_allow_html=True)
+
+
+# [6.04.02.02] 연결창 2차 통합 보정 — 실제 렌더링 우선
+st.markdown("""
+<style>
+/* A. 연결창이 열려 있을 때 실제 dialog header를 body 기준으로 포착 */
+body:has(.st-key-retirement-connection-platform) [data-testid="stDialogHeader"],
+body:has(.st-key-retirement-connection-platform) [data-testid="stDialogHeader"] > div {
+    box-sizing: border-box !important;
+    min-height: 0 !important;
+    height: auto !important;
+    padding: 7px 14px !important;
+    background: #159447 !important;
+    background-color: #159447 !important;
+    border: 0 !important;
+    border-bottom: 1px solid #11783A !important;
+}
+body:has(.st-key-retirement-connection-platform) [data-testid="stDialogHeader"] h2,
+body:has(.st-key-retirement-connection-platform) [data-testid="stDialogHeader"] h2 *,
+body:has(.st-key-retirement-connection-platform) [data-testid="stDialogHeader"] button,
+body:has(.st-key-retirement-connection-platform) [data-testid="stDialogHeader"] button * {
+    color: #FFFFFF !important;
+    -webkit-text-fill-color: #FFFFFF !important;
+    font-size: 15px !important;
+    font-weight: 800 !important;
+}
+
+/* 공통 연결 공간: 상·중·하의 배경 대비와 외곽 규격을 한 계열로 */
+.st-key-retirement-connection-platform {
+    box-sizing: border-box !important;
+    width: 100% !important;
+    padding: 9px !important;
+    border: 1px solid #B8D2BE !important;
+    border-radius: 12px !important;
+    background: #FFFFFF !important;
+}
+.st-key-retirement-connection-platform > [data-testid="stVerticalBlock"] {
+    gap: 10px !important;
+}
+
+/* B. 상단 양쪽 초록색 카드: 높이와 내용의 세로 중심을 일치 */
+.st-key-retirement-connection-platform .st-key-retirement-top-previous-clickable,
+.st-key-retirement-connection-platform .st-key-retirement-top-next-clickable {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    box-sizing: border-box !important;
+    width: 100% !important;
+    min-width: 0 !important;
+    min-height: 72px !important;
+    height: 100% !important;
+    padding: 6px 8px !important;
+    border: 1px solid #11783A !important;
+    border-radius: 10px !important;
+    background: #159447 !important;
+}
+.st-key-retirement-connection-platform .st-key-retirement-top-previous-clickable [data-testid="stButton"],
+.st-key-retirement-connection-platform .st-key-retirement-top-next-clickable [data-testid="stButton"] {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    width: 100% !important;
+    margin: 0 !important;
+}
+.st-key-retirement-connection-platform .st-key-retirement-top-previous-clickable [data-testid="stButton"] button,
+.st-key-retirement-connection-platform .st-key-retirement-top-next-clickable [data-testid="stButton"] button {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: flex-start !important;
+    box-sizing: border-box !important;
+    width: 100% !important;
+    min-width: 0 !important;
+    min-height: 58px !important;
+    height: auto !important;
+    padding: 5px 2px !important;
+    border: 0 !important;
+    border-bottom: 0 !important;
+    border-radius: 0 !important;
+    background: transparent !important;
+    background-image: none !important;
+    box-shadow: none !important;
+    color: #FFFFFF !important;
+    -webkit-text-fill-color: #FFFFFF !important;
+    font-size: 12.5px !important;
+    font-weight: 750 !important;
+    line-height: 1.35 !important;
+    text-align: left !important;
+    text-decoration: none !important;
+    white-space: normal !important;
+}
+.st-key-retirement-connection-platform .st-key-retirement-top-previous-clickable [data-testid="stButton"] button *,
+.st-key-retirement-connection-platform .st-key-retirement-top-next-clickable [data-testid="stButton"] button * {
+    color: #FFFFFF !important;
+    -webkit-text-fill-color: #FFFFFF !important;
+    text-decoration: none !important;
+}
+.st-key-retirement-connection-platform .st-key-retirement-top-previous-clickable [data-testid="stButton"] button::before,
+.st-key-retirement-connection-platform .st-key-retirement-top-next-clickable [data-testid="stButton"] button::before {
+    background: var(--report-color, #527B60) !important;
+}
+.st-key-retirement-connection-platform .st-key-retirement-top-previous-clickable [data-testid="stButton"] button:disabled {
+    opacity: .55 !important;
+}
+
+/* C. 검색 안내는 독립된 블록, 입력창은 다음 행에 배치 */
+.st-key-retirement-connection-search {
+    display: block !important;
+    box-sizing: border-box !important;
+    width: 100% !important;
+    margin: 0 !important;
+    padding: 10px 11px !important;
+    border: 1px solid #B8D2BE !important;
+    border-radius: 10px !important;
+    background: #F5F8F5 !important;
+}
+.st-key-retirement-connection-search > [data-testid="stVerticalBlock"] {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 8px !important;
+}
+.st-key-retirement-connection-search [data-testid="stElementContainer"]:has(.retirement-connection-search-title),
+.st-key-retirement-connection-search [data-testid="stElementContainer"]:has([data-testid="stMarkdownContainer"]) {
+    position: relative !important;
+    display: block !important;
+    flex: 0 0 auto !important;
+    width: 100% !important;
+    min-height: 0 !important;
+}
+.st-key-retirement-connection-search .retirement-connection-search-title,
+.st-key-retirement-connection-search [data-testid="stMarkdownContainer"] p {
+    position: static !important;
+    display: block !important;
+    height: auto !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    color: #244B32 !important;
+    -webkit-text-fill-color: #244B32 !important;
+    font-size: 13px !important;
+    font-weight: 800 !important;
+    line-height: 1.45 !important;
+    text-decoration: none !important;
+}
+.st-key-retirement-connection-search [data-testid="stForm"] {
+    display: block !important;
+    position: relative !important;
+    width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    border: 0 !important;
+    background: transparent !important;
+}
+.st-key-retirement-connection-search [data-testid="stForm"] [data-testid="stHorizontalBlock"] {
+    display: flex !important;
+    flex-wrap: nowrap !important;
+    align-items: center !important;
+    gap: 8px !important;
+    width: 100% !important;
+}
+.st-key-retirement-connection-search [data-testid="stForm"] [data-testid="stColumn"]:first-child {
+    flex: 1 1 0 !important;
+    width: 0 !important;
+    min-width: 0 !important;
+}
+.st-key-retirement-connection-search [data-testid="stForm"] [data-testid="stColumn"]:last-child {
+    flex: 0 0 auto !important;
+    width: auto !important;
+    min-width: 0 !important;
+}
+.st-key-retirement-connection-search [data-testid="stTextInput"] {
+    width: 100% !important;
+    margin: 0 !important;
+}
+.st-key-retirement-connection-search [data-testid="stTextInput"] input {
+    box-sizing: border-box !important;
+    width: 100% !important;
+    min-height: 38px !important;
+    height: 38px !important;
+    padding: 5px 10px !important;
+    border: 1px solid #718A78 !important;
+    border-radius: 8px !important;
+    background: #FFFFFF !important;
+    color: #1F2937 !important;
+    -webkit-text-fill-color: #1F2937 !important;
+    font-size: 13px !important;
+}
+.st-key-retirement-connection-search [data-testid="stFormSubmitButton"] {
+    display: inline-flex !important;
+    width: auto !important;
+    flex: 0 0 auto !important;
+}
+.st-key-retirement-connection-search [data-testid="stFormSubmitButton"] button {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    width: auto !important;
+    min-width: 60px !important;
+    max-width: none !important;
+    min-height: 38px !important;
+    height: 38px !important;
+    padding: 5px 14px !important;
+    border: 1px solid #C2410C !important;
+    border-radius: 8px !important;
+    background: #EA580C !important;
+    background-color: #EA580C !important;
+    color: #FFFFFF !important;
+    -webkit-text-fill-color: #FFFFFF !important;
+    font-size: 13px !important;
+    font-weight: 800 !important;
+    white-space: nowrap !important;
+}
+.st-key-retirement-connection-search [data-testid="stFormSubmitButton"] button * {
+    color: #FFFFFF !important;
+    -webkit-text-fill-color: #FFFFFF !important;
+    text-decoration: none !important;
+}
+
+/* D. 검색 결과 버튼은 흰 바탕과 분리되는 옅은 녹색 행, 제목은 짙은 글자 */
+.st-key-retirement-connection-search [class*="st-key-retirement-connection-search-result-"] {
+    display: block !important;
+    width: 100% !important;
+    margin: 2px 0 !important;
+    padding: 2px 5px !important;
+    border-radius: 7px !important;
+    background: #EDF5EF !important;
+}
+.st-key-retirement-connection-search [class*="st-key-retirement-connection-search-result-"] [data-testid="stButton"] {
+    display: block !important;
+    width: 100% !important;
+}
+.st-key-retirement-connection-search [class*="st-key-retirement-connection-search-result-"] [data-testid="stButton"] button,
+.st-key-retirement-connection-search [class*="st-key-retirement-connection-search-result-"] [data-testid="stButton"] button *,
+.st-key-retirement-connection-search [class*="st-key-retirement-connection-search-result-"] [data-testid="stButton"] button p,
+.st-key-retirement-connection-search [class*="st-key-retirement-connection-search-result-"] [data-testid="stButton"] button [data-testid="stMarkdownContainer"] {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: flex-start !important;
+    box-sizing: border-box !important;
+    width: 100% !important;
+    min-height: 26px !important;
+    height: auto !important;
+    margin: 0 !important;
+    padding: 2px 0 !important;
+    border: 0 !important;
+    border-bottom: 0 !important;
+    border-radius: 0 !important;
+    background: transparent !important;
+    background-image: none !important;
+    box-shadow: none !important;
+    color: #24352A !important;
+    -webkit-text-fill-color: #24352A !important;
+    font-size: 12px !important;
+    font-weight: 650 !important;
+    line-height: 1.35 !important;
+    text-align: left !important;
+    text-decoration: none !important;
+    white-space: normal !important;
+}
+
+/* E. 좌우 목록의 실제 행·글자 크기·간격 통일, 밑줄 장식 제거 */
+.st-key-retirement-connection-bottom .st-key-retirement-connection-read-list,
+.st-key-retirement-connection-bottom .st-key-retirement-connection-recommend-list {
+    box-sizing: border-box !important;
+    width: 100% !important;
+    min-width: 0 !important;
+    height: 100% !important;
+    padding: 9px !important;
+    border-radius: 10px !important;
+}
+.st-key-retirement-connection-bottom .st-key-retirement-connection-read-list > [data-testid="stVerticalBlock"],
+.st-key-retirement-connection-bottom .st-key-retirement-connection-recommend-list > [data-testid="stVerticalBlock"] {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 5px !important;
+}
+.st-key-retirement-connection-read-list .retirement-connection-panel-title,
+.st-key-retirement-connection-recommend-list .retirement-connection-panel-title {
+    margin: 0 0 4px !important;
+    padding: 0 0 5px !important;
+    border: 0 !important;
+    border-bottom: 1px solid rgba(60,75,65,.22) !important;
+    font-size: 12px !important;
+    font-weight: 850 !important;
+    line-height: 1.35 !important;
+}
+.st-key-retirement-connection-read-list .retirement-history-item {
+    display: flex !important;
+    align-items: center !important;
+    gap: 7px !important;
+    width: 100% !important;
+    margin: 0 !important;
+    padding: 3px 0 !important;
+    border: 0 !important;
+    font-size: 12px !important;
+    line-height: 1.35 !important;
+    text-decoration: none !important;
+}
+.st-key-retirement-connection-read-list .retirement-history-title {
+    display: block !important;
+    min-width: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    font-size: 12px !important;
+    line-height: 1.35 !important;
+    text-decoration: none !important;
+}
+.st-key-retirement-connection-recommend-list [class*="st-key-retirement-connection-choice-"] {
+    display: block !important;
+    width: 100% !important;
+    margin: 0 !important;
+    padding: 3px 0 !important;
+    border: 0 !important;
+}
+.st-key-retirement-connection-recommend-list [class*="st-key-retirement-connection-choice-"] [data-testid="stButton"],
+.st-key-retirement-connection-recommend-list [class*="st-key-retirement-connection-choice-"] [data-testid="stButton"] button {
+    display: block !important;
+    width: 100% !important;
+    margin: 0 !important;
+}
+.st-key-retirement-connection-recommend-list [class*="st-key-retirement-connection-choice-"] [data-testid="stButton"] button,
+.st-key-retirement-connection-recommend-list [class*="st-key-retirement-connection-choice-"] [data-testid="stButton"] button *,
+.st-key-retirement-connection-recommend-list [class*="st-key-retirement-connection-choice-"] [data-testid="stButton"] button p {
+    box-sizing: border-box !important;
+    min-height: 22px !important;
+    height: auto !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    border: 0 !important;
+    border-bottom: 0 !important;
+    background: transparent !important;
+    background-image: none !important;
+    box-shadow: none !important;
+    color: #26332A !important;
+    -webkit-text-fill-color: #26332A !important;
+    font-size: 12px !important;
+    font-weight: 600 !important;
+    line-height: 1.35 !important;
+    text-align: left !important;
+    text-decoration: none !important;
+    white-space: normal !important;
+}
+.st-key-retirement-connection-bottom button,
+.st-key-retirement-connection-bottom button *,
+.st-key-retirement-connection-search button,
+.st-key-retirement-connection-search button * {
+    text-decoration: none !important;
+}
+
+/* F. 버튼 두 개는 실제 가로 행 안에서 내용 폭만 차지하도록 */
+.st-key-retirement-connection-close-cta {
+    width: 100% !important;
+    margin: 4px 0 0 !important;
+}
+.st-key-retirement-connection-close-cta [data-testid="stHorizontalBlock"] {
+    display: flex !important;
+    flex-direction: row !important;
+    flex-wrap: nowrap !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 14px !important;
+    width: 100% !important;
+    margin: 0 auto !important;
+}
+.st-key-retirement-connection-close-cta [data-testid="stColumn"] {
+    display: flex !important;
+    flex: 0 0 auto !important;
+    width: auto !important;
+    min-width: 0 !important;
+    justify-content: center !important;
+}
+.st-key-retirement-connection-close-cta .st-key-retirement_connection_end,
+.st-key-retirement-connection-close-cta .st-key-retirement_connection_open_stats,
+.st-key-retirement-connection-close-cta .st-key-retirement_connection_end [data-testid="stButton"],
+.st-key-retirement-connection-close-cta .st-key-retirement_connection_open_stats [data-testid="stButton"] {
+    display: inline-flex !important;
+    width: max-content !important;
+    min-width: 0 !important;
+    max-width: none !important;
+    justify-content: center !important;
+}
+.st-key-retirement-connection-close-cta .st-key-retirement_connection_end [data-testid="stButton"] button {
+    box-sizing: border-box !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    width: max-content !important;
+    min-width: 0 !important;
+    min-height: 2.4rem !important;
+    height: 2.4rem !important;
+    padding: 5.6px !important;
+    border: 6px solid #159447 !important;
+    border-radius: 999px !important;
+    background: #FFFFFF !important;
+    color: #000000 !important;
+    -webkit-text-fill-color: #000000 !important;
+    font-size: 14.4px !important;
+    font-weight: 850 !important;
+    white-space: nowrap !important;
+}
+.st-key-retirement-connection-close-cta .st-key-retirement_connection_open_stats [data-testid="stButton"] button {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    width: max-content !important;
+    min-width: 0 !important;
+    min-height: 2.4rem !important;
+    height: 2.4rem !important;
+    padding: 0 4px !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    background: transparent !important;
+    box-shadow: none !important;
+    font-size: 27px !important;
+    line-height: 1 !important;
 }
 </style>
 """, unsafe_allow_html=True)
