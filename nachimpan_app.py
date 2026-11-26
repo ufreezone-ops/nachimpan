@@ -16868,6 +16868,11 @@ body:has(.st-key-retirement-connection-platform) .st-key-retirement-connection-r
     align-items:stretch !important;
     gap:7px !important;
 }
+/* [6.04.02.04] 좌우 패널 소제목과 첫 목록 행 사이 간격 통일 */
+body:has(.st-key-retirement-connection-platform) .st-key-retirement-connection-read-list > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"]:nth-child(2),
+body:has(.st-key-retirement-connection-platform) .st-key-retirement-connection-recommend-list > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"]:nth-child(2) {
+    margin-top:10px !important;
+}
 </style>
 """, unsafe_allow_html=True)
 
