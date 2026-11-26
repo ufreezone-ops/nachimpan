@@ -6025,17 +6025,20 @@ body:has(.st-key-retirement-connection-platform) .st-key-retirement-connection-s
             text-align:center !important;
         }
 
-        /* C. 검색 라벨과 입력창 사이 높이에 맞춰 검색 버튼 컬럼을 아래로 내린다 */
+        /* C. 검색 입력창과 검색 버튼 컬럼의 상하 여백을 0으로 통일하고 중앙 정렬 */
         body:has(.st-key-retirement-connection-platform) .st-key-retirement-connection-search [data-testid="stForm"] [data-testid="stHorizontalBlock"] {
-            align-items:flex-start !important;
+            align-items:center !important;
         }
-        body:has(.st-key-retirement-connection-platform) .st-key-retirement-connection-search [data-testid="stForm"] [data-testid="stHorizontalBlock"] > [data-testid="stColumn"]:last-child {
+        body:has(.st-key-retirement-connection-platform) .st-key-retirement-connection-search [data-testid="stForm"] [data-testid="stHorizontalBlock"] > [data-testid="stColumn"] {
             box-sizing:border-box !important;
-            padding-top:20px !important;
-            align-self:stretch !important;
+            padding-top:0 !important;
+            padding-bottom:0 !important;
+            align-self:center !important;
         }
-        body:has(.st-key-retirement-connection-platform) .st-key-retirement-connection-search [data-testid="stForm"] [data-testid="stFormSubmitButton"] {
+        body:has(.st-key-retirement-connection-platform) .st-key-retirement-connection-search [data-testid="stForm"] [data-testid="stFormSubmitButton"],
+        body:has(.st-key-retirement-connection-platform) .st-key-retirement-connection-search [data-testid="stForm"] [data-testid="stFormSubmitButton"] button {
             margin-top:0 !important;
+            margin-bottom:0 !important;
             transform:translateY(0) !important;
         }
 
