@@ -16617,6 +16617,17 @@ body:has(.st-key-retirement-connection-platform) [data-testid="stDialogContent"]
     text-align:left !important;
 }
 
+/* E-2. 읽은 자료 제목 p의 불필요한 30px 높이 제한 제거 */
+.st-key-retirement-connection-read-list [class*="st-key-retirement-connection-choice-history-"] [data-testid="stButton"] button p {
+    height:auto !important;
+    min-height:0 !important;
+    max-height:none !important;
+    margin:0 !important;
+    padding:0 !important;
+    line-height:1.35 !important;
+    align-self:center !important;
+}
+
 /* F. 하단 버튼은 현재의 내용 기반 폭·중앙 배치를 유지 */
 .st-key-retirement-connection-close-cta {
     width: 100% !important;
