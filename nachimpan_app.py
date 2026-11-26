@@ -5094,7 +5094,6 @@ def _retirement_connection_search(query):
 @st.dialog(" ", width="large", dismissible=False)
 def _show_retirement_connection_dialog():
     st.markdown("<div class=\"retirement-connection-native-title\">연결</div>", unsafe_allow_html=True)
-    """읽은 보고서 이력과 다음 추천 보고서를 좌우로 보여주는 연결창."""
     _by_source, _by_resource, _by_legacy = _nachimpan_master_resource_maps()
     _history = list(st.session_state.get("_retirement_explorer_history", []))
     _source_id = st.session_state.get("_retirement_explorer_source_id")
@@ -5689,6 +5688,101 @@ def _show_retirement_connection_dialog():
                 overflow:visible !important;
             }
         }
+
+        /* 최종 화면 보정: 모달과 안내판은 검정 배경을 사용하지 않는다 */
+        body:has(.st-key-retirement-connection-platform) [data-testid="stDialog"],
+        body:has(.st-key-retirement-connection-platform) [data-testid="stDialogContent"] {
+            background:#FFFFFF !important;
+            color:#1F2937 !important;
+        }
+        body:has(.st-key-retirement-connection-platform) .st-key-retirement-connection-platform {
+            background:#FFFFFF !important;
+            color:#1F2937 !important;
+        }
+        body:has(.st-key-retirement-connection-platform) .retirement-connection-native-title {
+            margin-bottom:12px !important;
+            background:#F3F7F4 !important;
+            color:#244B32 !important;
+            -webkit-text-fill-color:#244B32 !important;
+        }
+        /* 상단 카드 제목은 녹색 카드 위에서 흰색으로 확실히 표시 */
+        .st-key-retirement-connection-platform .st-key-retirement-top-previous-clickable [data-testid="stButton"] button,
+        .st-key-retirement-connection-platform .st-key-retirement-top-next-clickable [data-testid="stButton"] button,
+        .st-key-retirement-connection-platform .st-key-retirement-top-previous-clickable [data-testid="stButton"] button *,
+        .st-key-retirement-connection-platform .st-key-retirement-top-next-clickable [data-testid="stButton"] button *,
+        .st-key-retirement-connection-platform .st-key-retirement-top-previous-clickable [data-testid="stButton"] button p,
+        .st-key-retirement-connection-platform .st-key-retirement-top-next-clickable [data-testid="stButton"] button p {
+            color:#FFFFFF !important;
+            -webkit-text-fill-color:#FFFFFF !important;
+            opacity:1 !important;
+            visibility:visible !important;
+        }
+        .st-key-retirement-connection-platform .st-key-retirement-top-previous-clickable [data-testid="stButton"] button::before,
+        .st-key-retirement-connection-platform .st-key-retirement-top-next-clickable [data-testid="stButton"] button::before {
+            display:inline-flex !important;
+            content:var(--report-number, "") !important;
+            background:var(--report-color, #527B60) !important;
+            color:#FFFFFF !important;
+            -webkit-text-fill-color:#FFFFFF !important;
+        }
+        /* 검색 버튼은 라벨을 포함한 입력 위젯의 중심선에 맞춘다 */
+        .st-key-retirement-connection-search [data-testid="stForm"] [data-testid="stHorizontalBlock"] {
+            align-items:center !important;
+        }
+        .st-key-retirement-connection-search [data-testid="stFormSubmitButton"] {
+            align-self:center !important;
+            transform:translateY(-8px) !important;
+        }
+        .st-key-retirement-connection-search [data-testid="stFormSubmitButton"] button {
+            min-height:38px !important;
+            height:38px !important;
+        }
+        /* 하단 목록은 좌우 모두 같은 행 구조·간격을 사용한다 */
+        .st-key-retirement-connection-read-list > [data-testid="stVerticalBlock"],
+        .st-key-retirement-connection-recommend-list > [data-testid="stVerticalBlock"] {
+            gap:10px !important;
+        }
+        .st-key-retirement-connection-read-list .retirement-number-circle,
+        .st-key-retirement-connection-recommend-list .retirement-number-circle {
+            background:var(--retirement-number-color, #527B60) !important;
+            color:#FFFFFF !important;
+            -webkit-text-fill-color:#FFFFFF !important;
+        }
+        .st-key-retirement-connection-read-list [class*="st-key-retirement-connection-choice-"],
+        .st-key-retirement-connection-recommend-list [class*="st-key-retirement-connection-choice-"] {
+            padding:8px 1px !important;
+            border-bottom:1px solid rgba(34,34,34,.16) !important;
+        }
+        .st-key-retirement-connection-read-list [data-testid="stButton"] button,
+        .st-key-retirement-connection-read-list [data-testid="stButton"] button *,
+        .st-key-retirement-connection-read-list [data-testid="stButton"] button p {
+            width:100% !important;
+            min-height:30px !important;
+            height:auto !important;
+            padding:2px 1px !important;
+            background:transparent !important;
+            border:0 !important;
+            box-shadow:none !important;
+            color:#65418A !important;
+            -webkit-text-fill-color:#65418A !important;
+            font-size:12px !important;
+            font-weight:600 !important;
+            line-height:1.4 !important;
+            text-align:left !important;
+            white-space:normal !important;
+        }
+        .st-key-retirement-connection-read-list [data-testid="stHorizontalBlock"],
+        .st-key-retirement-connection-recommend-list [data-testid="stHorizontalBlock"] {
+            align-items:center !important;
+            gap:7px !important;
+        }
+        .st-key-retirement-connection-bottom {
+            margin-top:12px !important;
+        }
+        .st-key-retirement-connection-read-list .retirement-connection-panel-title,
+        .st-key-retirement-connection-recommend-list .retirement-connection-panel-title {
+            margin-bottom:12px !important;
+        }
         </style>
         """, unsafe_allow_html=True)
 
@@ -5831,17 +5925,36 @@ def _show_retirement_connection_dialog():
                 with st.container(key="retirement-connection-read-list", border=True):
                     st.markdown("<div class='retirement-connection-panel-title'>읽은 자료 목록</div>", unsafe_allow_html=True)
                     if _past_records:
-                        for _record in _past_records:
+                        for _index, _record in enumerate(_past_records):
                             _number = _record.get("display_label", "")
                             _title = _record.get("title", "자료")
                             _color = _continent_color(_record)
-                            _csv_class = " retirement-csv-title-clamp" if _record.get("file_format", "").upper() == "CSV" else ""
-                            st.markdown(
-                                f"<div class='retirement-history-item'>"
-                                f"<span class='retirement-number-circle' style='--retirement-number-color:{_color};'>"
-                                f"{_number}</span><span class='retirement-history-title{_csv_class}'>{_title}</span></div>",
-                                unsafe_allow_html=True,
-                            )
+                            _choice_key = f"retirement-connection-choice-read-{_index}"
+                            with st.container(key=_choice_key):
+                                _number_col, _title_col = st.columns([0.12, 0.88], gap=None)
+                                with _number_col:
+                                    st.markdown(
+                                        f"<span class='retirement-number-circle' style='--retirement-number-color:{_color};'>{_number}</span>",
+                                        unsafe_allow_html=True,
+                                    )
+                                with _title_col:
+                                    if st.button(
+                                        _title,
+                                        key=f"retirement_connection_read_{_index}",
+                                        use_container_width=True,
+                                        type="secondary",
+                                    ):
+                                        _record_key = _record.get("source_id") or _record.get("resource_id")
+                                        if _record_key in _history:
+                                            st.session_state["_retirement_explorer_history"] = _history[:_history.index(_record_key) + 1]
+                                        if _record.get("resource_type") == "보고서":
+                                            st.session_state["_retirement_explorer_source_id"] = _record.get("source_id")
+                                            st.session_state.pop("_retirement_explorer_resource_id", None)
+                                        else:
+                                            st.session_state["_retirement_explorer_resource_id"] = _record.get("resource_id")
+                                            st.session_state.pop("_retirement_explorer_source_id", None)
+                                        st.session_state["_retirement_connection_open"] = False
+                                        st.rerun()
                     else:
                         st.caption("아직 읽은 자료가 없습니다.")
 
