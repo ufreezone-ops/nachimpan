@@ -5444,10 +5444,6 @@ def _show_retirement_connection_dialog():
             }}
             {_previous_csv_css}
             {_next_csv_css}
-            .retirement-recommendation-score {{
-                color:inherit; opacity:.82; font-size:11px; line-height:1.25;
-                margin:1px 0 0 0; text-align:left;
-            }}
             /* 오른쪽 추천 항목도 왼쪽 읽은 보고서와 같은 한 줄 행 형식으로 표시 */
             .st-key-retirement-connection-platform [class*="st-key-retirement-connection-choice-"],
             .st-key-retirement-connection-platform [class*="st-key-retirement-connection-choice-"] {{
