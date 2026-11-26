@@ -5690,7 +5690,12 @@ def _show_retirement_connection_dialog():
         }
 
         /* 최종 화면 보정: 모달과 안내판은 검정 배경을 사용하지 않는다 */
-        body:has(.st-key-retirement-connection-platform) [data-testid="stDialog"],
+        /* 모달 바깥은 반투명 오버레이로 두어 뒤의 나침반 화면이 비치게 한다 */
+        body:has(.st-key-retirement-connection-platform) [data-testid="stDialog"] {
+            background:rgba(15,23,42,.32) !important;
+            color:#1F2937 !important;
+        }
+        /* 실제 연결창 본문만 흰색으로 유지 */
         body:has(.st-key-retirement-connection-platform) [data-testid="stDialogContent"] {
             background:#FFFFFF !important;
             color:#1F2937 !important;
@@ -5704,6 +5709,18 @@ def _show_retirement_connection_dialog():
             background:#F3F7F4 !important;
             color:#244B32 !important;
             -webkit-text-fill-color:#244B32 !important;
+        }
+        /* 상단 카드는 흰색 제목과 대비되도록 짙은 녹색 배경으로 통일 */
+        body:has(.st-key-retirement-connection-platform) .st-key-retirement-top-previous-clickable,
+        body:has(.st-key-retirement-connection-platform) .st-key-retirement-top-next-clickable {
+            background:#285C36 !important;
+            border-color:#1B4332 !important;
+        }
+        body:has(.st-key-retirement-connection-platform) .st-key-retirement-top-previous-clickable [data-testid="stButton"] button,
+        body:has(.st-key-retirement-connection-platform) .st-key-retirement-top-next-clickable [data-testid="stButton"] button {
+            background:transparent !important;
+            border:0 !important;
+            box-shadow:none !important;
         }
         /* 상단 카드 제목은 녹색 카드 위에서 흰색으로 확실히 표시 */
         .st-key-retirement-connection-platform .st-key-retirement-top-previous-clickable [data-testid="stButton"] button,
@@ -5731,7 +5748,8 @@ def _show_retirement_connection_dialog():
         }
         .st-key-retirement-connection-search [data-testid="stFormSubmitButton"] {
             align-self:center !important;
-            transform:translateY(-8px) !important;
+            /* 라벨과 입력창을 합친 높이의 중앙, 즉 두 요소 사이에 버튼을 둔다 */
+            transform:translateY(0) !important;
         }
         .st-key-retirement-connection-search [data-testid="stFormSubmitButton"] button {
             min-height:38px !important;
@@ -5782,6 +5800,69 @@ def _show_retirement_connection_dialog():
         .st-key-retirement-connection-read-list .retirement-connection-panel-title,
         .st-key-retirement-connection-recommend-list .retirement-connection-panel-title {
             margin-bottom:12px !important;
+        }
+
+        /* 읽은 자료 행도 추천 자료와 같은 일반 제목·번호·구분선 구조로 표시 */
+        .st-key-retirement-connection-read-list [class*="st-key-retirement-connection-choice-history-"] {
+            box-sizing:border-box !important;
+            width:100% !important;
+            margin:0 !important;
+            padding:8px 1px !important;
+            border:0 !important;
+            border-bottom:1px solid rgba(34,34,34,.16) !important;
+            background:transparent !important;
+        }
+        .st-key-retirement-connection-read-list [class*="st-key-retirement-connection-choice-history-"] [data-testid="stHorizontalBlock"] {
+            display:flex !important;
+            flex-wrap:nowrap !important;
+            align-items:center !important;
+            gap:7px !important;
+            width:100% !important;
+        }
+        .st-key-retirement-connection-read-list [class*="st-key-retirement-connection-choice-history-"] [data-testid="stColumn"]:first-child {
+            display:flex !important;
+            flex:0 0 22px !important;
+            width:22px !important;
+            min-width:22px !important;
+            align-items:center !important;
+            justify-content:center !important;
+        }
+        .st-key-retirement-connection-read-list [class*="st-key-retirement-connection-choice-history-"] [data-testid="stColumn"]:last-child {
+            flex:1 1 0 !important;
+            width:0 !important;
+            min-width:0 !important;
+        }
+        .st-key-retirement-connection-read-list [class*="st-key-retirement-connection-choice-history-"] [data-testid="stButton"],
+        .st-key-retirement-connection-read-list [class*="st-key-retirement-connection-choice-history-"] [data-testid="stButton"] button {
+            display:flex !important;
+            box-sizing:border-box !important;
+            width:100% !important;
+            min-width:0 !important;
+            min-height:22px !important;
+            height:auto !important;
+            margin:0 !important;
+            padding:0 !important;
+            border:0 !important;
+            border-radius:0 !important;
+            background:transparent !important;
+            box-shadow:none !important;
+            color:#65418A !important;
+            -webkit-text-fill-color:#65418A !important;
+            font-size:12px !important;
+            font-weight:600 !important;
+            line-height:1.35 !important;
+            text-align:left !important;
+            white-space:normal !important;
+        }
+        .st-key-retirement-connection-read-list [class*="st-key-retirement-connection-choice-history-"] [data-testid="stButton"] button *,
+        .st-key-retirement-connection-read-list [class*="st-key-retirement-connection-choice-history-"] [data-testid="stButton"] button p {
+            width:100% !important;
+            margin:0 !important;
+            padding:0 !important;
+            color:#65418A !important;
+            -webkit-text-fill-color:#65418A !important;
+            line-height:1.35 !important;
+            text-align:left !important;
         }
         </style>
         """, unsafe_allow_html=True)
@@ -5929,7 +6010,7 @@ def _show_retirement_connection_dialog():
                             _number = _record.get("display_label", "")
                             _title = _record.get("title", "자료")
                             _color = _continent_color(_record)
-                            _choice_key = f"retirement-connection-history-choice-{_index}"
+                            _choice_key = f"retirement-connection-choice-history-{_index}"
                             with st.container(key=_choice_key):
                                 _number_col, _title_col = st.columns([0.12, 0.88], gap=None)
                                 with _number_col:
@@ -5942,7 +6023,7 @@ def _show_retirement_connection_dialog():
                                         _title,
                                         key=f"retirement_connection_read_{_index}",
                                         use_container_width=True,
-                                        type="secondary",
+                                        type="tertiary",
                                     ):
                                         _record_key = _record.get("source_id") or _record.get("resource_id")
                                         if _record_key in _history:
