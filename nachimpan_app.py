@@ -15650,6 +15650,9 @@ div[data-testid="stDialog"]:has(.st-key-retirement-connection-platform) [data-te
     font-weight: 850 !important; line-height: 1 !important; white-space: nowrap !important;
 }
 .st-key-retirement-connection-platform .st-key-retirement-top-previous-clickable [data-testid="stButton"] button:disabled { opacity: .55 !important; }
+.st-key-retirement-connection-platform .st-key-retirement-top-previous-clickable [data-testid="stButton"] button:disabled::before {
+    display: none !important;
+}
 .st-key-retirement-connection-platform .retirement-top-arrow {
     display: flex !important; align-items: center !important; justify-content: center !important;
     min-height: 68px !important; height: 100% !important;
