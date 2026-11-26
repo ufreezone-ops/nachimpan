@@ -15699,7 +15699,7 @@ st.markdown("""
 
 
 # 상단 이전/다음 보고서: 바깥 글상자 높이를 기준으로 내부 버튼을 수직 중앙정렬
-st.markdown("""
+"""
 <style>
 /* 좌우 바깥 글상자: 같은 높이와 동일한 내부 기준선 */
 .st-key-retirement-top-previous-clickable,
@@ -15815,8 +15815,21 @@ st.markdown("""
     stroke:none !important;
     stroke-width:0 !important;
 }
+
+/* 모바일에서는 앞서 정의한 32px 화살표 규격을 후순위 선언에 빼앗기지 않도록 복원 */
+@media (max-width:640px) {
+    .st-key-retirement-connection-platform .retirement-top-arrow svg {
+        width:16px !important;
+        min-width:16px !important;
+        max-width:16px !important;
+        height:32px !important;
+        min-height:32px !important;
+        margin:auto !important;
+        transform:none !important;
+    }
+}
 </style>
-""", unsafe_allow_html=True)
+"""
 
 # 대출 원리금 소제목+나침반: 하나의 버튼 안에 함께 표시
 st.markdown("""
