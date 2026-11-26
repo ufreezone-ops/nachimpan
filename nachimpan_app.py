@@ -6035,6 +6035,13 @@ body:has(.st-key-retirement-connection-platform) .st-key-retirement-connection-s
             padding-bottom:0 !important;
             align-self:center !important;
         }
+        /* 접힌 검색 라벨이 남기는 하단 여백 제거: 입력창의 불필요한 세로 오프셋 방지 */
+        body:has(.st-key-retirement-connection-platform) .st-key-retirement-connection-search [data-testid="stForm"] [data-testid="stHorizontalBlock"] > [data-testid="stColumn"]:first-child [data-testid="stWidgetLabel"] {
+            margin-top:0 !important;
+            margin-bottom:0 !important;
+            padding-top:0 !important;
+            padding-bottom:0 !important;
+        }
         body:has(.st-key-retirement-connection-platform) .st-key-retirement-connection-search [data-testid="stForm"] [data-testid="stHorizontalBlock"] > [data-testid="stColumn"]:first-child [data-testid="stTextInput"],
         body:has(.st-key-retirement-connection-platform) .st-key-retirement-connection-search [data-testid="stForm"] [data-testid="stHorizontalBlock"] > [data-testid="stColumn"]:first-child [data-testid="stTextInput"] [data-testid="stTextInputRootElement"],
         body:has(.st-key-retirement-connection-platform) .st-key-retirement-connection-search [data-testid="stForm"] [data-testid="stHorizontalBlock"] > [data-testid="stColumn"]:first-child [data-testid="stTextInput"] input {
