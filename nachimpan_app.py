@@ -15411,14 +15411,11 @@ st.markdown("""
 
 
 # 연결창 미세 조정: 상단 카드 높이 고정 및 하단 추천 글자 세부 통일
-st.markdown("""
+"""
 <style>
 /* 상단 좌우 카드: 제목 줄 수와 관계없이 동일한 외곽 높이 */
 .st-key-retirement-top-previous-clickable,
 .st-key-retirement-top-next-clickable {
-    height:68px !important;
-    min-height:68px !important;
-    max-height:68px !important;
     flex:0 0 68px !important;
     box-sizing:border-box !important;
 }
@@ -15485,7 +15482,7 @@ st.markdown("""
     margin:0 !important;
 }
 </style>
-""", unsafe_allow_html=True)
+"""
 
 
 # 연결창 상단 버튼의 캡션 아래 중앙 배치 및 하단 실제 HTML 요소 직접 보정
