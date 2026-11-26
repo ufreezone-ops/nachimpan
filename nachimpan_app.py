@@ -16628,6 +16628,13 @@ body:has(.st-key-retirement-connection-platform) [data-testid="stDialogContent"]
     align-self:center !important;
 }
 
+/* E-3. 읽은 자료 제목의 Markdown 컨테이너에 남은 기본 30px 최소 높이 해제 */
+.st-key-retirement-connection-read-list [class*="st-key-retirement-connection-choice-history-"] [data-testid="stMarkdownContainer"] {
+    height:auto !important;
+    min-height:0 !important;
+    max-height:none !important;
+}
+
 /* F. 하단 버튼은 현재의 내용 기반 폭·중앙 배치를 유지 */
 .st-key-retirement-connection-close-cta {
     width: 100% !important;
