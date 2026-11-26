@@ -15208,7 +15208,7 @@ st.markdown("""
 
  
 # 연결창 4차 미세 보정: 다음 보고서 번호·제목 결합, 화살표 중앙 정렬, 추천 제목 대비
-st.markdown("""
+"""
 <style>
 /* 다음 보고서: 번호·제목 두 칸을 고정폭 번호 + 가변 제목으로 붙임 */
 .st-key-retirement-top-next-clickable [data-testid="stHorizontalBlock"] {
@@ -15257,14 +15257,14 @@ st.markdown("""
 }
 .st-key-retirement-connection-platform [data-testid="stHorizontalBlock"]:has(.retirement-connection-stop.previous):has(.st-key-retirement-top-next-clickable) > [data-testid="stColumn"]:nth-child(2) > [data-testid="stVerticalBlock"] {
     height:100% !important;
-    min-height:78px !important;
+    min-height:68px !important;
     display:flex !important;
     align-items:center !important;
     justify-content:center !important;
 }
 .st-key-retirement-connection-platform .retirement-top-arrow {
     width:100% !important;
-    min-height:78px !important;
+    min-height:68px !important;
     height:100% !important;
     display:flex !important;
     align-items:center !important;
@@ -15301,12 +15301,12 @@ st.markdown("""
     background:rgba(34,34,34,.06) !important;
 }
 </style>
-""", unsafe_allow_html=True)
+"""
 
 
 
 # 연결창 상단 3열 고정 및 좌우 카드·하단 추천 항목 스타일 통일
-st.markdown("""
+"""
 <style>
 .st-key-retirement-connection-platform [data-testid="stHorizontalBlock"]:has(.st-key-retirement-top-previous-clickable):has(.retirement-top-arrow):has(.st-key-retirement-top-next-clickable) {
  display:flex !important; flex-direction:row !important; flex-wrap:nowrap !important;
@@ -15326,7 +15326,7 @@ st.markdown("""
 .st-key-retirement-top-previous-clickable,
 .st-key-retirement-top-next-clickable {
  display:block !important; width:100% !important; min-width:0 !important;
- min-height:78px !important; height:100% !important; box-sizing:border-box !important;
+ min-height:68px !important; height:100% !important; box-sizing:border-box !important;
  padding:6px !important; border:2px solid #159447 !important; border-radius:12px !important;
  background:#159447 !important; color:#fff !important;
 }
@@ -15389,7 +15389,7 @@ st.markdown("""
 }
 .st-key-retirement-connection-platform .retirement-top-arrow {
  display:flex !important; align-items:center !important; justify-content:center !important;
- width:100% !important; height:100% !important; min-height:78px !important; margin:0 !important; padding:0 !important;
+ width:100% !important; height:100% !important; min-height:68px !important; margin:0 !important; padding:0 !important;
 }
 /* 하단 추천 보고서: 실제 버튼 및 내부 텍스트에 직접 적용 */
 .st-key-retirement-connection-platform .st-key-retirement-connection-recommend-list [data-testid="stButton"] button,
@@ -15407,7 +15407,7 @@ st.markdown("""
  background:transparent !important; border:0 !important; box-shadow:none !important;
 }
 </style>
-""", unsafe_allow_html=True)
+"""
 
 
 # 연결창 미세 조정: 상단 카드 높이 고정 및 하단 추천 글자 세부 통일
@@ -15489,12 +15489,12 @@ st.markdown("""
 
 
 # 연결창 상단 버튼의 캡션 아래 중앙 배치 및 하단 실제 HTML 요소 직접 보정
-st.markdown("""
+"""
 <style>
 /* 카드 내부: 캡션은 상단에 고정하고, 버튼 영역만 남은 높이의 중앙에 배치 */
 .st-key-retirement-top-previous-clickable,
 .st-key-retirement-top-next-clickable {
-    height:92px !important; min-height:92px !important; max-height:92px !important;
+    height:68px !important; min-height:68px !important; max-height:68px !important;
     padding:6px !important; box-sizing:border-box !important;
 }
 .st-key-retirement-top-previous-clickable > [data-testid="stVerticalBlock"],
@@ -15564,7 +15564,7 @@ st.markdown("""
 .st-key-retirement-top-next-clickable {
     display:flex !important; flex-direction:column !important;
     align-items:stretch !important; justify-content:flex-start !important;
-    height:92px !important; min-height:92px !important; max-height:92px !important;
+    height:68px !important; min-height:68px !important; max-height:68px !important;
     box-sizing:border-box !important; padding:6px !important;
 }
 .st-key-retirement-top-previous-caption,
@@ -15627,7 +15627,7 @@ st.markdown("""
     padding-inline:6px !important;
 }
 </style>
-""", unsafe_allow_html=True)
+"""
 
 
 # 연결창 상단 3열 비율 및 보고서 번호 원형 크기 조정
