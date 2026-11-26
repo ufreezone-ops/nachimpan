@@ -5322,61 +5322,6 @@ def _show_retirement_connection_dialog():
         st.markdown(
             f"""
             <style>
-            .retirement-connection-top {{
-                display:grid; grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);
-                align-items:stretch; gap:8px; margin:2px 0 12px;
-            }}
-            .retirement-connection-stop {{
-                min-width:0; min-height:78px; height:100%; box-sizing:border-box;
-                display:flex; flex-direction:column; align-items:center;
-                justify-content:center; text-align:center; gap:4px;
-                border:2px solid transparent; border-radius:12px;
-                padding:6px 6px; line-height:1.25;
-            }}
-            .retirement-connection-stop.previous {{
-                background:{_connection_panel_color}; border-color:{_connection_panel_color}; color:{_connection_panel_text_color};
-            }}
-            .retirement-connection-stop.next {{
-                background:{_connection_panel_color}; border-color:{_connection_panel_color}; color:{_connection_panel_text_color};
-            }}
-            .retirement-connection-stop .stop-caption {{
-                display:block; font-size:11px; color:{_connection_panel_text_color};
-                font-weight:700; margin:0;
-            }}
-            .retirement-connection-stop.next .stop-caption {{
-                color:{_connection_panel_text_color};
-            }}
-            .retirement-connection-stop .retirement-number-circle {{
-                display:inline-flex; width:25px; height:25px; flex:0 0 25px;
-                align-items:center; justify-content:center; border-radius:50%;
-                background:{_previous_color}; color:#fff; font-size:12px;
-                font-weight:900; line-height:1; border:0; box-shadow:none;
-            }}
-            .retirement-connection-stop.next .retirement-number-circle {{
-                color:{_next_color};
-            }}
-            .retirement-connection-stop .stop-main {{
-                display:flex; flex-direction:row; align-items:center;
-                justify-content:center; gap:8px; width:100%; min-width:0;
-            }}
-            .retirement-connection-stop .stop-name {{
-                display:block; min-width:0; font-size:13px; font-weight:800;
-                text-align:left; overflow-wrap:anywhere; color:inherit;
-            }}
-            .retirement-connection-center {{
-                min-width:42px; display:flex; flex-direction:column;
-                align-items:center; justify-content:center; gap:2px;
-                text-align:center; color:#222; font-size:12px; font-weight:800;
-                white-space:nowrap; padding:0 1px; background:transparent;
-            }}
-            .retirement-connection-center .compass {{
-                display:flex; width:30px; height:30px; align-items:center;
-                justify-content:center; border-radius:0; background:transparent;
-                color:inherit; font-size:21px; line-height:1;
-            }}
-            .retirement-connection-center .direction-arrow {{
-                color:#222; font-size:51px; font-weight:900; line-height:.8;
-            }}
             .st-key-retirement-connection-read-list {{
                 background:{_connection_panel_color} !important; color:{_connection_panel_text_color} !important;
                 border-color:{_connection_panel_color} !important;
@@ -5402,9 +5347,6 @@ def _show_retirement_connection_dialog():
             .st-key-retirement-connection-platform div[class*="st-key-retirement_connection_next_"] button *,
             .st-key-retirement-connection-platform div[class*="st-key-retirement_connection_next_"] button p {{
                 color:{_connection_panel_text_color} !important; -webkit-text-fill-color:{_connection_panel_text_color} !important;
-            }}
-            .retirement-connection-columns {{
-                display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-top:4px;
             }}
             /* 하단 좌우 패널과 각 추천 항목의 번호·제목을 모바일에서도 가로 정렬 */
             /* 하단 최상위 행: 좌우 패널을 정확히 1:1로 배분 */
@@ -5447,14 +5389,6 @@ def _show_retirement_connection_dialog():
             .st-key-retirement-connection-bottom .retirement-history-item {{
                 align-items:center !important;
             }}
-            .retirement-connection-list {{
-                border:1px solid rgba(255,255,255,.42); border-radius:11px;
-                padding:10px 9px; min-width:0;
-            }}
-            .retirement-connection-list h4 {{
-                color:inherit; font-size:14px; margin:0 0 9px 0;
-                padding-bottom:7px; border-bottom:1px solid rgba(255,255,255,.35);
-            }}
             .retirement-history-item {{
                 display:flex; align-items:flex-start; gap:7px;
                 padding:6px 1px; color:inherit; font-size:12px;
@@ -5465,7 +5399,6 @@ def _show_retirement_connection_dialog():
                 align-items:center; justify-content:center; border-radius:50%;
                 background:{_previous_color}; box-sizing:border-box; color:#fff !important; -webkit-text-fill-color:#fff !important; font-size:11px; font-weight:850; border:0 !important; box-shadow:none !important;
             }}
-            .retirement-connection-stop .retirement-number-circle {{ border:0 !important; box-shadow:none !important; box-sizing:border-box; }}
             .retirement-history-title {{ min-width:0; overflow-wrap:anywhere; font-size:12px; font-weight:500; line-height:1.4; }}
             .retirement-csv-title-clamp {{
                 display:-webkit-box; -webkit-box-orient:vertical; -webkit-line-clamp:2;
@@ -5570,18 +5503,6 @@ def _show_retirement_connection_dialog():
                  white-space:normal !important;
                  overflow-wrap:anywhere !important;
              }}
-             @media (max-width:480px) {{
-                .retirement-connection-top {{ gap:5px; }}
-                .retirement-connection-stop {{ min-height:108px; padding:8px 4px; }}
-                .retirement-connection-stop .stop-main {{ gap:5px; }}
-                .retirement-connection-stop .stop-name {{ font-size:11px; }}
-                .retirement-connection-center {{ min-width:38px; font-size:10px; gap:1px; }}
-                .retirement-connection-center .compass {{ width:25px; height:25px; font-size:18px; }}
-                .retirement-connection-center .direction-arrow {{ font-size:45px; }}
-                .retirement-connection-columns {{ gap:7px; }}
-                .retirement-connection-list {{ padding:8px 6px; }}
-                .retirement-connection-list h4 {{ font-size:12px; }}
-            }}
                           .retirement-top-arrow {{
                  display:flex; height:100%; min-height:68px; align-items:center;
                  justify-content:center; color:#222; font-size:38px; font-weight:900;
@@ -5625,23 +5546,6 @@ def _show_retirement_connection_dialog():
              }}
              .retirement-top-next-empty {{ color:#fff; font-size:13px; font-weight:700; }}
              /* 상단 3개 역은 모바일에서도 한 줄의 좌→우 흐름을 유지 */
-             .st-key-retirement-connection-platform > [data-testid="stVerticalBlock"] > [data-testid="stHorizontalBlock"]:has(.retirement-connection-stop.previous):has(.st-key-retirement-top-next-clickable) {{
-                 display:flex !important; flex-direction:row !important; flex-wrap:nowrap !important;
-                 align-items:stretch !important; width:100% !important; gap:6px !important;
-             }}
-             .st-key-retirement-connection-platform > [data-testid="stVerticalBlock"] > [data-testid="stHorizontalBlock"]:has(.retirement-connection-stop.previous):has(.st-key-retirement-top-next-clickable) > [data-testid="stColumn"] {{
-                 min-width:0 !important; box-sizing:border-box !important;
-             }}
-             .st-key-retirement-connection-platform > [data-testid="stVerticalBlock"] > [data-testid="stHorizontalBlock"]:has(.retirement-connection-stop.previous):has(.st-key-retirement-top-next-clickable) > [data-testid="stColumn"]:first-child,
-             .st-key-retirement-connection-platform > [data-testid="stVerticalBlock"] > [data-testid="stHorizontalBlock"]:has(.retirement-connection-stop.previous):has(.st-key-retirement-top-next-clickable) > [data-testid="stColumn"]:last-child {{
-                 flex:1 1 0% !important; width:0 !important; max-width:none !important; min-width:0 !important;
-             }}
-             .st-key-retirement-connection-platform > [data-testid="stVerticalBlock"] > [data-testid="stHorizontalBlock"]:has(.retirement-connection-stop.previous):has(.st-key-retirement-top-next-clickable) > [data-testid="stColumn"]:nth-child(2) {{
-                 flex:0 0 15px !important; width:15px !important; max-width:15px !important; min-width:15px !important;
-             }}
-             .retirement-connection-stop.previous {{ align-items:stretch !important; justify-content:space-between !important; }}
-             .retirement-connection-stop.previous .stop-caption {{ align-self:flex-start !important; text-align:left !important; }}
-             .retirement-connection-stop.previous .stop-main {{ justify-content:center !important; }}
              .st-key-retirement-top-next-clickable {{ align-items:stretch !important; justify-content:space-between !important; }}
              .st-key-retirement-top-next-clickable .retirement-top-next-header {{
                  display:flex !important; align-items:flex-start !important; justify-content:space-between !important;
@@ -5671,7 +5575,6 @@ def _show_retirement_connection_dialog():
              .st-key-retirement-connection-recommend-list h4,
              .st-key-retirement-connection-platform .retirement-history-item,
              .st-key-retirement-connection-platform .retirement-history-title,
-             .st-key-retirement-connection-platform .retirement-recommendation-score {{
                  color:#222222 !important; -webkit-text-fill-color:#222222 !important;
              }}
              .st-key-retirement-connection-platform [class*="st-key-retirement-connection-choice-"] [data-testid="stButton"] button,
@@ -5685,14 +5588,6 @@ def _show_retirement_connection_dialog():
              .st-key-retirement-connection-bottom [class*="st-key-retirement-connection-choice-"],
              .st-key-retirement-connection-bottom [class*="st-key-retirement-connection-choice-"] {{
                  border-bottom-color:rgba(34,34,34,.18) !important;
-             }}
-             @media (max-width:640px) {{
-                 .st-key-retirement-connection-platform > [data-testid="stVerticalBlock"] > [data-testid="stHorizontalBlock"]:has(.retirement-connection-stop.previous):has(.st-key-retirement-top-next-clickable) {{ gap:3px !important; }}
-                 .st-key-retirement-connection-platform > [data-testid="stVerticalBlock"] > [data-testid="stHorizontalBlock"]:has(.retirement-connection-stop.previous):has(.st-key-retirement-top-next-clickable) > [data-testid="stColumn"]:nth-child(2) {{
-                     flex-basis:52px !important; width:52px !important; max-width:52px !important; min-width:52px !important;
-                 }}
-                 .retirement-top-arrow svg {{ max-width:50px !important; height:22px !important; }}
-                 .retirement-connection-stop .stop-name {{ font-size:11px !important; }}
              }}
 
              .st-key-retirement-connection-platform [data-testid="stButton"] button,
@@ -15105,20 +15000,6 @@ st.markdown("""
 # 연결창 최종 모바일·추천목록 스타일 보정
 st.markdown("""
 <style>
-.st-key-retirement-connection-platform [data-testid="stHorizontalBlock"]:has(.retirement-connection-stop.previous):has(.st-key-retirement-top-next-clickable) {
- display:flex !important; flex-direction:row !important; flex-wrap:nowrap !important;
- align-items:stretch !important; width:100% !important; min-width:0 !important; gap:4px !important;
-}
-.st-key-retirement-connection-platform [data-testid="stHorizontalBlock"]:has(.retirement-connection-stop.previous):has(.st-key-retirement-top-next-clickable) > [data-testid="stColumn"] {
- min-width:0 !important; box-sizing:border-box !important;
-}
-.st-key-retirement-connection-platform [data-testid="stHorizontalBlock"]:has(.retirement-connection-stop.previous):has(.st-key-retirement-top-next-clickable) > [data-testid="stColumn"]:first-child,
-.st-key-retirement-connection-platform [data-testid="stHorizontalBlock"]:has(.retirement-connection-stop.previous):has(.st-key-retirement-top-next-clickable) > [data-testid="stColumn"]:last-child {
- flex:1 1 0% !important; width:0 !important; max-width:none !important; min-width:0 !important;
-}
-.st-key-retirement-connection-platform [data-testid="stHorizontalBlock"]:has(.retirement-connection-stop.previous):has(.st-key-retirement-top-next-clickable) > [data-testid="stColumn"]:nth-child(2) {
- flex:0 0 38px !important; width:38px !important; max-width:38px !important; min-width:38px !important;
-}
 .retirement-top-arrow svg { max-width:38px !important; height:22px !important; }
 .st-key-retirement-top-next-clickable .retirement-top-next-header {
  display:flex !important; justify-content:flex-end !important; width:100% !important;
@@ -15150,10 +15031,6 @@ st.markdown("""
  background:transparent !important; border:0 !important; box-shadow:none !important;
 }
 @media (max-width:640px) {
- .st-key-retirement-connection-platform [data-testid="stHorizontalBlock"]:has(.retirement-connection-stop.previous):has(.st-key-retirement-top-next-clickable) { gap:2px !important; }
- .st-key-retirement-connection-platform [data-testid="stHorizontalBlock"]:has(.retirement-connection-stop.previous):has(.st-key-retirement-top-next-clickable) > [data-testid="stColumn"]:nth-child(2) {
-  flex-basis:25px !important; width:25px !important; max-width:25px !important; min-width:25px !important;
- }
  .retirement-top-arrow svg { width:16px !important; min-width:16px !important; max-width:16px !important; height:32px !important; min-height:32px !important; margin:auto !important; transform:none !important; }
 }
 </style>
