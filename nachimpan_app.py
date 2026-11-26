@@ -5651,7 +5651,7 @@ def _show_retirement_connection_dialog():
                  flex:1 1 0% !important; width:0 !important; max-width:none !important; min-width:0 !important;
              }}
              .st-key-retirement-connection-platform > [data-testid="stVerticalBlock"] > [data-testid="stHorizontalBlock"]:has(.retirement-connection-stop.previous):has(.st-key-retirement-top-next-clickable) > [data-testid="stColumn"]:nth-child(2) {{
-                 flex:0 0 78px !important; width:78px !important; max-width:78px !important; min-width:78px !important;
+                 flex:0 0 15px !important; width:15px !important; max-width:15px !important; min-width:15px !important;
              }}
              .retirement-connection-stop.previous {{ align-items:stretch !important; justify-content:space-between !important; }}
              .retirement-connection-stop.previous .stop-caption {{ align-self:flex-start !important; text-align:left !important; }}
@@ -5666,7 +5666,7 @@ def _show_retirement_connection_dialog():
              }}
              .st-key-retirement-top-next-clickable [data-testid="stButton"] {{ margin-top:auto !important; }}
              .retirement-top-arrow {{
-                 display:flex !important; min-height:116px !important; height:100% !important;
+                 display:flex !important; min-height:68px !important; height:100% !important;
                  align-items:center !important; justify-content:center !important;
              }}
              .retirement-top-arrow svg {{
