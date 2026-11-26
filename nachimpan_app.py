@@ -4110,7 +4110,7 @@ def _render_nachimpan_dialog_title(_title):
             display:block !important;
             box-sizing:border-box !important;
             width:100% !important;
-            margin:0 0 12px !important;
+            margin:0 0 9px !important;
             padding:8px 13px !important;
             border:1px solid #D7E2D9 !important;
             border-left:5px solid #159447 !important;
@@ -4130,7 +4130,7 @@ def _render_nachimpan_dialog_title(_title):
     )
 
 
-@st.dialog("자료 보기", width="large", dismissible=False)
+@st.dialog(" ", width="large", dismissible=False)
 def _show_master_resource_dialog():
     _render_nachimpan_dialog_title("자료 보기")
     _resource_id = st.session_state.get("_catalog_resource_id", "")
@@ -4662,7 +4662,7 @@ def _show_retirement_entry_dialog():
             st.rerun()
 
 
-@st.dialog("자료 보기", width="large", dismissible=False)
+@st.dialog(" ", width="large", dismissible=False)
 def _show_retirement_report_dialog():
     """보고서 본문 또는 CSV 미리보기를 전체 제목과 함께 표시한다."""
     _render_nachimpan_dialog_title("자료 보기")
