@@ -16691,7 +16691,7 @@ body:has(.st-key-retirement-connection-platform) .st-key-retirement-connection-s
     visibility:visible !important;
     height:auto !important;
     min-height:0 !important;
-    margin:0 0 6px !important;
+    margin:0 !important;
     padding:0 !important;
     color:#244B32 !important;
     -webkit-text-fill-color:#244B32 !important;
