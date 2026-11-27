@@ -16874,7 +16874,7 @@ body:has(.st-key-retirement-connection-platform) .st-key-retirement-connection-r
     gap:7px !important;
 }
 
-/* [6.04.03.01] 연결창 공통 UI: 기기 테마에 맞춰 표면·문자 대비를 유지 */
+/* [6.04.02.06] 연결창 공통 UI: 기기 테마에 맞춰 표면·문자 대비를 유지 */
 @media (prefers-color-scheme: light) {
     body:has(.st-key-retirement-connection-platform) .st-key-retirement-connection-search {
         background:#F5F8F5 !important;
