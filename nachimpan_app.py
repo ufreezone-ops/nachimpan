@@ -17041,7 +17041,7 @@ body:has(.st-key-retirement-connection-platform) .st-key-retirement-connection-r
 """, unsafe_allow_html=True)
 
 
-        /* [6.04.02.07] 연결창은 기기 테마와 무관하게 밝은 표면·짙은 글자색으로 통일 */
+        # [6.04.02.07] 연결창은 기기 테마와 무관하게 밝은 표면·짙은 글자색으로 통일
         st.markdown(
             """
             <style>
