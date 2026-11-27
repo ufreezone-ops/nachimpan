@@ -6147,6 +6147,10 @@ body:has(.st-key-retirement-connection-platform) .st-key-retirement-connection-s
             )
             with st.form("retirement_connection_search_form", clear_on_submit=False):
                 _search_input_col, _search_button_col = st.columns([5, 1.25], gap="small")
+                # 위젯이 자료 보기 화면에서 잠시 사라져도 검색어는 별도 상태에 보존한다.
+                _saved_search_query = st.session_state.get("_retirement_connection_search_query_saved", "")
+                if "_retirement_connection_search_query" not in st.session_state:
+                    st.session_state["_retirement_connection_search_query"] = _saved_search_query
                 with _search_input_col:
                     _search_query = st.text_input(
                         "",
@@ -6154,6 +6158,7 @@ body:has(.st-key-retirement-connection-platform) .st-key-retirement-connection-s
                         placeholder="검색어를 입력하세요",
                         label_visibility="collapsed",
                     )
+                    st.session_state["_retirement_connection_search_query_saved"] = _search_query
                 with _search_button_col:
                     _search_submit = st.form_submit_button("검색", use_container_width=False, type="primary")
             if _search_submit:
@@ -16868,6 +16873,165 @@ body:has(.st-key-retirement-connection-platform) .st-key-retirement-connection-r
     align-items:stretch !important;
     gap:7px !important;
 }
+
+/* [6.04.03.01] 연결창 공통 UI: 기기 테마에 맞춰 표면·문자 대비를 유지 */
+@media (prefers-color-scheme: light) {
+    body:has(.st-key-retirement-connection-platform) .st-key-retirement-connection-search {
+        background:#F5F8F5 !important;
+        border-color:#B8D2BE !important;
+        color:#244B32 !important;
+        -webkit-text-fill-color:#244B32 !important;
+    }
+    body:has(.st-key-retirement-connection-platform) .st-key-retirement-connection-search .retirement-connection-search-label,
+    body:has(.st-key-retirement-connection-platform) .st-key-retirement-connection-search .retirement-connection-search-title {
+        color:#244B32 !important;
+        -webkit-text-fill-color:#244B32 !important;
+    }
+    body:has(.st-key-retirement-connection-platform) .st-key-retirement-connection-search [data-testid="stTextInput"] input {
+        background:#FFFFFF !important;
+        background-color:#FFFFFF !important;
+        color:#1F2937 !important;
+        -webkit-text-fill-color:#1F2937 !important;
+        border-color:#94A3B8 !important;
+    }
+    body:has(.st-key-retirement-connection-platform) .st-key-retirement-connection-search [class*="st-key-retirement-connection-search-result-"] [data-testid="stButton"] button,
+    body:has(.st-key-retirement-connection-platform) .st-key-retirement-connection-search [class*="st-key-retirement-connection-search-result-"] [data-testid="stButton"] button *,
+    body:has(.st-key-retirement-connection-platform) .st-key-retirement-connection-search [class*="st-key-retirement-connection-search-result-"] [data-testid="stButton"] button p {
+        color:#24352A !important;
+        -webkit-text-fill-color:#24352A !important;
+    }
+    body:has(.st-key-retirement-connection-platform) .st-key-retirement-connection-read-list {
+        background:#F3E8FF !important;
+        border-color:#D8B4FE !important;
+    }
+    body:has(.st-key-retirement-connection-platform) .st-key-retirement-connection-recommend-list {
+        background:#F8FAFC !important;
+        border-color:#CBD5E1 !important;
+    }
+    body:has(.st-key-retirement-connection-platform) .st-key-retirement-connection-recommend-list [class*="st-key-retirement-connection-choice-"] button,
+    body:has(.st-key-retirement-connection-platform) .st-key-retirement-connection-recommend-list [class*="st-key-retirement-connection-choice-"] button *,
+    body:has(.st-key-retirement-connection-platform) .st-key-retirement-connection-recommend-list [class*="st-key-retirement-connection-choice-"] button p {
+        color:#334155 !important;
+        -webkit-text-fill-color:#334155 !important;
+    }
+    body:has(.st-key-retirement-connection-platform) .st-key-retirement-top-previous-clickable,
+    body:has(.st-key-retirement-connection-platform) .st-key-retirement-top-next-clickable {
+        background:#159447 !important;
+        border-color:#11783A !important;
+    }
+    body:has(.st-key-retirement-connection-platform) .st-key-retirement-top-previous-button button,
+    body:has(.st-key-retirement-connection-platform) .st-key-retirement-top-next-button button,
+    body:has(.st-key-retirement-connection-platform) .st-key-retirement-top-previous-button button *,
+    body:has(.st-key-retirement-connection-platform) .st-key-retirement-top-next-button button * {
+        color:#FFFFFF !important;
+        -webkit-text-fill-color:#FFFFFF !important;
+    }
+}
+@media (prefers-color-scheme: dark) {
+    body:has(.st-key-retirement-connection-platform) .st-key-retirement-connection-search {
+        background:#172033 !important;
+        border-color:#475569 !important;
+        color:#F8FAFC !important;
+        -webkit-text-fill-color:#F8FAFC !important;
+    }
+    body:has(.st-key-retirement-connection-platform) .st-key-retirement-connection-search .retirement-connection-search-label,
+    body:has(.st-key-retirement-connection-platform) .st-key-retirement-connection-search .retirement-connection-search-title,
+    body:has(.st-key-retirement-connection-platform) .st-key-retirement-connection-search [data-testid="stTextInput"] label,
+    body:has(.st-key-retirement-connection-platform) .st-key-retirement-connection-search [data-testid="stTextInput"] label * {
+        color:#E2E8F0 !important;
+        -webkit-text-fill-color:#E2E8F0 !important;
+    }
+    body:has(.st-key-retirement-connection-platform) .st-key-retirement-connection-search [data-testid="stTextInput"] input {
+        background:#0F172A !important;
+        background-color:#0F172A !important;
+        color:#F8FAFC !important;
+        -webkit-text-fill-color:#F8FAFC !important;
+        border-color:#64748B !important;
+        caret-color:#F8FAFC !important;
+    }
+    body:has(.st-key-retirement-connection-platform) .st-key-retirement-connection-search [data-testid="stTextInput"] input::placeholder {
+        color:#94A3B8 !important;
+        -webkit-text-fill-color:#94A3B8 !important;
+    }
+    body:has(.st-key-retirement-connection-platform) .st-key-retirement-connection-search [class*="st-key-retirement-connection-search-result-"] [data-testid="stButton"] button,
+    body:has(.st-key-retirement-connection-platform) .st-key-retirement-connection-search [class*="st-key-retirement-connection-search-result-"] [data-testid="stButton"] button *,
+    body:has(.st-key-retirement-connection-platform) .st-key-retirement-connection-search [class*="st-key-retirement-connection-search-result-"] [data-testid="stButton"] button p {
+        color:#E2E8F0 !important;
+        -webkit-text-fill-color:#E2E8F0 !important;
+    }
+    body:has(.st-key-retirement-connection-platform) .st-key-retirement-connection-read-list {
+        background:#302442 !important;
+        border-color:#8B6AA8 !important;
+    }
+    body:has(.st-key-retirement-connection-platform) .st-key-retirement-connection-read-list .retirement-connection-panel-title {
+        color:#E9D5FF !important;
+        -webkit-text-fill-color:#E9D5FF !important;
+        border-bottom-color:#8B6AA8 !important;
+    }
+    body:has(.st-key-retirement-connection-platform) .st-key-retirement-connection-read-list .retirement-history-item,
+    body:has(.st-key-retirement-connection-platform) .st-key-retirement-connection-read-list .retirement-history-title,
+    body:has(.st-key-retirement-connection-platform) .st-key-retirement-connection-read-list [data-testid="stButton"] button,
+    body:has(.st-key-retirement-connection-platform) .st-key-retirement-connection-read-list [data-testid="stButton"] button * {
+        color:#E9D5FF !important;
+        -webkit-text-fill-color:#E9D5FF !important;
+    }
+    body:has(.st-key-retirement-connection-platform) .st-key-retirement-connection-recommend-list {
+        background:#1E293B !important;
+        border-color:#475569 !important;
+    }
+    body:has(.st-key-retirement-connection-platform) .st-key-retirement-connection-recommend-list .retirement-connection-panel-title {
+        color:#E2E8F0 !important;
+        -webkit-text-fill-color:#E2E8F0 !important;
+        border-bottom-color:#64748B !important;
+    }
+    body:has(.st-key-retirement-connection-platform) .st-key-retirement-connection-recommend-list [class*="st-key-retirement-connection-choice-"] button,
+    body:has(.st-key-retirement-connection-platform) .st-key-retirement-connection-recommend-list [class*="st-key-retirement-connection-choice-"] button * {
+        color:#E2E8F0 !important;
+        -webkit-text-fill-color:#E2E8F0 !important;
+    }
+    body:has(.st-key-retirement-connection-platform) .st-key-retirement-connection-recommend-list [class*="st-key-retirement-connection-choice-read-"] button,
+    body:has(.st-key-retirement-connection-platform) .st-key-retirement-connection-recommend-list [class*="st-key-retirement-connection-choice-read-"] button * {
+        color:#D8B4FE !important;
+        -webkit-text-fill-color:#D8B4FE !important;
+    }
+    body:has(.st-key-retirement-connection-platform) .st-key-retirement-top-previous-clickable,
+    body:has(.st-key-retirement-connection-platform) .st-key-retirement-top-next-clickable {
+        background:#14532D !important;
+        border-color:#4ADE80 !important;
+    }
+    body:has(.st-key-retirement-connection-platform) .st-key-retirement-top-previous-button button,
+    body:has(.st-key-retirement-connection-platform) .st-key-retirement-top-next-button button,
+    body:has(.st-key-retirement-connection-platform) .st-key-retirement-top-previous-button button *,
+    body:has(.st-key-retirement-connection-platform) .st-key-retirement-top-next-button button * {
+        color:#F0FDF4 !important;
+        -webkit-text-fill-color:#F0FDF4 !important;
+    }
+}
+/* 상단 이전·다음 자료: 목록과 글자 크기를 맞추고 중복 여백을 제거 */
+body:has(.st-key-retirement-connection-platform) .st-key-retirement-top-previous-clickable,
+body:has(.st-key-retirement-connection-platform) .st-key-retirement-top-next-clickable {
+    padding:4px !important;
+}
+body:has(.st-key-retirement-connection-platform) .st-key-retirement-top-previous-button,
+body:has(.st-key-retirement-connection-platform) .st-key-retirement-top-next-button,
+body:has(.st-key-retirement-connection-platform) .st-key-retirement-top-previous-button [data-testid="stButton"],
+body:has(.st-key-retirement-connection-platform) .st-key-retirement-top-next-button [data-testid="stButton"] {
+    padding:0 !important;
+    margin:0 !important;
+    gap:0 !important;
+}
+body:has(.st-key-retirement-connection-platform) .st-key-retirement-top-previous-button button,
+body:has(.st-key-retirement-connection-platform) .st-key-retirement-top-next-button button,
+body:has(.st-key-retirement-connection-platform) .st-key-retirement-top-previous-button button p,
+body:has(.st-key-retirement-connection-platform) .st-key-retirement-top-next-button button p {
+    font-size:14px !important;
+    line-height:1.35 !important;
+}
+body:has(.st-key-retirement-connection-platform) .st-key-retirement-top-previous-clickable [data-testid="stButton"] button::before,
+body:has(.st-key-retirement-connection-platform) .st-key-retirement-top-next-clickable [data-testid="stButton"] button::before {
+    margin-right:4px !important;
+}
+
 /* [6.04.02.05] 첫 행의 별도 상단 여백은 제거하고 소제목 아래 여백으로 간격 통일 */
 body:has(.st-key-retirement-connection-platform) .st-key-retirement-connection-read-list > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"]:nth-child(2),
 body:has(.st-key-retirement-connection-platform) .st-key-retirement-connection-recommend-list > [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"]:nth-child(2) {
