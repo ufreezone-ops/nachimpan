@@ -17062,15 +17062,24 @@ st.markdown(
         border-color:#475569 !important;
         color:#F8FAFC !important;
     }
-    body:has(.st-key-retirement-connection-platform) .st-key-retirement-connection-search .retirement-connection-search-label,
+    body:has(.st-key-retirement-connection-platform) .st-key-retirement-connection-search div.retirement-connection-search-label,
+    body:has(.st-key-retirement-connection-platform) .st-key-retirement-connection-search div.retirement-connection-search-label *,
     body:has(.st-key-retirement-connection-platform) .st-key-retirement-connection-search .retirement-connection-search-title {
         display:block !important;
         visibility:visible !important;
         opacity:1 !important;
+        position:relative !important;
+        z-index:2 !important;
+        min-height:18px !important;
+        margin:0 0 20px !important;
+        padding:0 !important;
+        background:transparent !important;
         color:#F8FAFC !important;
         -webkit-text-fill-color:#F8FAFC !important;
+        text-shadow:0 0 1px #F8FAFC !important;
         font-size:13px !important;
         font-weight:800 !important;
+        line-height:1.4 !important;
     }
 
     /* 검색 결과 행: 밝은 배경 + 짙은 제목 */
