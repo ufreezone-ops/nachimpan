@@ -17041,120 +17041,102 @@ body:has(.st-key-retirement-connection-platform) .st-key-retirement-connection-r
 """, unsafe_allow_html=True)
 
 
-# [6.04.02.07] 연결창은 기기 테마와 무관하게 밝은 표면·짙은 글자색으로 통일
+# [6.04.02.07] 연결창 색상 대비 보정 — 다크·라이트 테마 공통
 st.markdown(
     """
     <style>
-    /* 대화상자 내부의 검정 바탕이 비치지 않도록 연결창 영역을 밝게 고정 */
-    div[data-testid="stDialog"]:has(.st-key-retirement-connection-platform) [data-testid="stDialogContent"],
-    div[data-testid="stDialog"]:has(.st-key-retirement-connection-platform) [data-testid="stDialogBody"],
-    .st-key-retirement-connection-platform {
+    /* 내부 연결 플랫폼은 밝은 바탕으로 유지 */
+    body:has(.st-key-retirement-connection-platform) .st-key-retirement-connection-platform {
         background:#F4F8F4 !important;
         background-color:#F4F8F4 !important;
         color:#24352A !important;
         -webkit-text-fill-color:#24352A !important;
-    }
-    .st-key-retirement-connection-platform {
         border:1px solid #B8D2BE !important;
         border-radius:12px !important;
     }
 
-    /* 검색 안내 및 검색 영역 */
-    .st-key-retirement-connection-search {
-        background:#F5F8F5 !important;
-        background-color:#F5F8F5 !important;
-        border-color:#A9C8B0 !important;
-        color:#244B32 !important;
-        -webkit-text-fill-color:#244B32 !important;
+    /* 검색 영역: 현재 어두운 표면을 유지하고 안내문은 밝게 표시 */
+    body:has(.st-key-retirement-connection-platform) .st-key-retirement-connection-search {
+        background:#0F172A !important;
+        background-color:#0F172A !important;
+        border-color:#475569 !important;
+        color:#F8FAFC !important;
     }
-    .st-key-retirement-connection-search .retirement-connection-search-label,
-    .st-key-retirement-connection-search .retirement-connection-search-title {
-        color:#244B32 !important;
-        -webkit-text-fill-color:#244B32 !important;
-        font-size:14px !important;
+    body:has(.st-key-retirement-connection-platform) .st-key-retirement-connection-search .retirement-connection-search-label,
+    body:has(.st-key-retirement-connection-platform) .st-key-retirement-connection-search .retirement-connection-search-title {
+        display:block !important;
+        visibility:visible !important;
+        opacity:1 !important;
+        color:#F8FAFC !important;
+        -webkit-text-fill-color:#F8FAFC !important;
+        font-size:13px !important;
         font-weight:800 !important;
     }
 
-    /* 검색 결과: 행 배경과 버튼 자체의 배경·글자색을 함께 지정 */
-    .st-key-retirement-connection-search [class*="st-key-retirement-connection-search-result-"] {
-        background:#E8F3EA !important;
-        background-color:#E8F3EA !important;
-        border:1px solid #C5DCC9 !important;
+    /* 검색 결과 행: 밝은 배경 + 짙은 제목 */
+    body:has(.st-key-retirement-connection-platform) .st-key-retirement-connection-search [class*="st-key-retirement-connection-search-result-"] {
+        background:#F8FAFC !important;
+        background-color:#F8FAFC !important;
+        border:1px solid #CBD5E1 !important;
     }
-    .st-key-retirement-connection-search [class*="st-key-retirement-connection-search-result-"] [data-testid="stButton"] button,
-    .st-key-retirement-connection-search [class*="st-key-retirement-connection-search-result-"] [data-testid="stButton"] button > div,
-    .st-key-retirement-connection-search [class*="st-key-retirement-connection-search-result-"] [data-testid="stButton"] button p,
-    .st-key-retirement-connection-search [class*="st-key-retirement-connection-search-result-"] [data-testid="stButton"] button span {
+    body:has(.st-key-retirement-connection-platform) .st-key-retirement-connection-search [class*="st-key-retirement-connection-search-result-"] [data-testid="stButton"] button,
+    body:has(.st-key-retirement-connection-platform) .st-key-retirement-connection-search [class*="st-key-retirement-connection-search-result-"] [data-testid="stButton"] button *,
+    body:has(.st-key-retirement-connection-platform) .st-key-retirement-connection-search [class*="st-key-retirement-connection-search-result-"] [data-testid="stButton"] button p {
         background:transparent !important;
         background-color:transparent !important;
-        color:#183B25 !important;
-        -webkit-text-fill-color:#183B25 !important;
+        color:#24352A !important;
+        -webkit-text-fill-color:#24352A !important;
+        opacity:1 !important;
         text-align:left !important;
-    }
-    .st-key-retirement-connection-search [class*="st-key-retirement-connection-search-result-"] [data-testid="stButton"] button > div {
-        display:flex !important;
-        justify-content:flex-start !important;
-        align-items:flex-start !important;
-    }
-    .st-key-retirement-connection-search [class*="st-key-retirement-connection-search-result-"] [data-testid="stButton"] button p {
-        display:block !important;
-        width:100% !important;
-        margin:0 !important;
-        padding:0 !important;
-        text-align:left !important;
-        line-height:1.4 !important;
     }
 
-    /* 읽은 자료: 밝은 라벤더 / 추천 자료: 밝은 중성색 */
-    .st-key-retirement-connection-read-list {
-        background:#F1E8FF !important;
-        background-color:#F1E8FF !important;
-        border-color:#C9A9F0 !important;
-        color:#45236A !important;
-        -webkit-text-fill-color:#45236A !important;
+    /* 읽은 자료: 어두운 보라 표면 + 밝은 라벤더 제목 */
+    body:has(.st-key-retirement-connection-platform) .st-key-retirement-connection-read-list {
+        background:#302442 !important;
+        background-color:#302442 !important;
+        border-color:#8B6AA8 !important;
+        color:#F3E8FF !important;
+        -webkit-text-fill-color:#F3E8FF !important;
     }
-    .st-key-retirement-connection-read-list .retirement-connection-panel-title,
-    .st-key-retirement-connection-read-list .retirement-history-item,
-    .st-key-retirement-connection-read-list .retirement-history-title,
-    .st-key-retirement-connection-read-list [data-testid="stButton"] button,
-    .st-key-retirement-connection-read-list [data-testid="stButton"] button * {
-        color:#45236A !important;
-        -webkit-text-fill-color:#45236A !important;
+    body:has(.st-key-retirement-connection-platform) .st-key-retirement-connection-read-list .retirement-connection-panel-title,
+    body:has(.st-key-retirement-connection-platform) .st-key-retirement-connection-read-list .retirement-history-item,
+    body:has(.st-key-retirement-connection-platform) .st-key-retirement-connection-read-list .retirement-history-title,
+    body:has(.st-key-retirement-connection-platform) .st-key-retirement-connection-read-list [class*="st-key-retirement-connection-choice-history-"] [data-testid="stButton"] button,
+    body:has(.st-key-retirement-connection-platform) .st-key-retirement-connection-read-list [class*="st-key-retirement-connection-choice-history-"] [data-testid="stButton"] button *,
+    body:has(.st-key-retirement-connection-platform) .st-key-retirement-connection-read-list [class*="st-key-retirement-connection-choice-history-"] [data-testid="stButton"] button p {
+        color:#F3E8FF !important;
+        -webkit-text-fill-color:#F3E8FF !important;
         opacity:1 !important;
-    }
-    .st-key-retirement-connection-recommend-list {
-        background:#F7FAFC !important;
-        background-color:#F7FAFC !important;
-        border-color:#B8C7D6 !important;
-        color:#24364B !important;
-        -webkit-text-fill-color:#24364B !important;
-    }
-    .st-key-retirement-connection-recommend-list .retirement-connection-panel-title,
-    .st-key-retirement-connection-recommend-list [class*="st-key-retirement-connection-choice-"] [data-testid="stButton"] button,
-    .st-key-retirement-connection-recommend-list [class*="st-key-retirement-connection-choice-"] [data-testid="stButton"] button * {
-        color:#24364B !important;
-        -webkit-text-fill-color:#24364B !important;
-        opacity:1 !important;
-    }
-    .st-key-retirement-connection-read-list .retirement-connection-panel-title,
-    .st-key-retirement-connection-recommend-list .retirement-connection-panel-title {
-        font-weight:800 !important;
-        font-size:13px !important;
     }
 
-    /* 두 줄 이상인 검색 제목도 각 줄이 같은 왼쪽 기준선에서 시작 */
-    .st-key-retirement-connection-search [class*="st-key-retirement-connection-search-result-"] [data-testid="stButton"] button {
-        justify-content:flex-start !important;
-        align-items:flex-start !important;
-        text-align:left !important;
+    /* 다음 추천 자료: 어두운 녹색 표면 + 밝은 민트 제목 */
+    body:has(.st-key-retirement-connection-platform) .st-key-retirement-connection-recommend-list {
+        background:#1E293B !important;
+        background-color:#1E293B !important;
+        border-color:#475569 !important;
+        color:#D1FAE5 !important;
+        -webkit-text-fill-color:#D1FAE5 !important;
     }
-    .st-key-retirement-connection-search [class*="st-key-retirement-connection-search-result-"] [data-testid="stButton"] button > div,
-    .st-key-retirement-connection-search [class*="st-key-retirement-connection-search-result-"] [data-testid="stMarkdownContainer"],
-    .st-key-retirement-connection-search [class*="st-key-retirement-connection-search-result-"] [data-testid="stButton"] p {
-        justify-content:flex-start !important;
-        text-align:left !important;
-        margin-left:0 !important;
-        padding-left:0 !important;
+    body:has(.st-key-retirement-connection-platform) .st-key-retirement-connection-recommend-list .retirement-connection-panel-title,
+    body:has(.st-key-retirement-connection-platform) .st-key-retirement-connection-recommend-list [class*="st-key-retirement-connection-choice-"] [data-testid="stButton"] button,
+    body:has(.st-key-retirement-connection-platform) .st-key-retirement-connection-recommend-list [class*="st-key-retirement-connection-choice-"] [data-testid="stButton"] button *,
+    body:has(.st-key-retirement-connection-platform) .st-key-retirement-connection-recommend-list [class*="st-key-retirement-connection-choice-"] [data-testid="stButton"] button p {
+        color:#D1FAE5 !important;
+        -webkit-text-fill-color:#D1FAE5 !important;
+        opacity:1 !important;
+    }
+
+    /* 이미 읽은 추천 자료는 라벤더로 구분 */
+    body:has(.st-key-retirement-connection-platform) .st-key-retirement-connection-recommend-list [class*="st-key-retirement-connection-choice-read-"] [data-testid="stButton"] button,
+    body:has(.st-key-retirement-connection-platform) .st-key-retirement-connection-recommend-list [class*="st-key-retirement-connection-choice-read-"] [data-testid="stButton"] button * {
+        color:#D8B4FE !important;
+        -webkit-text-fill-color:#D8B4FE !important;
+    }
+
+    /* 자료 번호 원형 배지는 기존 대륙별 색상과 흰 글자를 유지 */
+    body:has(.st-key-retirement-connection-platform) .st-key-retirement-connection-platform .retirement-number-circle {
+        color:#FFFFFF !important;
+        -webkit-text-fill-color:#FFFFFF !important;
     }
     </style>
     """,
