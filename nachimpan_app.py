@@ -17337,6 +17337,8 @@ st.markdown(
     }
     div.st-key-retirement-stats-return-bar [data-testid="column"],
     div.st-key-retirement-connection-close-cta [data-testid="column"] {
+        /* 겹치는 Grid 영역을 같은 행에 유지해야 중심이 1/3·2/3 기준선에 놓인다. */
+        grid-row: 1 !important;
         width: 100% !important;
         min-width: 0 !important;
         max-width: none !important;
@@ -17375,7 +17377,8 @@ st.markdown(
 
     /* 통계 상단 고정 버튼은 기존 메뉴 아래 위치를 유지하면서 버튼 높이의 1/3만큼 더 띄운다. */
     div.st-key-retirement-stats-return-bar {
-        top: calc(7rem - 2.55rem + var(--nachimpan-pill-edge-gap)) !important;
+        /* 기존 메뉴와의 실제 가시 간격을 약 16.5px로 맞춘다. */
+        top: calc(7rem - 2.55rem + 2.5px) !important;
         left: 0 !important;
         transform: none !important;
         width: 100vw !important;
@@ -17385,7 +17388,8 @@ st.markdown(
 
     /* 연결창 하단 버튼은 창의 아래 경계에서 버튼 높이의 1/3만큼 띄운다. */
     div[data-testid="stDialog"]:has(.st-key-retirement-connection-platform) [data-testid="stDialogContent"] {
-        padding-bottom: var(--nachimpan-pill-edge-gap) !important;
+        /* 기존 내부 여백에서 실제로 보이는 간격이 약 10px이므로 보정해 약 16.5px 확보 */
+        padding-bottom: calc(var(--nachimpan-pill-edge-gap) + 6px) !important;
     }
     </style>
     """,
