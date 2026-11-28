@@ -12516,7 +12516,7 @@ padding-bottom: 0.45rem !important;
 st.markdown("""
 <style>
 .st-key-retirement-connection-platform {
-padding: 0.8rem 1rem 0.55rem !important;
+padding: 10px 8px !important; /* 상하 10px, 좌우 8px: 좌우 공간 확보 */
 }
 .st-key-retirement-connection-platform [data-testid="stVerticalBlock"] {
 gap: 0.42rem !important;
