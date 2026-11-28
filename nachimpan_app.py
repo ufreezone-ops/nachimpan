@@ -17391,7 +17391,7 @@ st.markdown(
         padding-bottom: 0 !important;
     }
     div.st-key-retirement-connection-close-cta {
-        padding-bottom: 16.5px !important;
+        padding-bottom: 0 !important;
         margin-bottom: 0 !important;
     }
     </style>
