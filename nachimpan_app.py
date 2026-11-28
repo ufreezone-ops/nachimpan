@@ -17152,3 +17152,161 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
+
+
+# [6.04.02.08] 2호선형 자료 순환 버튼 최종 공통 규격
+# 공통 외형은 이 블록에서 최종 적용한다. 기존 화면별 CSS는 위치·정렬 규칙을 유지한다.
+st.markdown(
+    """
+    <style>
+    :root {
+        --nachimpan-pill-border: #159447;
+        --nachimpan-pill-border-width: 6px;
+        --nachimpan-pill-radius: 999px;
+        --nachimpan-pill-background: #FFFFFF;
+        --nachimpan-pill-text: #000000;
+        --nachimpan-pill-hover: #E8F5EC;
+        --nachimpan-pill-height: 2.4rem;
+        --nachimpan-pill-padding: 5.6px;
+        --nachimpan-pill-font-size: 14.4px;
+        --nachimpan-pill-font-weight: 850;
+    }
+
+    /* 2호선형 버튼 6종: 자료보기 연결, 연결창 닫기, 통계 복귀 2종, 부동산 연결·닫기 */
+    div.st-key-retirement-report-connection-cta [data-testid="stButton"] button,
+    div.st-key-retirement-connection-close-cta .st-key-retirement_connection_end [data-testid="stButton"] button,
+    div.st-key-retirement-stats-return-bar [data-testid="stButton"] button,
+    div.st-key-housing-price-dialog-actions .st-key-housing_price_open_connection [data-testid="stButton"] button,
+    div.st-key-housing-price-dialog-actions .st-key-close_housing_price_stats_dialog [data-testid="stButton"] button,
+    div.st-key-housing-price-dialog-actions .st-key-close_housing_price_method_dialog [data-testid="stButton"] button,
+    div.st-key-retirement-report-connection-cta [data-testid="stButton"] button:hover,
+    div.st-key-retirement-connection-close-cta .st-key-retirement_connection_end [data-testid="stButton"] button:hover,
+    div.st-key-retirement-stats-return-bar [data-testid="stButton"] button:hover,
+    div.st-key-housing-price-dialog-actions .st-key-housing_price_open_connection [data-testid="stButton"] button:hover,
+    div.st-key-housing-price-dialog-actions .st-key-close_housing_price_stats_dialog [data-testid="stButton"] button:hover,
+    div.st-key-housing-price-dialog-actions .st-key-close_housing_price_method_dialog [data-testid="stButton"] button:hover,
+    div.st-key-retirement-report-connection-cta [data-testid="stButton"] button:focus,
+    div.st-key-retirement-connection-close-cta .st-key-retirement_connection_end [data-testid="stButton"] button:focus,
+    div.st-key-retirement-stats-return-bar [data-testid="stButton"] button:focus,
+    div.st-key-housing-price-dialog-actions .st-key-housing_price_open_connection [data-testid="stButton"] button:focus,
+    div.st-key-housing-price-dialog-actions .st-key-close_housing_price_stats_dialog [data-testid="stButton"] button:focus,
+    div.st-key-housing-price-dialog-actions .st-key-close_housing_price_method_dialog [data-testid="stButton"] button:focus,
+    div.st-key-retirement-report-connection-cta [data-testid="stButton"] button:active,
+    div.st-key-retirement-connection-close-cta .st-key-retirement_connection_end [data-testid="stButton"] button:active,
+    div.st-key-retirement-stats-return-bar [data-testid="stButton"] button:active,
+    div.st-key-housing-price-dialog-actions .st-key-housing_price_open_connection [data-testid="stButton"] button:active,
+    div.st-key-housing-price-dialog-actions .st-key-close_housing_price_stats_dialog [data-testid="stButton"] button:active,
+    div.st-key-housing-price-dialog-actions .st-key-close_housing_price_method_dialog [data-testid="stButton"] button:active {
+        box-sizing: border-box !important;
+        display: inline-flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        width: max-content !important;
+        min-width: 0 !important;
+        max-width: none !important;
+        height: var(--nachimpan-pill-height) !important;
+        min-height: var(--nachimpan-pill-height) !important;
+        max-height: var(--nachimpan-pill-height) !important;
+        padding: var(--nachimpan-pill-padding) !important;
+        border: var(--nachimpan-pill-border-width) solid var(--nachimpan-pill-border) !important;
+        border-radius: var(--nachimpan-pill-radius) !important;
+        background: var(--nachimpan-pill-background) !important;
+        background-color: var(--nachimpan-pill-background) !important;
+        background-image: none !important;
+        color: var(--nachimpan-pill-text) !important;
+        -webkit-text-fill-color: var(--nachimpan-pill-text) !important;
+        font-family: inherit !important;
+        font-size: var(--nachimpan-pill-font-size) !important;
+        font-weight: var(--nachimpan-pill-font-weight) !important;
+        line-height: 1.0563 !important;
+        white-space: nowrap !important;
+        box-shadow: none !important;
+        flex: 0 0 auto !important;
+        text-decoration: none !important;
+    }
+
+    /* Streamlit 내부 텍스트 래퍼도 버튼과 같은 글자 규격으로 고정 */
+    div.st-key-retirement-report-connection-cta [data-testid="stButton"] button *,
+    div.st-key-retirement-connection-close-cta .st-key-retirement_connection_end [data-testid="stButton"] button *,
+    div.st-key-retirement-stats-return-bar [data-testid="stButton"] button *,
+    div.st-key-housing-price-dialog-actions .st-key-housing_price_open_connection [data-testid="stButton"] button *,
+    div.st-key-housing-price-dialog-actions .st-key-close_housing_price_stats_dialog [data-testid="stButton"] button *,
+    div.st-key-housing-price-dialog-actions .st-key-close_housing_price_method_dialog [data-testid="stButton"] button * {
+        box-sizing: border-box !important;
+        margin-top: 0 !important;
+        margin-bottom: 0 !important;
+        padding: 0 !important;
+        color: var(--nachimpan-pill-text) !important;
+        -webkit-text-fill-color: var(--nachimpan-pill-text) !important;
+        font-size: var(--nachimpan-pill-font-size) !important;
+        font-weight: var(--nachimpan-pill-font-weight) !important;
+        line-height: 1.0563 !important;
+        text-decoration: none !important;
+    }
+
+    div.st-key-retirement-report-connection-cta [data-testid="stButton"] button:hover,
+    div.st-key-retirement-connection-close-cta .st-key-retirement_connection_end [data-testid="stButton"] button:hover,
+    div.st-key-retirement-stats-return-bar [data-testid="stButton"] button:hover,
+    div.st-key-housing-price-dialog-actions .st-key-housing_price_open_connection [data-testid="stButton"] button:hover,
+    div.st-key-housing-price-dialog-actions .st-key-close_housing_price_stats_dialog [data-testid="stButton"] button:hover,
+    div.st-key-housing-price-dialog-actions .st-key-close_housing_price_method_dialog [data-testid="stButton"] button:hover {
+        background: var(--nachimpan-pill-hover) !important;
+        background-color: var(--nachimpan-pill-hover) !important;
+        border-color: var(--nachimpan-pill-border) !important;
+    }
+
+    /* 부동산 창도 고정 폭을 제거하고 문구 길이에 맞춘다. 바깥 행만 중앙 정렬한다. */
+    div.st-key-housing-price-dialog-actions {
+        width: max-content !important;
+        max-width: calc(100% - 1.25rem) !important;
+        margin-left: auto !important;
+        margin-right: auto !important;
+    }
+    div.st-key-housing-price-dialog-actions [data-testid="stHorizontalBlock"] {
+        display: flex !important;
+        flex-wrap: nowrap !important;
+        align-items: center !important;
+        justify-content: center !important;
+        gap: 0.7rem !important;
+        width: max-content !important;
+        max-width: 100% !important;
+        margin-left: auto !important;
+        margin-right: auto !important;
+    }
+    div.st-key-housing-price-dialog-actions [data-testid="column"],
+    div.st-key-housing-price-dialog-actions [data-testid="stElementContainer"],
+    div.st-key-housing-price-dialog-actions [data-testid="stButton"] {
+        flex: 0 0 auto !important;
+        width: auto !important;
+        min-width: 0 !important;
+        max-width: none !important;
+        display: flex !important;
+        justify-content: center !important;
+    }
+
+    @media (max-width: 480px) {
+        div.st-key-retirement-report-connection-cta [data-testid="stButton"] button,
+        div.st-key-retirement-connection-close-cta .st-key-retirement_connection_end [data-testid="stButton"] button,
+        div.st-key-retirement-stats-return-bar [data-testid="stButton"] button,
+        div.st-key-housing-price-dialog-actions .st-key-housing_price_open_connection [data-testid="stButton"] button,
+        div.st-key-housing-price-dialog-actions .st-key-close_housing_price_stats_dialog [data-testid="stButton"] button,
+        div.st-key-housing-price-dialog-actions .st-key-close_housing_price_method_dialog [data-testid="stButton"] button {
+            font-size: 14.4px !important;
+            width: max-content !important;
+            min-width: 0 !important;
+            max-width: none !important;
+        }
+        div.st-key-housing-price-dialog-actions {
+            width: 100% !important;
+            max-width: 100% !important;
+            box-sizing: border-box !important;
+        }
+        div.st-key-housing-price-dialog-actions [data-testid="stHorizontalBlock"] {
+            max-width: 100% !important;
+            gap: 0.25rem !important;
+        }
+    }
+    </style>
+    """,
+    unsafe_allow_html=True,
+)
