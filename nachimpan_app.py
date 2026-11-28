@@ -17308,76 +17308,76 @@ st.markdown(
         }
     }
 
-    /* [6.04.02.09] 버튼 배치 표준: 버튼의 중심을 화면 분할 기준선에 맞춘다. */
-    /* 두 버튼: 가로 1/3·2/3 지점. 세 버튼: 1/4·2/4·3/4 지점. */
+    /* [6.04.02.09] 2버튼 배치: 각 버튼 중심을 화면 폭의 1/3·2/3에 고정 */
+    /* Streamlit 열 수를 :has()로 추정하지 않는다. 두 버튼의 위치를 6등분 Grid 좌표로 직접 지정한다. */
     div.st-key-retirement-stats-return-bar,
-    div.st-key-retirement-connection-close-cta {
+    div.st-key-retirement-connection-close-cta,
+    div.st-key-retirement-report-connection-cta {
         box-sizing: border-box !important;
         width: 100% !important;
         max-width: 100% !important;
     }
+
     div.st-key-retirement-stats-return-bar [data-testid="stHorizontalBlock"],
-    div.st-key-retirement-connection-close-cta [data-testid="stHorizontalBlock"] {
+    div.st-key-retirement-connection-close-cta [data-testid="stHorizontalBlock"],
+    div.st-key-retirement-report-connection-cta [data-testid="stHorizontalBlock"] {
         display: grid !important;
-        grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+        grid-template-columns: repeat(6, minmax(0, 1fr)) !important;
+        grid-auto-flow: row !important;
         align-items: center !important;
-        justify-items: stretch !important;
         gap: 0 !important;
         width: 100% !important;
         max-width: 100% !important;
         margin: 0 !important;
     }
+
     div.st-key-retirement-stats-return-bar [data-testid="column"]:nth-child(1),
-    div.st-key-retirement-connection-close-cta [data-testid="column"]:nth-child(1) {
-        grid-column: 1 / 3 !important;
+    div.st-key-retirement-connection-close-cta [data-testid="column"]:nth-child(1),
+    div.st-key-retirement-report-connection-cta [data-testid="column"]:nth-child(1) {
+        grid-column: 2 / 4 !important;
+        grid-row: 1 !important;
     }
     div.st-key-retirement-stats-return-bar [data-testid="column"]:nth-child(2),
-    div.st-key-retirement-connection-close-cta [data-testid="column"]:nth-child(2) {
-        grid-column: 2 / 4 !important;
-    }
-    div.st-key-retirement-stats-return-bar [data-testid="column"],
-    div.st-key-retirement-connection-close-cta [data-testid="column"] {
-        /* 겹치는 Grid 영역을 같은 행에 유지해야 중심이 1/3·2/3 기준선에 놓인다. */
+    div.st-key-retirement-connection-close-cta [data-testid="column"]:nth-child(2),
+    div.st-key-retirement-report-connection-cta [data-testid="column"]:nth-child(2) {
+        grid-column: 4 / 6 !important;
         grid-row: 1 !important;
+    }
+
+    /* 실제 화면에 추가 열이 렌더링되더라도 두 버튼 배치를 밀어내지 않게 한다. */
+    div.st-key-retirement-stats-return-bar [data-testid="column"]:nth-child(n+3),
+    div.st-key-retirement-connection-close-cta [data-testid="column"]:nth-child(n+3),
+    div.st-key-retirement-report-connection-cta [data-testid="column"]:nth-child(n+3) {
+        display: none !important;
+    }
+
+    div.st-key-retirement-stats-return-bar [data-testid="column"],
+    div.st-key-retirement-connection-close-cta [data-testid="column"],
+    div.st-key-retirement-report-connection-cta [data-testid="column"] {
+        box-sizing: border-box !important;
         width: 100% !important;
         min-width: 0 !important;
         max-width: none !important;
         padding-left: 0 !important;
         padding-right: 0 !important;
         justify-self: stretch !important;
-        box-sizing: border-box !important;
     }
+
     div.st-key-retirement-stats-return-bar [data-testid="stElementContainer"],
     div.st-key-retirement-stats-return-bar [data-testid="stButton"],
     div.st-key-retirement-connection-close-cta [data-testid="stElementContainer"],
-    div.st-key-retirement-connection-close-cta [data-testid="stButton"] {
+    div.st-key-retirement-connection-close-cta [data-testid="stButton"],
+    div.st-key-retirement-report-connection-cta [data-testid="stElementContainer"],
+    div.st-key-retirement-report-connection-cta [data-testid="stButton"] {
+        box-sizing: border-box !important;
         width: 100% !important;
         min-width: 0 !important;
         display: flex !important;
         justify-content: center !important;
     }
 
-    /* 세 버튼이 놓이는 경우에는 각 버튼 중심을 가로 1/4·2/4·3/4 지점에 둔다. */
-    div.st-key-retirement-stats-return-bar [data-testid="stHorizontalBlock"]:has(> [data-testid="column"]:nth-child(3)),
-    div.st-key-retirement-connection-close-cta [data-testid="stHorizontalBlock"]:has(> [data-testid="column"]:nth-child(3)) {
-        grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
-    }
-    div.st-key-retirement-stats-return-bar [data-testid="stHorizontalBlock"]:has(> [data-testid="column"]:nth-child(3)) > [data-testid="column"]:nth-child(1),
-    div.st-key-retirement-connection-close-cta [data-testid="stHorizontalBlock"]:has(> [data-testid="column"]:nth-child(3)) > [data-testid="column"]:nth-child(1) {
-        grid-column: 1 / 3 !important;
-    }
-    div.st-key-retirement-stats-return-bar [data-testid="stHorizontalBlock"]:has(> [data-testid="column"]:nth-child(3)) > [data-testid="column"]:nth-child(2),
-    div.st-key-retirement-connection-close-cta [data-testid="stHorizontalBlock"]:has(> [data-testid="column"]:nth-child(3)) > [data-testid="column"]:nth-child(2) {
-        grid-column: 2 / 4 !important;
-    }
-    div.st-key-retirement-stats-return-bar [data-testid="stHorizontalBlock"]:has(> [data-testid="column"]:nth-child(3)) > [data-testid="column"]:nth-child(3),
-    div.st-key-retirement-connection-close-cta [data-testid="stHorizontalBlock"]:has(> [data-testid="column"]:nth-child(3)) > [data-testid="column"]:nth-child(3) {
-        grid-column: 3 / 5 !important;
-    }
-
-    /* 통계 상단 고정 버튼은 기존 메뉴 아래 위치를 유지하면서 버튼 높이의 1/3만큼 더 띄운다. */
+    /* 통계 상단 버튼: 사용자가 확인한 상단 여백 조정값은 유지 */
     div.st-key-retirement-stats-return-bar {
-        /* 기존 메뉴와의 실제 가시 간격을 약 16.5px로 맞춘다. */
         top: calc(7rem - 2.55rem + 2.5px) !important;
         left: 0 !important;
         transform: none !important;
@@ -17386,10 +17386,13 @@ st.markdown(
         padding: 0 !important;
     }
 
-    /* 연결창 하단 버튼은 창의 아래 경계에서 버튼 높이의 1/3만큼 띄운다. */
+    /* 연결창 하단은 여백을 dialog 전체가 아니라 마지막 버튼 묶음 자체에 확보한다. */
     div[data-testid="stDialog"]:has(.st-key-retirement-connection-platform) [data-testid="stDialogContent"] {
-        /* 기존 내부 여백에서 실제로 보이는 간격이 약 10px이므로 보정해 약 16.5px 확보 */
-        padding-bottom: calc(var(--nachimpan-pill-edge-gap) + 6px) !important;
+        padding-bottom: 0 !important;
+    }
+    div.st-key-retirement-connection-close-cta {
+        padding-bottom: 16.5px !important;
+        margin-bottom: 0 !important;
     }
     </style>
     """,
