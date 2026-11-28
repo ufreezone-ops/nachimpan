@@ -6216,7 +6216,7 @@ body:has(.st-key-retirement-connection-platform) .st-key-retirement-connection-s
             _left, _right = st.columns(2, gap="small")
             with _left:
                 with st.container(key="retirement-connection-read-list", border=True):
-                    st.markdown("<div class='retirement-connection-panel-title'>읽은 자료 목록</div>", unsafe_allow_html=True)
+                    st.markdown("<div class='retirement-connection-panel-title'>&lt;-읽은 자료</div>", unsafe_allow_html=True)
                     if _past_records:
                         for _index, _record in enumerate(_past_records):
                             _number = _record.get("display_label", "")
@@ -6253,7 +6253,7 @@ body:has(.st-key-retirement-connection-platform) .st-key-retirement-connection-s
 
             with _right:
                 with st.container(key="retirement-connection-recommend-list", border=True):
-                    st.markdown("<div class='retirement-connection-panel-title'>다음 추천 자료</div>", unsafe_allow_html=True)
+                    st.markdown("<div class='retirement-connection-panel-title'>추천 자료-&gt;</div>", unsafe_allow_html=True)
                     if _recommend_rows:
                         for _index, _item in enumerate(_recommend_rows):
                             _number = _item.get("display_label", "")
@@ -13822,13 +13822,14 @@ div.st-key-retirement-connection-close-cta .st-key-retirement_connection_open_st
 """, unsafe_allow_html=True)
 
 
-# 연결창 오른쪽 하단 패널 제목: '다음 추천 자료 →' 오른쪽 정렬
+# 연결창 하단 두 패널 제목을 중앙 정렬
 st.markdown("""
 <style>
-.st-key-retirement-connection-recommend-list h4 {
+.st-key-retirement-connection-read-list .retirement-connection-panel-title,
+.st-key-retirement-connection-recommend-list .retirement-connection-panel-title {
     display: block !important;
     width: 100% !important;
-    text-align: right !important;
+    text-align: center !important;
 }
 </style>
 """, unsafe_allow_html=True)
@@ -15831,13 +15832,14 @@ div.st-key-retirement-connection-close-cta .st-key-retirement_connection_open_st
 """, unsafe_allow_html=True)
 
 
-# 연결창 오른쪽 하단 패널 제목: '다음 추천 자료 →' 오른쪽 정렬
+# 연결창 하단 두 패널 제목을 중앙 정렬
 st.markdown("""
 <style>
-.st-key-retirement-connection-recommend-list h4 {
+.st-key-retirement-connection-read-list .retirement-connection-panel-title,
+.st-key-retirement-connection-recommend-list .retirement-connection-panel-title {
     display: block !important;
     width: 100% !important;
-    text-align: right !important;
+    text-align: center !important;
 }
 </style>
 """, unsafe_allow_html=True)
