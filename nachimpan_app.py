@@ -5704,6 +5704,16 @@ body:has(.st-key-retirement-connection-platform) .st-key-retirement-connection-r
     line-height:1.35 !important;
     text-align:left !important;
 }}
+/* [6.04.02.04] 이미 읽은 자료는 검색 결과와 추천 목록에서도 보랏빛 제목으로 표시 */
+body:has(.st-key-retirement-connection-platform) .st-key-retirement-connection-search [class*="st-key-retirement-connection-search-result-read-"] [data-testid="stButton"] button,
+body:has(.st-key-retirement-connection-platform) .st-key-retirement-connection-search [class*="st-key-retirement-connection-search-result-read-"] [data-testid="stButton"] button *,
+body:has(.st-key-retirement-connection-platform) .st-key-retirement-connection-search [class*="st-key-retirement-connection-search-result-read-"] [data-testid="stButton"] button p,
+body:has(.st-key-retirement-connection-platform) .st-key-retirement-connection-recommend-list [class*="st-key-retirement-connection-choice-read-"] [data-testid="stButton"] button,
+body:has(.st-key-retirement-connection-platform) .st-key-retirement-connection-recommend-list [class*="st-key-retirement-connection-choice-read-"] [data-testid="stButton"] button *,
+body:has(.st-key-retirement-connection-platform) .st-key-retirement-connection-recommend-list [class*="st-key-retirement-connection-choice-read-"] [data-testid="stButton"] button p {{
+    color:#D8B4FE !important;
+    -webkit-text-fill-color:#D8B4FE !important;
+}}
 /* 검색 라벨은 폼 밖, 입력창과 버튼은 같은 행에서 중앙 정렬 */
 body:has(.st-key-retirement-connection-platform) .st-key-retirement-connection-search .retirement-connection-search-label {{
     display:block !important;
@@ -6181,7 +6191,14 @@ body:has(.st-key-retirement-connection-platform) .st-key-retirement-connection-s
                             or (_result_record or {}).get("display_label", "")
                         ).strip()
                         _result_color = _continent_color(_result_record)
-                        with st.container(key=f"retirement-connection-search-result-{_index}"):
+                        _result_key = _result.get("key") or _result.get("source_id") or _result.get("resource_id")
+                        _result_is_read = bool(_result_key and _result_key in _history_set)
+                        _search_result_container_key = (
+                            f"retirement-connection-search-result-read-{_index}"
+                            if _result_is_read
+                            else f"retirement-connection-search-result-{_index}"
+                        )
+                        with st.container(key=_search_result_container_key):
                             _number_col, _title_col = st.columns([0.11, 0.89], gap=None)
                             with _number_col:
                                 if _result_number:
