@@ -17331,29 +17331,29 @@ st.markdown(
         margin: 0 !important;
     }
 
-    div.st-key-retirement-stats-return-bar [data-testid="column"]:nth-child(1),
-    div.st-key-retirement-connection-close-cta [data-testid="column"]:nth-child(1),
-    div.st-key-retirement-report-connection-cta [data-testid="column"]:nth-child(1) {
+    div.st-key-retirement-stats-return-bar [data-testid="stColumn"]:nth-child(1),
+    div.st-key-retirement-connection-close-cta [data-testid="stColumn"]:nth-child(1),
+    div.st-key-retirement-report-connection-cta [data-testid="stColumn"]:nth-child(1) {
         grid-column: 2 / 4 !important;
         grid-row: 1 !important;
     }
-    div.st-key-retirement-stats-return-bar [data-testid="column"]:nth-child(2),
-    div.st-key-retirement-connection-close-cta [data-testid="column"]:nth-child(2),
-    div.st-key-retirement-report-connection-cta [data-testid="column"]:nth-child(2) {
+    div.st-key-retirement-stats-return-bar [data-testid="stColumn"]:nth-child(2),
+    div.st-key-retirement-connection-close-cta [data-testid="stColumn"]:nth-child(2),
+    div.st-key-retirement-report-connection-cta [data-testid="stColumn"]:nth-child(2) {
         grid-column: 4 / 6 !important;
         grid-row: 1 !important;
     }
 
     /* 실제 화면에 추가 열이 렌더링되더라도 두 버튼 배치를 밀어내지 않게 한다. */
-    div.st-key-retirement-stats-return-bar [data-testid="column"]:nth-child(n+3),
-    div.st-key-retirement-connection-close-cta [data-testid="column"]:nth-child(n+3),
-    div.st-key-retirement-report-connection-cta [data-testid="column"]:nth-child(n+3) {
+    div.st-key-retirement-stats-return-bar [data-testid="stColumn"]:nth-child(n+3),
+    div.st-key-retirement-connection-close-cta [data-testid="stColumn"]:nth-child(n+3),
+    div.st-key-retirement-report-connection-cta [data-testid="stColumn"]:nth-child(n+3) {
         display: none !important;
     }
 
-    div.st-key-retirement-stats-return-bar [data-testid="column"],
-    div.st-key-retirement-connection-close-cta [data-testid="column"],
-    div.st-key-retirement-report-connection-cta [data-testid="column"] {
+    div.st-key-retirement-stats-return-bar [data-testid="stColumn"],
+    div.st-key-retirement-connection-close-cta [data-testid="stColumn"],
+    div.st-key-retirement-report-connection-cta [data-testid="stColumn"] {
         box-sizing: border-box !important;
         width: 100% !important;
         min-width: 0 !important;
