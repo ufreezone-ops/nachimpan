@@ -17166,8 +17166,8 @@ st.markdown(
         --nachimpan-pill-background: #FFFFFF;
         --nachimpan-pill-text: #000000;
         --nachimpan-pill-hover: #E8F5EC;
-        --nachimpan-pill-height: 2.4rem;
-        --nachimpan-pill-padding: 5.6px;
+        --nachimpan-pill-min-height: 2.4rem;
+        --nachimpan-pill-padding: 11.2px 22.4px;
         --nachimpan-pill-font-size: 14.4px;
         --nachimpan-pill-font-weight: 850;
     }
@@ -17204,9 +17204,9 @@ st.markdown(
         width: max-content !important;
         min-width: 0 !important;
         max-width: none !important;
-        height: var(--nachimpan-pill-height) !important;
-        min-height: var(--nachimpan-pill-height) !important;
-        max-height: var(--nachimpan-pill-height) !important;
+        height: auto !important;
+        min-height: var(--nachimpan-pill-min-height) !important;
+        max-height: none !important;
         padding: var(--nachimpan-pill-padding) !important;
         border: var(--nachimpan-pill-border-width) solid var(--nachimpan-pill-border) !important;
         border-radius: var(--nachimpan-pill-radius) !important;
