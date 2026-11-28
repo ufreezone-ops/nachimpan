@@ -16030,7 +16030,7 @@ body:has(.st-key-retirement-connection-platform) [data-testid="stDialogContent"]
     box-sizing: border-box !important;
     width: 100% !important;
     margin: 0 !important;
-    padding: 8px 10px !important;
+    padding: 10px 8px !important;
     border: 1px solid #D7E2D9 !important;
     border-radius: 12px !important;
     background: #FFFFFF !important;
