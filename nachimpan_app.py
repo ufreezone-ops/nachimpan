@@ -10430,13 +10430,13 @@ elif selected_page == "통계":
             _back_connection_col, _back_origin_col = st.columns([1, 1], gap="small")
             with _back_connection_col:
                 st.button(
-                    "연결창으로",
+                    "연결",
                     key="stats_return_to_connection",
                     on_click=_return_to_retirement_connection,
                 )
             with _back_origin_col:
                 st.button(
-                    "처음 탭으로",
+                    "닫기",
                     key="stats_return_to_origin",
                     on_click=_return_to_retirement_origin,
                 )
@@ -17168,6 +17168,7 @@ st.markdown(
         --nachimpan-pill-hover: #E8F5EC;
         --nachimpan-pill-min-height: 2.4rem;
         --nachimpan-pill-padding: 11.2px 22.4px;
+        --nachimpan-pill-edge-gap: calc((14.4px * 1.0563 + 22.4px + 12px) / 3);
         --nachimpan-pill-font-size: 14.4px;
         --nachimpan-pill-font-weight: 850;
     }
@@ -17305,6 +17306,86 @@ st.markdown(
             max-width: 100% !important;
             gap: 0.25rem !important;
         }
+    }
+
+    /* [6.04.02.09] 버튼 배치 표준: 버튼의 중심을 화면 분할 기준선에 맞춘다. */
+    /* 두 버튼: 가로 1/3·2/3 지점. 세 버튼: 1/4·2/4·3/4 지점. */
+    div.st-key-retirement-stats-return-bar,
+    div.st-key-retirement-connection-close-cta {
+        box-sizing: border-box !important;
+        width: 100% !important;
+        max-width: 100% !important;
+    }
+    div.st-key-retirement-stats-return-bar [data-testid="stHorizontalBlock"],
+    div.st-key-retirement-connection-close-cta [data-testid="stHorizontalBlock"] {
+        display: grid !important;
+        grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+        align-items: center !important;
+        justify-items: stretch !important;
+        gap: 0 !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        margin: 0 !important;
+    }
+    div.st-key-retirement-stats-return-bar [data-testid="column"]:nth-child(1),
+    div.st-key-retirement-connection-close-cta [data-testid="column"]:nth-child(1) {
+        grid-column: 1 / 3 !important;
+    }
+    div.st-key-retirement-stats-return-bar [data-testid="column"]:nth-child(2),
+    div.st-key-retirement-connection-close-cta [data-testid="column"]:nth-child(2) {
+        grid-column: 2 / 4 !important;
+    }
+    div.st-key-retirement-stats-return-bar [data-testid="column"],
+    div.st-key-retirement-connection-close-cta [data-testid="column"] {
+        width: 100% !important;
+        min-width: 0 !important;
+        max-width: none !important;
+        padding-left: 0 !important;
+        padding-right: 0 !important;
+        justify-self: stretch !important;
+        box-sizing: border-box !important;
+    }
+    div.st-key-retirement-stats-return-bar [data-testid="stElementContainer"],
+    div.st-key-retirement-stats-return-bar [data-testid="stButton"],
+    div.st-key-retirement-connection-close-cta [data-testid="stElementContainer"],
+    div.st-key-retirement-connection-close-cta [data-testid="stButton"] {
+        width: 100% !important;
+        min-width: 0 !important;
+        display: flex !important;
+        justify-content: center !important;
+    }
+
+    /* 세 버튼이 놓이는 경우에는 각 버튼 중심을 가로 1/4·2/4·3/4 지점에 둔다. */
+    div.st-key-retirement-stats-return-bar [data-testid="stHorizontalBlock"]:has(> [data-testid="column"]:nth-child(3)),
+    div.st-key-retirement-connection-close-cta [data-testid="stHorizontalBlock"]:has(> [data-testid="column"]:nth-child(3)) {
+        grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+    }
+    div.st-key-retirement-stats-return-bar [data-testid="stHorizontalBlock"]:has(> [data-testid="column"]:nth-child(3)) > [data-testid="column"]:nth-child(1),
+    div.st-key-retirement-connection-close-cta [data-testid="stHorizontalBlock"]:has(> [data-testid="column"]:nth-child(3)) > [data-testid="column"]:nth-child(1) {
+        grid-column: 1 / 3 !important;
+    }
+    div.st-key-retirement-stats-return-bar [data-testid="stHorizontalBlock"]:has(> [data-testid="column"]:nth-child(3)) > [data-testid="column"]:nth-child(2),
+    div.st-key-retirement-connection-close-cta [data-testid="stHorizontalBlock"]:has(> [data-testid="column"]:nth-child(3)) > [data-testid="column"]:nth-child(2) {
+        grid-column: 2 / 4 !important;
+    }
+    div.st-key-retirement-stats-return-bar [data-testid="stHorizontalBlock"]:has(> [data-testid="column"]:nth-child(3)) > [data-testid="column"]:nth-child(3),
+    div.st-key-retirement-connection-close-cta [data-testid="stHorizontalBlock"]:has(> [data-testid="column"]:nth-child(3)) > [data-testid="column"]:nth-child(3) {
+        grid-column: 3 / 5 !important;
+    }
+
+    /* 통계 상단 고정 버튼은 기존 메뉴 아래 위치를 유지하면서 버튼 높이의 1/3만큼 더 띄운다. */
+    div.st-key-retirement-stats-return-bar {
+        top: calc(7rem - 2.55rem + var(--nachimpan-pill-edge-gap)) !important;
+        left: 0 !important;
+        transform: none !important;
+        width: 100vw !important;
+        max-width: 100vw !important;
+        padding: 0 !important;
+    }
+
+    /* 연결창 하단 버튼은 창의 아래 경계에서 버튼 높이의 1/3만큼 띄운다. */
+    div[data-testid="stDialog"]:has(.st-key-retirement-connection-platform) [data-testid="stDialogContent"] {
+        padding-bottom: var(--nachimpan-pill-edge-gap) !important;
     }
     </style>
     """,
